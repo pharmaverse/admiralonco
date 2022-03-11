@@ -1,0 +1,50 @@
+Package: admiralonco
+Type: Package
+Title: Oncology extension package for ADaM in R Asset Library (admiral)
+Version: 0.1.0
+Authors@R: c(
+    person("Stefan", "Bundfuss", email = "stefan.bundfuss@roche.com", role = c("aut", "cre")),
+    person("Ross", "Farrugia", role = "aut"),
+    person("GlaxoSmithKline LLC", role = c("cph", "fnd")),
+    person("AMGEN", role = c("cph", "fnd")),
+    person("F. Hoffmann-La Roche AG", role = c("cph", "fnd"))
+    )
+Description: Oncology extension package for ADaM in R Asset Library (admiral).
+License: Apache License (>= 2)
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+Depends: R (>= 3.5)
+Imports:
+  assertthat,
+  dplyr,
+  lubridate,
+  rlang,
+  purrr,
+  magrittr,
+  stringr,
+  hms,
+  tidyr,
+  tidyselect,
+  admiral,
+  admiral.test
+Suggests:
+  devtools,
+  diffdf,
+  lifecycle,
+  lintr,
+  pkgdown,
+  testthat,
+  knitr,
+  methods,
+  miniUI,
+  rmarkdown,
+  roxygen2,
+  spelling,
+  styler,
+  tibble,
+  usethis,
+  covr,
+  DT
+VignetteBuilder: knitr

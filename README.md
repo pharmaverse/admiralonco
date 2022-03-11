@@ -1,2 +1,20 @@
-# admiralonco
-Oncology extension package for ADaM in R Asset Library (admiral)
+# admiralonco <img src="man/figures/logo.png" align="right" width="200" style="margin-left:50px;"/>
+Oncology extension package for ADaM in R Asset Library `{admiral}`
+
+### Purpose
+
+To provide a complementary (to `{admiral}`) toolbox that enables to develop oncology disease area specifics.
+
+### Scope
+
+* Build a toolbox of re-usable functions and utilities to create oncology-specific ADaM datasets in R in a modular manner.
+* All functions are created based upon the ADaM Implementation Guide and aim to facilitate the programming of ADaM dataset standards.
+* Initially the package will focus on the most common efficacy endpoint needs, but over time we will look to add extra areas such as:
+endpoints for targeted indications, baseline disease characteristics, common sensitivity analyses and questionnaires.
+
+### R Versions
+
+Here's a summary of our strategy for this package related to R versions:
+- R versions for developers and users will follow the same as `{admiral}` core package.
+- For development the `devel` branch of `{admiral}` core is used as a dependency. For releasing a new `{admiralroche}` version it 
+must run using the latest released `{admiral}` core version, i.e., `main` branch of `{admiral}` core.
