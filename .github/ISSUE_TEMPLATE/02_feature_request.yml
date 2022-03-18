@@ -14,8 +14,7 @@ body:
     attributes:
       label: Feature Idea
       description: Tell us your idea in as few words as possible
-      placeholder: Tell us what you see!
-      value: "`derive_var_dtm` should do x, y and z "
+      placeholder: `derive_var_dtm` should do x, y and z
     validations:
       required: true
   - type: textarea
