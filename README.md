@@ -14,10 +14,7 @@ endpoints for targeted indications, baseline disease characteristics, common sen
 
 ## Expectations
 
-* `{admiralonco}` is expected to complement `{admiral}` and provide functions to help with the creation of the efficacy endpoints required for oncoly ADaMs.
-
-* Please also refer to the [`{admiral}` expectations](https://pharmaverse.github.io/admiral/index.html#expectations)
-
+ `{admiralonco}` is expected to complement `{admiral}` and provide functions to help with the creation of the efficacy endpoints required for oncology ADaMs.
 
 ## References and Documentation
 
