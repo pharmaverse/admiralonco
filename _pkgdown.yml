@@ -10,9 +10,10 @@ repo:
     source: https://github.com/pharmaverse/admiralonco/blob/main/
     issue: https://github.com/pharmaverse/admiralonco/issues/
     user: https://github.com/
-    news:
-    #cran_dates: false
+  news:
+    cran_dates: false
 reference:
+
  - title: Derivations
    desc: Derivations add one or more variables or parameters to the input dataset and return the extended dataset.
  - contents:
@@ -24,6 +25,10 @@ reference:
    - has_keyword('computation')
    
  - title: CDISC Hierarchy
+ - subtitle: ADEVENT
+   desc: ADEVENT specific functions
+ - contents:
+   - has_keyword('adevent')
  - subtitle: ADRS
    desc: ADRS specific functions
  - contents:
@@ -69,9 +74,9 @@ articles:
    - adrs
    - adtte
    - faq
- - title: Developer Guides
-   navbar: Developer Guides
-   contents:
-   - guide1
+# - title: Developer Guides
+#   navbar: Developer Guides
+#   contents:
+#   - guide1
 
 
