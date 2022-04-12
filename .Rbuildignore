@@ -2,3 +2,6 @@
 ^\.Rproj\.user$
 ^.github$
 ^docs$
+^admiralonco\.Rcheck$
+^admiralonco.*\.tar\.gz$
+^admiralonco.*\.tgz$
