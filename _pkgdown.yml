@@ -1,0 +1,82 @@
+template:
+  params:
+   bootswatch: flatly
+  docsearch:
+    api_key: 2d4895759f79e89d6eb1c3b990bca6d8
+    index_name: pharmaverse
+repo:
+  url:
+    home: https://github.com/pharmaverse/admiralonco
+    source: https://github.com/pharmaverse/admiralonco/blob/main/
+    issue: https://github.com/pharmaverse/admiralonco/issues/
+    user: https://github.com/
+  news:
+    cran_dates: false
+reference:
+
+ - title: Derivations
+   desc: Derivations add one or more variables or parameters to the input dataset and return the extended dataset.
+ - contents:
+   - starts_with("derive")
+   
+ - title: Computations
+   desc: Computations expect vectors as input and return a vector
+ - contents:
+   - has_keyword('computation')
+   
+ - title: CDISC Hierarchy
+ - subtitle: ADEVENT
+   desc: ADEVENT specific functions
+ - contents:
+   - has_keyword('adevent')
+ - subtitle: ADRS
+   desc: ADRS specific functions
+ - contents:
+   - has_keyword('adrs')
+ - subtitle: ADTTE
+   desc: ADTTE specific functions
+ - contents:
+   - has_keyword('adtte')
+   
+ - title: Other Keywords
+ - subtitle: Source Specifications
+   desc: Classes defining sources for derivations where variables or observations from more than one dataset are considered, e.g., like in `derive_xxxxx()`
+ - contents:
+   - has_keyword('source_specifications')
+   
+ - title: ADaM Datasets
+ - contents:
+   - adrs
+   - adtte
+   
+ - title: User Utilities
+ - contents:
+   - has_keyword("user_utility")
+   
+ - title: Developer Utilities
+ - subtitle: Assertions
+ - contents:
+   - has_keyword("assertion")
+ - subtitle: Checks
+ - contents:
+   - has_keyword("check")
+ - subtitle: Warnings
+ - contents:
+   - has_keyword("warning")
+ - subtitle: Various
+ - contents:
+   - has_keyword("dev_utility")
+   
+articles:
+ - title: User Guides
+   navbar: User Guides
+   contents:
+   - adrs
+   - adtte
+   - faq
+# - title: Developer Guides
+#   navbar: Developer Guides
+#   contents:
+#   - guide1
+
+
