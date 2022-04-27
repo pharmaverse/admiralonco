@@ -33,7 +33,7 @@
 #'   "TEST01", "PAT01",  "RSP",  as.Date("2021-04-27"),  "Y",   "2021-04-27"
 #' )
 #'
-#' death <- date_source(dateset_name = "dummy_data", date = ADT, filter = PARAMCD == "DEATH")
+#' death <- date_source(dataset_name = "dummy_data", date = ADT, filter = PARAMCD == "DEATH")
 #' resp <- date_source(dataset_name = "dummy_data", date = ADT, filter = PARAMCD == "RSP" & AVALC == "Y")
 #' pd <- date_source(dataset_name = "dummy_data", date = PDDT, filter = NULL)
 #'
@@ -47,3 +47,5 @@ date_source <- function(dataset_name, date, filter = NULL, set_values_to = NULL)
   class(out) <- c("date_source", "list")
   out
 }
+
+
