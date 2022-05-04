@@ -11,14 +11,14 @@
 #' 
 #'   The variables `PARAMCD`, `AVALC`, `ADT`, and those specified by the `by_vars` 
 #'   parameter are expected. 
-#' 
+#'   
 #' @param dataset_adsl ADSL dataset used as input for populating `subject_keys`
 #' in input dataset. 
 #' 
 #'   The variables specified by the `subject_keys` parameter and the `reference_date`
 #'   parameter are expected. 
-#'   
-#' @param source_param Character name of parameter code in `source_dataset` that
+#' 
+#' @param source_param Character name of parameter code in `dataset` that
 #' represents overall disease response assessment for a subject at a given timepoint,
 #' e.g. `"OVR"` or `"OVRLRESP"`.
 #' 
@@ -27,9 +27,6 @@
 #' 
 #' @param source_pd A `date_source` object specifying the dataset, date variable, 
 #' and filter condition used to identify disease progression.
-#' 
-#' @param source_datasets Named list of length 1 specifying the dataset from 
-#' which response information for deriving clinical benefit rate will be collected. 
 #' 
 #' @param by_vars A named list returned by `vars()` used together with `subject_keys` 
 #' to identify groupings within which the earliest date of clinical benefit rate 
@@ -54,7 +51,6 @@ derive_param_clinbenefit <- function(dataset,
                                      source_param,
                                      source_resp,
                                      source_pd,
-                                     source_datasets,
                                      by_vars = NULL,
                                      reference_date = TRTSDT,
                                      ref_start_window = 28,
@@ -65,47 +61,20 @@ derive_param_clinbenefit <- function(dataset,
   assert_vars(by_vars, optional = TRUE)
   reference_date <- assert_symbol(enquo(reference_date))
   assert_data_frame(
-    dataset, 
-    required_vars = vars(!!!by_vars, PARAMCD, AVALC, ADT)
-  )
-  assert_data_frame(
     dataset_adsl,
     required_vars = vars(!!!subject_keys, !!reference_date)
+  )
+  assert_data_frame(
+    dataset, 
+    required_vars = vars(!!!by_vars, PARAMCD, AVALC, ADT)
   )
   params_available <- unique(dataset$PARAMCD)
   source_param <- assert_character_scalar(source_param, values = params_available)
   assert_vars(subject_keys)
   assert_s3_class(source_resp, "date_source")
   assert_s3_class(source_pd, "date_source")
-  assert_list_of(source_datasets, "data.frame")
-  source_names <- names(source_datasets)
-  
-  assert_list_element(
-    list = list(source_resp),
-    element = "dataset_name",
-    condition = dataset_name %in% source_names,
-    source_names = source_names,
-    message_text = paste0(
-      "The dataset names must be included in the list specified for the ",
-      "`source_datasets` parameter.\n",
-      "Following names were provided by `source_datasets`:\n"
-      #enumerate(source_names, quote_fun = squote)
-    )
-  )
-  
-  assert_list_element(
-    list = list(source_pd),
-    element = "dataset_name",
-    condition = dataset_name %in% source_names,
-    source_names = source_names,
-    message_text = paste0(
-      "The dataset names must be included in the list specified for the ",
-      "`source_datasets` parameter.\n",
-      "Following names were provided by `source_datasets`:\n"
-      #enumerate(source_names, quote_fun = squote)
-    )
-  )
-  
+  assert_data_frame(eval(parse_expr(source_pd$dataset_name)))
+  assert_data_frame(eval(parse_expr(source_resp$dataset_name)))
   ref_start_window <- assert_integer_scalar(ref_start_window)
   assert_varval_list(set_values_to, accept_expr = TRUE, optional = TRUE)
   assert_param_does_not_exist(dataset, quo_get_expr(set_values_to$PARAMCD))
@@ -121,18 +90,18 @@ derive_param_clinbenefit <- function(dataset,
   
   # Get PD date and objective response date
   
-  pd_data <- source_datasets[[source_pd$dataset_name]] %>%
+  pd_data <- eval(parse_expr(source_pd$dataset_name)) %>%
     admiral::filter_if(source_pd$filter) %>%
     select(!!!subject_keys, !!!by_vars, !!source_pd$date) %>%
     rename(temp_pd = !!source_pd$date)
   
-  rsp_data <- source_datasets[[source_resp$dataset_name]] %>%
+  rsp_data <- eval(parse_expr(source_resp$dataset_name)) %>%
     admiral::filter_if(source_resp$filter) %>%
     select(!!!subject_keys, !!!by_vars, !!source_resp$date) %>%
     rename(temp_rs = !!source_resp$date)
   
   # Look for valid non-PD measurements after window from reference date
-  ovr_data <- source_datasets[[source_resp$dataset_name]] %>%
+  ovr_data <- dataset %>%
     left_join(
       adsl,
       by = vars2chr(subject_keys)

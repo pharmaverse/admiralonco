@@ -7,7 +7,7 @@ adsl <- tibble::tribble(
 ) %>%
   mutate(STUDYID = "AB42")
 
-input <- tibble::tribble(
+adrs <- tibble::tribble(
   ~USUBJID, ~PARAMCD, ~AVALC, ~ADT,
   "01", "RSP", "Y", ymd("2021-04-08"),
   "02", "RSP", "N", ymd("2021-05-07"),
@@ -31,13 +31,13 @@ input <- tibble::tribble(
   mutate(STUDYID = "AB42")
 
 pd <-  date_source(
-  dataset_name = "ADRS",
+  dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == "PD" & AVALC == "Y"
 )
 
 resp <- date_source(
-  dataset_name = "ADRS",
+  dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == "RSP" & AVALC == "Y"
 )
@@ -52,16 +52,15 @@ test_that("Clinical benefit rate parameter is derived correctly", {
     "04", "CBR", "N", NA)  %>%
     mutate(STUDYID = "AB42")
   
-  expected_output <- bind_rows(input, input_cbr)
+  expected_output <- bind_rows(adrs, input_cbr)
 
   
   actual_output <- derive_param_clinbenefit(
-    dataset = input,
+    dataset = adrs,
     dataset_adsl = adsl,
     source_param = "OVR",
     source_resp = resp,
     source_pd = pd,
-    source_datasets = list(ADRS = input),
     reference_date = TRTSDT,
     ref_start_window = 28,
     set_values_to = vars(
@@ -73,21 +72,3 @@ test_that("Clinical benefit rate parameter is derived correctly", {
                    keys = c("USUBJID", "PARAMCD", "ADT"))
   
 })
-
-test_that("Errors", {
-  # Dataset name in source object must match names in source_dataset
-  expect_error(
-    input %>% derive_param_clinbenefit(
-      dataset_adsl = adsl,
-      source_param = "OVR",
-      source_resp = resp,
-      source_pd = pd,
-      source_datasets = list(RESP = input),
-      reference_date = TRTSDT,
-      ref_start_window = 28,
-      set_values_to = vars(
-        PARAMCD = "CBR")
-      ), 
-    regexp = "dataset names must be included in the list specified for the"
-  )
-  })
