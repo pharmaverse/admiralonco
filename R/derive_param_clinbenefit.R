@@ -1,6 +1,54 @@
 #' Derive a Clinical Benefit Parameter
 #'
-#' Add a clinical benefit parameter to the input dataset.
+#' Add a clinical benefit/disease control parameter to the input dataset. 
+#' Clinical benefit/disease control is first identified for looking for subjects 
+#' having objective response, and then derived for subjects that have at least 
+#' one evaluable non-PD response assessment after a specified amount of time 
+#' from a reference date.
+#' 
+#' @param dataset Input dataset. This is the dataset to which the clinical
+#' benefit rate parameter will be added.
+#' 
+#'   The variables `PARAMCD`, `AVALC`, `ADT`, and those specified by the `by_vars` 
+#'   parameter are expected. 
+#' 
+#' @param dataset_adsl ADSL dataset used as input for populating `subject_keys`
+#' in input dataset. 
+#' 
+#'   The variables specified by the `subject_keys` parameter and the `reference_date`
+#'   parameter are expected. 
+#'   
+#' @param source_param Character name of parameter code in `source_dataset` that
+#' represents overall disease response assessment for a subject at a given timepoint,
+#' e.g. `"OVR"` or `"OVRLRESP"`.
+#' 
+#' @param source_resp A `date_source` object specifying the dataset, date variable, 
+#' and filter condition used to identify objective response status.
+#' 
+#' @param source_pd A `date_source` object specifying the dataset, date variable, 
+#' and filter condition used to identify disease progression.
+#' 
+#' @param source_datasets Named list of length 1 specifying the dataset from 
+#' which response information for deriving clinical benefit rate will be collected. 
+#' 
+#' @param by_vars A named list returned by `vars()` used together with `subject_keys` 
+#' to identify groupings within which the earliest date of clinical benefit rate 
+#' status will be chosen. 
+#' 
+#' @param reference_date Name of variable representing the index date for 
+#' `ref_start_window`. A variable providing a date. An unquoted symbol is expected.
+#' 
+#' @param ref_start_window Integer representing number of days from `reference_date`
+#' that must elapse before an evaluable non-PD assessment counts toward determining
+#' clinical benefit.
+#' 
+#' @param set_values_to A named list returned by `vars()` containing new variables 
+#' and their static value to be populated for the clinical benefit rate parameter 
+#' records, e.g. `vars(PARAMCD = "CBR", PARAM = "Clinical Benefit Rate")`.
+#' 
+#' @param subject_keys A named list returned by `vars()` containing variables 
+#' used to uniquely identify subjects.
+#' 
 derive_param_clinbenefit <- function(dataset,
                                      dataset_adsl,
                                      source_param,
@@ -22,7 +70,7 @@ derive_param_clinbenefit <- function(dataset,
   )
   assert_data_frame(
     dataset_adsl,
-    required_vars = vars(!!reference_date)
+    required_vars = vars(!!!subject_keys, !!reference_date)
   )
   params_available <- unique(dataset$PARAMCD)
   source_param <- assert_character_scalar(source_param, values = params_available)
@@ -31,6 +79,7 @@ derive_param_clinbenefit <- function(dataset,
   assert_s3_class(source_pd, "date_source")
   assert_list_of(source_datasets, "data.frame")
   source_names <- names(source_datasets)
+  
   assert_list_element(
     list = list(source_resp),
     element = "dataset_name",
@@ -43,6 +92,7 @@ derive_param_clinbenefit <- function(dataset,
       #enumerate(source_names, quote_fun = squote)
     )
   )
+  
   assert_list_element(
     list = list(source_pd),
     element = "dataset_name",
@@ -55,20 +105,21 @@ derive_param_clinbenefit <- function(dataset,
       #enumerate(source_names, quote_fun = squote)
     )
   )
+  
   ref_start_window <- assert_integer_scalar(ref_start_window)
   assert_varval_list(set_values_to, accept_expr = TRUE, optional = TRUE)
   assert_param_does_not_exist(dataset, quo_get_expr(set_values_to$PARAMCD))
   
-  # ADSL
+  # ADSL variables
   
   adsl_vars <- vars(
     !!!subject_keys,
-    !!reference_date
-  )
+    !!reference_date)
+  
   adsl <- dataset_adsl %>%
     select(!!!adsl_vars)
   
-  # Get PD date and response date
+  # Get PD date and objective response date
   
   pd_data <- source_datasets[[source_pd$dataset_name]] %>%
     admiral::filter_if(source_pd$filter) %>%
@@ -81,7 +132,6 @@ derive_param_clinbenefit <- function(dataset,
     rename(temp_rs = !!source_resp$date)
   
   # Look for valid non-PD measurements after window from reference date
-  
   ovr_data <- source_datasets[[source_resp$dataset_name]] %>%
     left_join(
       adsl,
@@ -92,13 +142,16 @@ derive_param_clinbenefit <- function(dataset,
       by = vars2chr(subject_keys)
     ) %>%
     filter(PARAMCD == source_param & 
-             !(AVALC %in% c("NA", "NE", "ND")) & !is.na(AVALC) &
-             (is.na(temp_pd) | (!is.na(temp_pd) & ADT < temp_pd)) &
-             ADT >= !!reference_date + days(ref_start_window)
+      !(AVALC %in% c("NA", "NE", "ND")) & !is.na(AVALC) &
+      # This line will become filter_pd
+      (is.na(temp_pd) | (!is.na(temp_pd) & ADT < temp_pd)) &
+      # end filter_pd
+      ADT >= !!reference_date + days(ref_start_window)
     ) %>% 
-    anti_join(., 
-              rsp_data, 
-              by = vars2chr(subject_keys) 
+    anti_join(
+      ., 
+      rsp_data, 
+      by = vars2chr(subject_keys) 
     ) %>%
     filter_extreme(
       order = vars(ADT),
@@ -111,12 +164,10 @@ derive_param_clinbenefit <- function(dataset,
   rsp_data <- rsp_data %>%
     rename(ADT=temp_rs)
   
-  # Set data for new parameter
-  
   new_param <- bind_rows(ovr_data, rsp_data) %>%
     right_join(adsl, by=vars2chr(subject_keys)) %>%
     mutate(AVALC=if_else(!is.na(ADT), "Y", "N")) %>%
-    select(!!reference_date)
+    select(-!!reference_date)
   
   tryCatch(
     new_param <- mutate(new_param, !!!set_values_to),
@@ -139,27 +190,6 @@ derive_param_clinbenefit <- function(dataset,
     }
   )
   
-  # Add new parameter to input dataset
-  
   bind_rows(dataset, new_param)
   
-}
-
-
-#' Create a `date_source` Object
-#'
-#' The `date_source` object is used to dates of progressive disease (PD) and 
-#' other responses as input for downstream `derive_param` functions in {admiralonco}
-
-date_source <- function(dataset_name,
-                        date,
-                        filter = NULL) {
-  out <- list(
-    dataset_name = assert_character_scalar(dataset_name),
-    date = assert_symbol(enquo(date)),
-    filter = assert_filter_cond(enquo(filter), optional = TRUE)
-    )
-  
-  class(out) <- c("date_source", "source", "list")
-  out
 }
