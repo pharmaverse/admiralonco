@@ -1,6 +1,8 @@
 #' Derive a Clinical Benefit Parameter
 #'
 #' Add a clinical benefit/disease control parameter to the input dataset. 
+#' 
+#' @details
 #' Clinical benefit/disease control is first identified for looking for subjects 
 #' having objective response, and then derived for subjects that have at least 
 #' one evaluable non-PD response assessment after a specified amount of time 
@@ -45,6 +47,41 @@
 #' 
 #' @param subject_keys A named list returned by `vars()` containing variables 
 #' used to uniquely identify subjects.
+#' 
+#' @export
+#' 
+#' @author Andrew Smith
+#' adsl <- tibble::tribble(
+#' ~USUBJID, ~TRTSDT,           ~EOSDT,
+#' "01",     ymd("2020-01-14"), ymd("2020-05-06"),
+#' "02",     ymd("2021-02-16"), ymd("2021-08-03"),
+#' "03",     ymd("2021-03-09"), ymd("2021-04-24"),
+#' "04",     ymd("2021-04-21"), ymd("2021-09-15")
+#' ) %>%
+#'   mutate(STUDYID = "AB42")
+#' 
+#' adrs <- tibble::tribble(
+#'   ~USUBJID, ~PARAMCD, ~AVALC, ~ADT,
+#'   "01", "RSP", "Y", ymd("2021-03-14"),
+#'   "02", "RSP", "N", ymd("2021-05-07"),
+#'   "03", "RSP", "N", NA,
+#'   "04", "RSP", "N", NA,
+#'   "01", "PD", "N", NA,
+#'   "02", "PD", "Y", ymd("2021-05-07"),
+#'   "03", "PD", "N", NA,
+#'   "04", "PD", "N", NA,
+#'   "01", "OVR", "SD", ymd("2020-03-14"),
+#'   "01", "OVR", "PR", ymd("2021-04-13"),
+#'   "02", "OVR", "PR", ymd("2021-04-08"),
+#'   "02", "OVR", "PD", ymd("2021-05-07"),
+#'   "02", "OVR", "CR", ymd("2021-06-20"),
+#'   "03", "OVR", "SD", ymd("2021-03-30"),
+#'   "04", "OVR", "NE", ymd("2021-05-21"),
+#'   "04", "OVR", "NA", ymd("2021-06-30"),
+#'   "04", "OVR", "NE", ymd("2021-07-24"),
+#'   "04", "OVR", "ND", ymd("2021-09-04"),
+#' ) %>%
+#'  mutate(STUDYID = "AB42")
 #' 
 derive_param_clinbenefit <- function(dataset,
                                      dataset_adsl,
