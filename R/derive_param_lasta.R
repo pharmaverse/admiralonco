@@ -73,7 +73,8 @@
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @keyword ADRS Last Disease Assesment
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
-#' @return The dataframe passed in the dataset argument with additona columns as in set_values_to argument
+#' @return The dataframe passed in the dataset argument with additonal columns and/or rows as set in 
+#'         the set_values_to argument.
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|
 
 derive_param_lasta <- function(dataset,
@@ -127,6 +128,8 @@ derive_param_lasta <- function(dataset,
     
     admiral::assert_s3_class(source_pd, "date_source")
     admiral::assert_data_frame(eval(rlang::parse_expr(source_pd$dataset_name)))
+    
+    warning("USER WARNING: The following should be replaced by FILTER_PD when ready.")
     
     pd_data <- eval(rlang::parse_expr(source_pd$dataset_name)) %>%
       admiral::filter_if(source_pd$filter) %>%

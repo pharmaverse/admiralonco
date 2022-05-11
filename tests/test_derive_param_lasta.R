@@ -1,59 +1,8 @@
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# Amgen Data TO DELETE ----
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-source("~/admiralonco/R/date_source.R")
-source("~/admiralonco/R/derive_param_lasta.R")
-
-adsl_amgen <- haven::read_sas("/userdata/stat/amg160/onc/20180101/analysis/final/statdata/adam/adsl.sas7bdat")
-
-adrs_amgen <- haven::read_sas("/userdata/stat/amg160/onc/20180101/analysis/final/statdata/adam/adrs.sas7bdat") %>%
-  dplyr::select(USUBJID, PARAM, PARAMCD, ADT, ASEQ, AVAL, AVALC, dplyr::starts_with("ANL"))
-
-test_pd <-  date_source(
-  dataset_name = "adrs_amgen",
-  date         = ADT,
-  filter       = PARAMCD == "CLINRESP" & AVALC == "PD" # check with Catherine
-)
-
-LSTAC <- derive_param_lasta(
-  dataset      = adrs_amgen,
-  order           = admiral::vars(USUBJID, ADT, ASEQ),
-  filter_source = PARAMCD == "OVRLRESP", # & ANL01FL == "Y",
-  source_pd = test_pd,
-  source_datasets = list(adrs_amgen = adrs_amgen),
-  set_values_to = vars(
-    PARAMCD = "LSTAC",
-    PARAM = " Last Disease Assessment Censored at First PD by Investigator",
-    PARCAT1 = "Tumor Response",
-    PARCAT2 = "Investigator",
-    PARCAT3 = "Recist 1.1",
-    ANL01FL = "Y")
-)
-
-View(LSTAC %>% dplyr::filter(PARAMCD == "LSTAC"))
-
-
-LSTA <- derive_param_lasta(
-  dataset      = adrs_amgen,
-  order           = admiral::vars(USUBJID, ADT, ASEQ),
-  filter_source = PARAMCD == "OVRLRESP", # & ANL01FL == "Y",
-  source_pd = NULL,
-  source_datasets = NULL,
-  set_values_to = vars(
-    PARAMCD = "LSTA",
-    PARAM = " Last Disease Assessment by Investigator",
-    PARCAT1 = "Tumor Response",
-    PARCAT2 = "Investigator",
-    PARCAT3 = "Recist 1.1",
-    ANL01FL = "Y")
-)
-
-View(LSTA %>% dplyr::filter(PARAMCD == "LSTA"))
-
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Create Test Data ----
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+library(magrittr)
 
 adsl_test <- tibble::tribble(
   ~USUBJID, ~TRTSDT,           ~EOSDT,
@@ -263,3 +212,56 @@ test_that("Errors correctly from derive_param_lasta", {
     ), 
     "The dataset names must be included in the list specified for the `source_datasets` parameter.")
 })
+
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Amgen Data TO DELETE ----
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+source("~/admiralonco/R/date_source.R")
+source("~/admiralonco/R/derive_param_lasta.R")
+
+adsl_amgen <- haven::read_sas("/userdata/stat/amg160/onc/20180101/analysis/final/statdata/adam/adsl.sas7bdat")
+
+adrs_amgen <- haven::read_sas("/userdata/stat/amg160/onc/20180101/analysis/final/statdata/adam/adrs.sas7bdat") %>%
+  dplyr::select(USUBJID, PARAM, PARAMCD, ADT, ASEQ, AVAL, AVALC, dplyr::starts_with("ANL"))
+
+test_pd <-  date_source(
+  dataset_name = "adrs_amgen",
+  date         = ADT,
+  filter       = PARAMCD == "CLINRESP" & AVALC == "PD" # check with Catherine
+)
+
+LSTAC <- derive_param_lasta(
+  dataset      = adrs_amgen,
+  order           = admiral::vars(USUBJID, ADT, ASEQ),
+  filter_source = PARAMCD == "OVRLRESP", # & ANL01FL == "Y",
+  source_pd = test_pd,
+  source_datasets = list(adrs_amgen = adrs_amgen),
+  set_values_to = vars(
+    PARAMCD = "LSTAC",
+    PARAM = " Last Disease Assessment Censored at First PD by Investigator",
+    PARCAT1 = "Tumor Response",
+    PARCAT2 = "Investigator",
+    PARCAT3 = "Recist 1.1",
+    ANL01FL = "Y")
+)
+
+View(LSTAC %>% dplyr::filter(PARAMCD == "LSTAC"))
+
+
+LSTA <- derive_param_lasta(
+  dataset      = adrs_amgen,
+  order           = admiral::vars(USUBJID, ADT, ASEQ),
+  filter_source = PARAMCD == "OVRLRESP", # & ANL01FL == "Y",
+  source_pd = NULL,
+  source_datasets = NULL,
+  set_values_to = vars(
+    PARAMCD = "LSTA",
+    PARAM = " Last Disease Assessment by Investigator",
+    PARCAT1 = "Tumor Response",
+    PARCAT2 = "Investigator",
+    PARCAT3 = "Recist 1.1",
+    ANL01FL = "Y")
+)
+
+View(LSTA %>% dplyr::filter(PARAMCD == "LSTA"))
