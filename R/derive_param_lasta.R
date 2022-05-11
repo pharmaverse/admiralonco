@@ -224,8 +224,7 @@ derive_param_lasta <- function(dataset,
   # check nothing strange has gone on with joins
   assertthat::are_equal(nrow(return_dataframe), 
                         nrow(dataset) + 
-                          nrow(param_lasta_with_adsl %>% dplyr::filter(is.null(ADT))) +  
-                             nrow(param_lasta_with_adsl %>% dplyr::filter(!is.null(ADT))))
+                          nrow(param_lasta))
 
   
   return(return_dataframe)
