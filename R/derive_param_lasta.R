@@ -1,11 +1,12 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|
 #' @description
-#'     Add a Last Disease Assessment parameter to the input dataset.
+#'     Add a Last Disease Assessment parameter to the input dataset and join with ADSL to ensure 
+#'     each subject in ADSL has a parameter.
 #'     
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @details
-#'    Calculates the last disease assessment for subjects censored (if required) using argument source_pd
-#'    which will remove all records in the dataset being passed that occur after the date in source_pd
+#'    Calculates the last disease assessment for subjects (censored if required using argument source_pd
+#'    which will remove all records in the dataset being passed that occur after the date in source_pd)
 #'    
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 # Function Arguments: 
@@ -20,9 +21,6 @@
 #'                        
 #' @param by_vars Grouping variables, the last of which (as ordered by order) shall be taken as the 
 #'                 Last Disease Assessment record
-#'                  
-#' @param dataset_adsl ADSL dataset used as input for populating `subject_keys`
-#'                     in input dataset.
 #'
 #'   The variables specified by the `subject_keys` parameter and the `reference_date`
 #'   parameter are expected.
@@ -34,7 +32,8 @@
 #'
 #' @param source_datasets A named `list` containing datasets in which to search for the
 #'                        progressive disease as defined in source_pd.
-
+#'                        
+#' @param keep_adsl_vars TBC [IF Needed]
 #' 
 #' @param set_values_to A named list returned by `vars()` containing new variables
 #'                      and their static value to be populated for the Last Disease Assessment
@@ -42,21 +41,18 @@
 #'
 #' @param subject_keys   TBC [IF Needed]
 #' 
-#' @param keep_adsl_vars TBC [IF Needed]
-#' 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @examples
 #'
 #' \dontrun{
 #' pd <- date_source(
 #'   dataset_name = “adrs”,
-#'   date = ADT,
-#'   filter = PARAMCD == “PD” & AVALC == “Y”
+#'   date         = ADT,
+#'   filter       = PARAMCD == “PD” & AVALC == “Y”
 #' )
 #' 
 #' derive_param_lasta(
 #'   dataset,
-#'   dataset_adsl = adsl,
 #'   filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
 #'   source_pd = list(pd),
 #'   source_datasets = list(adrs = adrs),
@@ -83,7 +79,6 @@
 derive_param_lasta <- function(dataset,
                                order           = admiral::vars(USUBJID, ADT),
                                by_vars         = admiral::vars(USUBJID),
-                               dataset_adsl,
                                filter_source   = PARAMCD == "OVR" & ANL01FL == "Y",
                                source_pd       = NULL,
                                source_datasets = list(adrs = adrs),
@@ -94,11 +89,9 @@ derive_param_lasta <- function(dataset,
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Assert statements ----
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
+  
   filter_source <- admiral::assert_filter_cond(enquo(filter_source), optional = TRUE)
   admiral::assert_vars(by_vars)
-  admiral::assert_data_frame(dataset_adsl)
-  admiral::assert_data_frame(dataset_adsl, required_vars = vars(USUBJID))
   admiral::assert_data_frame(dataset, 
                              required_vars = admiral::vars(!!!by_vars, PARAMCD, AVAL, AVALC, ADT))
   admiral::assert_varval_list(set_values_to, 
@@ -106,47 +99,58 @@ derive_param_lasta <- function(dataset,
                               optional    = TRUE)
   admiral::assert_param_does_not_exist(dataset, rlang::quo_get_expr(set_values_to$PARAMCD))
   
-  source_names <- names(source_datasets)
-  admiral::assert_list_element(
-      list         = list(source_pd),
-      element      = "dataset_name",
-      condition    = dataset_name %in% source_names,
-      source_names = source_names,
-      message_text = paste0(
-        "The dataset names must be included in the list specified for the ",
-        "`source_datasets` parameter.\n",
-        "Following names were provided by `source_datasets`:\n",
-        admiral:::enumerate(source_names, quote_fun = sQuote)
+  if(!is.null(source_pd)) {
+      source_names <- names(source_datasets)
+      admiral::assert_list_element(
+        list         = list(source_pd),
+        element      = "dataset_name",
+        condition    = dataset_name %in% source_names,
+        source_names = source_names,
+        message_text = paste0(
+          "The dataset names must be included in the list specified for the ",
+          "`source_datasets` parameter.\n",
+          "Following names were provided by `source_datasets`:\n",
+          admiral:::enumerate(source_names, quote_fun = sQuote)
+        )
       )
-    )
-  dataset <<- dataset
-  dataset_adsl <<- dataset_adsl
-  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Select adsl_cols ---- 
-  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  }
 
-  adsl_cols <- dataset_adsl %>% 
-    dplyr::select(USUBJID, !!!keep_adsl_vars)
-  
-  warning("USER WARNING: Double check this, not sure this is necessary")
+  # dataset <<- dataset
+  # filter_source <<-filter_source
+  # source_pd <<- source_pd
   
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Get PD date from PD_SOURCE dataset if passed ---- 
-  # Is this either ADSL or ADRS PD? I think so, in which case why do we have dataset_ADSL?
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
   if(!is.null(source_pd)) {
+    
     admiral::assert_s3_class(source_pd, "date_source")
     admiral::assert_data_frame(eval(rlang::parse_expr(source_pd$dataset_name)))
     
     pd_data <- eval(rlang::parse_expr(source_pd$dataset_name)) %>%
       admiral::filter_if(source_pd$filter) %>%
-      dplyr::select(!!!subject_keys, !!!by_vars, !!source_pd$date) %>%
+      dplyr::select(!!!subject_keys, !!source_pd$date) %>%
       dplyr::rename(temp_pd_date = !!source_pd$date)
     
-    dataset <- dataset %>% 
-      dplyr::left_join(pd_data, by = "USUBJID") %>%
-      dplyr::filter(is.na(temp_pd_date) | (!is.na(temp_pd_date) & ADT <= temp_pd_date))
+    # select first PD Date
+    pd_data_first <- pd_data %>% 
+      dplyr::arrange(!!!subject_keys, temp_pd_date) %>% 
+      dplyr::group_by(!!!subject_keys) %>%
+      dplyr::filter(row_number() == 1)
+    
+    # check nothing strange has gone on with above
+    assertthat::are_equal(nrow(pd_data_first), 
+                          nrow(pd_data %>% dplyr::distinct(!!!subject_keys)))
+    
+    dataset_censor <- dataset %>% 
+      dplyr::left_join(pd_data_first, by = admiral::vars2chr(subject_keys)) %>%
+      dplyr::filter(is.na(temp_pd_date) | (!is.na(temp_pd_date) & ADT < temp_pd_date))
+    
+  } else {
+    
+    dataset_censor <- dataset
+    
   }
   
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -155,9 +159,19 @@ derive_param_lasta <- function(dataset,
   # e.g. ADSL.TRTSDT
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  filter_source <<-filter_source
-  dataset_filter <- dataset %>%
+  dataset_filter <- dataset_censor %>%
     dplyr::filter(!!filter_source)  # what about NE's and others like UNDEFIINED, NON-CR? In here or argument?
+  
+  # Error if filter results in 0 records
+  if(nrow(dataset_filter) == 0) {
+    filter <- deparse(rlang::quo_get_expr(filter_source))
+    err_msg <- sprintf(
+      "dataframe passed into %s argument with the filter %s has resulted in 0 records",
+      "dataset",
+      deparse(rlang::quo_get_expr(filter_source)))
+    
+    rlang::abort(err_msg)  
+  }
   
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Filter last assessment using filter_extreme ----
@@ -165,40 +179,29 @@ derive_param_lasta <- function(dataset,
 
   param_lasta <- dataset_filter %>%
       admiral::filter_extreme(mode       = "last",
-                              order      = vars(!!!order),
-                              by_vars    = vars(!!!by_vars, ADT),
+                              order      = admiral::vars(!!!order),
+                              by_vars    = admiral::vars(!!!by_vars),
                               check_type = "warning")
   
-  warning("USER WARNING: Ask how I should provide a more informative error?")
-  
-  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Join with ADSL such that all subjects in ADSL have a PARAM even with no assessment ----
-  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  
-  param_lasta_with_adsl <- param_lasta %>%
-    dplyr::right_join(adsl_cols, by = "USUBJID") 
-  
-  warning("USER WARNING: Double check this, as not 100% sure")
-
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Execute set_values_to ----
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
   tryCatch(
     
-    param_lasta_with_adsl_values_set <- param_lasta_with_adsl %>% 
+    param_lasta_values_set <- param_lasta %>% 
       dplyr::mutate(!!!set_values_to),
     
     error = function(cnd) {
       abort(
         paste0(
-          "Assigning new variables failed!\n",
+          "Assigning new columns with set_values_to has failed:\n",
           "set_values_to = (\n",
           paste(
             " ",
             names(set_values_to),
             "=",
-            lapply(set_values_to, quo_get_expr),
+            lapply(set_values_to, rlang::quo_get_expr),
             collapse = "\n"
           ),
           "\n)\nError message:\n  ",
@@ -212,12 +215,14 @@ derive_param_lasta <- function(dataset,
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   return_dataframe <- dplyr::bind_rows(dataset, 
-                                       param_lasta_with_adsl_values_set)
+                                       param_lasta_values_set)
   
   
   # check nothing strange has gone on with joins
   assertthat::are_equal(nrow(return_dataframe), 
-                        nrow(dataset) + nrow(param_lasta_with_adsl %>% dplyr::filter(is.null(ADT))) +  nrow(param_lasta_with_adsl %>% dplyr::filter(!is.null(ADT))))
+                        nrow(dataset) + 
+                          nrow(param_lasta_with_adsl %>% dplyr::filter(is.null(ADT))) +  
+                             nrow(param_lasta_with_adsl %>% dplyr::filter(!is.null(ADT))))
 
   
   return(return_dataframe)
