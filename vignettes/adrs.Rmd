@@ -37,7 +37,7 @@ otherwise specified.*
 * [Derive Best Overall Response Parameter](#bor)
 * [Derive Best Overall Response of CR/PR Parameter](#bcp)
 * [Derive Response Parameters requiring Confirmation](#confirm)
-* [Derive Parameters using Independent Review Facility responses](#irf)
+* [Derive Parameters using Independent Review Facility (IRF) responses](#irf)
 * [Derive Death Parameter](#death)
 * [Derive Last Disease Assessment Parameters](#lsta)
 * [Derive Measurable Disease at Baseline Parameter](#mdis)
@@ -100,8 +100,74 @@ dataset_vignette(
 
 ## Pre-processing of Input Records {#input}
 
+The first step involves company-specific pre-processing of records for the required input to the downstream parameter functions.
+Note that this could be needed multiple times (e.g. once for investigator and once for Independent Review Facility (IRF) records).
+It could even involve merging input data from other sources besides `RS`, such as `ADTR`.
 
-Use RSEVAL == "INVESTIGATOR" & RSTESTCD == "OVRLRESP" for example.
+This step would include any required selection/derivation of `ADT` or applying any necessary partial date imputations,
+updating `AVAL` (e.g. this should be ordered from best to worst response), and setting analysis flag `ANL01FL`. Common options for
+ANL01FL would be to only flag assessments on or after after date of first treatment/randomization, setting null for assessments
+after next anti-cancer therapy, or rules to cover the case when a patient has multiple observations per visit.
+Another consideration could be extra potential sources of Progressive Disease such as radiological assessments, which could be
+pre-processed here to create a PD record to feed downstream derivations.
+
+The below shows an example of a possible company-specific implementation of this step.
+
+### Select Overall Response Records
+
+In this case we use the overall response records from `RS` from the investigator as our starting point.
+
+```{r}
+adrs <- rs %>%
+  filter(RSEVAL == "INVESTIGATOR" & RSTESTCD == "OVRLRESP")
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, RSTESTCD, RSEVAL, RSDTC, VISIT)
+)
+```
+
+### Partial Date Imputation
+
+If your data collection allows for partial dates, you could apply a company-specific imputation rule at this stage. 
+For this example, here we impute missing day as the last day of the month for `CR`/`PR`, otherwise missing day is imputed as '01'.
+Missing month and year are not imputed.
+
+```{r}
+adrs <- adrs %>%
+  slice_derivation(
+    derivation = derive_vars_dt,
+    args = params(
+      dtc = RSDTC,
+      new_vars_prefix = "A"
+      ),
+    slices = list(
+      slice(
+        filter = RSSTRESC %in% c("CR","PR") & nchar(RSDTC) >= 7,
+        args = params(
+          date_imputation = "last"
+         )),
+      slice(
+        filter = nchar(RSDTC) >= 7,
+        args = params(
+          date_imputation = "first"
+         )))
+  )
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, RSSTRESC, RSDTC, ADT)
+)
+```
+
+### Derive `AVAL`
+
+### Derive `ANL01FL`
+
+
+Note: it is important to explain in our ADRS vignette why we don’t filter out the records after PD at this stage in ANL01FL. Reason being we need them to derive PD parameter and also not considering responses after PD is the one common rule here that all the response endpoints will always need. If we rely on the users to do that up front then we can’t really call our BOR function as BOR for example.
 
 
 ## Derive Progressive Disease Parameter {#pd}
@@ -121,7 +187,7 @@ rather than from already derived ADRS params. Or even from ADSL vars.
 
 ## Derive Response Parameters requiring Confirmation {#confirm}
 
-## Derive Parameters using Independent Review Facility responses {#irf}
+## Derive Parameters using Independent Review Facility (IRF) responses {#irf}
 
 
 Use RSEVAL == "INDEPENDENT ASSESSOR" & RSEVALID == "RADIOLOGIST 1" for example.
