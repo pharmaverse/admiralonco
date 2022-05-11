@@ -61,9 +61,14 @@ library(admiraltest)
 library(lubridate)
 library(stringr)
 library(tibble)
-data("adsl")
-data("rs")
-data("tu")
+data("admiral_adsl")
+data("admiral_rs")
+data("admiral_tu")
+
+adsl <- admiral_adsl
+rs <- admiral_rs
+tu <- admiral_tu
+
 rs <- convert_blanks_to_na(rs)
 tu <- convert_blanks_to_na(tu)
 ```
@@ -95,7 +100,16 @@ dataset_vignette(
 
 ## Pre-processing of Input Records {#input}
 
+
+Use RSEVAL == "INVESTIGATOR" & RSTESTCD == "OVRLRESP" for example.
+
+
 ## Derive Progressive Disease Parameter {#pd}
+
+
+Consider ADEVENT possible set-up that some companies use, and include examples where PD and RESP dates are passed from an intermeidate dataset
+rather than from already derived ADRS params. Or even from ADSL vars.
+
 
 ## Derive Response Parameter {#rsp}
 
@@ -108,6 +122,10 @@ dataset_vignette(
 ## Derive Response Parameters requiring Confirmation {#confirm}
 
 ## Derive Parameters using Independent Review Facility responses {#irf}
+
+
+Use RSEVAL == "INDEPENDENT ASSESSOR" & RSEVALID == "RADIOLOGIST 1" for example.
+
 
 ## Derive Death Parameter {#death}
 
