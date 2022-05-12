@@ -300,9 +300,9 @@ resp <- date_source(
 )
 ```
 
-The function `derive_param_clinbenefit()` can then be used to derive the clinical benefit parameter,
-which we define as a patient having had a response or a sustained period of time before first `PD`. In
-this example the "sustained period" has been defined as 42 days after randomization date.
+The function `derive_param_clinbenefit()` can then be used to derive the clinical benefit parameter, which we define
+as a patient having had a response or a sustained period of time before first `PD`. In this example the "sustained period"
+has been defined as 42 days after randomization date.
 
 ```{r}
 adrs <- adrs %>%
@@ -333,10 +333,9 @@ dataset_vignette(
 
 ## Derive Best Overall Response Parameter {#bor}
 
-The function `derive_param_bor()` can be used to derive the best overall response parameter.
-Similar to the above function you can optionally decide what period would you consider a `SD`
-or `NON-CR/NON-PD` as being eligible from. In this example, 42 days after randomization date
-has been used again.
+The function `derive_param_bor()` can be used to derive the best overall response parameter. Similar to the above function
+you can optionally decide what period would you consider a `SD` or `NON-CR/NON-PD` as being eligible from. In this example,
+42 days after randomization date has been used again.
 
 ```{r}
 adrs <- adrs %>%
@@ -366,9 +365,9 @@ dataset_vignette(
 
 ## Derive Best Overall Response of CR/PR Parameter {#bcp}
 
-The function `derive_param_response()` can be used to check if a patient had a response for BOR.
-This parameter in most cases would be a repeat of the Response parameter, but more interesting
-versions of this derivation could be in the case where using "confirmed" BOR (see later steps).
+The function `derive_param_response()` can be used to check if a patient had a response for BOR. This parameter in most cases
+would be a repeat of the Response parameter, but a more interesting version of this derivation could be in the case where using
+"confirmed" BOR (see next step below).
 
 ```{r}
 adrs <- adrs %>%
@@ -397,13 +396,93 @@ dataset_vignette(
 
 ## Derive Response Parameters requiring Confirmation {#confirm}
 
+Any of the above response parameters can be repeated for "confirmed" responses only. For these the functions
+`derive_param_confirmed_response()` and `derive_param_confirmed_bor()` can be used. Here is an example of a BOR parameter
+when requiring confirmation.
+
+```{r}
+adrs <- adrs %>%
+  derive_param_confirmed_bor(
+    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+    source_pd = list(pd),
+    source_datasets = list(adrs = adrs),
+    reference_date = RANDDT,
+    ref_start_window = 42,
+    set_values_to = vars(
+      PARAMCD = "CBOR",
+      PARAM = "Best Overall Response by Investigator",
+      PARCAT1 = "Tumor Response",
+      PARCAT2 = "Investigator",
+      PARCAT3 = "Recist 1.1",
+      ANL01FL = "Y"
+    )
+  )
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, AVAL, ADT, RANDDT, ANL01FL),
+  filter = PARAMCD == "CBOR"
+)
+```
+
 ## Derive Parameters using Independent Review Facility (IRF) responses {#irf}
 
+All of the above steps can be repeated for different sets of records, such as now using assessments from the Independent
+Review Facility instead of investigator. For this you would just need to replace the first steps with selecting the required
+records, and then feed these as input to the downstream parameter functions.
 
-Use RSEVAL == "INDEPENDENT ASSESSOR" & RSEVALID == "RADIOLOGIST 1" for example.
+```{r}
+adrs <- adrs %>%
+  filter(RSEVAL == "INDEPENDENT ASSESSOR" & RSEVALID == "RADIOLOGIST 1") %>%
+  mutate(
+    PARAMCD = "OVRR1",
+    PARAM = "Overall Response by Radiologist 1",
+    PARCAT1 = "Tumor Response",
+    PARCAT2 = "Radiologist",
+    PARCAT3 = "Recist 1.1"
+  )
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, VISIT, RSTESTCD, RSEVAL, PARAMCD, PARAM, PARCAT1, PARCAT2, PARCAT3),
+  filter = PARAMCD == "OVRR1"
+)
+```
 
+Then in all the calls to the parameter derivation functions you would replace the `PARAMCD == "OVR"` source with
+`PARAMCD == "OVRR1"`.
 
 ## Derive Death Parameter {#death}
+
+The function `derive_param_merged()` can be used to create a new death parameter using death date from `ADSL`.
+
+```{r}
+adrs <- adrs %>%
+  derive_param_merged(
+    dataset_base = adrs,
+    dataset_add = adsl,
+    filter_add = !is.na(DTHDT),
+    new_vars = vars(ADT),
+    by_vars = vars(STUDYID, USUBJID),
+    order = ADT,
+    mode = "first",
+    set_values_to = vars(
+      PARAMCD = "DEATH",
+      PARAM = "Death",
+      PARCAT1 = "Reference Event",
+      ANL01FL = "Y"
+    )
+  )
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, AVAL, ADT, ANL01FL),
+  filter = PARAMCD == "DEATH"
+)
+```
 
 ## Derive Last Disease Assessment Parameters {#lsta}
 
