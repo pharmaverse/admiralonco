@@ -138,23 +138,25 @@ dataset_vignette(
 )
 ```
 
-### Partial Date Imputation
+### Partial Date Imputation and Deriving `ADT`, `ADTM`, `AVISIT` etc
 
 If your data collection allows for partial dates, you could apply a company-specific imputation rule at this stage
-when deriving `ADT`. For this example, here we impute missing day to last possible date.
+when deriving `ADTM` and `ADT`. For this example, here we impute missing day to last possible date.
 
 ```{r}
 adrs <- adrs %>%
-  derive_vars_dt(
+  derive_vars_dtm(
     dtc = RSDTC,
     new_vars_prefix = "A",
     date_imputation = "last"
-  )
+  ) %>%
+  derive_vars_dtm_to_dt(vars(ADTM)) %>%
+  mutate(AVISIT = VISIT)
 ```
 ```{r, echo=FALSE}
 dataset_vignette(
   adrs,
-  display_vars = vars(USUBJID, VISIT, PARAMCD, PARAM, RSSTRESC, RSDTC, ADT)
+  display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, RSSTRESC, RSDTC, ADT, ADTM)
 )
 ```
 
@@ -181,7 +183,7 @@ adrs <- adrs %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   adrs,
-  display_vars = vars(USUBJID, VISIT, PARAMCD, PARAM, RSSTRESC, AVALC, AVAL)
+  display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, RSSTRESC, AVALC, AVAL)
 )
 ```
 
@@ -203,7 +205,7 @@ adrs <- adrs %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   adrs,
-  display_vars = vars(USUBJID, VISIT, PARAMCD, PARAM, AVAL, ADT, RANDDT, ANL01FL)
+  display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, AVAL, ADT, RANDDT, ANL01FL)
 )
 ```
 
@@ -235,7 +237,7 @@ adrs <- adrs %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   adrs,
-  display_vars = vars(USUBJID, VISIT, PARAMCD, PARAM, AVAL, ADT, RANDDT, ANL01FL)
+  display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, AVAL, ADT, RANDDT, ANL01FL)
 )
 ```
 
@@ -279,7 +281,7 @@ derive_param_response(
 ```{r, echo=FALSE}
 dataset_vignette(
   adrs,
-  display_vars = vars(USUBJID, VISIT, PARAMCD, PARAM, AVAL, ADT, ANL01FL),
+  display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, AVAL, ADT, ANL01FL),
   filter = PARAMCD == "PD"
 )
 ```
@@ -314,7 +316,7 @@ adrs <- derive_var_obs_number(
   adrs,
   new_var = ASEQ,
   by_vars = vars(STUDYID, USUBJID),
-  order = vars(PARAMCD, ADT, AVISITN, VISITNUM),
+  order = vars(PARAMCD, ADT, VISITNUM),
   check_type = "error"
 )
 ```
@@ -322,7 +324,7 @@ adrs <- derive_var_obs_number(
 ```{r, eval=TRUE, echo=FALSE}
 dataset_vignette(
   adrs,
-  display_vars = vars(USUBJID, PARAMCD, ADT, AVISITN, VISIT, ADT, ASEQ),
+  display_vars = vars(USUBJID, PARAMCD, ADT, VISITNUM, AVISIT, ADT, ASEQ),
   filter = USUBJID == "01-701-1015"
 )
 ```
