@@ -1,47 +1,49 @@
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|
 #' @description
-#'     Add a Last Disease Assessment parameter to the input dataset and join with ADSL to ensure 
-#'     each subject in ADSL has a parameter.
-#'     
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#'     Add a Last Disease Assessment parameter to the input dataframe passed 
+#'     into the dataset argument.
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @details
-#'    Calculates the last disease assessment for subjects (censored if required using argument source_pd
-#'    which will remove all records in the dataset being passed that occur after the date in source_pd)
-#'    
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#'    Calculates the last disease assessment for subjects (censored if 
+#'    required using argument source_pd which will remove all records in the 
+#'    dataframe being passed that occur after the date in source_pd)
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 # Function Arguments: 
 #
-#' @param dataset Input dataframe to which the Last clinical assesment parameter will be added.
-#'
-#'   The variables `PARAMCD`, `AVAL`, `AVALC`, and those specified by the `order`
-#'   argument are expected.
-#'
-#' @param order Sort order in which the last record shall be taken by USUBJID to calculate
-#'              Last Disease Assessment
-#'                        
-#' @param by_vars Grouping variables, the last of which (as ordered by order) shall be taken as the 
-#'                 Last Disease Assessment record
-#'
-#'   The variables specified by the `subject_keys` parameter and the `reference_date`
-#'   parameter are expected.
-#'
-#' @param filter_source Filter to be applied on dataset from which to derive the Last Disease Assessment
-#'
-#' @param source_pd A `date_source` object specifying the dataset, date variable,
-#'                  and filter condition used to identify disease progression.
-#'
-#' @param source_datasets A named `list` containing datasets in which to search for the
-#'                        progressive disease as defined in source_pd.
-#'                        
-#' @param keep_adsl_vars TBC [IF Needed]
+#' @param dataset Input dataframe to which the Last Disease Assessment 
+#'                parameter will be added. The variables `PARAMCD`, `AVAL`, 
+#'                `AVALC`, `ADT`, and those specified in the `order` and 
+#'                `by_vars` argument are expected.
 #' 
-#' @param set_values_to A named list returned by `vars()` containing new variables
-#'                      and their static value to be populated for the Last Disease Assessment
-#'                      records, e.g. `vars(PARAMCD = "LSTAC", PARAM = "Last Disease Assessment Censored at First PD by Investigator")`.
+#' @param order Sort order, after which the last record shall be taken by 
+#'              the by_vars to determine Last Disease Assessment
+#'                        
+#' @param by_vars Grouping variables, the last of which (as ordered by order) 
+#'                shall be taken as the Last Disease Assessment record for the
+#'                by_vars
 #'
-#' @param subject_keys   TBC [IF Needed]
+#' @param filter_source Filter to be applied to the input dataframe to derive 
+#'                      the Last Disease Assessment
+#'
+#' @param source_pd A `date_source` object specifying the dataset_name, date 
+#'                  variable, and filter condition used to identify disease 
+#'                  progression and subsequently used (if provided) to remove 
+#'                  all records after diease progression.
+#'
+#' @param source_datasets A named `list` containing the name of the dataframe 
+#'                        in which to search for the progressive disease as 
+#'                        defined in `source_pd`
+#'   
+#' @param subject_keys Variables to uniquely identify a subject, used by 
+#'                     `source_pd` to specify a date.
+#'                      
+#' @param set_values_to A named `list` returned by `vars()` containing new 
+#'                      variables and their static value to be populated for 
+#'                      the Last Disease Assessment records, e.g. 
+#'                      vars(PARAMCD = "LSTAC", PARAM = "Last Disease 
+#'                      Assessment Censored at First PD by Investigator")`.
 #' 
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @examples
 #'
 #' \dontrun{
@@ -66,16 +68,16 @@
 #' )
 #'}
 #'
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @export
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @author Stephen Gormley
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @keyword ADRS Last Disease Assesment
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
-#' @return The dataframe passed in the dataset argument with additonal columns and/or rows as set in 
-#'         the set_values_to argument.
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#' @return The dataframe passed in the dataset argument with additonal columns 
+#'         and/or rows as set in the set_values_to argument.
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|
 
 derive_param_lasta <- function(dataset,
                                order           = admiral::vars(USUBJID, ADT),
@@ -83,24 +85,27 @@ derive_param_lasta <- function(dataset,
                                filter_source   = PARAMCD == "OVR" & ANL01FL == "Y",
                                source_pd       = NULL,
                                source_datasets = list(adrs = adrs),
-                               keep_adsl_vars  = NULL,
-                               set_values_to,
-                               subject_keys    = admiral::vars(USUBJID)) {
-  
-  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                               subject_keys    = admiral::vars(USUBJID),
+                               set_values_to) {
+
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Assert statements ----
-  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
-  filter_source <- admiral::assert_filter_cond(enquo(filter_source), optional = TRUE)
+  filter_source <- admiral::assert_filter_cond(enquo(filter_source), 
+                                               optional = TRUE)
   admiral::assert_vars(by_vars)
   admiral::assert_data_frame(dataset, 
-                             required_vars = admiral::vars(!!!by_vars, PARAMCD, AVAL, AVALC, ADT))
+                             required_vars = admiral::vars(!!!order, 
+                                                           !!!by_vars, 
+                                                           PARAMCD, AVAL, 
+                                                           AVALC, ADT))
   admiral::assert_varval_list(set_values_to, 
-                              accept_expr = TRUE, 
-                              optional    = TRUE)
-  admiral::assert_param_does_not_exist(dataset, rlang::quo_get_expr(set_values_to$PARAMCD))
+                              accept_expr = TRUE)
+  admiral::assert_param_does_not_exist(dataset, 
+                                       rlang::quo_get_expr(set_values_to$PARAMCD))
   
-  if(!is.null(source_pd)) {
+  if (!is.null(source_pd)) {
       source_names <- names(source_datasets)
       admiral::assert_list_element(
         list         = list(source_pd),
@@ -115,21 +120,17 @@ derive_param_lasta <- function(dataset,
         )
       )
   }
-
-  # dataset <<- dataset
-  # filter_source <<-filter_source
-  # source_pd <<- source_pd
   
-  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Get PD date from PD_SOURCE dataset if passed ---- 
-  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
-  if(!is.null(source_pd)) {
+  if (!is.null(source_pd)) {
     
     admiral::assert_s3_class(source_pd, "date_source")
     admiral::assert_data_frame(eval(rlang::parse_expr(source_pd$dataset_name)))
     
-    warning("USER WARNING: The following should be replaced by FILTER_PD when ready.")
+    warning("USER WARNING: The following should be replaced by FILTER_PD .")
     
     pd_data <- eval(rlang::parse_expr(source_pd$dataset_name)) %>%
       admiral::filter_if(source_pd$filter) %>%
@@ -147,8 +148,10 @@ derive_param_lasta <- function(dataset,
                           nrow(pd_data %>% dplyr::distinct(!!!subject_keys)))
     
     dataset_censor <- dataset %>% 
-      dplyr::left_join(pd_data_first, by = admiral::vars2chr(subject_keys)) %>%
-      dplyr::filter(is.na(temp_pd_date) | (!is.na(temp_pd_date) & ADT < temp_pd_date))
+      dplyr::left_join(pd_data_first, 
+                       by = admiral::vars2chr(subject_keys)) %>%
+      dplyr::filter(is.na(temp_pd_date) | 
+                      (!is.na(temp_pd_date) & ADT < temp_pd_date))
     
   } else {
     
@@ -156,29 +159,28 @@ derive_param_lasta <- function(dataset,
     
   }
   
-  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Filter using filter_source argument ----
-  # This would also be used to filter out records from dataset that are greater than
-  # e.g. ADSL.TRTSDT
-  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  # This would also be used to filter out records from dataset that are greater 
+  # than e.g. ADSL.TRTSDT
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   dataset_filter <- dataset_censor %>%
-    dplyr::filter(!!filter_source)  # what about NE's and others like UNDEFIINED, NON-CR? In here or argument?
+    dplyr::filter(!!!filter_source)  
   
   # Error if filter results in 0 records
-  if(nrow(dataset_filter) == 0) {
-    filter <- deparse(rlang::quo_get_expr(filter_source))
+  if (nrow(dataset_filter) == 0) {
     err_msg <- sprintf(
-      "dataframe passed into %s argument with the filter %s has resulted in 0 records",
+      "dataframe passed into %s argument with the filter %s has 0 records",
       "dataset",
       deparse(rlang::quo_get_expr(filter_source)))
     
     rlang::abort(err_msg)  
   }
   
-  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Filter last assessment using filter_extreme ----
-  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   param_lasta <- dataset_filter %>%
       admiral::filter_extreme(mode       = "last",
@@ -186,9 +188,9 @@ derive_param_lasta <- function(dataset,
                               by_vars    = admiral::vars(!!!by_vars),
                               check_type = "warning")
   
-  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Execute set_values_to ----
-  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
   tryCatch(
     
@@ -213,9 +215,9 @@ derive_param_lasta <- function(dataset,
       )
     })
   
-  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # bind back to passed dataset and return ----
-  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Bind back to passed dataset and return ----
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   return_dataframe <- dplyr::bind_rows(dataset, 
                                        param_lasta_values_set)
