@@ -114,18 +114,27 @@ which could be pre-processed here to create a PD record to feed downstream deriv
 
 The below shows an example of a possible company-specific implementation of this step.
 
-### Select Overall Response Records
+### Select Overall Response Records and Set Parameter Details
 
-In this case we use the overall response records from `RS` from the investigator as our starting point.
+In this case we use the overall response records from `RS` from the investigator as our starting point. The parameter details such
+as `PARAMCD`, `PARAM` etc will always be company-specific, but an example is shown below so that you can trace through how these
+records feed into the other parameter derivations.
 
 ```{r}
 adrs <- rs %>%
-  filter(RSEVAL == "INVESTIGATOR" & RSTESTCD == "OVRLRESP")
+  filter(RSEVAL == "INVESTIGATOR" & RSTESTCD == "OVRLRESP") %>%
+  mutate(
+    PARAMCD = "OVR",
+    PARAM = "Overall Response by Investigator",
+    PARCAT1 = "Tumor Response",
+    PARCAT2 = "Investigator",
+    PARCAT3 = "Recist 1.1"
+  )
 ```
 ```{r, echo=FALSE}
 dataset_vignette(
   adrs,
-  display_vars = vars(USUBJID, RSTESTCD, RSEVAL, RSDTC, VISIT)
+  display_vars = vars(USUBJID, VISIT, RSTESTCD, RSEVAL, PARAMCD, PARAM, PARCAT1, PARCAT2, PARCAT3)
 )
 ```
 
@@ -145,7 +154,7 @@ adrs <- adrs %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   adrs,
-  display_vars = vars(USUBJID, RSSTRESC, RSDTC, ADT)
+  display_vars = vars(USUBJID, VISIT, PARAMCD, PARAM, RSSTRESC, RSDTC, ADT)
 )
 ```
 
@@ -172,7 +181,7 @@ adrs <- adrs %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   adrs,
-  display_vars = vars(USUBJID, RSSTRESC, AVALC, AVAL)
+  display_vars = vars(USUBJID, VISIT, PARAMCD, PARAM, RSSTRESC, AVALC, AVAL)
 )
 ```
 
@@ -194,7 +203,7 @@ adrs <- adrs %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   adrs,
-  display_vars = vars(USUBJID, AVAL, ADT, RANDDT, ANL01FL)
+  display_vars = vars(USUBJID, VISIT, PARAMCD, PARAM, AVAL, ADT, RANDDT, ANL01FL)
 )
 ```
 
@@ -203,12 +212,77 @@ the `{admiralonco}` parameter derivation functions in the below steps.
 
 ## Derive Progressive Disease Parameter {#pd}
 
+Now that we have the input records prepared above with any company-specific requirements, we can start to derive
+new parameters. The function `derive_param_first_event()` can be used to find the date of first `PD`.
 
-Consider ADEVENT possible set-up that some companies use, and include examples where PD and RESP dates are passed from an intermeidate dataset
-rather than from already derived ADRS params. Or even from ADSL vars.
+```{r}
+adrs <- adrs %>%
+  derive_param_first_event(
+    dataset_adsl = adsl,
+    source_param = OVR,
+    condition = AVALC == "PD" & ANL01FL=”Y”,
+    subject_keys = vars(STUDYID, USUBJID),
+    set_values_to= vars(
+      PARAMCD = "PD",
+      PARAM = "Disease Progression by Investigator",
+      PARCAT1 = "Tumor Response",
+      PARCAT2 = "Investigator",
+      PARCAT3 = "Recist 1.1",
+      ANL01FL = "Y"
+    )
+  )
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, VISIT, PARAMCD, PARAM, AVAL, ADT, RANDDT, ANL01FL)
+)
+```
 
+For progressive disease, response and death parameters shown in steps here and below, in our
+examples we show these as `ADRS` parameters, but they could equally be achieved via `ADSL` dates or `ADEVENT`
+parameters. All the parameter derivation functions that use these are flexible to allow sourcing these dates
+from any input source using `date_source()`.
 
 ## Derive Response Parameter {#rsp}
+
+The next required step is to define the source location for this newly derived `PD` date.
+
+```{r}
+pd <- date_source(
+  dataset_name = “adrs”,
+  date = ADT,
+  filter = PARAMCD == “PD” & AVALC == “Y”
+)
+```
+
+The function `derive_param_response()` can then be used to find the date of first response. This differs from
+the `derive_param_first_event()` function in that it only looks for events occurring prior to first `PD`.
+In the below example, the response condition has been defined as `CR` or `PR`.
+
+```{r}
+derive_param_response(
+  filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+  source_pd = list(pd),
+  source_datasets = list(adrs = adrs),
+  resp_cond = AVALC %in% c(“CR”, “PR”),
+  set_values_to = vars(
+	  PARAMCD = "RSP",
+	  PARAM = " Response by Investigator (confirmation not required)",
+	  PARCAT1 = "Tumor Response",
+	  PARCAT2 = "Investigator",
+	  PARCAT3 = "Recist 1.1",
+	  ANL01FL = "Y"
+  )
+)
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, VISIT, PARAMCD, PARAM, AVAL, ADT, ANL01FL),
+  filter = PARAMCD == "PD"
+)
+```
 
 ## Derive Clinical Benefit Parameter {#cb}
 
