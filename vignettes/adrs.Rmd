@@ -221,8 +221,9 @@ new parameters. The function `derive_param_first_event()` can be used to find th
 adrs <- adrs %>%
   derive_param_first_event(
     dataset_adsl = adsl,
-    source_param = OVR,
-    condition = AVALC == "PD" & ANL01FL=”Y”,
+    dataset_source = adrs,
+    filter_source = PARAMCD == "OVR" & AVALC == "PD" & ANL01FL=”Y”,
+    date_var = ADT,
     subject_keys = vars(STUDYID, USUBJID),
     set_values_to= vars(
       PARAMCD = "PD",
@@ -456,18 +457,16 @@ Then in all the calls to the parameter derivation functions you would replace th
 
 ## Derive Death Parameter {#death}
 
-The function `derive_param_merged()` can be used to create a new death parameter using death date from `ADSL`.
+The function `derive_param_first_event()` can be used to create a new death parameter using death date from `ADSL`.
 
 ```{r}
 adrs <- adrs %>%
-  derive_param_merged(
-    dataset_base = adrs,
-    dataset_add = adsl,
-    filter_add = !is.na(DTHDT),
-    new_vars = vars(ADT),
-    by_vars = vars(STUDYID, USUBJID),
-    order = ADT,
-    mode = "first",
+  derive_param_first_event(
+    dataset = adrs,
+    dataset_adsl = adsl,
+    dataset_source = adsl,
+    filter_source = !is.na(DTHDT),
+    date_var = DTHDT,
     set_values_to = vars(
       PARAMCD = "DEATH",
       PARAM = "Death",
