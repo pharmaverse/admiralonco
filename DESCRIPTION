@@ -1,6 +1,6 @@
 Package: admiralonco
 Type: Package
-Title: Oncology extension package for ADaM in R Asset Library 
+Title: Oncology Extension Package for ADaM in R Asset Library
 Version: 0.0.0
 Authors@R: c(
     person("Stefan", "Bundfuss", email = "stefan.bundfuss@roche.com", role = c("aut", "cre")),
@@ -59,4 +59,6 @@ Suggests:
     usethis,
     covr,
     DT
+Remotes:
+    pharmaverse/admiraltest@devel
 VignetteBuilder: knitr
