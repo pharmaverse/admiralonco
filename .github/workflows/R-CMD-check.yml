@@ -23,7 +23,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {os: ubuntu-20.04, r: '3.6'}
+          #- {os: ubuntu-20.04, r: '3.6'}
           - {os: ubuntu-20.04, r: 'release', repos: 'https://packagemanager.rstudio.com/cran/__linux__/focal/latest'}
 
     env:
