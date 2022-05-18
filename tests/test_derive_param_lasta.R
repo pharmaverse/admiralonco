@@ -177,7 +177,7 @@ test_that("Last assesment derived correctly from derive_param_lasta", {
 
 test_that("Errors correctly from derive_param_lasta", {
 
-  # missing dataset
+  # Test Error 1: missing dataset argument ----
   testthat::expect_error(
         derive_param_lasta(
             dataset         = "not a dataset",
@@ -195,7 +195,7 @@ test_that("Errors correctly from derive_param_lasta", {
           ), 
        "`dataset` must be a data frame but is")
   
-  # missing source_datasets
+  # Test Error 2: missing source_datasets argument ----
   testthat::expect_error(
     derive_param_lasta(
       dataset         = adrs_test,
@@ -212,6 +212,39 @@ test_that("Errors correctly from derive_param_lasta", {
         ANL01FL = "Y")
     ), 
     "The dataset names must be included in the list specified for the `source_datasets` parameter.")
+  
+  # Test Error 3: missing set_values_to argument ----
+  testthat::expect_error(
+    derive_param_lasta(
+      dataset         = adrs_test,
+      order           = admiral::vars(USUBJID, ADT, ASEQ),
+      filter_source   = PARAMCD == "OVR" & !(AVALC %in% c(NA, "NE", "ND", "NA")), # & ANL01FL == "Y",
+      source_pd       = pd_test,
+      source_datasets = list(adrs_test = adrs_test),
+      set_values_to   = "not a list"
+      ), 
+     "`set_values_to` must be a named list of quosures where each element")
+  
+  # Test Error 4: No PARAMCD in dataset ----
+  adrs_test_missing_paramcd <- 
+    adrs_test %>% dplyr::select(-PARAMCD)
+  
+  testthat::expect_error(
+    derive_param_lasta(
+      dataset         = adrs_test_missing_paramcd,
+      order           = admiral::vars(USUBJID, ADT, ASEQ),
+      filter_source   = PARAMCD == "OVR" & !(AVALC %in% c(NA, "NE", "ND", "NA")), # & ANL01FL == "Y",
+      source_pd       = pd_test,
+      source_datasets = list(adrs_test = adrs_test),
+      set_values_to   = vars(
+        PARAMCD = "LSTAC",
+        PARAM = " Last Disease Assessment Censored at First PD by Investigator",
+        PARCAT1 = "Tumor Response",
+        PARCAT2 = "Investigator",
+        PARCAT3 = "Recist 1.1",
+        ANL01FL = "Y")
+    ), 
+    "Required variable `PARAMCD` is missing")
 })
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

@@ -1,7 +1,7 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|
 #' @description
-#'     Add a Last Disease Assessment parameter to the input dataframe passed
-#'     into the dataset argument.
+#'     Add a Last Disease Assessment parameter for each unique `by_vars` to the 
+#'     input dataframe passed into the dataset argument.
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @details
 #'    Calculates the last disease assessment for subjects (censored if
@@ -16,11 +16,10 @@
 #'                `by_vars` argument are expected.
 #'
 #' @param order Sort order, after which the last record shall be taken by
-#'              the by_vars to determine Last Disease Assessment
+#'              the `by_vars` to determine Last Disease Assessment
 #'
-#' @param by_vars Grouping variables, the last of which (as ordered by order)
-#'                shall be taken as the Last Disease Assessment record for the
-#'                by_vars
+#' @param by_vars Grouping variables, the last of which (ordered by `order`)
+#'                shall be taken as the Last Disease Assessment record
 #'
 #' @param filter_source Filter to be applied to the input dataframe to derive
 #'                      the Last Disease Assessment
@@ -28,7 +27,7 @@
 #' @param source_pd A `date_source` object specifying the dataset_name, date
 #'                  variable, and filter condition used to identify disease
 #'                  progression and subsequently used (if provided) to remove
-#'                  all records after diease progression
+#'                  all records after disease progression from `dataset`
 #'
 #' @param source_datasets A named `list` containing the name of the dataframe
 #'                        in which to search for the progressive disease as
@@ -75,8 +74,8 @@
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @keyword ADRS Last Disease Assesment
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
-#' @return The dataframe passed in the dataset argument with additonal columns
-#'         and/or rows as set in the set_values_to argument.
+#' @return The dataframe passed in the `dataset` argument with additonal columns
+#'         and/or rows as set in the `set_values_to` argument.
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|
 
 derive_param_lasta <- function(dataset,
@@ -122,7 +121,7 @@ derive_param_lasta <- function(dataset,
   }
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Get PD date from PD_SOURCE dataset if passed ----
+  # source_pd: Get PD date from source_pd dataframe, if passed ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   if (!is.null(source_pd)) {
@@ -160,7 +159,7 @@ derive_param_lasta <- function(dataset,
   }
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Filter using filter_source argument ----
+  # filter_source: Filter using filter_source argument ----
   # This would also be used to filter out records from dataset that are greater
   # than e.g. ADSL.TRTSDT
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -179,7 +178,7 @@ derive_param_lasta <- function(dataset,
   }
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Filter last assessment using filter_extreme ----
+  # filter_extreme: Filter last assessment using filter_extreme ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   param_lasta <- dataset_filter %>%
@@ -189,7 +188,7 @@ derive_param_lasta <- function(dataset,
                               check_type = "warning")
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Execute set_values_to ----
+  # set_values_to: Execute set_values_to ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   tryCatch(
