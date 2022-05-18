@@ -4,7 +4,7 @@
 \name{admiralonco-package}
 \alias{admiralonco}
 \alias{admiralonco-package}
-\title{admiralonco: Oncology extension package for ADaM in R Asset Library}
+\title{admiralonco: Oncology Extension Package for ADaM in R Asset Library}
 \description{
 \if{html}{\figure{logo.png}{options: align='right' alt='logo' width='120'}}
 
