@@ -31,10 +31,41 @@ derive_param_confirmed_bor <- function(
   assert_logical_scalar(accept_sd)
   assert_varval_list(set_values_to, required_elements = "PARAMCD")
   assert_vars(subject_keys)
-  assert_data_frame(dataset, required_vars = quo_c(subject_keys, vars(PARAMCD, ADT, AVALC)))
-  assert_data_frame(dataset_adsl, required_vars = quo_c(subject_keys, reference_date))
+  assert_data_frame(dataset, required_vars = admiral:::quo_c(subject_keys, vars(PARAMCD, ADT, AVALC)))
+  assert_data_frame(dataset_adsl, required_vars = admiral:::quo_c(subject_keys, reference_date))
   if (!is.null(dataset)) {
     assert_param_does_not_exist(dataset, quo_get_expr(set_values_to$PARAMCD))
   }
 
+  # Restrict input dataset
+  source_data <- dataset %>%
+    filter(!!filter_source)
+    # filter_pd(source_pd = source_pd,
+    #    source_datasets = source_datasets)
+
+  # Create observations for potential responses
+  cr_data <- filter_confirmation(
+    source_data,
+    by_vars = subject_keys,
+    join_vars = vars(AVALC),
+    order = vars(ADT),
+    first_cond = AVALC.join == "CR",
+    filter = AVALC == "CR" & all(AVALC.join %in% c("CR", "NE")) & count_vals(var = AVALC.join, val = "NE") < max_nr_ne
+  ) %>%
+    mutate(AVAL = 1)
+
+  missing_data <- dataset_adsl %>%
+    select(subject_keys) %>%
+    mutate(
+      AVALC = "MISSING",
+      AVAL = 7)
+
+  # Select best response
+  bind_rows(cr_data, missing_data) %>%
+    filter_extreme(
+      by_vars = subject_keys,
+      order = vars(AVAL, ADT),
+      mode = "first"
+    ) %>%
+    mutate(!!!set_values_to)
 }
