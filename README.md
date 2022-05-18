@@ -1,4 +1,7 @@
-# admiralonco <img src="man/figures/logo.png" align="right" width="200" style="margin-left:50px;"/>
+# admiralonco
+
+<img src="man/figures/logo.png" align="right" width="200" style="margin-left:50px;"/>
+
 Oncology extension package for ADaM in R Asset Library `{admiral}`
 
 ## Purpose
@@ -23,13 +26,13 @@ endpoints for targeted indications, baseline disease characteristics, common sen
 ## R Versions
 
 Here's a summary of our strategy for this package related to R versions:
-- R versions for developers and users will follow the same as `{admiral}` core package.
-- For development the `devel` branch of `{admiral}` core is used as a dependency. For releasing a new `{admiralonco}` version it 
-must run using the latest released `{admiral}` core version, i.e., `main` branch of `{admiral}` core.
 
-## Contact 
+* R versions for developers and users will follow the same as `{admiral}` core package.
+* For development the `devel` branch of `{admiral}` core is used as a dependency. For releasing a new `{admiralonco}` version it must run using the latest released `{admiral}` core version, i.e., `main` branch of `{admiral}` core.
+
+## Contact
 
 We use the following for support and communications between user and developer community:
+
 * [Slack](https://app.slack.com/client/T028PB489D3/C02M8KN8269) - for informal discussions, Q&A and building our user community. If you don't have access, use this [link](https://join.slack.com/t/pharmaverse/shared_invite/zt-yv5atkr4-Np2ytJ6W_QKz_4Olo7Jo9A) to join the pharmaverse Slack workspace
 * [GitHub Issues](https://github.com/pharmaverse/admiralonco/issues) - for direct feedback, enhancement requests or raising bugs
-
