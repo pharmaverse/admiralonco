@@ -104,7 +104,7 @@ filter_confirmation(
   by_vars = vars(USUBJID),
   join_vars = vars(AVALC, AVISITN),
   order = vars(AVISITN),
-  filter = AVALC == "Y" & AVALC.join == "Y" & AVISIT < AVISIT.join
+  filter = AVALC == "Y" & AVALC.join == "Y" & AVISITN < AVISITN.join
 )
 
 data <- tibble::tribble(
