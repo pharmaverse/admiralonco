@@ -31,8 +31,9 @@ derive_param_confirmed_bor <- function(
   assert_logical_scalar(accept_sd)
   assert_varval_list(set_values_to, required_elements = "PARAMCD")
   assert_vars(subject_keys)
-  assert_data_frame(dataset, required_vars = admiral:::quo_c(subject_keys, vars(PARAMCD, ADT, AVALC)))
-  assert_data_frame(dataset_adsl, required_vars = admiral:::quo_c(subject_keys, reference_date))
+  assert_data_frame(dataset,
+                    required_vars = admiral:::quo_c(subject_keys, reference_date, vars(PARAMCD, ADT, AVALC)))
+  assert_data_frame(dataset_adsl, required_vars = subject_keys)
   if (!is.null(dataset)) {
     assert_param_does_not_exist(dataset, quo_get_expr(set_values_to$PARAMCD))
   }
@@ -47,25 +48,94 @@ derive_param_confirmed_bor <- function(
   cr_data <- filter_confirmation(
     source_data,
     by_vars = subject_keys,
-    join_vars = vars(AVALC),
+    join_vars = vars(AVALC, ADT),
     order = vars(ADT),
-    first_cond = AVALC.join == "CR",
-    filter = AVALC == "CR" & all(AVALC.join %in% c("CR", "NE")) & count_vals(var = AVALC.join, val = "NE") < max_nr_ne
+    first_cond = AVALC.join == "CR" &
+      ADT.join >= ADT + days(ref_confirm),
+    filter = AVALC == "CR" &
+      all(AVALC.join %in% c("CR", "NE")) &
+      count_vals(var = AVALC.join, val = "NE") < max_nr_ne
   ) %>%
     mutate(AVAL = 1)
 
+  if (accept_sd) {
+    max_nr_sd = 1
+  } else {
+    max_nr_sd = 0
+  }
+  pr_data <- filter_confirmation(
+    source_data,
+    by_vars = subject_keys,
+    join_vars = vars(AVALC, ADT),
+    order = vars(ADT),
+    first_cond = AVALC.join %in% c("CR", "PR") &
+      ADT.join >= ADT + days(ref_confirm),
+    filter = AVALC == "PR" &
+      all(AVALC.join %in% c("CR", "PR", "SD", "NE")) &
+      count_vals(var = AVALC.join, val = "NE") < max_nr_ne &
+      count_vals(var = AVALC.join, val = "SD") < max_nr_sd &
+      (
+        min_cond(var = ADT.join, cond = AVALC.join == "CR") > max_cond(var = ADT.join, cond = AVALC.join == "PR") |
+          count_vals(var = AVALC.join, val = "CR") == 0
+      )
+  ) %>%
+    mutate(AVAL = 2)
+
+  sd_data <- filter(
+    source_data,
+    AVALC == "SD" & ADT >= !!reference_date + days(ref_start_window)
+  ) %>%
+    mutate(
+      AVAL = 3
+    )
+  non_data <- filter(
+    source_data,
+    AVALC == "NON-CR/NON-PD" & ADT >= !!reference_date + days(ref_start_window)
+  ) %>%
+    mutate(
+      AVAL = 4
+    )
+
+  pd_data <- filter(source_data, AVALC == "PD") %>%
+    mutate(AVAL = 5)
+
+  ne_data <- filter(
+    source_data,
+    AVALC == "NE" | AVALC %in% c("CR", "PR", "SD", "NON-CR/NON-PD") & ADT < !!reference_date + days(ref_start_window)
+  ) %>%
+    mutate(AVALC = "NE",
+           AVAL = 6)
+
   missing_data <- dataset_adsl %>%
-    select(subject_keys) %>%
+    select(!!!subject_keys) %>%
     mutate(
       AVALC = "MISSING",
       AVAL = 7)
 
   # Select best response
-  bind_rows(cr_data, missing_data) %>%
+  bind_rows(cr_data, pr_data, sd_data, pd_data, non_data, ne_data, missing_data) %>%
     filter_extreme(
       by_vars = subject_keys,
       order = vars(AVAL, ADT),
       mode = "first"
     ) %>%
     mutate(!!!set_values_to)
+}
+
+min_cond <- function(var, cond) {
+  assert_filter_cond(enquo(cond))
+  if (length(var[cond]) == 0) {
+    NA
+  } else {
+    min(var[cond])
+  }
+}
+
+max_cond <- function(var, cond) {
+  assert_filter_cond(enquo(cond))
+  if (length(var[cond]) == 0) {
+    NA
+  } else {
+    min(var[cond])
+  }
 }

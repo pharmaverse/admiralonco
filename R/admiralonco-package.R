@@ -5,6 +5,8 @@
 #'   assert_s3_class assert_symbol assert_vars assert_varval_list
 #'   derive_var_obs_number expect_dfs_equal filter_extreme filter_relative
 #'   vars2chr
-#' @importFrom dplyr bind_rows filter group_by if_else left_join mutate select slice ungroup
+#' @importFrom dplyr bind_rows filter group_by if_else left_join mutate select
+#'   slice vars ungroup
+#' @importFrom lubridate days
 #' @importFrom rlang enquo quo_get_expr quo_is_null
 "_PACKAGE"

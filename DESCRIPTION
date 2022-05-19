@@ -41,6 +41,7 @@ Imports:
     admiral.test,
     admiral,
     dplyr,
+    lubridate,
     rlang
 Suggests:
     devtools,

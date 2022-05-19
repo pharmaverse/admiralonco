@@ -36,7 +36,12 @@ adrs <- tibble::tribble(
     mutate(PARAMCD = "PD")
   ) %>%
   mutate(ADT = lubridate::ymd(ADTC),
-         STUDYID = "XX1234")
+         STUDYID = "XX1234") %>%
+  admiral::derive_vars_merged(
+    dataset_add = adsl,
+    by_vars = dplyr::vars(STUDYID, USUBJID),
+    new_vars = dplyr::vars(TRTSDT)
+  )
 
 pd_date <- admiral::date_source(dataset_name = "adrs",
                                 date = ADT,
