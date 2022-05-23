@@ -226,6 +226,24 @@ count_vals <- function(var, val) {
   length(var[var == val])
 }
 
+min_cond <- function(var, cond) {
+  assert_filter_cond(enquo(cond))
+  if (length(var[cond]) == 0) {
+    NA
+  } else {
+    min(var[cond])
+  }
+}
+
+max_cond <- function(var, cond) {
+  assert_filter_cond(enquo(cond))
+  if (length(var[cond]) == 0) {
+    NA
+  } else {
+    max(var[cond])
+  }
+}
+
 add_var_suffix <- function(vars, suffix) {
   assert_order_vars(vars)
 

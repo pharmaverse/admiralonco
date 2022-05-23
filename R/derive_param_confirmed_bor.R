@@ -54,9 +54,10 @@ derive_param_confirmed_bor <- function(
       ADT.join >= ADT + days(ref_confirm),
     filter = AVALC == "CR" &
       all(AVALC.join %in% c("CR", "NE")) &
-      count_vals(var = AVALC.join, val = "NE") < max_nr_ne
+      count_vals(var = AVALC.join, val = "NE") <= max_nr_ne
   ) %>%
-    mutate(AVAL = 1)
+    mutate(AVAL = 1) %>%
+    select(!!!subject_keys, AVALC, AVAL, ADT)
 
   if (accept_sd) {
     max_nr_sd = 1
@@ -72,70 +73,63 @@ derive_param_confirmed_bor <- function(
       ADT.join >= ADT + days(ref_confirm),
     filter = AVALC == "PR" &
       all(AVALC.join %in% c("CR", "PR", "SD", "NE")) &
-      count_vals(var = AVALC.join, val = "NE") < max_nr_ne &
-      count_vals(var = AVALC.join, val = "SD") < max_nr_sd &
+      count_vals(var = AVALC.join, val = "NE") <= max_nr_ne &
+      count_vals(var = AVALC.join, val = "SD") <= max_nr_sd &
       (
         min_cond(var = ADT.join, cond = AVALC.join == "CR") > max_cond(var = ADT.join, cond = AVALC.join == "PR") |
           count_vals(var = AVALC.join, val = "CR") == 0
       )
   ) %>%
-    mutate(AVAL = 2)
+    mutate(AVAL = 2) %>%
+    select(!!!subject_keys, AVALC, AVAL, ADT)
 
   sd_data <- filter(
     source_data,
-    AVALC == "SD" & ADT >= !!reference_date + days(ref_start_window)
+    AVALC %in% c("CR", "PR", "SD") & ADT >= !!reference_date + days(ref_start_window)
   ) %>%
     mutate(
+      AVALC = "SD",
       AVAL = 3
-    )
+    ) %>%
+    select(!!!subject_keys, AVALC, AVAL, ADT)
+
   non_data <- filter(
     source_data,
     AVALC == "NON-CR/NON-PD" & ADT >= !!reference_date + days(ref_start_window)
   ) %>%
     mutate(
       AVAL = 4
-    )
+    ) %>%
+    select(!!!subject_keys, AVALC, AVAL, ADT)
 
   pd_data <- filter(source_data, AVALC == "PD") %>%
-    mutate(AVAL = 5)
+    mutate(AVAL = 5) %>%
+    select(!!!subject_keys, AVALC, AVAL, ADT)
 
   ne_data <- filter(
     source_data,
     AVALC == "NE" | AVALC %in% c("CR", "PR", "SD", "NON-CR/NON-PD") & ADT < !!reference_date + days(ref_start_window)
   ) %>%
     mutate(AVALC = "NE",
-           AVAL = 6)
+           AVAL = 6) %>%
+    select(!!!subject_keys, AVALC, AVAL, ADT)
 
   missing_data <- dataset_adsl %>%
     select(!!!subject_keys) %>%
     mutate(
       AVALC = "MISSING",
-      AVAL = 7)
+      AVAL = 7) %>%
+    select(!!!subject_keys, AVALC, AVAL)
 
   # Select best response
-  bind_rows(cr_data, pr_data, sd_data, pd_data, non_data, ne_data, missing_data) %>%
+  bor <- bind_rows(cr_data, pr_data, sd_data, pd_data, non_data, ne_data, missing_data) %>%
     filter_extreme(
       by_vars = subject_keys,
       order = vars(AVAL, ADT),
       mode = "first"
     ) %>%
     mutate(!!!set_values_to)
-}
 
-min_cond <- function(var, cond) {
-  assert_filter_cond(enquo(cond))
-  if (length(var[cond]) == 0) {
-    NA
-  } else {
-    min(var[cond])
-  }
-}
-
-max_cond <- function(var, cond) {
-  assert_filter_cond(enquo(cond))
-  if (length(var[cond]) == 0) {
-    NA
-  } else {
-    min(var[cond])
-  }
+  # Add to input dataset
+  bind_rows(dataset, bor)
 }
