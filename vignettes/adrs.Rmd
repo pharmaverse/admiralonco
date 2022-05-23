@@ -268,10 +268,9 @@ In the below example, the response condition has been defined as `CR` or `PR`.
 adrs <- adrs %>%
   derive_param_response(
     dataset_adsl = adsl,
-    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+    filter_source = PARAMCD == "OVR" & AVALC %in% c(“CR”, “PR”) & ANL01FL == "Y",
     source_pd = list(pd),
     source_datasets = list(adrs = adrs),
-    resp_cond = AVALC %in% c(“CR”, “PR”),
     set_values_to = vars(
       PARAMCD = "RSP",
       PARAM = "Response by Investigator (confirmation not required)",
@@ -377,10 +376,9 @@ would be a repeat of the Response parameter, but a more interesting version of t
 adrs <- adrs %>%
   derive_param_response(
     dataset_adsl = adsl,
-    filter_source = PARAMCD == "BOR" & ANL01FL == "Y",
+    filter_source = PARAMCD == "BOR" & AVALC %in% c(“CR”, “PR”) & ANL01FL == "Y",
     source_pd = list(pd),
     source_datasets = list(adrs = adrs),
-    resp_cond = AVALC %in% c(“CR”, “PR”),
     set_values_to = vars(
       PARAMCD = "BCP",
       PARAM = "Best Overall Response of CR/PR by Investigator (confirmation not required)",
@@ -497,12 +495,12 @@ adrs <- adrs %>%
   derive_param_lasta(
     filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
     set_values_to = vars(
-	    PARAMCD = "LSTA",
-	    PARAM = "Last Disease Assessment by Investigator",
-	    PARCAT1 = "Tumor Response",
-    	PARCAT2 = "Investigator",
-    	PARCAT3 = "Recist 1.1",
-	    ANL01FL = "Y"
+      PARAMCD = "LSTA",
+      PARAM = "Last Disease Assessment by Investigator",
+      PARCAT1 = "Tumor Response",
+      PARCAT2 = "Investigator",
+      PARCAT3 = "Recist 1.1",
+      ANL01FL = "Y"
     )
   )
 ```
