@@ -269,7 +269,7 @@ adrs <- adrs %>%
   derive_param_response(
     dataset_adsl = adsl,
     filter_source = PARAMCD == "OVR" & AVALC %in% c(“CR”, “PR”) & ANL01FL == "Y",
-    source_pd = list(pd),
+    source_pd = pd,
     source_datasets = list(adrs = adrs),
     set_values_to = vars(
       PARAMCD = "RSP",
@@ -310,8 +310,8 @@ adrs <- adrs %>%
   derive_param_clinbenefit(
     dataset_adsl = adsl,
     filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
-    source_resp = list(rsp),
-    source_pd = list(pd),
+    source_resp = rsp,
+    source_pd = pd,
     source_datasets = list(adrs = adrs),
     reference_date = RANDDT,
     ref_start_window = 42,
@@ -344,7 +344,7 @@ adrs <- adrs %>%
   derive_param_bor(
     dataset_adsl = adsl,
     filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
-    source_pd = list(pd),
+    source_pd = pd,
     source_datasets = list(adrs = adrs),
     reference_date = RANDDT,
     ref_start_window = 42,
@@ -377,7 +377,7 @@ adrs <- adrs %>%
   derive_param_response(
     dataset_adsl = adsl,
     filter_source = PARAMCD == "BOR" & AVALC %in% c(“CR”, “PR”) & ANL01FL == "Y",
-    source_pd = list(pd),
+    source_pd = pd,
     source_datasets = list(adrs = adrs),
     set_values_to = vars(
       PARAMCD = "BCP",
@@ -408,7 +408,7 @@ adrs <- adrs %>%
   derive_param_confirmed_bor(
     dataset_adsl = adsl,
     filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
-    source_pd = list(pd),
+    source_pd = pd,
     source_datasets = list(adrs = adrs),
     reference_date = RANDDT,
     ref_start_window = 42,
