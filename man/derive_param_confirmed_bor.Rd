@@ -15,6 +15,7 @@ derive_param_confirmed_bor(
   ref_confirm,
   max_nr_ne = 1,
   accept_sd = FALSE,
+  aval_fun = aval_resp,
   set_values_to,
   subject_keys = vars(STUDYID, USUBJID)
 )

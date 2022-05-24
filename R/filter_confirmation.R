@@ -184,7 +184,6 @@ filter_confirmation <- function(dataset,
     select(colnames(dataset))
 }
 
-
 #' Count Number of Observations Where a Variable Equals a Value
 #'
 #' Count number of observations where a variable equals a value.
@@ -221,11 +220,49 @@ filter_confirmation <- function(dataset,
 #'   "4",      5,        "PR"
 #' )
 #'
+#' # add variable indicating if PR occurred after CR
 #' group_by(data, USUBJID) %>% mutate(nr_nes = count_vals(var = AVALC, val = "NE"))
 count_vals <- function(var, val) {
   length(var[var == val])
 }
 
+#' Minimum Value on a Subset
+#'
+#' The function derives the minimum value of a vector/column on a subset of
+#' entries/observations.
+#'
+#' @param var A vector
+#'
+#' @param cond A condition
+#'
+#' @author Stefan Bundfuss
+#'
+#' @export
+#'
+#' @keywords user_utility
+#'
+#' @examples
+#'
+#' library(dplyr)
+#' library(admiralonco)
+#' data <- tibble::tribble(
+#'   ~USUBJID, ~AVISITN, ~AVALC,
+#'   "1",      1,        "PR",
+#'   "1",      2,        "CR",
+#'   "1",      3,        "NE",
+#'   "1",      4,        "CR",
+#'   "1",      5,        "NE",
+#'   "2",      1,        "CR",
+#'   "2",      2,        "PR",
+#'   "2",      3,        "CR",
+#' )
+#'
+#' # add variable indicating if PR occurred after CR
+#' group_by(data, USUBJID) %>% mutate(
+#'   first_cr_vis = min_cond(var = AVISITN, cond = AVALC == "CR"),
+#'   last_pr_vis = max_cond(var = AVISITN, cond = AVALC == "PR"),
+#'   pr_after_cr = last_pr_vis > first_cr_vis
+#' )
 min_cond <- function(var, cond) {
   assert_filter_cond(enquo(cond))
   if (length(var[cond]) == 0) {
@@ -235,6 +272,42 @@ min_cond <- function(var, cond) {
   }
 }
 
+#' Maximum Value on a Subset
+#'
+#' The function derives the maximum value of a vector/column on a subset of
+#' entries/observations.
+#'
+#' @param var A vector
+#'
+#' @param cond A condition
+#'
+#' @author Stefan Bundfuss
+#'
+#' @export
+#'
+#' @keywords user_utility
+#'
+#' @examples
+#'
+#' library(dplyr)
+#' library(admiralonco)
+#' data <- tibble::tribble(
+#'   ~USUBJID, ~AVISITN, ~AVALC,
+#'   "1",      1,        "PR",
+#'   "1",      2,        "CR",
+#'   "1",      3,        "NE",
+#'   "1",      4,        "CR",
+#'   "1",      5,        "NE",
+#'   "2",      1,        "CR",
+#'   "2",      2,        "PR",
+#'   "2",      3,        "CR",
+#' )
+#'
+#' group_by(data, USUBJID) %>% mutate(
+#'   first_cr_vis = min_cond(var = AVISITN, cond = AVALC == "CR"),
+#'   last_pr_vis = max_cond(var = AVISITN, cond = AVALC == "PR"),
+#'   pr_after_cr = last_pr_vis > first_cr_vis
+#' )
 max_cond <- function(var, cond) {
   assert_filter_cond(enquo(cond))
   if (length(var[cond]) == 0) {
@@ -242,19 +315,4 @@ max_cond <- function(var, cond) {
   } else {
     max(var[cond])
   }
-}
-
-add_var_suffix <- function(vars, suffix) {
-  assert_order_vars(vars)
-
-  out <- lapply(vars, function(arg, suffix) {
-    if (quo_is_symbol(arg)) {
-      parse_quo(paste0(as_name(arg), suffix), env = quo_get_env(arg))
-    } else {
-      parse_quo(paste0("desc(", as_name(quo_get_expr(arg)[[2]]), suffix, ")"), env = quo_get_env(arg))
-    }
-  }, suffix = suffix)
-
-  attr(out, "class") <- c("quosures", "list")
-  out
 }
