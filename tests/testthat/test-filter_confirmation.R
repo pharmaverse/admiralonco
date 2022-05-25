@@ -25,7 +25,8 @@ test_that("filter_confirmation Test 1: filter without first_cond", {
       by_vars = vars(USUBJID),
       join_vars = vars(AVISITN, AVALC),
       order = vars(AVISITN),
-      filter = AVALC == "PR" & AVALC.join %in% c("CR", "PR") & AVISITN < AVISITN.join
+      filter = AVALC == "PR" & AVALC.join %in% c("CR", "PR") &
+        AVISITN < AVISITN.join
     )
 
   expected <- tibble::tribble(
@@ -37,7 +38,8 @@ test_that("filter_confirmation Test 1: filter without first_cond", {
   expect_dfs_equal(
     base = expected,
     compare = actual,
-    keys = c("USUBJID", "AVISITN"))
+    keys = c("USUBJID", "AVISITN")
+  )
 })
 
 ## filter_confirmation Test 1:
@@ -58,9 +60,11 @@ test_that("filter_confirmation Test 1: filter with first_cond", {
     "1",      2,        "CR"
   )
 
-  expect_dfs_equal(base = expected,
-                   compare = actual,
-                   keys = c("USUBJID", "AVISITN"))
+  expect_dfs_equal(
+    base = expected,
+    compare = actual,
+    keys = c("USUBJID", "AVISITN")
+  )
 })
 
 ## filter_confirmation Test 3: filter with first_cond and summary function
@@ -81,9 +85,11 @@ test_that("filter_confirmation Test 3: filter with first_cond and summary functi
     "1",      1,        "PR"
   )
 
-  expect_dfs_equal(base = expected,
-                   compare = actual,
-                   keys = c("USUBJID", "AVISITN"))
+  expect_dfs_equal(
+    base = expected,
+    compare = actual,
+    keys = c("USUBJID", "AVISITN")
+  )
 })
 
 data <- tibble::tribble(
@@ -131,5 +137,6 @@ filter_confirmation(
   join_vars = vars(AVALC),
   order = vars(AVISITN),
   first_cond = AVALC.join == "CR",
-  filter = AVALC == "CR" & all(AVALC.join %in% c("CR", "NE")) & count_vals(var = AVALC.join, val = "NE") <=1
+  filter = AVALC == "CR" & all(AVALC.join %in% c("CR", "NE")) &
+    count_vals(var = AVALC.join, val = "NE") <= 1
 )
