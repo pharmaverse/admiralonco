@@ -10,14 +10,23 @@ aval_resp(arg)
 \item{arg}{Character vector}
 }
 \value{
-\code{1} if \code{arg} equals \code{"Y"}, \code{0} if \code{arg} equals \code{"N"}, \code{NA_real_} otherwise
+\itemize{
+\item \code{1} if \code{arg} equals \code{"CR"},
+\item \code{2} if \code{arg} equals \code{"PR"},
+\item \code{3} if \code{arg} equals \code{"SD"},
+\item \code{4} if \code{arg} equals \code{"NON-CR/NON-PD"},
+\item \code{5} if \code{arg} equals \code{"PD"},
+\item \code{6} if \code{arg} equals \code{"NE"},
+\item \code{7} if \code{arg} equals \code{"MISSING"},
+\item \code{NA_real_} otherwise
+}
 }
 \description{
 Map character response values like \code{"PR"} or \code{"SD"} to numeric values.
 }
 \examples{
 
-aval_resp(c("Y", "N", NA_character_))
+aval_resp(c("CR", "PR", "SD", "NON-CR/NON-PD", "PD", "NE", "MISSING", "ND", NA_character_))
 }
 \author{
 Stefan Bundfuss
