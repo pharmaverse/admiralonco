@@ -1,0 +1,14 @@
+---
+name: Style 🎽
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+      - devel
+
+jobs:
+  style:
+    name: Style Check 👗
+    uses: insightsengineering/r.pkg.template/.github/workflows/style.yaml@main
