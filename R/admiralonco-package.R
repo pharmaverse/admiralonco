@@ -8,5 +8,6 @@
 #' @importFrom dplyr bind_rows filter group_by if_else left_join mutate select
 #'   slice vars ungroup
 #' @importFrom lubridate days
+#' @importFrom magrittr `%>%`
 #' @importFrom rlang enquo quo_get_expr quo_is_null
 "_PACKAGE"

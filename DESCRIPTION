@@ -42,6 +42,7 @@ Imports:
     admiral,
     dplyr,
     lubridate,
+    magrittr,
     rlang
 Suggests:
     devtools,

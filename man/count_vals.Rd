@@ -37,7 +37,8 @@ data <- tibble::tribble(
 )
 
 # add variable indicating if PR occurred after CR
-group_by(data, USUBJID) \%>\% mutate(nr_nes = count_vals(var = AVALC, val = "NE"))
+group_by(data, USUBJID) \%>\%
+  mutate(nr_nes = count_vals(var = AVALC, val = "NE"))
 }
 \author{
 Stefan Bundfuss
