@@ -271,6 +271,7 @@ adrs <- adrs %>%
     filter_source = PARAMCD == "OVR" & AVALC %in% c(“CR”, “PR”) & ANL01FL == "Y",
     source_pd = pd,
     source_datasets = list(adrs = adrs),
+    subject_keys = vars(STUDYID, USUBJID),
     set_values_to = vars(
       PARAMCD = "RSP",
       PARAM = "Response by Investigator (confirmation not required)",
@@ -313,6 +314,7 @@ adrs <- adrs %>%
     source_resp = rsp,
     source_pd = pd,
     source_datasets = list(adrs = adrs),
+    subject_keys = vars(STUDYID, USUBJID),
     reference_date = RANDDT,
     ref_start_window = 42,
     set_values_to = vars(
@@ -346,6 +348,7 @@ adrs <- adrs %>%
     filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
     source_pd = pd,
     source_datasets = list(adrs = adrs),
+    subject_keys = vars(STUDYID, USUBJID),
     reference_date = RANDDT,
     ref_start_window = 42,
     set_values_to = vars(
@@ -379,6 +382,7 @@ adrs <- adrs %>%
     filter_source = PARAMCD == "BOR" & AVALC %in% c(“CR”, “PR”) & ANL01FL == "Y",
     source_pd = pd,
     source_datasets = list(adrs = adrs),
+    subject_keys = vars(STUDYID, USUBJID),
     set_values_to = vars(
       PARAMCD = "BCP",
       PARAM = "Best Overall Response of CR/PR by Investigator (confirmation not required)",
@@ -410,6 +414,7 @@ adrs <- adrs %>%
     filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
     source_pd = pd,
     source_datasets = list(adrs = adrs),
+    subject_keys = vars(STUDYID, USUBJID),
     reference_date = RANDDT,
     ref_start_window = 42,
     set_values_to = vars(
@@ -469,6 +474,7 @@ adrs <- adrs %>%
     dataset_source = adsl,
     filter_source = !is.na(DTHDT),
     date_var = DTHDT,
+    subject_keys = vars(STUDYID, USUBJID),
     set_values_to = vars(
       PARAMCD = "DEATH",
       PARAM = "Death",
@@ -494,6 +500,7 @@ to use `source_pd` argument to only look up to first `PD` assessment, but in the
 adrs <- adrs %>%
   derive_param_lasta(
     filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+    subject_keys = vars(STUDYID, USUBJID),
     set_values_to = vars(
       PARAMCD = "LSTA",
       PARAM = "Last Disease Assessment by Investigator",
@@ -525,6 +532,7 @@ adrs <- adrs %>%
     condition = TUEVAL == "INVESTIGATOR" & TUSTRESC == "TARGET" & VISIT == "BASELINE",
     false_value = "N",
     missing_value = "N",
+    subject_keys = vars(STUDYID, USUBJID),
     set_values_to = vars(
       PARAMCD = "MDIS",
       PARAM = "Measurable Disease at Baseline by Investigator",
