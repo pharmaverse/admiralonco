@@ -10,7 +10,8 @@
 #'
 #' @param dataset Input dataset
 #'
-#'   The variables specified for `by_vars`, `join_vars`, and `order` are expected.
+#'   The variables specified for `by_vars`, `join_vars`, and `order` are
+#'   expected.
 #'
 #' @param by_vars By variables
 #'
@@ -117,7 +118,8 @@
 #'   join_vars = vars(AVALC),
 #'   order = vars(AVISITN),
 #'   first_cond = AVALC.join == "CR",
-#'   filter = AVALC == "CR" & all(AVALC.join %in% c("CR", "NE")) & count_vals(var = AVALC.join, val = "NE") <= 1
+#'   filter = AVALC == "CR" & all(AVALC.join %in% c("CR", "NE")) &
+#'     count_vals(var = AVALC.join, val = "NE") <= 1
 #' )
 filter_confirmation <- function(dataset,
                                 by_vars,
@@ -138,7 +140,10 @@ filter_confirmation <- function(dataset,
       values = c("none", "warning", "error"),
       case_sensitive = FALSE
     )
-  assert_data_frame(dataset, required_vars = admiral:::quo_c(by_vars, join_vars, admiral:::extract_vars(order)))
+  assert_data_frame(
+    dataset,
+    required_vars = admiral:::quo_c(by_vars, join_vars, admiral:::extract_vars(order))
+  )
 
   # number observations of the input dataset to get a unique key
   # (by_vars and tmp_obs_nr_filter_confirmation)
@@ -221,22 +226,8 @@ filter_confirmation <- function(dataset,
 #'   "4",      5,        "PR"
 #' )
 #'
-#' group_by(data, USUBJID) %>% mutate(nr_nes = count_vals(var = AVALC, val = "NE"))
+#' group_by(data, USUBJID) %>%
+#'   mutate(nr_nes = count_vals(var = AVALC, val = "NE"))
 count_vals <- function(var, val) {
   length(var[var == val])
-}
-
-add_var_suffix <- function(vars, suffix) {
-  assert_order_vars(vars)
-
-  out <- lapply(vars, function(arg, suffix) {
-    if (quo_is_symbol(arg)) {
-      parse_quo(paste0(as_name(arg), suffix), env = quo_get_env(arg))
-    } else {
-      parse_quo(paste0("desc(", as_name(quo_get_expr(arg)[[2]]), suffix, ")"), env = quo_get_env(arg))
-    }
-  }, suffix = suffix)
-
-  attr(out, "class") <- c("quosures", "list")
-  out
 }
