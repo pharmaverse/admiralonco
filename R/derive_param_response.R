@@ -1,43 +1,55 @@
 #' Add a Parameter Indicating If a Subject Had a Response
-#' 
+#'
 #' Add a new parameter indicating if a response has been observed (AVALC and AVAL).
-#' If a response has been observed, AVALC is set to "Y", AVAL to 1 and ADT is set to the first date 
-#' when a response has been observed.
-#' If a response has not been observed, AVALC is set to "N", AVAL to 0 and ADT is set NA
+#' If a response has been observed, `AVALC` is set to "Y", `AVAL` to 1 and `ADT` is set to the 
+#' first date when a response has been observed.
+#' If a response has not been observed, `AVALC` is set to "N", AVAL to 0 and `ADT` is set NA.
+#'
+#' @param dataset Input dataset
 #' 
-#' @param dataset Input dataset expected.
-#'   The variables specified by the `subject_keys` are expected expected.
-#'   
+#'   The variables specified by the `subject_keys`and `ADT` are expected. 
+#'
 #' @param dataset_adsl Input dataset
 #'
-#'   + The variables specified for `subject_keys` are expected. 
+#'   + The variables specified for `subject_keys` are expected.
 #'   + For each observation of the specified dataset a new observation is added to the input dataset.
 #'
-#' @param source_datasets Source dataset
-#'
-#'   All observations in the specified dataset fulfilling the condition
-#'   specified by `filter_source` are considered as response
-#'
-#'   The variables specified by the `subject_keys` and
-#'   `date_var` parameter are expected.
+#' @param source_datasets Source dataset(s)
+#' 
+#'   A named list of datasets with 1 or 2 elements is expected (e.g. list( adrs = adrs, pdds=pdds)).
+#'   
+#'   At least `dataset` must be defined as a named list.
+#'   
+#'   + If 1 element is defined, it implies that the response data and the data used in `pd_source` are
+#'   in the same dataset `dataset`.
+#'   
+#'   + If 2 elements are defined, then 1 dataset contains the response data (`dataset`) and 
+#'   the other the data used in `pd_source` (e.g `pd_source$dataset_name`)
+#'   
+#'   The variables specified by the `subject_keys` and `ADT` are expected in the input `dataset`.
 #'
 #' @param filter_source Source filter
 #'
-#'   All observations in `source_datasets` fulfilling the specified condition are
-#'   considered as response
+#'   All observations in the `dataset` data fulfilling the specified condition are selected.
 #'
-#'   For subjects with at least one response `AVALC` is set to `"Y"`, `AVAL` to
-#'   `1`, and `ADT` to the first date where the response occured.
+#' @param source_pd Sources and conditions defining the end of the assessment period for the
+#'  responses.
 #'
-#'   For all other subjects `AVALC` is set to `"N"`, `AVAL` to `0`, and `ADT` to
-#'   `NA`.
+#'   An object of type `date_source` is expected
 #'
-#' @param date_var Date variable
+#'   All observations in `dataset` defining the response data fulfilling the `filter_source` 
+#'   condition are considered as response if they fall before the end of the assessment period  
+#'   as defined by `source_pd`
+#'   
+#'   For example:
+#'   `source_pd = date_source (datasets_name="adrs", date = ADT, filter= PARAMCD == "PD" & AVALC == "Y")`,
+#'   would exclude all responses occurring after the first PD date.
+#'   
+#'   + For subjects with at least one response before the end of the assessment period, `AVALC` is set
+#'   to `"Y"`, `AVAL` to `1`, and `ADT` to the first date when the response occurred.
 #'
-#'   Date variable in the source dataset (`source_datasets`). The variable is
-#'   used to sort the source dataset. `ADT` is set to the specified variable for
-#'   response
-#'
+#'   + For all other subjects `AVALC` is set to `"N"`, `AVAL` to `0`, and `ADT` to `NA`.
+#'   
 #' @param set_values_to Variables to set
 #'
 #'   A named list returned by `vars()` defining the variables to be set for the
@@ -48,27 +60,32 @@
 #' @param subject_keys Variables to uniquely identify a subject
 #'
 #'   A list of symbols created using `vars()` is expected.
-#'
-#'
 #' @details
-#'   1. The input dataset is restricted to observations fulfilling
-#'   `filter_source`.
+#' 
+#'   1. The Date of the end of the assessment period (e.g. Progresive diesase, as defined by 
+#'   `pd_source`) is added to the response dataset.
+#'   
+#'   1. The response dataset is restricted to observations occurring before ** or on ** the date of
+#'    progressive disease
+#'    
 #'   1. For each subject (with respect to the variables specified for the
-#'   `subject_keys` parameter) the first observation (with respect to
-#'   `date_var`) where the event condition (`filter_source` parameter) is
+#'   `subject_keys` parameter), the first observation (with respect to
+#'   `ADT`) where the response condition (`filter_source` parameter) is
 #'   fulfilled is selected.
-#'   1. For each observation in `dataset_adsl` a new observation is created. For
-#'   subjects with event `AVALC` is set to `"Y"`, `AVAL` to `1`, and `ADT` to
-#'   the first date where the event condition is fulfilled. For all other
-#'   subjects `AVALC` is set to `"N"`, `AVAL` to `0`, and `ADT` to `NA`.
+#'   
+#'   1. For each observation in `dataset_adsl` a new observation is created. 
+#'   + For subjects with a response `AVALC` is set to `"Y"`, `AVAL` to `1`, and `ADT` to
+#'   the first date (`ADT`) where the response condition is fulfilled. 
+#'   + For all other subjects `AVALC` is set to `"N"`, `AVAL` to `0`, and `ADT` to `NA`.
+#'   
 #'   1. The variables specified by the `set_values_to` parameter are added to
 #'   the new observations.
+#'   
 #'   1. The new observations are added to input dataset.
 #'
 #' @author Samia Kabi
 #'
-#' @return The input dataset with a new parameter indicating if and when an
-#'   response occurred
+#' @return The input dataset with a new parameter indicating if and when a response occurred
 #'
 #' @keywords derivation bds
 #'
@@ -76,87 +93,143 @@
 #'
 #' @examples
 #' library(dplyr)
-#' library(lubridate)
 #' library(admiral)
-#' library(admiraltest)
-derive_param_response<- function (
-  dataset,
-  dataset_adsl,
-  filter_source,
-  source_pd,
-  source_datasets,
-  set_values_to,
-  subject_keys = vars(STUDYID, USUBJID)
-){
- 
-  # ---- checking and quoting ---- 
+#' library(lubridate)
+#' library(rlang)
+#' 
+#' adsl <- tibble::tribble(
+#'  ~USUBJID,
+#'  "1",      
+#'  "2",      
+#'  "3",
+#'  "4") %>%
+#'  mutate(STUDYID = "XX1234")
+#'  
+#' adrs0 <- tibble::tribble(
+#'  ~USUBJID, ~ADTC,        ~AVALC,
+#'  "1",      "2020-01-02", "PR",
+#'  "1",      "2020-02-01", "CR",
+#'  "1",      "2020-03-01", "CR",
+#'  "1",      "2020-04-01", "SD",
+#'  "2",      "2021-06-15", "SD",
+#'  "2",      "2021-07-16", "PD",
+#'  "2",      "2021-09-14", "PD",
+#'  "3",      "2021-09-14", "SD",
+#'  "3",      "2021-10-30", "PD",
+#'  "3",      "2021-12-25", "CR"
+#'  ) %>%
+#'  mutate(
+#'    STUDYID = "XX1234",
+#'    ADT = ymd(ADTC),
+#'    PARAMCD = "OVR",
+#'    PARAM = "Overall Response",
+#'    ANL01FL = "Y"
+#'  ) %>%
+#'  select(-ADTC)
+#'  
+#' #Add a parameter for the date of Progressive disease (PARAMCD = PD)
+#' adrs1<-derive_param_first_event(
+#'   dataset = adrs0,
+#'   dataset_adsl = adsl,
+#'   dataset_source = adrs0,
+#'   filter_source = PARAMCD == "OVR" & AVALC == "PD" ,
+#'   date_var = ADT,
+#'   set_values_to = vars(
+#'     PARAMCD = "PD",
+#'     PARAM = "Disease Progression",
+#'     ANL01FL = "Y"
+#'   )
+#' )
+#' 
+#' #Define the end of the assessment period for responses: 
+#' # all responses before or on the first PD will be used.
+#' pd <- date_source(
+#'   dataset_name = "adrs1",
+#'   date = ADT,
+#'   filter = PARAMCD == "PD"& AVALC == "Y"
+#' )
+#' # Derive the response parameter
+#'  derive_param_response (
+#'     dataset = adrs1,
+#'     dataset_adsl =  adsl,
+#'     filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR") ,
+#'     source_pd = pd,
+#'     source_datasets = list(adrs1=adrs1),
+#'     set_values_to = vars(
+#'       PARAMCD = "RSP",
+#'       PARAM = "Response by investigator"),
+#'     subject_keys = vars(STUDYID, USUBJID)
+#'   ) %>%
+#'   arrange(USUBJID, PARAMCD, ADT)
+
+derive_param_response <- function(
+                                  dataset,
+                                  dataset_adsl,
+                                  filter_source,
+                                  source_pd,
+                                  source_datasets,
+                                  set_values_to,
+                                  subject_keys = vars(STUDYID, USUBJID)) {
+
+  # ---- checking and quoting ----
   assert_data_frame(dataset)
   assert_data_frame(dataset_adsl)
   filter_s <- assert_filter_cond(enquo(filter_source), optional = TRUE)
   assert_list_of(source_datasets, "data.frame")
   source_names <- names(source_datasets)
-  
+
   assert_s3_class(source_pd, "date_source")
-  if (!(source_pd$dataset_name %in% source_names)){
-    abort(paste( 
+  if (!(source_pd$dataset_name %in% source_names)) {
+    abort(paste(
       "The dataset names must be included in the list specified for the ",
-    "`source_datasets` parameter.\n",
-    "Following names were provided by `source_datasets`:\n",
-    enumerate(source_names, quote_fun = squote)
+      "`source_datasets` parameter.\n",
+      "Following names were provided by `source_datasets`:\n",
+      enumerate(source_names, quote_fun = squote)
     ))
   }
 
   assert_varval_list(set_values_to, accept_expr = TRUE, optional = TRUE)
   if (!is.null(set_values_to$PARAMCD) & !is.null(dataset)) {
     assert_param_does_not_exist(dataset, quo_get_expr(set_values_to$PARAMCD))
-  } 
-  
+  }
+
   # ---- Read in data ----
   data <- vector("list", length(source_names))
-  for (i in seq_along(source_names)) {
+  #Both dates of PD and Response records are in the same datasets
+  if (length(source_names) ==1 ){
+    pddt <- source_datasets[[1]] %>%
+      filter_if(source_pd$filter) %>%
+      mutate(PDDT = ADT) %>%
+      select(!!!subject_keys, PDDT)
+    
+    data  <- source_datasets[[1]] 
+  }
+  else {
+    for (i in seq_along(source_names)) {
       #---PD  datasets ----
-     if (source_names[[i]] == source_pd$dataset_name){
-       pddt<- source_datasets[[i]] %>%
-         #admiral::filter_if(source_pd$filter) %>%
-         filter_if(source_pd$filter) %>%
-         mutate(PDDT=ADT) %>%
-         select(!!!subject_keys, PDDT)
-     }
-    # ---- response datasets ----
-    else {
-    data[[i]] <- source_datasets[[i]] %>%
-      #admiral::filter_if(filter_s)
-      filter_if(filter_s)
+      if (source_names[[i]] == source_pd$dataset_name) {
+        pddt <- source_datasets[[i]] %>%
+          filter_if(source_pd$filter) %>%
+          mutate(PDDT = ADT) %>%
+          select(!!!subject_keys, PDDT)
+      }
+      # ---- response datasets ----
+      else {        data  <- source_datasets[[i]]       }
     }
   }
-  
-  #---- Only responses before PD ----
-  resp_data<-data %>%
-      bind_rows() %>%
-      left_join(pddt, by = vars2chr(subject_keys))%>%
-      filter(ADT <= PDDT | is.na(PDDT)) %>% #Q: how to handle the < or  <=?
-      select (!!!subject_keys,ADT, AVALC_=AVALC)
 
-  # ---- Select the First response ----
-  fresp_data<-resp_data %>%
-    filter_extreme(
-    by_vars = subject_keys,
-    order = vars(ADT),
-    mode = "first"
-  ) 
+  #---- Only records before PD ----
+  resp_before_pd <- data %>%
+    left_join(pddt, by = vars2chr(subject_keys)) %>%
+    filter(ADT <= PDDT | is.na(PDDT)) 
 
-  # ---- Create a record for each pt in ADSL ----
-  add_data<-dataset_adsl %>%
-    left_join(fresp_data, by = vars2chr(subject_keys))%>%
-    mutate(AVALC= if_else(!is.na(AVALC_), "Y", "N"),
-           ADT=if_else(!is.na(AVALC_), ADT, as.Date(NA)),
-           !!!set_values_to
-    )%>%
-    select(-AVALC_)
-   
-  # ----Keep only variables from dataset and remove all other adsl_var  ----
-  rm_col<-colnames(dataset_adsl)[!(colnames(dataset_adsl) %in% colnames(dataset))]
-  # ----Append new obs to input dataset  ----
-  bind_rows(dataset,add_data%>% select(-all_of(rm_col)))
-
+  # ---- Select the First response before PD and add a new PARAMCD to the input dataset----
+  dataset %>%
+    derive_param_first_event(
+      dataset_adsl = dataset_adsl,
+      dataset_source = resp_before_pd,
+      filter_source = !!filter_s,
+      date_var = ADT,
+      set_values_to = set_values_to
+    )
 }
