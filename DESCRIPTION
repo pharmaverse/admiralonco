@@ -41,6 +41,7 @@ Imports:
     admiral.test,
     admiral,
     dplyr,
+    magrittr,
     rlang
 Suggests:
     devtools,

@@ -17,7 +17,8 @@ filter_confirmation(
 \arguments{
 \item{dataset}{Input dataset
 
-The variables specified for \code{by_vars}, \code{join_vars}, and \code{order} are expected.}
+The variables specified for \code{by_vars}, \code{join_vars}, and \code{order} are
+expected.}
 
 \item{by_vars}{By variables
 
@@ -123,7 +124,8 @@ filter_confirmation(
   join_vars = vars(AVALC),
   order = vars(AVISITN),
   first_cond = AVALC.join == "CR",
-  filter = AVALC == "CR" & all(AVALC.join \%in\% c("CR", "NE")) & count_vals(var = AVALC.join, val = "NE") <= 1
+  filter = AVALC == "CR" & all(AVALC.join \%in\% c("CR", "NE")) &
+    count_vals(var = AVALC.join, val = "NE") <= 1
 )
 }
 \author{
