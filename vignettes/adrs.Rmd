@@ -521,12 +521,12 @@ dataset_vignette(
 
 ## Derive Measurable Disease at Baseline Parameter {#mdis}
 
-The function `derive_param_merged_exist_flag()` can be used to check whether a patient has measurable disease at baseline,
+The function `derive_param_exist_flag()` can be used to check whether a patient has measurable disease at baseline,
 according to a company-specific condition. In this example we check `TU` for target lesions during the baseline visit.
 
 ```{r}
 adrs <- adrs %>%
-  derive_param_merged_exist_flag(
+  derive_param_exist_flag(
     dataset_adsl = adsl,
     dataset_add = tu,
     condition = TUEVAL == "INVESTIGATOR" & TUSTRESC == "TARGET" & VISIT == "BASELINE",
