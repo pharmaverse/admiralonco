@@ -2,6 +2,8 @@
 
 export(count_vals)
 export(filter_confirmation)
+export(max_cond)
+export(min_cond)
 importFrom(admiral,assert_character_scalar)
 importFrom(admiral,assert_data_frame)
 importFrom(admiral,assert_filter_cond)

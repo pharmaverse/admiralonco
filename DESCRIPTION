@@ -38,7 +38,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.2
 Depends: R (>= 3.5)
 Imports:
-    admiraltest,
+    admiral.test,
     admiral,
     dplyr,
     magrittr,
