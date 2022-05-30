@@ -114,7 +114,7 @@
 #'   the joined dataset is restricted to observations up to the first
 #'   observation where `first_cond` is fulfilled (the observation fulfilling the
 #'   condition is included). If for an observation of the input dataset the
-#'   condiition is not fulfilled, the observation is removed.
+#'   condition is not fulfilled, the observation is removed.
 #'
 #'   1. The joined dataset is grouped by the observations from the input dataset
 #'   and restricted to the observations fulfilling the condition specified by
