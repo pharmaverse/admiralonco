@@ -1,5 +1,7 @@
 #' Filter Confirmed Assessments
 #'
+#' @description
+#'
 #' The function filters observation using a condition taking subsequent
 #' observations into account. For example, it could select all observations with
 #' `AVALC == "Y"` and `AVALC == "Y"` for at least one subsequent observation.
@@ -7,6 +9,10 @@
 #' from both the current observation and the subsequent observations into
 #' account. The suffix ".join" is added to the variables from the subsequent
 #' observations.
+#'
+#' In the oncology setting, for example, we use such processing to check if a
+#' response value can be confirmed by a subsequent assessment. This is commonly
+#' used in endpoints such as best overall response.
 #'
 #' @param dataset Input dataset
 #'
@@ -26,6 +32,8 @@
 #'   "Y"` and `AVALC == "Y"` for at least one subsequent visit `join_vars =
 #'   vars(AVALC, AVISITN)` and `filter = AVALC == "Y" & AVALC.join == "Y" &
 #'   AVISITN < AVISITN.join` could be specified.
+#'
+#'   The `*.join` variables are not included in the output dataset.
 #'
 #' @param first_cond Condition for selecting range of data
 #'
@@ -58,6 +66,62 @@
 #'   *Default:* `"none"`
 #'
 #'   *Permitted Values:* `"none"`, `"warning"`, `"error"`
+#'
+#' @returns A subset of the observations of the input dataset. All variables of
+#'   the input dataset are included in the output dataset.
+#'
+#' @details
+#'
+#'   1. The input dataset is joined with itself by the variables specified for
+#'   `by_vars`. From the right hand side of the join only the variables
+#'   specified for `join_vars` are kept. The suffix ".join" is added to these
+#'   variables.
+#'
+#'       For example, for `by_vars = USUBJID`, `join_vars = vars(AVISITN, AVALC)` and input dataset
+#'       ```
+#'       # A tibble: 2 x 4
+#'       USUBJID AVISITN AVALC  AVAL
+#'       <chr>     <dbl> <chr> <dbl>
+#'       1             1 Y         1
+#'       1             2 N         0
+#'       ```
+#'       the joined dataset is
+#'       ```
+#'       A tibble: 4 x 6
+#'       USUBJID AVISITN AVALC  AVAL AVISITN.join AVALC.join
+#'       <chr>     <dbl> <chr> <dbl>        <dbl> <chr>
+#'       1             1 Y         1            1 Y
+#'       1             1 Y         1            2 N
+#'       1             2 N         0            1 Y
+#'       1             2 N         0            2 N
+#'       ```
+#'
+#'   1. The joined dataset is restricted to observations where the joined
+#'   variables are at or after the other variables with respect to `order`.
+#'
+#'       The dataset from the example in the previous step with `order =
+#'       vars(AVISITN)` is restricted to
+#'       ```
+#'       A tibble: 4 x 6
+#'       USUBJID AVISITN AVALC  AVAL AVISITN.join AVALC.join
+#'       <chr>     <dbl> <chr> <dbl>        <dbl> <chr>
+#'       1             1 Y         1            1 Y
+#'       1             1 Y         1            2 N
+#'       1             2 N         0            2 N
+#'       ```
+#'
+#'   1. If `first_cond` is specified, for each observation of the input dataset
+#'   the joined dataset is restricted to observations up to the first
+#'   observation where `first_cond` is fulfilled (the observation fulfilling the
+#'   condition is included). If for an observation of the input dataset the
+#'   condition is not fulfilled, the observation is removed.
+#'
+#'   1. The joined dataset is grouped by the observations from the input dataset
+#'   and restricted to the observations fulfilling the condition specified by
+#'   `filter`.
+#'
+#'   1. The first observation of each group is selected and the `*.join`
+#'   variables are dropped.
 #'
 #' @author Stefan Bundfuss
 #'
@@ -120,6 +184,45 @@
 #'   first_cond = AVALC.join == "CR",
 #'   filter = AVALC == "CR" & all(AVALC.join %in% c("CR", "NE")) &
 #'     count_vals(var = AVALC.join, val = "NE") <= 1
+#' )
+#'
+#' # select observations with AVALC == "PR", AVALC == "CR" or AVALC == "PR"
+#' # at a subsequent visit at least 20 days later, only "CR", "PR", or "NE"
+#' # in between, at most one "NE" in between, and "CR" is not followed by "PR"
+#' data <- tibble::tribble(
+#'   ~USUBJID, ~ADY, ~AVALC,
+#'   "1",         6, "PR",
+#'   "1",        12, "CR",
+#'   "1",        24, "NE",
+#'   "1",        32, "CR",
+#'   "1",        48, "PR",
+#'   "2",         3, "PR",
+#'   "2",        21, "CR",
+#'   "2",        33, "PR",
+#'   "3",        11, "PR",
+#'   "4",         7, "PR",
+#'   "4",        12, "NE",
+#'   "4",        24, "NE",
+#'   "4",        32, "PR",
+#'   "4",        55, "PR"
+#' )
+#'
+#' filter_confirmation(
+#'   data,
+#'   by_vars = vars(USUBJID),
+#'   join_vars = vars(AVALC, ADY),
+#'   order = vars(ADY),
+#'   first_cond = AVALC.join %in% c("CR", "PR") & ADY.join - ADY >= 20,
+#'   filter = AVALC == "PR" &
+#'     all(AVALC.join %in% c("CR", "PR", "NE")) &
+#'     count_vals(var = AVALC.join, val = "NE") <= 1 &
+#'     (
+#'       min_cond(
+#'         var = ADY.join,
+#'         cond = AVALC.join == "CR"
+#'       ) > max_cond(var = ADY.join, cond = AVALC.join == "PR") |
+#'         count_vals(var = AVALC.join, val = "CR") == 0
+#'     )
 #' )
 filter_confirmation <- function(dataset,
                                 by_vars,
