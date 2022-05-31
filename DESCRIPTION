@@ -62,5 +62,5 @@ Suggests:
     covr,
     DT
 Remotes:
-    pharmaverse/admiraltest@devel
+    pharmaverse/admiral.test@devel
 VignetteBuilder: knitr
