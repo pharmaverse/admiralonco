@@ -286,7 +286,8 @@ filter_confirmation <- function(dataset,
     data_joined <- filter_relative(
       data_joined,
       by_vars = vars(!!!by_vars, tmp_obs_nr_filter_confirmation),
-      condition = !!first_cond & tmp_obs_nr_filter_confirmation < tmp_obs_nr_filter_confirmation.join,
+      condition = !!first_cond &
+        tmp_obs_nr_filter_confirmation < tmp_obs_nr_filter_confirmation.join,
       order = vars(tmp_obs_nr_filter_confirmation.join),
       mode = "first",
       selection = "before",
