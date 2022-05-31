@@ -2,3 +2,4 @@
 ^\.Rproj\.user$
 ^.github$
 ^docs$
+^.lintr$
