@@ -69,10 +69,12 @@
 #'
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @export
+#' @name   derive_param_lasta
+#' @title  derive_param_lasta
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @author Stephen Gormley
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
-#' @keyword ADRS Last Disease Assesment
+#' @keywords ADRS
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @return The dataframe passed in the `dataset` argument with additonal columns
 #'         and/or rows as set in the `set_values_to` argument.
@@ -84,7 +86,7 @@ derive_param_lasta <- function(dataset,
                                filter_source   = PARAMCD == "OVR" & ANL01FL == "Y",
                                source_pd       = NULL,
                                source_datasets = list(adrs = adrs),
-                               subject_keys    = admiral::vars(USUBJID),
+                               subject_keys    = admiral::vars(STUDYID, USUBJID),
                                set_values_to) {
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -129,7 +131,7 @@ derive_param_lasta <- function(dataset,
     admiral::assert_s3_class(source_pd, "date_source")
     admiral::assert_data_frame(eval(rlang::parse_expr(source_pd$dataset_name)))
 
-    warning("USER WARNING: The following should be replaced by FILTER_PD .")
+    warning("USER WARNING: The following should be replaced by FILTER_PD.")
 
     pd_data <- eval(rlang::parse_expr(source_pd$dataset_name)) %>%
       admiral::filter_if(source_pd$filter) %>%

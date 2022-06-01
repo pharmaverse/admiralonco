@@ -3,6 +3,7 @@
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 library(magrittr)
+library(testthat)
 
 adsl_test <- tibble::tribble(
   ~USUBJID, ~TRTSDT,           ~EOSDT,
