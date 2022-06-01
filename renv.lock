@@ -134,6 +134,13 @@
       "Repository": "CRAN",
       "Hash": "56ae7e1987b340186a8a5a157c2ec358"
     },
+    "cachem": {
+      "Package": "cachem",
+      "Version": "1.0.6",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "648c5b3d71e6a37e3043617489a0a0e9"
+    },
     "callr": {
       "Package": "callr",
       "Version": "3.7.0",
