@@ -31,7 +31,7 @@
 #'
 #' @details
 #'
-#' 1. The input datasset (`dataset`) is restricted by `filter`
+#' 1. The input dataset (`dataset`) is restricted by `filter`.
 #'
 #' 1. For each subject the first PD date is derived as the first date
 #' (`source_pd$date`) in the source pd dataset

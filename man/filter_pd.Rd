@@ -46,7 +46,7 @@ regarding responses such as BOR.
 }
 \details{
 \enumerate{
-\item The input datasset (\code{dataset}) is restricted by \code{filter}
+\item The input dataset (\code{dataset}) is restricted by \code{filter}.
 \item For each subject the first PD date is derived as the first date
 (\code{source_pd$date}) in the source pd dataset
 (\code{source_datasets[[source_pd$dataset_name]]}) restricted by
