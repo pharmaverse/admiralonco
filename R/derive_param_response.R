@@ -1,7 +1,7 @@
-#' Add a Parameter Indicating If a Subject Had a Response
+#' Add a Parameter Indicating If a Subject Had a Response before Progressive
+#' Disease
 #'
-#' Add a new parameter indicating if a response has been observed (AVALC and
-#' AVAL).
+#' Add a new parameter indicating if a response has been observed.
 #' If a response has been observed, `AVALC` is set to "Y", `AVAL` to 1 and `ADT`
 #'  is set to the
 #' first date when a response has been observed.
@@ -16,7 +16,8 @@
 #'
 #'   + The variables specified for `subject_keys` are expected.
 #'   + For each observation of the specified dataset a new observation is added
-#'   to the input dataset.
+#'   to the input dataset. This is to capture those patients that may never have
+#'   had a tumor assessment.
 #'
 #' @param source_datasets Source dataset(s)
 #'
@@ -181,8 +182,7 @@
 #'   subject_keys = vars(STUDYID, USUBJID)
 #' ) %>%
 #'   arrange(USUBJID, PARAMCD, ADT)
-derive_param_response <- function(
-                                  dataset,
+derive_param_response <- function(dataset,
                                   dataset_adsl,
                                   filter_source,
                                   source_pd,
@@ -203,7 +203,7 @@ derive_param_response <- function(
       "The dataset names must be included in the list specified for the ",
       "`source_datasets` parameter.\n",
       "Following names were provided by `source_datasets`:\n",
-      enumerate(source_names, quote_fun = squote)
+      admiral:::enumerate(source_names, quote_fun = admiral:::squote)
     ))
   }
 
@@ -220,8 +220,7 @@ derive_param_response <- function(
       filter_if(source_pd$filter) %>%
       mutate(PDDT = ADT) %>%
       select(!!!subject_keys, PDDT)
-  }
-  else {
+  } else {
     for (i in seq_along(source_names)) {
       #---PD  datasets ----
       if (source_names[[i]] == source_pd$dataset_name) {
@@ -230,7 +229,7 @@ derive_param_response <- function(
           mutate(PDDT = ADT) %>%
           select(!!!subject_keys, PDDT)
       }
-     }
+    }
   }
 
   #---- Only records before PD ----
