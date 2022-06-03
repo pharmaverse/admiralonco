@@ -12,12 +12,13 @@ To provide a complementary (to `{admiral}`) toolbox that enables to develop onco
 
 * Build a toolbox of re-usable functions and utilities to create oncology-specific ADaM datasets in R in a modular manner.
 * All functions are created based upon the ADaM Implementation Guide and aim to facilitate the programming of ADaM dataset standards.
-* Initially the package will focus on the most common efficacy endpoint needs, but over time we will look to add extra areas such as:
-endpoints for targeted indications, baseline disease characteristics, common sensitivity analyses and questionnaires.
+* Initially the package will focus on the most common efficacy endpoint needs for solid tumor (using RECIST v1.1 response criteria),
+but over time we will look to add extra areas such as: endpoints for targeted indications, baseline disease characteristics, common
+sensitivity analyses and questionnaires.
 
 ## Expectations
 
- `{admiralonco}` is expected to complement `{admiral}` and provide functions to help with the creation of the efficacy endpoints required for oncology ADaMs.
+`{admiralonco}` is expected to complement `{admiral}` and provide functions to help with the creation of the efficacy endpoints required for oncology ADaMs.
 
 ## References and Documentation
 
