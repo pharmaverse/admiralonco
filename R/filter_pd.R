@@ -51,6 +51,7 @@
 #' @examples
 #'
 #' library(dplyr)
+#' library(lubridate)
 #' library(admiral)
 #' library(admiralonco)
 #'
@@ -67,16 +68,16 @@
 #'   "CDISCPILOT01", "01-701-1035", "OVR",    "SD",   "2016-04-25",
 #'   "CDISCPILOT01", "01-701-1035", "OVR",    "PR",   "2016-06-25",
 #'   "CDISCPILOT01", "01-701-1035", "BOR",    "PR",   "2016-06-25"
-#' ) %>% dplyr::mutate(
-#'   ADT = lubridate::as_date(ADT)
+#' ) %>% mutate(
+#'   ADT = as_date(ADT)
 #' )
 #'
 #' adevent <- tibble::tribble(
 #'   ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,
 #'   "CDISCPILOT01", "01-701-1015", "PD",     "Y",    "2016-02-22",
 #'   "CDISCPILOT01", "01-701-1034", "PD",     "Y",    "2016-04-25"
-#' ) %>% dplyr::mutate(
-#'   ADT = lubridate::as_date(ADT)
+#' ) %>% mutate(
+#'   ADT = as_date(ADT)
 #' )
 #'
 #' filter_pd(
@@ -105,8 +106,8 @@
 #'   "CDISCPILOT01", "01-701-1035", "BOR",    "PR",   "2016-06-25",
 #'   "CDISCPILOT01", "01-701-1015", "PD",     "Y",    "2016-02-22",
 #'   "CDISCPILOT01", "01-701-1034", "PD",     "Y",    "2016-04-25"
-#' ) %>% dplyr::mutate(
-#'   ADT = lubridate::as_date(ADT)
+#' ) %>% mutate(
+#'   ADT = as_date(ADT)
 #' )
 #'
 #' filter_pd(
@@ -133,8 +134,8 @@
 #'   "CDISCPILOT01", "01-701-1035", "OVR",    "SD",   "2016-04-25",
 #'   "CDISCPILOT01", "01-701-1035", "OVR",    "PR",   "2016-06-25",
 #'   "CDISCPILOT01", "01-701-1035", "BOR",    "PR",   "2016-06-25"
-#' ) %>% dplyr::mutate(
-#'   ADT = lubridate::as_date(ADT)
+#' ) %>% mutate(
+#'   ADT = as_date(ADT)
 #' )
 #'
 #' filter_pd(
@@ -171,7 +172,7 @@ filter_pd <- function(dataset,
         "The dataset name specified for `source_pd` must be included in the list\n",
         " specified for the `source_datasets` parameter.\n",
         "Following names were provided by `source_datasets`:\n",
-        enumerate(source_names, quote_fun = squote)
+        admiral:::enumerate(source_names, quote_fun = admiral:::squote)
       )
     )
   }
@@ -184,9 +185,9 @@ filter_pd <- function(dataset,
       filter_add = !!source_pd$filter,
       by_vars = subject_keys,
       order = vars(!!source_pd$date),
-      new_vars = vars(temp_ADT = !!source_pd$date),
+      new_vars = vars(temp_date = !!source_pd$date),
       mode = "first"
     ) %>%
-    filter(is.na(temp_ADT) | ADT <= temp_ADT) %>%
-    select(-temp_ADT)
+    filter(is.na(temp_date) | ADT <= temp_date) %>%
+    select(-temp_date)
 }

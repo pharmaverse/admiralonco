@@ -59,6 +59,7 @@ records are included.
 \examples{
 
 library(dplyr)
+library(lubridate)
 library(admiral)
 library(admiralonco)
 
@@ -75,16 +76,16 @@ adrs <- tibble::tribble(
   "CDISCPILOT01", "01-701-1035", "OVR",    "SD",   "2016-04-25",
   "CDISCPILOT01", "01-701-1035", "OVR",    "PR",   "2016-06-25",
   "CDISCPILOT01", "01-701-1035", "BOR",    "PR",   "2016-06-25"
-) \%>\% dplyr::mutate(
-  ADT = lubridate::as_date(ADT)
+) \%>\% mutate(
+  ADT = as_date(ADT)
 )
 
 adevent <- tibble::tribble(
   ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,
   "CDISCPILOT01", "01-701-1015", "PD",     "Y",    "2016-02-22",
   "CDISCPILOT01", "01-701-1034", "PD",     "Y",    "2016-04-25"
-) \%>\% dplyr::mutate(
-  ADT = lubridate::as_date(ADT)
+) \%>\% mutate(
+  ADT = as_date(ADT)
 )
 
 filter_pd(
@@ -113,8 +114,8 @@ adrs <- tibble::tribble(
   "CDISCPILOT01", "01-701-1035", "BOR",    "PR",   "2016-06-25",
   "CDISCPILOT01", "01-701-1015", "PD",     "Y",    "2016-02-22",
   "CDISCPILOT01", "01-701-1034", "PD",     "Y",    "2016-04-25"
-) \%>\% dplyr::mutate(
-  ADT = lubridate::as_date(ADT)
+) \%>\% mutate(
+  ADT = as_date(ADT)
 )
 
 filter_pd(
@@ -141,8 +142,8 @@ adrs <- tibble::tribble(
   "CDISCPILOT01", "01-701-1035", "OVR",    "SD",   "2016-04-25",
   "CDISCPILOT01", "01-701-1035", "OVR",    "PR",   "2016-06-25",
   "CDISCPILOT01", "01-701-1035", "BOR",    "PR",   "2016-06-25"
-) \%>\% dplyr::mutate(
-  ADT = lubridate::as_date(ADT)
+) \%>\% mutate(
+  ADT = as_date(ADT)
 )
 
 filter_pd(
