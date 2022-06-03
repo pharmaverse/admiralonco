@@ -181,8 +181,7 @@
 #'   subject_keys = vars(STUDYID, USUBJID)
 #' ) %>%
 #'   arrange(USUBJID, PARAMCD, ADT)
-derive_param_response <- function(
-                                  dataset,
+derive_param_response <- function(dataset,
                                   dataset_adsl,
                                   filter_source,
                                   source_pd,
@@ -220,8 +219,7 @@ derive_param_response <- function(
       filter_if(source_pd$filter) %>%
       mutate(PDDT = ADT) %>%
       select(!!!subject_keys, PDDT)
-  }
-  else {
+  } else {
     for (i in seq_along(source_names)) {
       #---PD  datasets ----
       if (source_names[[i]] == source_pd$dataset_name) {
@@ -230,7 +228,7 @@ derive_param_response <- function(
           mutate(PDDT = ADT) %>%
           select(!!!subject_keys, PDDT)
       }
-     }
+    }
   }
 
   #---- Only records before PD ----
