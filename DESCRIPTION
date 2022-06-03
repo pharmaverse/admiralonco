@@ -35,7 +35,7 @@ License: Apache License (>= 2)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Depends: R (>= 3.5)
 Imports:
     admiral.test,
@@ -60,5 +60,5 @@ Suggests:
     covr,
     DT
 Remotes:
-    pharmaverse/admiraltest@devel
+    pharmaverse/admiral.test@devel
 VignetteBuilder: knitr
