@@ -1,99 +1,192 @@
-#' Filter a Dataset to Only Include the Source Parameter Records up to and
+#' Filter up to First PD Date
+#'
+#' Filter a dataset to only include the source parameter records up to and
 #' including the first PD. These records are passed to downstream derivations
 #' regarding responses such as BOR.
 #'
-#' @param dataset An input BDS style data set is expected
+#' @param dataset Input dataset
 #'
-#' @param filter_source A filter condition is expected, upon which the ADRS
-#'        data set will be filtered to capture the PARAM containing the PD
-#'        response
+#'   The variables `ADT` and those specified by `subject_keys` are expected.
 #'
-#' @param source_pd The variable name which contains the dates of the responses
-#'        A date/datetime object is expected.
+#' @param filter Filter condition for restricting the input dataset
+#'
+#' @param source_pd A `admiral::date_source()` object providing the date of first PD
+#'
+#'   For each subject the first date (`date` field) in the provided dataset
+#'   (`dataset_name` field) restricted by `filter` field is considered as first
+#'   PD date.
 #'
 #' @param source_datasets A named list of data sets is expected.
-#'        Default is ADRS.
 #'
-#' @return A subset data set of ADRS of records that only include
-#'         the source_param records, keeping only those occurring
-#'        up to and including the first PD,
-#'         where the date comes from the ADT of
-#'         the source_param/source_pd records.
+#'   The name must match the name provided by the `dataset_name` field of the
+#'   `admiral::date_source()` object specified for `source_pd`.
 #'
-#' @author Teckla Akinyi
+#' @param subject_keys Variables to uniquely identify a subject
+#'
+#'   A list of symbols created using `vars()` is expected.
+#'
+#'   *Default:* `vars(STUDYID, USUBJID)`
+#'
+#' @return A subset of the input dataset
+#'
+#' @details
+#'
+#' 1. The input datasset (`dataset`) is restricted by `filter`
+#'
+#' 1. For each subject the first PD date is derived as the first date
+#' (`source_pd$date`) in the source pd dataset
+#' (`source_datasets[[source_pd$dataset_name]]`) restricted by
+#' `source_pd$filter`.
+#'
+#' 1. The restricted input dataset is restricted to records up to first PD date.
+#' Records at first PD date are included. For subject without first PD date all
+#' records are included.
+#'
+#' @author Teckla Akinyi, Stefan Bundfuss
 #'
 #' @export
 #'
-#' @seealso [derive_vars_merged()], [filter_extreme()], [filter_if()]
-#'
-#' @keywords user_utility ADRS PD response
+#' @keywords user_utility adrs
 #'
 #' @examples
-#'adrs <- tibble::tribble(
-#'~STUDYID, ~USUBJID, ~PARAMCD, ~AVALC, ~ADT,
-#'"CDISCPILOT01", "01-701-1015", "OVR", "CR", "2016-01-25",
-#'"CDISCPILOT01", "01-701-1015", "OVR", "PD", "2016-01-25",
-#'"CDISCPILOT01", "01-701-1015", "BOR", "PD", "2016-02-21",
-#'"CDISCPILOT01", "01-701-1034", "OVR", "SD", "2015-07-12",
-#'"CDISCPILOT01", "01-701-1034", "OVR", "PD", "2016-04-25",
-#'"CDISCPILOT01", "01-701-1034", "OVR", "PD", "2016-06-25",
-#'"CDISCPILOT01", "01-701-1034", "BOR", "PD", "2016-05-25"
-#') %>% dplyr::mutate(
-#'  ADT = lubridate::as_date(ADT))
 #'
-#'adlb <- tibble::tribble(
-#'  ~STUDYID, ~USUBJID, ~ADT,
-#'  "CDISCPILOT01", "01-701-1015", "2014-02-13",
-#'  "CDISCPILOT01", "01-701-1015", "2015-05-21",
-#'  "CDISCPILOT01", "01-701-1015", "2015-12-21",
-#'  "CDISCPILOT01", "01-701-1015", "2016-07-08",
-#'  "CDISCPILOT01", "01-701-1015", "2016-11-25",
-#'  "CDISCPILOT01", "01-701-1015", "2017-02-21",
-#'  "CDISCPILOT01", "01-701-1034", "2015-04-03",
-#'  "CDISCPILOT01", "01-701-1034", "2016-01-05",
-#'  "CDISCPILOT01", "01-701-1034", "2016-04-02",
-#'  "CDISCPILOT01", "01-701-1034", "2016-04-25",
-#'  "CDISCPILOT01", "01-701-1034", "2016-06-25",
-#'  "CDISCPILOT01", "01-701-1034", "2016-05-25"
-#') %>% dplyr::mutate(
-#'  ADT = lubridate::as_date(ADT))
+#' library(dplyr)
+#' library(admiral)
+#' library(admiralonco)
 #'
-#'  filter_pd(dataset = adlb,
-#'            filter_source = PARAMCD ==  "OVR" & AVALC == "PD",
-#'            source_pd = ADT,
-#'            source_dataset = adrs)
+#' # Filter OVR records up to first PD, first PD date provided in separate dataset (adevent)
+#' adrs <- tibble::tribble(
+#'   ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,
+#'   "CDISCPILOT01", "01-701-1015", "OVR",    "CR",   "2016-01-25",
+#'   "CDISCPILOT01", "01-701-1015", "OVR",    "PD",   "2016-02-22",
+#'   "CDISCPILOT01", "01-701-1015", "BOR",    "CR",   "2016-01-25",
+#'   "CDISCPILOT01", "01-701-1034", "OVR",    "SD",   "2015-12-07",
+#'   "CDISCPILOT01", "01-701-1034", "OVR",    "PD",   "2016-04-25",
+#'   "CDISCPILOT01", "01-701-1034", "OVR",    "PD",   "2016-06-25",
+#'   "CDISCPILOT01", "01-701-1034", "BOR",    "SD",   "2015-12-07",
+#'   "CDISCPILOT01", "01-701-1035", "OVR",    "SD",   "2016-04-25",
+#'   "CDISCPILOT01", "01-701-1035", "OVR",    "PR",   "2016-06-25",
+#'   "CDISCPILOT01", "01-701-1035", "BOR",    "PR",   "2016-06-25"
+#' ) %>% dplyr::mutate(
+#'   ADT = lubridate::as_date(ADT)
+#' )
+#'
+#' adevent <- tibble::tribble(
+#'   ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,
+#'   "CDISCPILOT01", "01-701-1015", "PD",     "Y",    "2016-02-22",
+#'   "CDISCPILOT01", "01-701-1034", "PD",     "Y",    "2016-04-25"
+#' ) %>% dplyr::mutate(
+#'   ADT = lubridate::as_date(ADT)
+#' )
+#'
+#' filter_pd(
+#'   dataset = adrs,
+#'   filter = PARAMCD == "OVR",
+#'   source_pd = date_source(
+#'     dataset_name = "adevent",
+#'     date = ADT,
+#'     filter = PARAMCD == "PD",
+#'   ),
+#'   source_datasets = list(adevent = adevent)
+#' )
+#'
+#' # Filter OVR records up to first PD, first PD date provided in input dataset (PD parameter)
+#' adrs <- tibble::tribble(
+#'   ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,
+#'   "CDISCPILOT01", "01-701-1015", "OVR",    "CR",   "2016-01-25",
+#'   "CDISCPILOT01", "01-701-1015", "OVR",    "PD",   "2016-02-22",
+#'   "CDISCPILOT01", "01-701-1015", "BOR",    "CR",   "2016-01-25",
+#'   "CDISCPILOT01", "01-701-1034", "OVR",    "SD",   "2015-12-07",
+#'   "CDISCPILOT01", "01-701-1034", "OVR",    "PD",   "2016-04-25",
+#'   "CDISCPILOT01", "01-701-1034", "OVR",    "PD",   "2016-06-25",
+#'   "CDISCPILOT01", "01-701-1034", "BOR",    "SD",   "2015-12-07",
+#'   "CDISCPILOT01", "01-701-1035", "OVR",    "SD",   "2016-04-25",
+#'   "CDISCPILOT01", "01-701-1035", "OVR",    "PR",   "2016-06-25",
+#'   "CDISCPILOT01", "01-701-1035", "BOR",    "PR",   "2016-06-25",
+#'   "CDISCPILOT01", "01-701-1015", "PD",     "Y",    "2016-02-22",
+#'   "CDISCPILOT01", "01-701-1034", "PD",     "Y",    "2016-04-25"
+#' ) %>% dplyr::mutate(
+#'   ADT = lubridate::as_date(ADT)
+#' )
+#'
+#' filter_pd(
+#'   dataset = adrs,
+#'   filter = PARAMCD == "OVR",
+#'   source_pd = date_source(
+#'     dataset_name = "adrs",
+#'     date = ADT,
+#'     filter = PARAMCD == "PD",
+#'   ),
+#'   source_datasets = list(adrs = adrs)
+#' )
+#'
+#' # Filter OVR records up to first PD, first PD date derived from OVR records
+#' adrs <- tibble::tribble(
+#'   ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,
+#'   "CDISCPILOT01", "01-701-1015", "OVR",    "CR",   "2016-01-25",
+#'   "CDISCPILOT01", "01-701-1015", "OVR",    "PD",   "2016-02-22",
+#'   "CDISCPILOT01", "01-701-1015", "BOR",    "CR",   "2016-01-25",
+#'   "CDISCPILOT01", "01-701-1034", "OVR",    "SD",   "2015-12-07",
+#'   "CDISCPILOT01", "01-701-1034", "OVR",    "PD",   "2016-04-25",
+#'   "CDISCPILOT01", "01-701-1034", "OVR",    "PD",   "2016-06-25",
+#'   "CDISCPILOT01", "01-701-1034", "BOR",    "SD",   "2015-12-07",
+#'   "CDISCPILOT01", "01-701-1035", "OVR",    "SD",   "2016-04-25",
+#'   "CDISCPILOT01", "01-701-1035", "OVR",    "PR",   "2016-06-25",
+#'   "CDISCPILOT01", "01-701-1035", "BOR",    "PR",   "2016-06-25"
+#' ) %>% dplyr::mutate(
+#'   ADT = lubridate::as_date(ADT)
+#' )
+#'
+#' filter_pd(
+#'   dataset = adrs,
+#'   filter = PARAMCD == "OVR",
+#'   source_pd = date_source(
+#'     dataset_name = "adrs",
+#'     date = ADT,
+#'     filter = PARAMCD == "OVR" & AVALC == "PD",
+#'   ),
+#'   source_datasets = list(adrs = adrs)
+#' )
 filter_pd <- function(dataset,
-                      filter_source = PARAMCD == "OVR" & AVALC == "PD",
-                      source_pd = ADT,
-                      source_dataset = list(adrs = adrs)) {
-
+                      filter,
+                      source_pd,
+                      source_datasets,
+                      subject_keys = vars(STUDYID, USUBJID)) {
+  # Check input arguments
+  assert_vars(subject_keys)
   assert_data_frame(dataset,
-                    required_vars = vars(STUDYID, USUBJID, ADT),
-                    optional = FALSE)
-  source_pd <- assert_symbol(enquo(source_pd))
-  assert_data_frame(source_dataset,
-                    required_vars = quo_c(source_pd,
-                                          vars(STUDYID, USUBJID, AVALC)),
-                                          optional = FALSE)
-  filter_source <- assert_filter_cond(enquo(filter_source),
-                                      optional = FALSE)
+    required_vars = vars(!!!subject_keys, ADT),
+    optional = FALSE
+  )
+  filter <- assert_filter_cond(
+    enquo(filter),
+    optional = FALSE
+  )
+  assert_s3_class(source_pd, "date_source")
+  assert_list_of(source_datasets, "data.frame")
+  source_names <- names(source_datasets)
+  if (!source_pd$dataset_name %in% source_names) {
+    abort(
+      paste0(
+        "The dataset name specified for `source_pd` must be included in the list\n",
+        " specified for the `source_datasets` parameter.\n",
+        "Following names were provided by `source_datasets`:\n",
+        enumerate(source_names, quote_fun = squote)
+      )
+    )
+  }
 
-  #filter source dataset and choose first PD
-  #based on condition specified by user
-  source_data <- filter_if(source_dataset,
-                           filter_source)
-  source_data <- filter_extreme(source_data,
-                                by_vars = vars(STUDYID, USUBJID),
-                                order =  vars(!!source_pd),
-                                mode = "FIRST")
-
-  #merge filtered source data and compare dates
-  #to keep only those up to source date
-  derive_vars_merged(dataset = dataset,
-                     dataset_add = source_data,
-                     by_vars = vars(STUDYID, USUBJID),
-                     order = vars(!!source_pd),
-                     new_vars = vars(temp_ADT = !!source_pd)) %>%
-                     filter(ADT <= temp_ADT) %>%
-                     select(-temp_ADT)
+  # Merge filtered source data and compare dates to keep only those up to source date
+  dataset %>%
+    filter_if(filter) %>%
+    derive_vars_merged(
+      dataset_add = source_datasets[[source_pd$dataset_name]],
+      filter_add = !!source_pd$filter,
+      by_vars = subject_keys,
+      order = vars(!!source_pd$date),
+      new_vars = vars(temp_ADT = !!source_pd$date),
+      mode = "first"
+    ) %>%
+    filter(is.na(temp_ADT) | ADT <= temp_ADT) %>%
+    select(-temp_ADT)
 }
