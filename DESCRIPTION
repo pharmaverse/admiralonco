@@ -40,7 +40,9 @@ Depends: R (>= 3.5)
 Imports:
     admiral.test,
     admiral,
-    dplyr
+    dplyr,
+    magrittr,
+    rlang
 Suggests:
     devtools,
     diffdf,
