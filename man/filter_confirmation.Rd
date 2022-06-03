@@ -88,31 +88,37 @@ used in endpoints such as best overall response.
 specified for \code{join_vars} are kept. The suffix ".join" is added to these
 variables.
 
-For example, for \code{by_vars = USUBJID}, \code{join_vars = vars(AVISITN, AVALC)} and input dataset\preformatted{# A tibble: 2 x 4
+For example, for \code{by_vars = USUBJID}, \code{join_vars = vars(AVISITN, AVALC)} and input dataset
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{# A tibble: 2 x 4
 USUBJID AVISITN AVALC  AVAL
 <chr>     <dbl> <chr> <dbl>
 1             1 Y         1
 1             2 N         0
-}
+}\if{html}{\out{</div>}}
 
-the joined dataset is\preformatted{A tibble: 4 x 6
+the joined dataset is
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{A tibble: 4 x 6
 USUBJID AVISITN AVALC  AVAL AVISITN.join AVALC.join
 <chr>     <dbl> <chr> <dbl>        <dbl> <chr>
 1             1 Y         1            1 Y
 1             1 Y         1            2 N
 1             2 N         0            1 Y
 1             2 N         0            2 N
-}
+}\if{html}{\out{</div>}}
 \item The joined dataset is restricted to observations where the joined
 variables are at or after the other variables with respect to \code{order}.
 
-The dataset from the example in the previous step with \code{order = vars(AVISITN)} is restricted to\preformatted{A tibble: 4 x 6
+The dataset from the example in the previous step with \code{order = vars(AVISITN)} is restricted to
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{A tibble: 4 x 6
 USUBJID AVISITN AVALC  AVAL AVISITN.join AVALC.join
 <chr>     <dbl> <chr> <dbl>        <dbl> <chr>
 1             1 Y         1            1 Y
 1             1 Y         1            2 N
 1             2 N         0            2 N
-}
+}\if{html}{\out{</div>}}
 \item If \code{first_cond} is specified, for each observation of the input dataset
 the joined dataset is restricted to observations up to the first
 observation where \code{first_cond} is fulfilled (the observation fulfilling the

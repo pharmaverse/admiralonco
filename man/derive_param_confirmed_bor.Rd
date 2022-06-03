@@ -54,12 +54,14 @@ for details)
 A named list of datasets is expected. It links the \code{dataset_name} from
 \code{source_pd} with an existing dataset.
 
-For example if \code{source_pd = pd_date} with\preformatted{pd_date <- date_source(
+For example if \code{source_pd = pd_date} with
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{pd_date <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == PD
 )
-}
+}\if{html}{\out{</div>}}
 
 and the actual response dataset in the script is \code{myadrs}, \code{source_datasets = list(adrs = myadrs)} should be specified.
 
