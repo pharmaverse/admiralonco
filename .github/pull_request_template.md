@@ -1,4 +1,5 @@
-Closes # .
+Please add "Closes #<issue number>" to the title of the pull request. Then the
+issue is closed automatically once it is merged to `main`.
 
 Thank you for your Pull Request! We have developed this task checklist from the [Development Process Guide](https://pharmaverse.github.io/admiral/articles/development_process.html) to help with the final steps of the process. Completing the below tasks helps to ensure our reviewers can maximize their time on your code as well as making sure the admiral codebase remains robust and consistent.   
 
@@ -17,3 +18,7 @@ Please check off each taskbox as an acknowledgment that you completed the task o
 - [ ] Link the issue so that it closes after successful merging. 
 - [ ] Address all merge conflicts and resolve appropriately 
 - [ ] Pat yourself on the back for a job well done!  Much love to your accomplishment!
+
+The following line requests to update the man pages by the "Man Pages" workflow.
+
+/roxygenize
