@@ -1,7 +1,7 @@
 globalVariables(c(
+  "ADT",
   "STUDYID",
   "USUBJID",
-  "ADT",
-  "PDDT",
+  "temp_date",
   "AVALC"
 ))
