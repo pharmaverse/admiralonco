@@ -17,7 +17,7 @@ data <- tibble::tribble(
 )
 
 # filter_confirmation ----
-## filter_confirmation Test 1: filter without first_cond
+## filter_confirmation Test 1: filter without first_cond ----
 test_that("filter_confirmation Test 1: filter without first_cond", {
   actual <-
     filter_confirmation(
@@ -42,8 +42,8 @@ test_that("filter_confirmation Test 1: filter without first_cond", {
   )
 })
 
-## filter_confirmation Test 1:
-test_that("filter_confirmation Test 1: filter with first_cond", {
+## filter_confirmation Test 2: filter with first_cond ----
+test_that("filter_confirmation Test 2: filter with first_cond", {
   actual <-
     filter_confirmation(
       data,
@@ -67,7 +67,7 @@ test_that("filter_confirmation Test 1: filter with first_cond", {
   )
 })
 
-## filter_confirmation Test 3: filter with first_cond and summary function
+## filter_confirmation Test 3: filter with first_cond and summary function ----
 test_that("filter_confirmation Test 3: filter with first_cond and summary function", {
   actual <-
     filter_confirmation(
