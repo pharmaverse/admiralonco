@@ -374,9 +374,15 @@ derive_param_bor <- function(dataset,
     dplyr::filter(!!enquo(filter_source))
   
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # reference_date: Filter using reference_date argument ----
-  # This is used to filter out records from dataset that are less than
-  # e.g. ADSL.TRTSDT
+  # Create the response dataframes ----
+  #
+  # Three: 
+  #  1.  ADT is after the reference date plus a window
+  #  2.  ADT is before the reference date plus a window
+  #      but subject does have a subsequent read in after_ref_data.
+  #  3.  ADT is before the reference date plus a window
+  #      but subject does not have a subsequent read in after_ref_data.
+  #      (this is NE)
   #
   # Requirement: BOR is set to 'NE', in the case where the subject has only 
   # AVALC = 'SD' or 'NON-CR/NON-PD' less than xxx days after the reference date 
@@ -385,7 +391,14 @@ derive_param_bor <- function(dataset,
   
   # data where ADT >= reference_date + days(ref_start_window)
   after_ref_data <- dataset_filter_01 %>% 
-    dplyr::filter(ADT >= !!reference_date + lubridate::days(ref_start_window)) %>%
+    dplyr::filter(ADT >= !!reference_date + lubridate::days(ref_start_window)) 
+  
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Data frame 1: bor_data_01, ADT is after the reference date plus a window
+  #               assign sort order to select best (i.e. lowest) later
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+  bor_data_01 <- after_ref_data %>%
     dplyr::mutate(tmp_order = dplyr::case_when(AVALC %in% c("CR") ~ 1,
                                                AVALC %in% c("PR") ~ 2,
                                                AVALC %in% c("SD") ~ 3,
@@ -397,17 +410,21 @@ derive_param_bor <- function(dataset,
     dplyr::select(!!!subject_keys, AVALC, tmp_order, ADT, tmp_record_after_reference)
   
   # data where ADT < reference_date + days(ref_start_window)
-  before_ref_data_01 <- dataset_filter_01 %>% 
+  before_ref_data <- dataset_filter_01 %>% 
     dplyr::filter(ADT < !!reference_date + lubridate::days(ref_start_window)) %>%
     dplyr::mutate(tmp_record_after_reference = FALSE) %>%
     dplyr::select(!!!subject_keys, AVALC, ADT, tmp_record_after_reference)
   
- # after_ref_data <- after_ref_data[c(-14),]
+  # after_ref_data <- after_ref_data[c(-14),]
   
-  # join before and after, only create temporder for those with a subqequent record
-  before_ref_data_02 <- after_ref_data %>% 
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Data frame 2: bor_data_02, ADT is before the reference date plus a window
+  #               but subject does have a subsequent read in after_ref_data.
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  
+  bor_data_02 <- after_ref_data %>% 
     dplyr::distinct(!!!subject_keys) %>% 
-    dplyr::left_join(before_ref_data_01)%>%
+    dplyr::left_join(before_ref_data)%>%
     dplyr::mutate(tmp_order = dplyr::case_when(AVALC %in% c("CR") ~ 1,
                                                AVALC %in% c("PR") ~ 2,
                                                AVALC %in% c("SD") ~ 3,
@@ -416,8 +433,14 @@ derive_param_bor <- function(dataset,
                                                AVALC %in% c("NE") ~ 6,
                                                is.null(AVALC) ~ 7))
   
-  # ne_data
-  ne_data <- before_ref_data_01  %>% 
+  
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Data frame 3: bor_data_03, ADT is before the reference date plus a window
+  #               but subject does not have a subsequent read in after_ref_data.
+  #               i.e. NE, tmp_order 6.
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  
+  bor_data_03 <- before_ref_data_01  %>% 
     dplyr::distinct(!!!subject_keys) %>% 
     dplyr::anti_join(after_ref_data) %>%
     dplyr::mutate(tmp_order = 6)
@@ -426,10 +449,9 @@ derive_param_bor <- function(dataset,
   # Bind three types of dataframes and select lowest value as BOR
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  param_bor <- dplyr::bind_rows(after_ref_data, 
-                                before_ref_data_02, 
-                                non_data, 
-                                ne_data) %>%
+  param_bor <- dplyr::bind_rows(bor_data_01, 
+                                bor_data_02, 
+                                bor_data_03) %>%
     admiral::filter_extreme(by_vars = subject_keys,
                             order   = vars(tmp_order, ADT),
                             mode    = "first") %>%
