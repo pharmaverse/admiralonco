@@ -1,10 +1,11 @@
 #' @keywords internal
 #' @importFrom admiral assert_character_scalar assert_character_vector
-#'   assert_data_frame assert_filter_cond assert_list_of assert_function assert_integer_scalar
-#'   assert_list_of assert_logical_scalar assert_order_vars
-#'   assert_param_does_not_exist assert_s3_class assert_symbol assert_vars
-#'   assert_varval_list derive_var_obs_number derive_vars_merged expect_dfs_equal filter_extreme filter_if
-#'   filter_relative vars2chr
+#'   assert_data_frame assert_filter_cond assert_list_of assert_function
+#'   assert_integer_scalar assert_list_of assert_logical_scalar
+#'   assert_order_vars assert_param_does_not_exist assert_s3_class assert_symbol
+#'   assert_vars assert_varval_list derive_var_obs_number derive_vars_merged
+#'   enumerate expect_dfs_equal extract_vars filter_extreme filter_if
+#'   filter_relative quo_c squote vars2chr
 #' @importFrom dplyr bind_rows case_when filter group_by if_else left_join
 #'   mutate select slice vars ungroup
 #' @importFrom lubridate days
