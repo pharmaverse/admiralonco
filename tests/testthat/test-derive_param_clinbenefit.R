@@ -6,10 +6,11 @@ adsl <- tibble::tribble(
   "03", "2021-01-09", "2021-02-24",
   "04", "2021-04-21", "2021-09-15"
 ) %>%
-  mutate(STUDYID = "AB42",
-         TRTSDT = lubridate::as_date(TRTSDT),
-         EOSDT = lubridate::as_date(EOSDT),
-         )
+  mutate(
+    STUDYID = "AB42",
+    TRTSDT = lubridate::as_date(TRTSDT),
+    EOSDT = lubridate::as_date(EOSDT),
+  )
 
 adrs <- tibble::tribble(
   ~USUBJID, ~PARAMCD, ~AVALC, ~ADT,
@@ -32,8 +33,10 @@ adrs <- tibble::tribble(
   "04", "OVR", "NE", "2021-07-24",
   "04", "OVR", "ND", "2021-09-30",
 ) %>%
-  mutate(STUDYID = "AB42",
-         ADT = lubridate::as_date(ADT))
+  mutate(
+    STUDYID = "AB42",
+    ADT = lubridate::as_date(ADT)
+  )
 
 pd <- admiral::date_source(
   dataset_name = "adrs",
@@ -55,8 +58,10 @@ test_that("Clinical benefit rate parameter is derived correctly", {
     "03", "CBR", "N", NA,
     "04", "CBR", "N", NA
   ) %>%
-    mutate(STUDYID = "AB42",
-           ADT = lubridate::as_date(ADT))
+    mutate(
+      STUDYID = "AB42",
+      ADT = lubridate::as_date(ADT)
+    )
 
   expected_output <- bind_rows(adrs, input_cbr)
 
