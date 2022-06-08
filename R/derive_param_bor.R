@@ -71,6 +71,8 @@
 #'
 #'   *Permitted Values:* a non-negative numeric scalar
 #'
+#'   *Default:* 0
+#'
 #' @param missing_as_ne Consider no assessments as `"NE"`?
 #'
 #'   If the argument is set to `TRUE`, the response is set to `"NE"` for
@@ -301,33 +303,24 @@
 derive_param_bor <- function(dataset,
                              dataset_adsl,
                              filter_source,
-                             source_pd     = NULL,
-                             source_datasets,
+                             source_pd        = NULL,
+                             source_datasets  = NULL,
                              reference_date,
-                             ref_start_window,
-                             missing_as_ne = FALSE,
-                             aval_fun      = admiralonco::aval_resp(),
+                             ref_start_window = 0,
+                             aval_fun         = admiralonco::aval_resp(),
                              set_values_to,
-                             subject_keys  = admiral::vars(STUDYID, USUBJID)) {
+                             subject_keys     = admiral::vars(STUDYID, USUBJID)) {
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Assert statements ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
-  filter_source  <- admiral::assert_filter_cond(enquo(filter_source))
-  reference_date <- admiral::assert_symbol(enquo(reference_date))
-  
-  admiral::assert_s3_class(arg      = source_pd, 
-                           class    = "date_source", 
-                           optional = TRUE)
-  
-  admiral::assert_list_of(arg   = source_datasets, 
-                          class = "data.frame")
-  
-  admiral::assert_integer_scalar(ref_start_window, 
-                                 subset = "non-negative")
-  
-  admiral::assert_logical_scalar(arg = missing_as_ne)
+  filter_source  <- admiral::assert_filter_cond(arg = enquo(filter_source))
+  reference_date <- admiral::assert_symbol(arg = enquo(reference_date))
+
+  admiral::assert_integer_scalar(arg      = ref_start_window, 
+                                 subset   = "non-negative",
+                                 optional = TRUE)
   
   admiral::assert_function(arg = aval_fun)
   
@@ -336,7 +329,7 @@ derive_param_bor <- function(dataset,
   
   admiral::assert_vars(arg = subject_keys)
   
-  admiral::assert_data_frame(arg           =dataset,
+  admiral::assert_data_frame(arg           = dataset,
                              required_vars = admiral:::quo_c(subject_keys, 
                                                              reference_date, 
                                                              admiral::vars(PARAMCD, ADT, AVALC)))
@@ -344,58 +337,75 @@ derive_param_bor <- function(dataset,
   admiral::assert_data_frame(arg           = dataset_adsl, 
                              required_vars = subject_keys)
   
-  if (!is.null(dataset)) {
-    admiral::assert_param_does_not_exist(dataset = dataset, 
-                                         param   = rlang::quo_get_expr(set_values_to$PARAMCD))
-  } else { 
-    stop("This is required, check what ERROR message to add.")
-  }
+
+  admiral::assert_param_does_not_exist(dataset = dataset, 
+                                       param   = rlang::quo_get_expr(set_values_to$PARAMCD))
+ 
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  # filter_pd and filter_source: Filter source dataset using filter_source----
+  # argument and also filter data after progressive disease with filter_pd
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
-  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # filter_source: Filter using filter_source argument ----
-  # This would also be used to filter out records from dataset that are greater
-  # than e.g. ADSL.TRTSDT
-  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  if (!is.null(source_pd)) {
     
-  # dataset <<- dataset 
-  # dataset_adsl <<- dataset_adsl 
-  # filter_source <<- filter_source 
-  # source_pd <<- source_pd 
-  # source_datasets <<- source_datasets
-  # reference_date <<- reference_date 
-  # ref_start_window <<- ref_start_window
-  # missing_as_ne <<- missing_as_ne 
-  # aval_fun <<- aval_fun 
-  # set_values_to <<- set_values_to
-  # subject_keys <<- subject_keys 
-  # stop("yep good start")
-  
-  dataset_filter_01 <- dataset %>%
-    dplyr::filter(!!enquo(filter_source))
+    admiral::assert_s3_class(arg   = source_pd, 
+                             class = "date_source")
+    
+    admiral::assert_data_frame(arg = eval(rlang::parse_expr(source_pd$dataset_name)))
+    
+    dataset_filter <- dataset %>%
+      filter_pd(filter          = !!enquo(filter_source),
+                source_pd       = source_pd,
+                source_datasets = source_datasets,
+                subject_keys    = admiral::vars(STUDYID, USUBJID))
+    
+  } else {
+    
+    #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    # filter_source: Filter using filter_source argument ----
+    # This would also be used to filter out records from dataset that are greater
+    # than e.g. ADSL.TRTSDT
+    # Not filtering data after progressive disease with filter_pd
+    #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    
+    dataset_filter <- dataset %>%
+      dplyr::filter(!!enquo(filter_source))
+    
+  }
+                
+  # Error if filter results in 0 records
+  if (nrow(dataset_filter) == 0) {
+    err_msg <- sprintf(
+      "dataframe passed into %s argument with the filter %s has 0 records",
+      "dataset",
+      deparse(rlang::quo_get_expr(filter_source)))
+    
+    rlang::abort(err_msg)
+  }
   
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Create the response dataframes ----
   #
   # Three: 
-  #  1.  ADT is after the reference date plus a window
-  #  2.  ADT is before the reference date plus a window
-  #      but subject does have a subsequent read in after_ref_data.
-  #  3.  ADT is before the reference date plus a window
-  #      but subject does not have a subsequent read in after_ref_data.
-  #      (this is NE)
+  #  1.  ADT >= reference_date + ref_start_window
+  #  2.  ADT < reference_date + ref_start_window 
+  #      but subject does have a subsequent read in dataframe 1.
+  #  3.  ADT < reference_date + ref_start_window
+  #      but subject does not have a subsequent read in dataframe 1.
+  #      (this is NE for subects with 'SD' or 'NON-CR/NON-PD')
   #
-  # Requirement: BOR is set to 'NE', in the case where the subject has only 
-  # AVALC = 'SD' or 'NON-CR/NON-PD' less than xxx days after the reference date 
-  # from ADSL.
+  #      Requirement: BOR is set to 'NE', in the case where the subject has only 
+  #      AVALC = 'SD' or 'NON-CR/NON-PD' less than xxx days after the reference date 
+  #      from ADSL.
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
   # data where ADT >= reference_date + days(ref_start_window)
-  after_ref_data <- dataset_filter_01 %>% 
+  after_ref_data <- dataset_filter %>% 
     dplyr::filter(ADT >= !!reference_date + lubridate::days(ref_start_window)) 
   
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Data frame 1: bor_data_01, ADT is after the reference date plus a window
-  #               assign sort order to select best (i.e. lowest) later
+  # Data frame 1: bor_data_01, ADT >= reference_date + ref_start_window
+  #               and assign sort order to select best (i.e. lowest) later
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   bor_data_01 <- after_ref_data %>%
@@ -405,26 +415,26 @@ derive_param_bor <- function(dataset,
                                                AVALC %in% c("NON-CR/NON-PD") ~ 4,
                                                AVALC %in% c("PD") ~ 5,
                                                AVALC %in% c("NE") ~ 6,
-                                               is.null(AVALC) ~ 7),
-                  tmp_record_after_reference = TRUE) %>%
-    dplyr::select(!!!subject_keys, AVALC, tmp_order, ADT, tmp_record_after_reference)
+                                               is.null(AVALC) ~ 7)) %>%
+    dplyr::select(!!!subject_keys, AVALC, tmp_order, ADT)
   
   # data where ADT < reference_date + days(ref_start_window)
-  before_ref_data <- dataset_filter_01 %>% 
+  before_ref_data <- dataset_filter %>% 
     dplyr::filter(ADT < !!reference_date + lubridate::days(ref_start_window)) %>%
     dplyr::mutate(tmp_record_after_reference = FALSE) %>%
-    dplyr::select(!!!subject_keys, AVALC, ADT, tmp_record_after_reference)
+    dplyr::select(!!!subject_keys, AVALC, ADT)
   
   # after_ref_data <- after_ref_data[c(-14),]
   
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Data frame 2: bor_data_02, ADT is before the reference date plus a window
-  #               but subject does have a subsequent read in after_ref_data.
+  # Data frame 2: bor_data_02, ADT < reference_date + ref_start_window 
+  #               but subject does have a subsequent read in dataframe 1.
+  #               and assign sort order to select best (i.e. lowest) later
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
   bor_data_02 <- after_ref_data %>% 
     dplyr::distinct(!!!subject_keys) %>% 
-    dplyr::left_join(before_ref_data)%>%
+    dplyr::left_join(before_ref_data) %>%
     dplyr::mutate(tmp_order = dplyr::case_when(AVALC %in% c("CR") ~ 1,
                                                AVALC %in% c("PR") ~ 2,
                                                AVALC %in% c("SD") ~ 3,
@@ -433,17 +443,34 @@ derive_param_bor <- function(dataset,
                                                AVALC %in% c("NE") ~ 6,
                                                is.null(AVALC) ~ 7))
   
-  
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Data frame 3: bor_data_03, ADT is before the reference date plus a window
-  #               but subject does not have a subsequent read in after_ref_data.
-  #               i.e. NE, tmp_order 6.
+  # Data frame 3: bor_data_03, ADT < reference_date + ref_start_window
+  #               but subject does not have a subsequent read in dataframe 1.
+  #               and assign sort order to select best (i.e. lowest) later.
+  #               (Note: this is NE for subects with 'SD' or 'NON-CR/NON-PD')
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
   bor_data_03 <- before_ref_data_01  %>% 
     dplyr::distinct(!!!subject_keys) %>% 
     dplyr::anti_join(after_ref_data) %>%
-    dplyr::mutate(tmp_order = 6)
+    dplyr::mutate(tmp_order = dplyr::case_when(AVALC %in% c("CR") ~ 1,
+                                               AVALC %in% c("PR") ~ 2,
+                                               AVALC %in% c("PD") ~ 5,
+                                               TRUE ~ 6))
+  
+  nrow(bor_data_03) + nrow(bor_data_02) = nrow(before_ref_data)
+  
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Data frame 4: bor_data_04, subjects in ADSL
+  #
+  # ON PR REVIEW CHECK THIS IS APPROPRIATE, as I AM NOT SURE WHY.
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+  bor_data_04 <- dataset_adsl %>%
+    dplyr::select(!!!subject_keys) %>%
+    dplyr::mutate(AVALC     = missing_val,
+                  tmp_order = 7) %>%
+    dplyr::select(!!!subject_keys, AVALC, tmp_order)
   
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Bind three types of dataframes and select lowest value as BOR
@@ -451,7 +478,8 @@ derive_param_bor <- function(dataset,
 
   param_bor <- dplyr::bind_rows(bor_data_01, 
                                 bor_data_02, 
-                                bor_data_03) %>%
+                                bor_data_03,
+                                bor_data_04) %>%
     admiral::filter_extreme(by_vars = subject_keys,
                             order   = vars(tmp_order, ADT),
                             mode    = "first") %>%
