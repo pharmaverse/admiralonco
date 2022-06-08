@@ -307,6 +307,7 @@ derive_param_bor <- function(dataset,
                              source_datasets  = NULL,
                              reference_date,
                              ref_start_window = 0,
+                             missing_as_ne    = FALSE,
                              aval_fun         = admiralonco::aval_resp(),
                              set_values_to,
                              subject_keys     = admiral::vars(STUDYID, USUBJID)) {
@@ -321,6 +322,8 @@ derive_param_bor <- function(dataset,
   admiral::assert_integer_scalar(arg      = ref_start_window, 
                                  subset   = "non-negative",
                                  optional = TRUE)
+  
+  admiral::assert_logical_scalar(arg = missing_as_ne)
   
   admiral::assert_function(arg = aval_fun)
   
@@ -337,10 +340,20 @@ derive_param_bor <- function(dataset,
   admiral::assert_data_frame(arg           = dataset_adsl, 
                              required_vars = subject_keys)
   
-
   admiral::assert_param_does_not_exist(dataset = dataset, 
                                        param   = rlang::quo_get_expr(set_values_to$PARAMCD))
  
+  dataset <<- dataset
+  dataset_adsl <<- dataset_adsl
+  filter_source <<- filter_source
+  source_pd <<- source_pd
+  source_datasets <<- source_datasets
+  reference_date <<- reference_date
+  ref_start_window <<- ref_start_window
+  aval_fun <<- aval_fun
+  set_values_to <<- set_values_to
+  subject_keys <<- subject_keys
+  stop("yep good start")
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # filter_pd and filter_source: Filter source dataset using filter_source----
   # argument and also filter data after progressive disease with filter_pd
@@ -458,7 +471,8 @@ derive_param_bor <- function(dataset,
                                                AVALC %in% c("PD") ~ 5,
                                                TRUE ~ 6))
   
-  nrow(bor_data_03) + nrow(bor_data_02) = nrow(before_ref_data)
+  # check nothing strange has gone on with joins
+  assertthat::are_equal(nrow(bor_data_03) + nrow(bor_data_02), nrow(before_ref_data))
   
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Data frame 4: bor_data_04, subjects in ADSL
@@ -468,7 +482,8 @@ derive_param_bor <- function(dataset,
 
   bor_data_04 <- dataset_adsl %>%
     dplyr::select(!!!subject_keys) %>%
-    dplyr::mutate(AVALC     = missing_val,
+    dplyr::mutate(AVALC     = dplyr::case_when(isTRUE(missing_as_ne) ~ "NE",
+                                               TRUE ~"MISSING"),
                   tmp_order = 7) %>%
     dplyr::select(!!!subject_keys, AVALC, tmp_order)
   
@@ -480,8 +495,8 @@ derive_param_bor <- function(dataset,
                                 bor_data_02, 
                                 bor_data_03,
                                 bor_data_04) %>%
-    admiral::filter_extreme(by_vars = subject_keys,
-                            order   = vars(tmp_order, ADT),
+    admiral::filter_extreme(by_vars = !!!subject_keys,
+                            order   = admiral::vars(tmp_order, ADT),
                             mode    = "first") %>%
     dplyr::select(-tmp_order)
 
