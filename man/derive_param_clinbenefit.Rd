@@ -31,6 +31,10 @@ in input dataset.
 The variables specified by the \code{subject_keys} parameter and the \code{reference_date}
 parameter are expected.}
 
+\item{filter_source}{Filter condition in \code{dataset} that represents records
+for overall disease response assessment for a subject at a given timepoint,
+e.g. \code{PARAMCD == "OVR"} or \code{PARAMCD == "OVRLRESP"}.}
+
 \item{source_resp}{A \code{date_source} object specifying the dataset, date variable,
 and filter condition used to identify objective response status.}
 
@@ -59,10 +63,6 @@ records, e.g. \code{vars(PARAMCD = "CBR", PARAM = "Clinical Benefit Rate")}.}
 
 \item{subject_keys}{A named list returned by \code{vars()} containing variables
 used to uniquely identify subjects.}
-
-\item{source_param}{Character name of parameter code in \code{dataset} that
-represents overall disease response assessment for a subject at a given timepoint,
-e.g. \code{"OVR"} or \code{"OVRLRESP"}.}
 }
 \description{
 Add a clinical benefit/disease control parameter to the input dataset.
@@ -73,63 +73,65 @@ having objective response, and then derived for subjects that have at least
 one evaluable non-PD response assessment after a specified amount of time
 from a reference date.
 }
-\author{
-Andrew Smith
-adsl <- tibble::tribble(
-~USUBJID, ~TRTSDT,           ~EOSDT,
-"01",     ymd("2020-01-14"), ymd("2020-05-06"),
-"02",     ymd("2021-02-16"), ymd("2021-08-03"),
-"03",     ymd("2021-03-09"), ymd("2021-04-24"),
-"04",     ymd("2021-04-21"), ymd("2021-09-15")
+\examples{
+library(lubridate)
+adsl <- tibble::tribble(~USUBJID, ~TRTSDT, ~EOSDT,
+"01", ymd("2020-01-14"), ymd("2020-05-06"),
+"02", ymd("2021-02-16"), ymd("2021-08-03"),
+"03", ymd("2021-03-09"), ymd("2021-04-24"),
+"04", ymd("2021-04-21"), ymd("2021-09-15")
 ) \%>\%
-mutate(STUDYID = "AB42")
+  mutate(STUDYID = "AB42")
 
 adrs <- tibble::tribble(
-~USUBJID, ~PARAMCD, ~AVALC, ~ADT,
-"01", "RSP", "Y", ymd("2021-03-14"),
-"02", "RSP", "N", ymd("2021-05-07"),
-"03", "RSP", "N", NA,
-"04", "RSP", "N", NA,
-"01", "PD", "N", NA,
-"02", "PD", "Y", ymd("2021-05-07"),
-"03", "PD", "N", NA,
-"04", "PD", "N", NA,
-"01", "OVR", "SD", ymd("2020-03-14"),
-"01", "OVR", "PR", ymd("2021-04-13"),
-"02", "OVR", "PR", ymd("2021-04-08"),
-"02", "OVR", "PD", ymd("2021-05-07"),
-"02", "OVR", "CR", ymd("2021-06-20"),
-"03", "OVR", "SD", ymd("2021-03-30"),
-"04", "OVR", "NE", ymd("2021-05-21"),
-"04", "OVR", "NA", ymd("2021-06-30"),
-"04", "OVR", "NE", ymd("2021-07-24"),
-"04", "OVR", "ND", ymd("2021-09-04"),
+  ~USUBJID, ~PARAMCD, ~AVALC, ~ADT,
+  "01", "RSP", "Y", ymd("2021-03-14"),
+  "02", "RSP", "N", ymd("2021-05-07"),
+  "03", "RSP", "N", NA,
+  "04", "RSP", "N", NA,
+  "01", "PD", "N", NA,
+  "02", "PD", "Y", ymd("2021-05-07"),
+  "03", "PD", "N", NA,
+  "04", "PD", "N", NA,
+  "01", "OVR", "SD", ymd("2020-03-14"),
+  "01", "OVR", "PR", ymd("2021-04-13"),
+  "02", "OVR", "PR", ymd("2021-04-08"),
+  "02", "OVR", "PD", ymd("2021-05-07"),
+  "02", "OVR", "CR", ymd("2021-06-20"),
+  "03", "OVR", "SD", ymd("2021-03-30"),
+  "04", "OVR", "NE", ymd("2021-05-21"),
+  "04", "OVR", "NA", ymd("2021-06-30"),
+  "04", "OVR", "NE", ymd("2021-07-24"),
+  "04", "OVR", "ND", ymd("2021-09-04"),
 ) \%>\%
-mutate(STUDYID = "AB42")
+ mutate(STUDYID = "AB42")
 
 pd <-  date_source(
-dataset_name = "adrs",
-date = ADT,
-filter = PARAMCD == "PD" & AVALC == "Y"
+ dataset_name = "adrs",
+ date = ADT,
+ filter = PARAMCD == "PD" & AVALC == "Y"
 )
 
 resp <- date_source(
-dataset_name = "adrs",
-date = ADT,
-filter = PARAMCD == "RSP" & AVALC == "Y"
+ dataset_name = "adrs",
+ date = ADT,
+ filter = PARAMCD == "RSP" & AVALC == "Y"
 )
 
 derive_param_clinbenefit(
-dataset = adrs,
-dataset_adsl = adsl,
-filter_source = PARAMCD == "OVR",
-source_resp = resp,
-source_pd = pd,
-source_datasets = list(adrs = adrs),
-reference_date = TRTSDT,
-ref_start_window = 28,
-set_values_to = vars(
-PARAMCD = "CBR"
-)
-)
+  dataset = adrs,
+  dataset_adsl = adsl,
+  filter_source = PARAMCD == "OVR",
+  source_resp = resp,
+  source_pd = pd,
+  source_datasets = list(adrs = adrs),
+  reference_date = TRTSDT,
+  ref_start_window = 28,
+  set_values_to = vars(
+    PARAMCD = "CBR"
+      )
+   )
+}
+\author{
+Andrew Smith
 }

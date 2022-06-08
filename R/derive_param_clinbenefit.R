@@ -20,9 +20,9 @@
 #'   The variables specified by the `subject_keys` parameter and the `reference_date`
 #'   parameter are expected.
 #'
-#' @param source_param Character name of parameter code in `dataset` that
-#' represents overall disease response assessment for a subject at a given timepoint,
-#' e.g. `"OVR"` or `"OVRLRESP"`.
+#' @param filter_source Filter condition in `dataset` that represents records
+#' for overall disease response assessment for a subject at a given timepoint,
+#' e.g. `PARAMCD == "OVR"` or `PARAMCD == "OVRLRESP"`.
 #'
 #' @param source_resp A `date_source` object specifying the dataset, date variable,
 #' and filter condition used to identify objective response status.
