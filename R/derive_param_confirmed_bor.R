@@ -343,15 +343,31 @@ derive_param_confirmed_bor <- function(dataset,
     required_vars = quo_c(subject_keys, reference_date, vars(PARAMCD, ADT, AVALC))
   )
   assert_data_frame(dataset_adsl, required_vars = subject_keys)
-  if (!is.null(dataset)) {
-    assert_param_does_not_exist(dataset, quo_get_expr(set_values_to$PARAMCD))
-  }
+  assert_param_does_not_exist(dataset, quo_get_expr(set_values_to$PARAMCD))
 
   # Restrict input dataset
   source_data <- dataset %>%
-    filter(!!filter_source)
-  # filter_pd(source_pd = source_pd,
-  #    source_datasets = source_datasets)
+    filter_pd(
+      filter = !!filter_source,
+      source_pd = source_pd,
+      source_datasets = source_datasets,
+      subject_keys = subject_keys
+    )
+
+  # Check for invalid AVALC values
+  resp_vals <- source_data$AVALC
+  valid_vals <- c("CR", "PR", "SD", "NON-CR/NON-PD", "PD", "NE", "ND")
+  invalid_vals <- unique(resp_vals[!resp_vals %in% valid_vals])
+  if (length(invalid_vals) > 0 ) {
+    abort(
+      paste0(
+        "The function is considering only the following response values:\n",
+        enumerate(valid_vals),
+        "\nThe following invalid values were found:\n",
+        enumerate(invalid_vals)
+      )
+    )
+  }
 
   # Create observations for potential responses
   cr_data <- filter_confirmation(
