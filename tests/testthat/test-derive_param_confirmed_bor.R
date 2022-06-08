@@ -191,12 +191,12 @@ test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as
 ## derive_param_confirmed_bor Test 3: error if invalid response values ----
 test_that("derive_param_confirmed_bor Test 3: error if invalid response values", {
   adrs <- tibble::tribble(
-  ~USUBJID, ~ADTC,        ~AVALC,
-  "1",      "2020-01-01", "PR",
-  "1",      "2020-02-01", "CR",
-  "1",      "2020-02-16", "NE",
-  "1",      "2020-03-01", "iCR",
-  "1",      "2020-04-01", "SD",
+    ~USUBJID, ~ADTC,        ~AVALC,
+    "1",      "2020-01-01", "PR",
+    "1",      "2020-02-01", "CR",
+    "1",      "2020-02-16", "NE",
+    "1",      "2020-03-01", "iCR",
+    "1",      "2020-04-01", "SD",
   ) %>%
     mutate(
       PARAMCD = "OVR",

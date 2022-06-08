@@ -358,7 +358,7 @@ derive_param_confirmed_bor <- function(dataset,
   resp_vals <- source_data$AVALC
   valid_vals <- c("CR", "PR", "SD", "NON-CR/NON-PD", "PD", "NE", "ND")
   invalid_vals <- unique(resp_vals[!resp_vals %in% valid_vals])
-  if (length(invalid_vals) > 0 ) {
+  if (length(invalid_vals) > 0) {
     abort(
       paste0(
         "The function is considering only the following response values:\n",
