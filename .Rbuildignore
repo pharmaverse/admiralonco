@@ -5,3 +5,6 @@
 ^.github$
 ^docs$
 ^.lintr$
+^admiralonco\.Rcheck$
+^admiralonco.*\.tar\.gz$
+^admiralonco.*\.tgz$
