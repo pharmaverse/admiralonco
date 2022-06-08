@@ -72,56 +72,72 @@
 #'
 #' @details
 #'
-#'   1. The input dataset is joined with itself by the variables specified for
+#'   The following steps are performed to produce the output dataset.
+#'
+#'   ## Step 1
+#'
+#'   The input dataset is joined with itself by the variables specified for
 #'   `by_vars`. From the right hand side of the join only the variables
 #'   specified for `join_vars` are kept. The suffix ".join" is added to these
 #'   variables.
 #'
-#'       For example, for `by_vars = USUBJID`, `join_vars = vars(AVISITN, AVALC)` and input dataset
-#'       ```
-#'       # A tibble: 2 x 4
-#'       USUBJID AVISITN AVALC  AVAL
-#'       <chr>     <dbl> <chr> <dbl>
-#'       1             1 Y         1
-#'       1             2 N         0
-#'       ```
-#'       the joined dataset is
-#'       ```
-#'       A tibble: 4 x 6
-#'       USUBJID AVISITN AVALC  AVAL AVISITN.join AVALC.join
-#'       <chr>     <dbl> <chr> <dbl>        <dbl> <chr>
-#'       1             1 Y         1            1 Y
-#'       1             1 Y         1            2 N
-#'       1             2 N         0            1 Y
-#'       1             2 N         0            2 N
-#'       ```
+#'   For example, for `by_vars = USUBJID`, `join_vars = vars(AVISITN, AVALC)` and input dataset
 #'
-#'   1. The joined dataset is restricted to observations where the joined
-#'   variables are at or after the other variables with respect to `order`.
+#'   ```{r eval=FALSE}
+#'   # A tibble: 2 x 4
+#'   USUBJID AVISITN AVALC  AVAL
+#'   <chr>     <dbl> <chr> <dbl>
+#'   1             1 Y         1
+#'   1             2 N         0
+#'   ```
 #'
-#'       The dataset from the example in the previous step with `order =
-#'       vars(AVISITN)` is restricted to
-#'       ```
-#'       A tibble: 4 x 6
-#'       USUBJID AVISITN AVALC  AVAL AVISITN.join AVALC.join
-#'       <chr>     <dbl> <chr> <dbl>        <dbl> <chr>
-#'       1             1 Y         1            1 Y
-#'       1             1 Y         1            2 N
-#'       1             2 N         0            2 N
-#'       ```
+#'   the joined dataset is
 #'
-#'   1. If `first_cond` is specified, for each observation of the input dataset
-#'   the joined dataset is restricted to observations up to the first
-#'   observation where `first_cond` is fulfilled (the observation fulfilling the
-#'   condition is included). If for an observation of the input dataset the
-#'   condition is not fulfilled, the observation is removed.
+#'   ```{r eval=FALSE}
+#'   A tibble: 4 x 6
+#'   USUBJID AVISITN AVALC  AVAL AVISITN.join AVALC.join
+#'   <chr>     <dbl> <chr> <dbl>        <dbl> <chr>
+#'   1             1 Y         1            1 Y
+#'   1             1 Y         1            2 N
+#'   1             2 N         0            1 Y
+#'   1             2 N         0            2 N
+#'   ```
 #'
-#'   1. The joined dataset is grouped by the observations from the input dataset
+#'   ## Step 2
+#'
+#'   The joined dataset is restricted to observations where the joined variables
+#'   are at or after the other variables with respect to `order`.
+#'
+#'   The dataset from the example in the previous step with `order =
+#'   vars(AVISITN)` is restricted to
+#'
+#'   ```{r eval=FALSE}
+#'   A tibble: 4 x 6
+#'   USUBJID AVISITN AVALC  AVAL AVISITN.join AVALC.join
+#'   <chr>     <dbl> <chr> <dbl>        <dbl> <chr>
+#'   1             1 Y         1            1 Y
+#'   1             1 Y         1            2 N
+#'   1             2 N         0            2 N
+#'   ```
+#'
+#'   ## Step 3
+#'
+#'   If `first_cond` is specified, for each observation of the input dataset the
+#'   joined dataset is restricted to observations up to the first observation
+#'   where `first_cond` is fulfilled (the observation fulfilling the condition
+#'   is included). If for an observation of the input dataset the condition is
+#'   not fulfilled, the observation is removed.
+#'
+#'   ## Step 4
+#'
+#'   The joined dataset is grouped by the observations from the input dataset
 #'   and restricted to the observations fulfilling the condition specified by
 #'   `filter`.
 #'
-#'   1. The first observation of each group is selected and the `*.join`
-#'   variables are dropped.
+#'   ## Step 5
+#'
+#'   The first observation of each group is selected and the `*.join` variables
+#'   are dropped.
 #'
 #' @author Stefan Bundfuss
 #'
@@ -217,10 +233,8 @@
 #'     all(AVALC.join %in% c("CR", "PR", "NE")) &
 #'     count_vals(var = AVALC.join, val = "NE") <= 1 &
 #'     (
-#'       min_cond(
-#'         var = ADY.join,
-#'         cond = AVALC.join == "CR"
-#'       ) > max_cond(var = ADY.join, cond = AVALC.join == "PR") |
+#'       min_cond(var = ADY.join, cond = AVALC.join == "CR") >
+#'         max_cond(var = ADY.join, cond = AVALC.join == "PR") |
 #'         count_vals(var = AVALC.join, val = "CR") == 0
 #'     )
 #' )
@@ -272,7 +286,8 @@ filter_confirmation <- function(dataset,
     data_joined <- filter_relative(
       data_joined,
       by_vars = vars(!!!by_vars, tmp_obs_nr_filter_confirmation),
-      condition = !!first_cond & tmp_obs_nr_filter_confirmation < tmp_obs_nr_filter_confirmation.join,
+      condition = !!first_cond &
+        tmp_obs_nr_filter_confirmation < tmp_obs_nr_filter_confirmation.join,
       order = vars(tmp_obs_nr_filter_confirmation.join),
       mode = "first",
       selection = "before",
