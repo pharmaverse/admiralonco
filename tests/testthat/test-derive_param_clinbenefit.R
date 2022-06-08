@@ -1,3 +1,4 @@
+library(lubridate)
 adsl <- tibble::tribble(
   ~USUBJID, ~TRTSDT,           ~EOSDT,
   "01",     ymd("2020-12-06"), ymd("2022-03-06"),
