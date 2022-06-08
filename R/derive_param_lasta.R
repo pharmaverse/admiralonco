@@ -28,11 +28,30 @@
 #'                  variable, and filter condition used to identify disease
 #'                  progression and subsequently used (if provided) to remove
 #'                  all records after disease progression from `dataset`
+#'                  
+#'   *Permitted Values:* a `date_source` object (see `admiral::date_source()`
+#'   for details)
+#'
+#'   *Default:* `NULL`,
 #'
 #' @param source_datasets A named `list` containing the name of the dataframe
 #'                        in which to search for the progressive disease as
 #'                        defined in `source_pd`
 #'
+#'   For example if `source_pd = pd_date` with
+#'   ```
+#'   pd_date <- date_source(
+#'     dataset_name = "adrs",
+#'     date = ADT,
+#'     filter = PARAMCD == PD
+#'   )
+#'   ```
+#'   and the actual response dataset in the script is `myadrs`, `source_datasets
+#'   = list(adrs = myadrs)` should be specified.
+#'
+#'   This allows to define `pd_date` at a higher level, e.g., at company level,
+#'   where the actual dataset does not exist.
+#'   
 #' @param subject_keys Variables to uniquely identify a subject, used by
 #'                     `source_pd` to specify a date
 #'
@@ -76,16 +95,16 @@
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @keywords ADRS
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
-#' @return The dataframe passed in the `dataset` argument with additonal columns
-#'         and/or rows as set in the `set_values_to` argument.
+#' @return The dataframe passed in the `dataset` argument with additional 
+#'         columns and/or rows as set in the `set_values_to` argument.
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|
 
 derive_param_lasta <- function(dataset,
-                               order           = admiral::vars(USUBJID, ADT),
-                               by_vars         = admiral::vars(USUBJID),
+                               order           = admiral::vars(STUDYID, USUBJID, ADT),
+                               by_vars         = admiral::vars(STUDYID, USUBJID),
                                filter_source   = PARAMCD == "OVR" & ANL01FL == "Y",
                                source_pd       = NULL,
-                               source_datasets = list(adrs = adrs),
+                               source_datasets = NULL,
                                subject_keys    = admiral::vars(STUDYID, USUBJID),
                                set_values_to) {
 
@@ -93,81 +112,69 @@ derive_param_lasta <- function(dataset,
   # Assert statements ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  filter_source <- admiral::assert_filter_cond(enquo(filter_source),
+  filter_source <- admiral::assert_filter_cond(arg      = enquo(filter_source),
                                                optional = TRUE)
-  admiral::assert_vars(by_vars)
-  admiral::assert_data_frame(dataset,
+  
+  admiral::assert_vars(arg = by_vars)
+  
+  admiral::assert_data_frame(arg           = dataset,
                              required_vars = admiral::vars(!!!order,
                                                            !!!by_vars,
                                                            PARAMCD, AVAL,
                                                            AVALC, ADT))
-  admiral::assert_varval_list(set_values_to,
+  
+  admiral::assert_varval_list(arg         = set_values_to,
                               accept_expr = TRUE)
-  admiral::assert_param_does_not_exist(dataset,
-                                       rlang::quo_get_expr(set_values_to$PARAMCD))
-
-  if (!is.null(source_pd)) {
-      source_names <- names(source_datasets)
-      admiral::assert_list_element(
-        list         = list(source_pd),
-        element      = "dataset_name",
-        condition    = dataset_name %in% source_names,
-        source_names = source_names,
-        message_text = paste0(
-          "The dataset names must be included in the list specified for the ",
-          "`source_datasets` parameter.\n",
-          "Following names were provided by `source_datasets`:\n",
-          admiral:::enumerate(source_names, quote_fun = sQuote)
-        )
-      )
-  }
+  
+  admiral::assert_param_does_not_exist(dataset = dataset,
+                                       param   = rlang::quo_get_expr(set_values_to$PARAMCD))
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # source_pd: Get PD date from source_pd dataframe, if passed ----
+  # filter_pd and filter_source: Filter source dataset using filter_source----
+  # argument and also filter data after progressive disease with filter_pd
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   if (!is.null(source_pd)) {
+    
+    source_names <- names(source_datasets)
+    
+    admiral::assert_list_element(
+      list         = list(source_pd),
+      element      = "dataset_name",
+      condition    = dataset_name %in% source_names,
+      source_names = source_names,
+      message_text = paste0(
+        "The dataset names must be included in the list specified for the ",
+        "`source_datasets` parameter.\n",
+        "Following names were provided by `source_datasets`:\n",
+        admiral:::enumerate(source_names, quote_fun = sQuote))
+    )
 
-    admiral::assert_s3_class(source_pd, "date_source")
-    admiral::assert_data_frame(eval(rlang::parse_expr(source_pd$dataset_name)))
-
-    warning("USER WARNING: The following should be replaced by FILTER_PD.")
-
-    pd_data <- eval(rlang::parse_expr(source_pd$dataset_name)) %>%
-      admiral::filter_if(source_pd$filter) %>%
-      dplyr::select(!!!subject_keys, !!source_pd$date) %>%
-      dplyr::rename(temp_pd_date = !!source_pd$date)
-
-    # select first PD Date
-    pd_data_first <- pd_data %>%
-      dplyr::arrange(!!!subject_keys, temp_pd_date) %>%
-      dplyr::group_by(!!!subject_keys) %>%
-      dplyr::filter(row_number() == 1)
-
-    # check nothing strange has gone on with above
-    assertthat::are_equal(nrow(pd_data_first),
-                          nrow(pd_data %>% dplyr::distinct(!!!subject_keys)))
-
-    dataset_censor <- dataset %>%
-      dplyr::left_join(pd_data_first,
-                       by = admiral::vars2chr(subject_keys)) %>%
-      dplyr::filter(is.na(temp_pd_date) |
-                      (!is.na(temp_pd_date) & ADT < temp_pd_date))
+    admiral::assert_s3_class(arg   = source_pd, 
+                             class = "date_source")
+    
+    admiral::assert_data_frame(arg = eval(rlang::parse_expr(source_pd$dataset_name)))
+    
+    dataset_filter <- dataset %>%
+            filter_pd(filter          = !!enquo(filter_source),
+                      source_pd       = source_pd,
+                      source_datasets = source_datasets,
+                      subject_keys    = admiral::vars(STUDYID, USUBJID))
 
   } else {
 
-    dataset_censor <- dataset
+    #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    # filter_source: Filter using filter_source argument ----
+    # This would also be used to filter out records from dataset that are greater
+    # than e.g. ADSL.TRTSDT
+    # Not filtering data after progressive disease with filter_pd
+    #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    
+    dataset_filter <- dataset %>%
+      dplyr::filter(!!enquo(filter_source))
 
   }
 
-  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # filter_source: Filter using filter_source argument ----
-  # This would also be used to filter out records from dataset that are greater
-  # than e.g. ADSL.TRTSDT
-  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-  dataset_filter <- dataset_censor %>%
-    dplyr::filter(!!!filter_source)
 
   # Error if filter results in 0 records
   if (nrow(dataset_filter) == 0) {
