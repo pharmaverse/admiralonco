@@ -75,11 +75,12 @@ from a reference date.
 }
 \examples{
 library(lubridate)
-adsl <- tibble::tribble(~USUBJID, ~TRTSDT, ~EOSDT,
-"01", ymd("2020-01-14"), ymd("2020-05-06"),
-"02", ymd("2021-02-16"), ymd("2021-08-03"),
-"03", ymd("2021-03-09"), ymd("2021-04-24"),
-"04", ymd("2021-04-21"), ymd("2021-09-15")
+adsl <- tibble::tribble(
+  ~USUBJID, ~TRTSDT, ~EOSDT,
+  "01", ymd("2020-01-14"), ymd("2020-05-06"),
+  "02", ymd("2021-02-16"), ymd("2021-08-03"),
+  "03", ymd("2021-03-09"), ymd("2021-04-24"),
+  "04", ymd("2021-04-21"), ymd("2021-09-15")
 ) \%>\%
   mutate(STUDYID = "AB42")
 
@@ -104,18 +105,18 @@ adrs <- tibble::tribble(
   "04", "OVR", "NE", ymd("2021-07-24"),
   "04", "OVR", "ND", ymd("2021-09-04"),
 ) \%>\%
- mutate(STUDYID = "AB42")
+  mutate(STUDYID = "AB42")
 
-pd <-  date_source(
- dataset_name = "adrs",
- date = ADT,
- filter = PARAMCD == "PD" & AVALC == "Y"
+pd <- date_source(
+  dataset_name = "adrs",
+  date = ADT,
+  filter = PARAMCD == "PD" & AVALC == "Y"
 )
 
 resp <- date_source(
- dataset_name = "adrs",
- date = ADT,
- filter = PARAMCD == "RSP" & AVALC == "Y"
+  dataset_name = "adrs",
+  date = ADT,
+  filter = PARAMCD == "RSP" & AVALC == "Y"
 )
 
 derive_param_clinbenefit(
@@ -129,8 +130,8 @@ derive_param_clinbenefit(
   ref_start_window = 28,
   set_values_to = vars(
     PARAMCD = "CBR"
-      )
-   )
+  )
+)
 }
 \author{
 Andrew Smith
