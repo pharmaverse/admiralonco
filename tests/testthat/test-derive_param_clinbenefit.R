@@ -44,17 +44,17 @@ resp <- date_source(
 
 test_that("Clinical benefit rate parameter is derived correctly", {
 
-  input_cbr <-  tibble::tribble( 
+  input_cbr <-  tibble::tribble(
     ~USUBJID, ~PARAMCD, ~AVALC, ~ADT,
     "01", "CBR", "Y", ymd("2021-04-08"),
     "02", "CBR", "Y", ymd("2021-03-07"),
     "03", "CBR", "N", NA,
     "04", "CBR", "N", NA)  %>%
     mutate(STUDYID = "AB42")
-  
+
   expected_output <- bind_rows(adrs, input_cbr)
 
-  
+
   actual_output <- derive_param_clinbenefit(
     dataset = adrs,
     dataset_adsl = adsl,
@@ -68,8 +68,8 @@ test_that("Clinical benefit rate parameter is derived correctly", {
       PARAMCD = "CBR"
     )
   )
-  
+
   expect_dfs_equal(actual_output, expected_output,
                    keys = c("USUBJID", "PARAMCD", "ADT"))
-  
+
 })
