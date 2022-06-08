@@ -3,30 +3,49 @@
 #'     Derive Best Overall Response Parameter
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @details
-#'    Calculates the best overall response (BOR) parameter for subjects (censored if
-#'    required using argument source_pd which will remove all records in the
-#'    dataframe being passed that occur after the date in source_pd)
+#'    Calculates the best overall response (BOR) parameter for subjects.
+#'    Records after PD can be removed using the source_pd and source_datasets
+#'    arguments.
+#'
+#'   Note: 
+#'   
+#'   1. All records where `ADT` >= `reference_date` + `ref_start_window` are considered
+#'      for Best Overall Response.
+#'      
+#'   2. All records where `ADT` < `reference_date` + `ref_start_window`  and the subject
+#'      has a record in step 1, are considered for Best Overall Response.
+#'      
+#'   3. Records where `ADT` < `reference_date` + `ref_start_window`  and the subject does 
+#'      not have a record in step 1 and AVALC %in% c("CR", "PR", "PD") are considered for
+#'      Best Overall Response
+#'      
+#'   4  Records where `ADT` < `reference_date` + `ref_start_window` and the subject does 
+#'      not have a record in step 1 and AVALC %in% c('SD', 'NON-CR/NON-PD') then
+#'      Best Overall Response is set to NE.
+#'      
+#'   5. The `AVAL` variable is added and set using the `aval_fun(AVALC)` function.
+#'
+#'   6. The variables specified by the `set_values_to` parameter and records
+#'      are added to the dataframe passed into the `dataset` argument
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 # Function Arguments:
 #'
-#' @param dataset Input dataset
+#' @param dataset The input dataframe from which the Best Overall Response will 
+#'                be derived from and added to.
 #'
-#'   The `PARAMCD`, `ADT`, and `AVALC` variables and the variables specified by
+#'   The columns `PARAMCD`, `ADT`, and `AVALC`and the columns specified in
 #'   `subject_keys` and `reference_date` are expected.
 #'
-#' @param dataset_adsl ADSL input dataset
+#' @param dataset_adsl The ADSL input dataframe
 #'
-#'   The variables specified for `subject_keys` are expected. For each subject
-#'   of the specified dataset a new observation is added to the input dataset.
+#'   The columns specified in `subject_keys` are expected.
 #'
-#' @param filter_source Source filter
-#'
-#'   All observations in `dataset_source` fulfilling the specified condition are
-#'   considered for deriving the best overall response.
+#' @param filter_source Filter to be applied to `dataset` to derive the
+#'                       Best Overall Response
 #'
 #' @param source_pd Date of first progressive disease (PD)
 #'
-#'   If the parameter is specified, the observations of the input dataset for
+#'   If the parameter is specified, the observations of the input `dataset` for
 #'   deriving the new parameter are restricted to observations up to the
 #'   specified date. Observations at the specified date are included. For
 #'   subjects without first PD date all observations are take into account.
@@ -36,10 +55,10 @@
 #'
 #'   *Default:* `NULL`,
 #'
-#' @param source_datasets Source dataset for the first PD date
+#' @param source_datasets Source dataframe to be used to calculatethe first PD date
 #'
-#'   A named list of datasets is expected. It links the `dataset_name` from
-#'   `source_pd` with an existing dataset.
+#'   A named list of dataframes is expected (although for BoR) only one dataframe is
+#'   needed. It links the `dataset_name` from `source_pd` with an existing dataframe.
 #'
 #'   For example if `source_pd = pd_date` with
 #'   ```
@@ -49,25 +68,23 @@
 #'     filter = PARAMCD == PD
 #'   )
 #'   ```
-#'   and the actual response dataset in the script is `myadrs`, `source_datasets
+#'   and the actual response dataframe in the script is `myadrs`, `source_datasets
 #'   = list(adrs = myadrs)` should be specified.
-#'
-#'   This allows to define `pd_date` at a higher level, e.g., at company level,
-#'   where the actual dataset does not exist.
 #'
 #' @param reference_date Reference date
 #'
-#'   The reference date is used for the derivation of `"SD"` and
-#'   `"NON-CR/NON-PD"` response (see "Details" section). Usually it is treatment
-#'   start date (`TRTSDT`) or randomization date (`RANDDT`).
-#'
+#'   The reference date is used along with `ref_start_window` to determine those 
+#'   records that occur before and after `ADT` (see Details section for further
+#'   information). Usually it is treatment start date (`TRTSDT`) or 
+#'   randomization date (`RANDDT`).
+#'   
 #'   *Permitted Values:* a numeric date variable
 #'
 #' @param ref_start_window Stable disease time window
 #'
-#'   Assessments at least the specified number of days after the reference date
-#'   with response `"CR"`, `"PR"`, `"SD"`, or `"NON-CR/NON-PD"` are considered
-#'   as `"SD"` or `"NON-CR/NON-PD"` response.
+#'   The ref_start_window is used along with `reference_date` to determine those 
+#'   records that occur before and after `ADT` (see Details section for further
+#'   information). 
 #'
 #'   *Permitted Values:* a non-negative numeric scalar
 #'
@@ -76,8 +93,9 @@
 #' @param missing_as_ne Consider no assessments as `"NE"`?
 #'
 #'   If the argument is set to `TRUE`, the response is set to `"NE"` for
-#'   subjects without an assessment in the input dataset. Otherwise, the
-#'   response is set to `"MISSING"` for these subjects.
+#'   subjects in `dataset_adsl` without an assessment in the `dataset` after the 
+#'   filter has been applied. Otherwise, the response is set to `"MISSING"` 
+#'   for these subjects.
 #'
 #'   *Permitted Values:* a logical scalar
 #'
@@ -102,78 +120,6 @@
 #'
 #'   A list of symbols created using `vars()` is expected.
 #'
-#' @details
-#'
-#'   1. The input dataset (`dataset`) is restricted to the observations matching
-#'   `filter_source` and to observations before or at the date specified by
-#'   `source_pd`.
-#'
-#'   1. The following potential responses are select from the restricted input dataset:
-#'
-#'       - `"CR"`: An assessment is considered as complete response (CR) if
-#'           - `AVALC == "CR"`,
-#'           - there is a confirmatory assessment with `AVALC == "CR"` at least
-#'           `ref_confirm` days after the assessment,
-#'           - all assessments between the assessment and the confirmatory
-#'           assessment are `"CR"` or `"NE"`, and
-#'           - there are at most `max_nr_ne` `"NE"` assessments between the
-#'           assessment and the confirmatory assessment.
-#'
-#'       - `"PR"`: An assessment is considered as partial response (PR) if
-#'           - `AVALC == "PR"`,
-#'           - there is a confirmatory assessment with `AVALC %in% c("CR",
-#'           "PR")` at least `ref_confirm` days after the assessment,
-#'           - all assessments between the assessment and the confirmatory
-#'           assessment are `"CR"`, `"PR"`, or `"NE"`,
-#'           - there is no `"PR"` assessment after a `"CR"` assessment in the
-#'           confirmation period, and
-#'           - there are at most `max_nr_ne` `"NE"` assessments between the
-#'           assessment and the confirmatory assessment.
-#'
-#'           If the `accept_sd` argument is set to `TRUE`, one `"SD"` assessment
-#'           in the confirmation period is accepted.
-#'
-#'        - `"SD"`: An assessment is considered as stable disease (SD) if
-#'          - `AVALC %in% c("CR", "PR", "SD")` and
-#'          - the assessment is at least `ref_start_window` days after
-#'          `reference_date`.
-#'
-#'        - `"NON-CR/NON-PD"`: An assessment is considered as NON-CR/NON-PD if
-#'          - `AVALC = "NON-CR/NON-PD"` and
-#'          - the assessment is at least `ref_start_window` days after
-#'          `reference_date`.
-#'
-#'        - `"PD"`: An assessment is considered as progressive disease (PD) if
-#'        `AVALC == "PD"`.
-#'
-#'        - `"NE"`: An assessment is considered as not estimable (NE) if
-#'            - `AVALC == "NE"` or
-#'            - `AVALC %in% c("CR", "PR", "SD")` and the assessment is less than
-#'            `ref_start_window` days after `reference_date`.
-#'
-#'        - `"ND"`: An assessment is considered as not done (ND) if `AVALC ==
-#'        "ND"`.
-#'
-#'        - `"MISSING"`: An assessment is considered as missing (MISSING) if a
-#'        subject has no observation in the input dataset.
-#'
-#'            If the `missing_as_ne` argument is set to `TRUE`, `AVALC` is set to
-#'            `"NE"` for missing assessments.
-#'
-#'   1. For each subject the best response as derived in the previous step is
-#'   selected, where `"CR"` is best and `"MISSING"` is worst in the order above.
-#'   If the best response is not unique, the first one (with respect to `ADT`)
-#'   is selected. Only the variables `AVALC`, `ADT`, and the variables specified
-#'   for `subject_keys` are kept from the selected observations.
-#'
-#'   1. The `AVAL` variable is added and set to `aval_fun(AVALC)`.
-#'
-#'   1. The variables specified by the `set_values_to` parameter are added to
-#'   the new observations.
-#'
-#'   1. The new observations are added to input dataset.
-#'
-#'
 #' @examples
 #'
 #' # Create ADSL dataset
@@ -188,7 +134,7 @@
 #'   "7",      "2020-02-02",
 #'   "8",      "2020-04-01"
 #' ) %>%
-#'   mutate(
+#'   dplyr::mutate(
 #'     TRTSDT = lubridate::ymd(TRTSDTC),
 #'     STUDYID = "XX1234"
 #'   )
@@ -227,66 +173,48 @@
 #'   "7",      "2020-02-16", "CR",
 #'   "7",      "2020-04-01", "NE"
 #' ) %>%
-#'   mutate(PARAMCD = "OVR")
+#'   dplyr::mutate(PARAMCD = "OVR")
 #'
 #' pd_obs <-
-#'   bind_rows(tibble::tribble(
+#'   dplyr::bind_rows(tibble::tribble(
 #'     ~USUBJID, ~ADTC,        ~AVALC,
 #'     "2",      "2020-03-01", "Y",
 #'     "4",      "2020-02-01", "Y"
 #'   ) %>%
-#'     mutate(PARAMCD = "PD"))
-#' adrs <- bind_rows(ovr_obs, pd_obs) %>%
-#'   mutate(
+#'     dplyr::mutate(PARAMCD = "PD"))
+#' adrs <- dplyr::bind_rows(ovr_obs, pd_obs) %>%
+#'   dplyr::mutate(
 #'     ADT = lubridate::ymd(ADTC),
 #'     STUDYID = "XX1234"
 #'   ) %>%
-#'   select(-ADTC) %>%
+#'   dplyr::select(-ADTC) %>%
 #'   admiral::derive_vars_merged(
 #'     dataset_add = adsl,
-#'     by_vars = dplyr::vars(STUDYID, USUBJID),
-#'     new_vars = dplyr::vars(TRTSDT)
+#'     by_vars     = dplyr::vars(STUDYID, USUBJID),
+#'     new_vars    = dplyr::vars(TRTSDT)
 #'   )
 #'
 #' pd_date <- admiral::date_source(
 #'   dataset_name = "adrs",
-#'   date = ADT,
-#'   filter = PARAMCD == "PD"
+#'   date         = ADT,
+#'   filter       = PARAMCD == "PD"
 #' )
 #'
 #' # Derive best overall response parameter
-#' derive_param_confirmed_bor(
+#' derive_param_bor(
 #'   adrs,
-#'   dataset_adsl = adsl,
-#'   filter_source = PARAMCD == "OVR",
-#'   source_pd = pd_date,
-#'   source_datasets = list(adrs = adrs),
-#'   reference_date = TRTSDT,
+#'   dataset_adsl     = adsl,
+#'   filter_source    = PARAMCD == "OVR",
+#'   source_pd        = pd_date,
+#'   source_datasets  = list(adrs = adrs),
+#'   reference_date   = TRTSDT,
 #'   ref_start_window = 28,
-#'   set_values_to = vars(
-#'     PARAMCD = "CBOR",
-#'     PARAM = "Best Overall Response by Investigator"
+#'   set_values_to    = vars(
+#'     PARAMCD        = "CBOR",
+#'     PARAM          = "Best Overall Response by Investigator"
 #'   )
 #' ) %>%
-#'   filter(PARAMCD == "CBOR")
-#'
-#' # Derive best overall response parameter (accepting SD for PR and
-#' # considering missings as NE)
-#' derive_param_confirmed_bor(
-#'   adrs,
-#'   dataset_adsl = adsl,
-#'   filter_source = PARAMCD == "OVR",
-#'   source_pd = pd_date,
-#'   source_datasets = list(adrs = adrs),
-#'   reference_date = TRTSDT,
-#'   ref_start_window = 28,
-#'   missing_as_ne = TRUE,
-#'   set_values_to = vars(
-#'     PARAMCD = "CBOR",
-#'     PARAM = "Best Overall Response by Investigator"
-#'   )
-#' ) %>%
-#'   filter(PARAMCD == "CBOR")
+#'   filter(PARAMCD == "BOR")
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @export
 #' @name   derive_param_bor
@@ -360,6 +288,21 @@ derive_param_bor <- function(dataset,
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
   if (!is.null(source_pd)) {
+
+    # asserts on the pd data
+    source_names <- names(source_datasets)
+    
+    admiral::assert_list_element(
+      list         = list(source_pd),
+      element      = "dataset_name",
+      condition    = dataset_name %in% source_names,
+      source_names = source_names,
+      message_text = paste0(
+        "The dataset names must be included in the list specified for the ",
+        "`source_datasets` parameter.\n",
+        "Following names were provided by `source_datasets`:\n",
+        admiral:::enumerate(source_names, quote_fun = sQuote))
+    )
     
     admiral::assert_s3_class(arg   = source_pd, 
                              class = "date_source")
@@ -370,7 +313,7 @@ derive_param_bor <- function(dataset,
       filter_pd(filter          = !!enquo(filter_source),
                 source_pd       = source_pd,
                 source_datasets = source_datasets,
-                subject_keys    = admiral::vars(STUDYID, USUBJID))
+                subject_keys    = subject_keys)
     
   } else {
     
@@ -400,16 +343,17 @@ derive_param_bor <- function(dataset,
   # Create the response dataframes ----
   #
   # Three: 
-  #  1.  ADT >= reference_date + ref_start_window
-  #  2.  ADT < reference_date + ref_start_window 
+  #  1.  Records where ADT >= reference_date + ref_start_window
+  #  2.  Records where ADT < reference_date + ref_start_window 
   #      but subject does have a subsequent read in dataframe 1.
-  #  3.  ADT < reference_date + ref_start_window
+  #  3.  Records where ADT < reference_date + ref_start_window
   #      but subject does not have a subsequent read in dataframe 1.
   #      (this is NE for subects with 'SD' or 'NON-CR/NON-PD')
   #
   #      Requirement: BOR is set to 'NE', in the case where the subject has only 
   #      AVALC = 'SD' or 'NON-CR/NON-PD' less than xxx days after the reference date 
   #      from ADSL.
+  #  4.  Subjects in adsl and not in dataset_filter
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
   # data where ADT >= reference_date + days(ref_start_window)
@@ -472,19 +416,19 @@ derive_param_bor <- function(dataset,
                                                TRUE ~ 6))
   
   # check nothing strange has gone on with joins
-  assertthat::are_equal(nrow(bor_data_03) + nrow(bor_data_02), nrow(before_ref_data))
+  assertthat::are_equal(nrow(bor_data_03) + nrow(bor_data_02), 
+                        nrow(before_ref_data))
   
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Data frame 4: bor_data_04, subjects in ADSL
-  #
-  # ON PR REVIEW CHECK THIS IS APPROPRIATE, as I AM NOT SURE WHY.
+  # Data frame 4: bor_data_04, Subjects in adsl and not in dataset_filter
+  #               tmp_order set to 999 so last in order when binded later.
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   bor_data_04 <- dataset_adsl %>%
     dplyr::select(!!!subject_keys) %>%
     dplyr::mutate(AVALC     = dplyr::case_when(isTRUE(missing_as_ne) ~ "NE",
                                                TRUE ~"MISSING"),
-                  tmp_order = 7) %>%
+                  tmp_order = 999) %>%
     dplyr::select(!!!subject_keys, AVALC, tmp_order)
   
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -543,6 +487,8 @@ derive_param_bor <- function(dataset,
   
   return(return_dataframe)
 }
+
+
 
 #' Map Character Response Values to Numeric Values
 #'
