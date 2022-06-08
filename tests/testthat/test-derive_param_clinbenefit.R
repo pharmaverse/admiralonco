@@ -58,9 +58,10 @@ test_that("Clinical benefit rate parameter is derived correctly", {
   actual_output <- derive_param_clinbenefit(
     dataset = adrs,
     dataset_adsl = adsl,
-    source_param = "OVR",
+    filter_source = PARAMCD == "OVR",
     source_resp = resp,
     source_pd = pd,
+    source_datasets = list(adrs = adrs),
     reference_date = TRTSDT,
     ref_start_window = 28,
     set_values_to = vars(

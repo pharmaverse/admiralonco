@@ -30,6 +30,11 @@
 #' @param source_pd A `date_source` object specifying the dataset, date variable, 
 #' and filter condition used to identify disease progression.
 #' 
+#' @param source_datasets  A named list of data sets is expected.
+#'
+#'  The list must contain the names provided by the `dataset_name` field of the
+#'  `admiral::date_source()` objects specified for `source_pd` and `source_resp`.
+#' 
 #' @param by_vars A named list returned by `vars()` used together with `subject_keys` 
 #' to identify groupings within which the earliest date of clinical benefit rate 
 #' status will be chosen. 
@@ -51,6 +56,9 @@
 #' @export
 #' 
 #' @author Andrew Smith
+#' 
+#' @examples 
+#' library(lubridate)
 #' adsl <- tibble::tribble(
 #' ~USUBJID, ~TRTSDT,           ~EOSDT,
 #' "01",     ymd("2020-01-14"), ymd("2020-05-06"),
@@ -83,11 +91,40 @@
 #' ) %>%
 #'  mutate(STUDYID = "AB42")
 #' 
+#' pd <-  date_source(
+#'  dataset_name = "adrs",
+#'  date = ADT,
+#'  filter = PARAMCD == "PD" & AVALC == "Y"
+#' )
+#'
+#' resp <- date_source(
+#'  dataset_name = "adrs",
+#'  date = ADT,
+#'  filter = PARAMCD == "RSP" & AVALC == "Y"
+#' )
+#' 
+#' derive_param_clinbenefit(
+#'   dataset = adrs,
+#'   dataset_adsl = adsl,
+#'   filter_source = PARAMCD == "OVR",
+#'   source_resp = resp,
+#'   source_pd = pd,
+#'   source_datasets = list(adrs = adrs),
+#'   reference_date = TRTSDT,
+#'   ref_start_window = 28,
+#'   set_values_to = vars(
+#'     PARAMCD = "CBR"
+#'       )
+#'    )
+#' 
+#' 
+#' 
 derive_param_clinbenefit <- function(dataset,
                                      dataset_adsl,
-                                     source_param,
+                                     filter_source,
                                      source_resp,
                                      source_pd,
+                                     source_datasets,
                                      by_vars = NULL,
                                      reference_date = TRTSDT,
                                      ref_start_window = 28,
@@ -105,13 +142,27 @@ derive_param_clinbenefit <- function(dataset,
     dataset, 
     required_vars = vars(!!!by_vars, PARAMCD, AVALC, ADT)
   )
-  params_available <- unique(dataset$PARAMCD)
-  source_param <- assert_character_scalar(source_param, values = params_available)
+  filter_source <- assert_filter_cond(
+    enquo(filter_source),
+    optional = FALSE
+  )
   assert_vars(subject_keys)
   assert_s3_class(source_resp, "date_source")
   assert_s3_class(source_pd, "date_source")
-  assert_data_frame(eval(parse_expr(source_pd$dataset_name)))
-  assert_data_frame(eval(parse_expr(source_resp$dataset_name)))
+  assert_list_of(source_datasets, "data.frame")
+  
+  source_names <- names(source_datasets)
+  if (!all(c(source_pd$dataset_name, source_resp$dataset_name) %in% source_names)) {
+    abort(
+      paste0(
+        "The dataset names specified for `source_pd` and `source_resp` must be \n",
+        "included in the list specified for the `source_datasets` parameter.\n",
+        "Following names were provided by `source_datasets`:\n",
+        enumerate(source_names, quote_fun = squote)
+      )
+    )
+  }
+  
   ref_start_window <- assert_integer_scalar(ref_start_window)
   assert_varval_list(set_values_to, accept_expr = TRUE, optional = TRUE)
   assert_param_does_not_exist(dataset, quo_get_expr(set_values_to$PARAMCD))
@@ -127,18 +178,24 @@ derive_param_clinbenefit <- function(dataset,
   
   # Get PD date and objective response date
   
-  pd_data <- eval(parse_expr(source_pd$dataset_name)) %>%
-    admiral::filter_if(source_pd$filter) %>%
+  pd_data <-source_datasets[[source_pd$dataset_name]] %>%
+    filter_if(source_pd$filter) %>%
     select(!!!subject_keys, !!!by_vars, !!source_pd$date) %>%
     rename(temp_pd = !!source_pd$date)
   
-  rsp_data <- eval(parse_expr(source_resp$dataset_name)) %>%
-    admiral::filter_if(source_resp$filter) %>%
+  rsp_data <- source_datasets[[source_resp$dataset_name]] %>%
+    filter_if(source_resp$filter) %>%
     select(!!!subject_keys, !!!by_vars, !!source_resp$date) %>%
     rename(temp_rs = !!source_resp$date)
   
   # Look for valid non-PD measurements after window from reference date
-  ovr_data <- dataset %>%
+  ovr_data <- filter_pd(dataset = dataset, 
+                        filter = !!filter_source, 
+                        source_pd = source_pd,
+                        source_datasets = source_datasets
+                        )
+    
+  ovr_data <- ovr_data  %>%
     left_join(
       adsl,
       by = vars2chr(subject_keys)
@@ -147,13 +204,11 @@ derive_param_clinbenefit <- function(dataset,
       pd_data,
       by = vars2chr(subject_keys)
     ) %>%
-    filter(PARAMCD == source_param & 
+    filter(
       !(AVALC %in% c("NA", "NE", "ND")) & !is.na(AVALC) &
-      # This line will become filter_pd
-      (is.na(temp_pd) | (!is.na(temp_pd) & ADT < temp_pd)) &
-      # end filter_pd
       ADT >= !!reference_date + days(ref_start_window)
     ) %>% 
+  # Use this approach only for patients that are not already responders
     anti_join(
       ., 
       rsp_data, 
