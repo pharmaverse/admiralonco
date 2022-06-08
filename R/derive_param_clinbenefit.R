@@ -58,11 +58,12 @@
 #' @author Andrew Smith
 #' @examples
 #' library(lubridate)
-#' adsl <- tibble::tribble(~USUBJID, ~TRTSDT, ~EOSDT,
-#' "01", ymd("2020-01-14"), ymd("2020-05-06"),
-#' "02", ymd("2021-02-16"), ymd("2021-08-03"),
-#' "03", ymd("2021-03-09"), ymd("2021-04-24"),
-#' "04", ymd("2021-04-21"), ymd("2021-09-15")
+#' adsl <- tibble::tribble(
+#'   ~USUBJID, ~TRTSDT, ~EOSDT,
+#'   "01", ymd("2020-01-14"), ymd("2020-05-06"),
+#'   "02", ymd("2021-02-16"), ymd("2021-08-03"),
+#'   "03", ymd("2021-03-09"), ymd("2021-04-24"),
+#'   "04", ymd("2021-04-21"), ymd("2021-09-15")
 #' ) %>%
 #'   mutate(STUDYID = "AB42")
 #'
@@ -87,18 +88,18 @@
 #'   "04", "OVR", "NE", ymd("2021-07-24"),
 #'   "04", "OVR", "ND", ymd("2021-09-04"),
 #' ) %>%
-#'  mutate(STUDYID = "AB42")
+#'   mutate(STUDYID = "AB42")
 #'
-#' pd <-  date_source(
-#'  dataset_name = "adrs",
-#'  date = ADT,
-#'  filter = PARAMCD == "PD" & AVALC == "Y"
+#' pd <- date_source(
+#'   dataset_name = "adrs",
+#'   date = ADT,
+#'   filter = PARAMCD == "PD" & AVALC == "Y"
 #' )
 #'
 #' resp <- date_source(
-#'  dataset_name = "adrs",
-#'  date = ADT,
-#'  filter = PARAMCD == "RSP" & AVALC == "Y"
+#'   dataset_name = "adrs",
+#'   date = ADT,
+#'   filter = PARAMCD == "RSP" & AVALC == "Y"
 #' )
 #'
 #' derive_param_clinbenefit(
@@ -112,9 +113,8 @@
 #'   ref_start_window = 28,
 #'   set_values_to = vars(
 #'     PARAMCD = "CBR"
-#'       )
-#'    )
-
+#'   )
+#' )
 derive_param_clinbenefit <- function(dataset,
                                      dataset_adsl,
                                      filter_source,
@@ -136,11 +136,13 @@ derive_param_clinbenefit <- function(dataset,
   )
   assert_data_frame(
     dataset,
-    required_vars = vars(!!!by_vars, PARAMCD, AVALC, ADT))
+    required_vars = vars(!!!by_vars, PARAMCD, AVALC, ADT)
+  )
 
   filter_source <- assert_filter_cond(
     enquo(filter_source),
-    optional = FALSE)
+    optional = FALSE
+  )
 
   assert_vars(subject_keys)
   assert_s3_class(source_resp, "date_source")
@@ -167,7 +169,8 @@ derive_param_clinbenefit <- function(dataset,
 
   adsl_vars <- vars(
     !!!subject_keys,
-    !!reference_date)
+    !!reference_date
+  )
 
   adsl <- dataset_adsl %>%
     select(!!!adsl_vars)
@@ -185,13 +188,14 @@ derive_param_clinbenefit <- function(dataset,
     rename(temp_rs = !!source_resp$date)
 
   # Look for valid non-PD measurements after window from reference date
-  ovr_data <- filter_pd(dataset = dataset,
-                        filter = !!filter_source,
-                        source_pd = source_pd,
-                        source_datasets = source_datasets
-                        )
+  ovr_data <- filter_pd(
+    dataset = dataset,
+    filter = !!filter_source,
+    source_pd = source_pd,
+    source_datasets = source_datasets
+  )
 
-  ovr_data <- ovr_data  %>%
+  ovr_data <- ovr_data %>%
     left_join(
       adsl,
       by = vars2chr(subject_keys)
@@ -202,9 +206,9 @@ derive_param_clinbenefit <- function(dataset,
     ) %>%
     filter(
       !(AVALC %in% c("NA", "NE", "ND")) & !is.na(AVALC) &
-      ADT >= !!reference_date + days(ref_start_window)
+        ADT >= !!reference_date + days(ref_start_window)
     ) %>%
-  # Use this approach only for patients that are not already responders
+    # Use this approach only for patients that are not already responders
     anti_join(
       .,
       rsp_data,
@@ -248,5 +252,4 @@ derive_param_clinbenefit <- function(dataset,
   )
 
   bind_rows(dataset, new_param)
-
 }

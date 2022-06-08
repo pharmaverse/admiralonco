@@ -1,10 +1,10 @@
 library(lubridate)
 adsl <- tibble::tribble(
-  ~USUBJID, ~TRTSDT,           ~EOSDT,
-  "01",     ymd("2020-12-06"), ymd("2022-03-06"),
-  "02",     ymd("2021-01-16"), ymd("2022-02-03"),
-  "03",     ymd("2021-01-09"), ymd("2021-02-24"),
-  "04",     ymd("2021-04-21"), ymd("2021-09-15")
+  ~USUBJID, ~TRTSDT, ~EOSDT,
+  "01", ymd("2020-12-06"), ymd("2022-03-06"),
+  "02", ymd("2021-01-16"), ymd("2022-02-03"),
+  "03", ymd("2021-01-09"), ymd("2021-02-24"),
+  "04", ymd("2021-04-21"), ymd("2021-09-15")
 ) %>%
   mutate(STUDYID = "AB42")
 
@@ -31,7 +31,7 @@ adrs <- tibble::tribble(
 ) %>%
   mutate(STUDYID = "AB42")
 
-pd <-  date_source(
+pd <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == "PD" & AVALC == "Y"
@@ -44,13 +44,13 @@ resp <- date_source(
 )
 
 test_that("Clinical benefit rate parameter is derived correctly", {
-
-  input_cbr <-  tibble::tribble(
+  input_cbr <- tibble::tribble(
     ~USUBJID, ~PARAMCD, ~AVALC, ~ADT,
     "01", "CBR", "Y", ymd("2021-04-08"),
     "02", "CBR", "Y", ymd("2021-03-07"),
     "03", "CBR", "N", NA,
-    "04", "CBR", "N", NA)  %>%
+    "04", "CBR", "N", NA
+  ) %>%
     mutate(STUDYID = "AB42")
 
   expected_output <- bind_rows(adrs, input_cbr)
@@ -71,6 +71,6 @@ test_that("Clinical benefit rate parameter is derived correctly", {
   )
 
   expect_dfs_equal(actual_output, expected_output,
-                   keys = c("USUBJID", "PARAMCD", "ADT"))
-
+    keys = c("USUBJID", "PARAMCD", "ADT")
+  )
 })
