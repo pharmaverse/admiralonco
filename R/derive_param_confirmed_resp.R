@@ -226,7 +226,7 @@
 #' )
 #'
 #' # Derive confirmed best overall response parameter
-#' derive_param_confirmed_response(
+#' derive_param_confirmed_resp(
 #'   adrs,
 #'   dataset_adsl = adsl,
 #'   filter_source = PARAMCD == "OVR",
@@ -241,7 +241,7 @@
 #'   filter(PARAMCD == "CRSP")
 #'
 #' # Derive confirmed best overall response parameter (accepting SD for PR)
-#' derive_param_confirmed_response(
+#' derive_param_confirmed_resp(
 #'   adrs,
 #'   dataset_adsl = adsl,
 #'   filter_source = PARAMCD == "OVR",
@@ -255,17 +255,17 @@
 #'   )
 #' ) %>%
 #'   filter(PARAMCD == "CRSP")
-derive_param_confirmed_response <- function(dataset,
-                                       dataset_adsl,
-                                       filter_source,
-                                       source_pd = NULL,
-                                       source_datasets,
-                                       ref_confirm,
-                                       max_nr_ne = 1,
-                                       accept_sd = FALSE,
-                                       aval_fun = yn_to_numeric,
-                                       set_values_to,
-                                       subject_keys = vars(STUDYID, USUBJID)) {
+derive_param_confirmed_resp <- function(dataset,
+                                        dataset_adsl,
+                                        filter_source,
+                                        source_pd = NULL,
+                                        source_datasets,
+                                        ref_confirm,
+                                        max_nr_ne = 1,
+                                        accept_sd = FALSE,
+                                        aval_fun = yn_to_numeric,
+                                        set_values_to,
+                                        subject_keys = vars(STUDYID, USUBJID)) {
   # Check input parameters
   filter_source <- assert_filter_cond(enquo(filter_source))
   assert_s3_class(source_pd, "date_source", optional = TRUE)
@@ -287,9 +287,11 @@ derive_param_confirmed_response <- function(dataset,
 
   # Restrict input dataset
   source_data <- dataset %>%
-    filter_pd(filter = !!filter_source,
-              source_pd = source_pd,
-              source_datasets = source_datasets)
+    filter_pd(
+      filter = !!filter_source,
+      source_pd = source_pd,
+      source_datasets = source_datasets
+    )
 
   # Check for invalid AVALC values
   resp_vals <- source_data$AVALC
@@ -320,7 +322,8 @@ derive_param_confirmed_response <- function(dataset,
   ) %>%
     mutate(
       AVALC = "Y",
-      tmp_order = 1) %>%
+      tmp_order = 1
+    ) %>%
     select(!!!subject_keys, AVALC, tmp_order, ADT)
 
   if (accept_sd) {
@@ -349,7 +352,8 @@ derive_param_confirmed_response <- function(dataset,
   ) %>%
     mutate(
       AVALC = "Y",
-      tmp_order = 1) %>%
+      tmp_order = 1
+    ) %>%
     select(!!!subject_keys, AVALC, tmp_order, ADT)
 
   missing_data <- dataset_adsl %>%

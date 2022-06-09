@@ -64,11 +64,11 @@ pd_date <- admiral::date_source(
   filter = PARAMCD == "PD"
 )
 
-# derive_param_confirmed_response ----
-## derive_param_confirmed_response Test 1: default confirmed response ----
-test_that("derive_param_confirmed_response Test 1: default confirmed response", {
+# derive_param_confirmed_resp ----
+## derive_param_confirmed_resp Test 1: default confirmed response ----
+test_that("derive_param_confirmed_resp Test 1: default confirmed response", {
   actual <-
-    derive_param_confirmed_response(
+    derive_param_confirmed_resp(
       adrs,
       dataset_adsl = adsl,
       filter_source = PARAMCD == "OVR",
@@ -111,8 +111,8 @@ test_that("derive_param_confirmed_response Test 1: default confirmed response", 
   )
 })
 
-## derive_param_confirmed_response Test 2: accept SD ----
-test_that("derive_param_confirmed_response Test 2: accept SD", {
+## derive_param_confirmed_resp Test 2: accept SD ----
+test_that("derive_param_confirmed_resp Test 2: accept SD", {
   adrs_ext <- bind_rows(
     filter(adrs, USUBJID != "7"),
     tibble::tribble(
@@ -127,7 +127,7 @@ test_that("derive_param_confirmed_response Test 2: accept SD", {
   )
 
   actual <-
-    derive_param_confirmed_response(
+    derive_param_confirmed_resp(
       adrs_ext,
       dataset_adsl = adsl,
       filter_source = PARAMCD == "OVR",
@@ -172,8 +172,8 @@ test_that("derive_param_confirmed_response Test 2: accept SD", {
   )
 })
 
-## derive_param_confirmed_response Test 3: error if invalid response values ----
-test_that("derive_param_confirmed_response Test 3: error if invalid response values", {
+## derive_param_confirmed_resp Test 3: error if invalid response values ----
+test_that("derive_param_confirmed_resp Test 3: error if invalid response values", {
   adrs <- tibble::tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
     "1",      "2020-01-01", "PR",
@@ -189,7 +189,7 @@ test_that("derive_param_confirmed_response Test 3: error if invalid response val
     )
 
   expect_error(
-    derive_param_confirmed_response(
+    derive_param_confirmed_resp(
       adrs,
       dataset_adsl = adsl,
       filter_source = PARAMCD == "OVR",
