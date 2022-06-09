@@ -263,19 +263,7 @@ derive_param_bor <- function(dataset,
   
   admiral::assert_param_does_not_exist(dataset = dataset, 
                                        param   = rlang::quo_get_expr(set_values_to$PARAMCD))
- 
-  dataset <<- dataset
-  dataset_adsl <<- dataset_adsl
-  filter_source <<- filter_source
-  source_pd <<- source_pd
-  source_datasets <<- source_datasets
-  reference_date <<- reference_date
-  ref_start_window <<- ref_start_window
-  aval_fun <<- aval_fun
-  set_values_to <<- set_values_to
-  subject_keys <<- subject_keys
-  missing_as_ne <<- missing_as_ne
-  stop("yep good start")
+
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # filter_pd and filter_source: Filter source dataset using filter_source----
   # argument and also filter data after progressive disease with filter_pd
