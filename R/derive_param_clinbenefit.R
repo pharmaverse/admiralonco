@@ -91,13 +91,13 @@
 #' ) %>%
 #'   mutate(STUDYID = "AB42")
 #'
-#' pd <- date_source(
+#' pd <- admiral::date_source(
 #'   dataset_name = "adrs",
 #'   date = ADT,
 #'   filter = PARAMCD == "PD" & AVALC == "Y"
 #' )
 #'
-#' resp <- date_source(
+#' resp <- admiral::date_source(
 #'   dataset_name = "adrs",
 #'   date = ADT,
 #'   filter = PARAMCD == "RSP" & AVALC == "Y"
