@@ -53,7 +53,7 @@ A named list of datasets is expected. It links the \code{dataset_name} from
 
 For example if \code{source_pd = pd_date} with
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{pd_date <- date_source(
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{pd_date <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == PD
@@ -93,43 +93,20 @@ analysis value (\code{AVAL})
 The (first) argument of the function must expect a character vector and the
 function must return a numeric vector.
 
-\emph{Default:} \code{aval_resp} (see \code{aval_resp()} for details)}
+\emph{Default:} \code{yn_to_numeric} (see \code{admiral::yn_to_numeric()} for details)}
 
 \item{set_values_to}{Variables to set
 
 A named list returned by \code{vars()} defining the variables to be set for the
-new parameter, e.g. \code{vars(PARAMCD = "CBOR", PARAM = "Confirmed Best Overall Response")} is expected. The values must be symbols, character strings,
-numeric values, or \code{NA}.}
+new parameter, e.g. \code{vars(PARAMCD = "CRSP", PARAM = "Confirmed Response")}
+is expected. The values must be symbols, character strings, numeric values,
+or \code{NA}.}
 
 \item{subject_keys}{Variables to uniquely identify a subject
 
-A list of symbols created using \code{vars()} is expected.}
+A list of symbols created using \code{vars()} is expected.
 
-\item{reference_date}{Reference date
-
-The reference date is used for the derivation of \code{"SD"} and
-\code{"NON-CR/NON-PD"} response (see "Details" section). Usually it is treatment
-start date (\code{TRTSDT}) or randomization date (\code{RANDDT}).
-
-\emph{Permitted Values:} a numeric date variable}
-
-\item{ref_start_window}{Stable disease time window
-
-Assessments at least the specified number of days after the reference date
-with response \code{"CR"}, \code{"PR"}, \code{"SD"}, or \code{"NON-CR/NON-PD"} are considered
-as \code{"SD"} or \code{"NON-CR/NON-PD"} response.
-
-\emph{Permitted Values:} a non-negative numeric scalar}
-
-\item{missing_as_ne}{Consider no assessments as \code{"NE"}?
-
-If the argument is set to \code{TRUE}, the response is set to \code{"NE"} for
-subjects without an assessment in the input dataset. Otherwise, the
-response is set to \code{"MISSING"} for these subjects.
-
-\emph{Permitted Values:} a logical scalar
-
-\emph{Default:} \code{FALSE}}
+\emph{Default:} \code{vars(STUDYID, USUBJID)}}
 }
 \value{
 The input dataset with a new parameter for confirmed response
@@ -142,7 +119,10 @@ Derive confirmed response parameter
 \item The input dataset (\code{dataset}) is restricted to the observations matching
 \code{filter_source} and to observations before or at the date specified by
 \code{source_pd}.
-\item A subject is considered as responder if there is at least one observation in the restricted dataset with
+
+\item A subject is considered as responder if there is at least one
+observation in the restricted dataset with
+
 \itemize{
 \item \code{AVALC == "CR"},
 \item there is a confirmatory assessment with \code{AVALC == "CR"} at least
@@ -150,35 +130,40 @@ Derive confirmed response parameter
 \item all assessments between the assessment and the confirmatory
 assessment are \code{"CR"} or \code{"NE"}, and
 \item there are at most \code{max_nr_ne} \code{"NE"} assessments between the
+assessment and the confirmatory assessment.}
+
+or at least one observation with
+
+\itemize{
+\item \code{AVALC == "PR"},
+\item there is a confirmatory assessment with \code{AVALC \%in\% c("CR", "PR")} at
+least \code{ref_confirm} days after the assessment,
+\item all assessments between the assessment and the confirmatory
+assessment are \code{"CR"}, \code{"PR"}, or \code{"NE"},
+\item there is no \code{"PR"} assessment after a \code{"CR"} assessment in the
+confirmation period, and
+\item there are at most \code{max_nr_ne} \code{"NE"} assessments between the
 assessment and the confirmatory assessment.
 }
-}
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{or at least one observation with
-      - `AVALC == "PR"`,
-      - there is a confirmatory assessment with `AVALC \%in\% c("CR",
-      "PR")` at least `ref_confirm` days after the assessment,
-      - all assessments between the assessment and the confirmatory
-      assessment are `"CR"`, `"PR"`, or `"NE"`,
-      - there is no `"PR"` assessment after a `"CR"` assessment in the
-      confirmation period, and
-      - there are at most `max_nr_ne` `"NE"` assessments between the
-      assessment and the confirmatory assessment.
+If the \code{accept_sd} argument is set to \code{TRUE}, one \code{"SD"} assessment in the
+confirmation period of \code{"PR"} is accepted.
 
-      If the `accept_sd` argument is set to `TRUE`, one `"SD"` assessment
-      in the confirmation period is accepted.
-}\if{html}{\out{</div>}}
-\enumerate{
 \item For responders \code{AVALC} is set to \code{"Y"} and \code{ADT} to the first date where
 the response criteria are fulfilled. For all other subjects in
 \code{dataset_adsl} \code{AVALC} is set to \code{"N"} and \code{ADT} to \code{NA}.
+
 \item The \code{AVAL} variable is added and set to \code{aval_fun(AVALC)}.
+
 \item The variables specified by the \code{set_values_to} parameter are added to
 the new observations.
+
 \item The new observations are added to input dataset.
 }
 }
 \examples{
+
+library(dplyr)
 
 # Create ADSL dataset
 adsl <- tibble::tribble(
@@ -193,7 +178,6 @@ adsl <- tibble::tribble(
   "8",      "2020-04-01"
 ) \%>\%
   mutate(
-    TRTSDT = lubridate::ymd(TRTSDTC),
     STUDYID = "XX1234"
   )
 
@@ -236,21 +220,16 @@ ovr_obs <- tibble::tribble(
 pd_obs <-
   bind_rows(tibble::tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
-    "2",      "2020-03-01", "Y",
-    "4",      "2020-02-01", "Y"
+    "6",      "2020-04-12", "Y"
   ) \%>\%
     mutate(PARAMCD = "PD"))
+
 adrs <- bind_rows(ovr_obs, pd_obs) \%>\%
   mutate(
     ADT = lubridate::ymd(ADTC),
     STUDYID = "XX1234"
   ) \%>\%
-  select(-ADTC) \%>\%
-  admiral::derive_vars_merged(
-    dataset_add = adsl,
-    by_vars = dplyr::vars(STUDYID, USUBJID),
-    new_vars = dplyr::vars(TRTSDT)
-  )
+  select(-ADTC)
 
 pd_date <- admiral::date_source(
   dataset_name = "adrs",
@@ -271,7 +250,7 @@ derive_param_confirmed_response(
     PARAM = "Confirmed Response by Investigator"
   )
 ) \%>\%
-  filter(PARAMCD == "CBOR")
+  filter(PARAMCD == "CRSP")
 
 # Derive confirmed best overall response parameter (accepting SD for PR)
 derive_param_confirmed_response(

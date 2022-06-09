@@ -84,16 +84,16 @@ test_that("derive_param_confirmed_response Test 1: default confirmed response", 
   expected <- bind_rows(
     adrs,
     tibble::tribble(
-      ~USUBJID, ~ADTC,        ~AVALC,          ~AVAL,
-      "1",      "2020-02-01", "CR",            1,
-      "2",      "2020-02-01", "SD",            3,
-      "3",      "2020-01-01", "SD",            3,
-      "4",      "2020-03-01", "SD",            3,
-      "5",      "2020-05-15", "NON-CR/NON-PD", 4,
-      "6",      "2020-03-30", "SD",            3,
-      "7",      "2020-02-06", "NE",            6,
-      "8",      "",           "MISSING",       7,
-      "9",      "2020-02-16", "PD",            5
+      ~USUBJID, ~ADTC,        ~AVALC, ~AVAL,
+      "1",      "2020-01-01", "Y",    1,
+      "2",      "",           "N",    0,
+      "3",      "",           "N",    0,
+      "4",      "",           "N",    0,
+      "5",      "",           "N",    0,
+      "6",      "",           "N",    0,
+      "7",      "",           "N",    0,
+      "8",      "",           "N",    0,
+      "9",      "",           "N",    0
     ) %>%
       mutate(
         ADT = lubridate::ymd(ADTC),
@@ -123,11 +123,6 @@ test_that("derive_param_confirmed_response Test 2: accept SD", {
         PARAMCD = "OVR",
         ADT = lubridate::ymd(ADTC),
         STUDYID = "XX1234"
-      ) %>%
-      admiral::derive_vars_merged(
-        dataset_add = adsl,
-        by_vars = dplyr::vars(STUDYID, USUBJID),
-        new_vars = dplyr::vars(TRTSDT)
       )
   )
 
@@ -150,16 +145,16 @@ test_that("derive_param_confirmed_response Test 2: accept SD", {
   expected <- bind_rows(
     adrs_ext,
     tibble::tribble(
-      ~USUBJID, ~ADTC,        ~AVALC,          ~AVAL,
-      "1",      "2020-01-01", "PR",            2,
-      "2",      "2020-02-01", "PR",            2,
-      "3",      "2019-11-12", "CR",            1,
-      "4",      "2020-03-01", "SD",            3,
-      "5",      "2020-01-01", "PR",            2,
-      "6",      "2020-03-30", "SD",            3,
-      "7",      "2020-04-02", "ND",            NA,
-      "8",      "",           "NE",            6,
-      "9",      "2020-02-16", "PD",            5
+      ~USUBJID, ~ADTC,        ~AVALC, ~AVAL,
+      "1",      "2020-01-01", "Y",    1,
+      "2",      "2020-02-01", "Y",    1,
+      "3",      "2019-11-12", "Y",    1,
+      "4",      "",           "N",    0,
+      "5",      "2020-01-01", "Y",    1,
+      "6",      "",           "N",    0,
+      "7",      "",           "N",    0,
+      "8",      "",           "N",    0,
+      "9",      "",           "N",    0
     ) %>%
       mutate(
         ADT = lubridate::ymd(ADTC),
@@ -177,8 +172,8 @@ test_that("derive_param_confirmed_response Test 2: accept SD", {
   )
 })
 
-## derive_param_confirmed_bor Test 3: error if invalid response values ----
-test_that("derive_param_confirmed_bor Test 3: error if invalid response values", {
+## derive_param_confirmed_response Test 3: error if invalid response values ----
+test_that("derive_param_confirmed_response Test 3: error if invalid response values", {
   adrs <- tibble::tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
     "1",      "2020-01-01", "PR",
@@ -191,11 +186,6 @@ test_that("derive_param_confirmed_bor Test 3: error if invalid response values",
       PARAMCD = "OVR",
       ADT = lubridate::ymd(ADTC),
       STUDYID = "XX1234"
-    ) %>%
-    admiral::derive_vars_merged(
-      dataset_add = adsl,
-      by_vars = dplyr::vars(STUDYID, USUBJID),
-      new_vars = dplyr::vars(TRTSDT)
     )
 
   expect_error(

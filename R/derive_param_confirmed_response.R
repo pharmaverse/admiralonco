@@ -35,7 +35,7 @@
 #'   `source_pd` with an existing dataset.
 #'
 #'   For example if `source_pd = pd_date` with
-#'   ```
+#'   ```{r eval=FALSE}
 #'   pd_date <- date_source(
 #'     dataset_name = "adrs",
 #'     date = ADT,
@@ -47,22 +47,6 @@
 #'
 #'   This allows to define `pd_date` at a higher level, e.g., at company level,
 #'   where the actual dataset does not exist.
-#'
-#' @param reference_date Reference date
-#'
-#'   The reference date is used for the derivation of `"SD"` and
-#'   `"NON-CR/NON-PD"` response (see "Details" section). Usually it is treatment
-#'   start date (`TRTSDT`) or randomization date (`RANDDT`).
-#'
-#'   *Permitted Values:* a numeric date variable
-#'
-#' @param ref_start_window Stable disease time window
-#'
-#'   Assessments at least the specified number of days after the reference date
-#'   with response `"CR"`, `"PR"`, `"SD"`, or `"NON-CR/NON-PD"` are considered
-#'   as `"SD"` or `"NON-CR/NON-PD"` response.
-#'
-#'   *Permitted Values:* a non-negative numeric scalar
 #'
 #' @param ref_confirm Minimum time period for confirmation
 #'
@@ -77,21 +61,12 @@
 #'   *Permitted Values:* a non-negative numeric scalar
 #'
 #'   *Default:* `1`
+#'
 #' @param accept_sd Accept `"SD"` for `"PR"`?
 #'
 #'   If the argument is set to `TRUE`, one `"SD"` assessment between the
 #'   assessment and the confirmatory assessment for `"PR"` response is accepted.
 #'   Otherwise, no `"SD"` assessment must occur between the two assessments.
-#'
-#'   *Permitted Values:* a logical scalar
-#'
-#'   *Default:* `FALSE`
-#'
-#' @param missing_as_ne Consider no assessments as `"NE"`?
-#'
-#'   If the argument is set to `TRUE`, the response is set to `"NE"` for
-#'   subjects without an assessment in the input dataset. Otherwise, the
-#'   response is set to `"MISSING"` for these subjects.
 #'
 #'   *Permitted Values:* a logical scalar
 #'
@@ -103,59 +78,68 @@
 #'   The (first) argument of the function must expect a character vector and the
 #'   function must return a numeric vector.
 #'
-#'   *Default:* `aval_resp` (see `aval_resp()` for details)
+#'   *Default:* `yn_to_numeric` (see `admiral::yn_to_numeric()` for details)
 #'
 #' @param set_values_to Variables to set
 #'
 #'   A named list returned by `vars()` defining the variables to be set for the
-#'   new parameter, e.g. `vars(PARAMCD = "CBOR", PARAM = "Confirmed Best Overall
-#'   Response")` is expected. The values must be symbols, character strings,
-#'   numeric values, or `NA`.
+#'   new parameter, e.g. `vars(PARAMCD = "CRSP", PARAM = "Confirmed Response")`
+#'   is expected. The values must be symbols, character strings, numeric values,
+#'   or `NA`.
 #'
 #' @param subject_keys Variables to uniquely identify a subject
 #'
 #'   A list of symbols created using `vars()` is expected.
 #'
+#'   *Default:* `vars(STUDYID, USUBJID)`
+#'
 #' @details
 #'
-#'   1. The input dataset (`dataset`) is restricted to the observations matching
+#'   \enumerate{
+#'   \item The input dataset (`dataset`) is restricted to the observations matching
 #'   `filter_source` and to observations before or at the date specified by
 #'   `source_pd`.
 #'
-#'   1. A subject is considered as responder if there is at least one observation in the restricted dataset with
+#'   \item A subject is considered as responder if there is at least one
+#'   observation in the restricted dataset with
 #'
-#'       - `AVALC == "CR"`,
-#'       - there is a confirmatory assessment with `AVALC == "CR"` at least
-#'       `ref_confirm` days after the assessment,
-#'       - all assessments between the assessment and the confirmatory
-#'       assessment are `"CR"` or `"NE"`, and
-#'       - there are at most `max_nr_ne` `"NE"` assessments between the
-#'       assessment and the confirmatory assessment.
+#'   \itemize{
+#'   \item `AVALC == "CR"`,
+#'   \item there is a confirmatory assessment with `AVALC == "CR"` at least
+#'   `ref_confirm` days after the assessment,
+#'   \item all assessments between the assessment and the confirmatory
+#'   assessment are `"CR"` or `"NE"`, and
+#'   \item there are at most `max_nr_ne` `"NE"` assessments between the
+#'   assessment and the confirmatory assessment.}
 #'
-#'     or at least one observation with
-#'           - `AVALC == "PR"`,
-#'           - there is a confirmatory assessment with `AVALC %in% c("CR",
-#'           "PR")` at least `ref_confirm` days after the assessment,
-#'           - all assessments between the assessment and the confirmatory
-#'           assessment are `"CR"`, `"PR"`, or `"NE"`,
-#'           - there is no `"PR"` assessment after a `"CR"` assessment in the
-#'           confirmation period, and
-#'           - there are at most `max_nr_ne` `"NE"` assessments between the
-#'           assessment and the confirmatory assessment.
+#'   or at least one observation with
 #'
-#'           If the `accept_sd` argument is set to `TRUE`, one `"SD"` assessment
-#'           in the confirmation period is accepted.
+#'   \itemize{
+#'   \item `AVALC == "PR"`,
+#'   \item there is a confirmatory assessment with `AVALC %in% c("CR", "PR")` at
+#'   least `ref_confirm` days after the assessment,
+#'   \item all assessments between the assessment and the confirmatory
+#'   assessment are `"CR"`, `"PR"`, or `"NE"`,
+#'   \item there is no `"PR"` assessment after a `"CR"` assessment in the
+#'   confirmation period, and
+#'   \item there are at most `max_nr_ne` `"NE"` assessments between the
+#'   assessment and the confirmatory assessment.
+#'        }
 #'
-#'   1. For responders `AVALC` is set to `"Y"` and `ADT` to the first date where
+#'   If the `accept_sd` argument is set to `TRUE`, one `"SD"` assessment in the
+#'   confirmation period of `"PR"` is accepted.
+#'
+#'   \item For responders `AVALC` is set to `"Y"` and `ADT` to the first date where
 #'   the response criteria are fulfilled. For all other subjects in
 #'   `dataset_adsl` `AVALC` is set to `"N"` and `ADT` to `NA`.
 #'
-#'   1. The `AVAL` variable is added and set to `aval_fun(AVALC)`.
+#'   \item The `AVAL` variable is added and set to `aval_fun(AVALC)`.
 #'
-#'   1. The variables specified by the `set_values_to` parameter are added to
+#'   \item The variables specified by the `set_values_to` parameter are added to
 #'   the new observations.
 #'
-#'   1. The new observations are added to input dataset.
+#'   \item The new observations are added to input dataset.
+#'   }
 #'
 #' @return The input dataset with a new parameter for confirmed response
 #'
@@ -166,6 +150,8 @@
 #' @export
 #'
 #' @examples
+#'
+#' library(dplyr)
 #'
 #' # Create ADSL dataset
 #' adsl <- tibble::tribble(
@@ -180,7 +166,6 @@
 #'   "8",      "2020-04-01"
 #' ) %>%
 #'   mutate(
-#'     TRTSDT = lubridate::ymd(TRTSDTC),
 #'     STUDYID = "XX1234"
 #'   )
 #'
@@ -223,21 +208,16 @@
 #' pd_obs <-
 #'   bind_rows(tibble::tribble(
 #'     ~USUBJID, ~ADTC,        ~AVALC,
-#'     "2",      "2020-03-01", "Y",
-#'     "4",      "2020-02-01", "Y"
+#'     "6",      "2020-04-12", "Y"
 #'   ) %>%
 #'     mutate(PARAMCD = "PD"))
+#'
 #' adrs <- bind_rows(ovr_obs, pd_obs) %>%
 #'   mutate(
 #'     ADT = lubridate::ymd(ADTC),
 #'     STUDYID = "XX1234"
 #'   ) %>%
-#'   select(-ADTC) %>%
-#'   admiral::derive_vars_merged(
-#'     dataset_add = adsl,
-#'     by_vars = dplyr::vars(STUDYID, USUBJID),
-#'     new_vars = dplyr::vars(TRTSDT)
-#'   )
+#'   select(-ADTC)
 #'
 #' pd_date <- admiral::date_source(
 #'   dataset_name = "adrs",
@@ -258,7 +238,7 @@
 #'     PARAM = "Confirmed Response by Investigator"
 #'   )
 #' ) %>%
-#'   filter(PARAMCD == "CBOR")
+#'   filter(PARAMCD == "CRSP")
 #'
 #' # Derive confirmed best overall response parameter (accepting SD for PR)
 #' derive_param_confirmed_response(
@@ -298,7 +278,7 @@ derive_param_confirmed_response <- function(dataset,
   assert_vars(subject_keys)
   assert_data_frame(
     dataset,
-    required_vars = quo_c(subject_keys, reference_date, vars(PARAMCD, ADT, AVALC))
+    required_vars = quo_c(subject_keys, vars(PARAMCD, ADT, AVALC))
   )
   assert_data_frame(dataset_adsl, required_vars = subject_keys)
   if (!is.null(dataset)) {
@@ -310,6 +290,21 @@ derive_param_confirmed_response <- function(dataset,
     filter_pd(filter = !!filter_source,
               source_pd = source_pd,
               source_datasets = source_datasets)
+
+  # Check for invalid AVALC values
+  resp_vals <- source_data$AVALC
+  valid_vals <- c("CR", "PR", "SD", "NON-CR/NON-PD", "PD", "NE", "ND")
+  invalid_vals <- unique(resp_vals[!resp_vals %in% valid_vals])
+  if (length(invalid_vals) > 0) {
+    abort(
+      paste0(
+        "The function is considering only the following response values:\n",
+        enumerate(valid_vals),
+        "\nThe following invalid values were found:\n",
+        enumerate(invalid_vals)
+      )
+    )
+  }
 
   # Create observations for potential responses
   cr_data <- filter_confirmation(
