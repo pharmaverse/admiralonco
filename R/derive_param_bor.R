@@ -237,8 +237,8 @@ derive_param_bor <- function(dataset,
   # Assert statements ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
-  filter_source  <- admiral::assert_filter_cond(arg = enquo(filter_source))
-  reference_date <- admiral::assert_symbol(arg = enquo(reference_date))
+  filter_source  <- admiral::assert_filter_cond(arg = rlang::enquo(filter_source))
+  reference_date <- admiral::assert_symbol(arg = rlang::enquo(reference_date))
 
   admiral::assert_integer_scalar(arg      = ref_start_window, 
                                  subset   = "non-negative",
@@ -274,6 +274,7 @@ derive_param_bor <- function(dataset,
   aval_fun <<- aval_fun
   set_values_to <<- set_values_to
   subject_keys <<- subject_keys
+  missing_as_ne <<- missing_as_ne
   stop("yep good start")
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # filter_pd and filter_source: Filter source dataset using filter_source----
@@ -318,7 +319,7 @@ derive_param_bor <- function(dataset,
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
     dataset_filter <- dataset %>%
-      dplyr::filter(!!enquo(filter_source))
+      dplyr::filter(!!rlang::enquo(filter_source))
     
   }
                 
@@ -353,6 +354,13 @@ derive_param_bor <- function(dataset,
   after_ref_data <- dataset_filter %>% 
     dplyr::filter(ADT >= !!reference_date + lubridate::days(ref_start_window)) 
   
+  after_ref_data <- after_ref_data[c(-14),]
+  
+  # create list of unique subject_keys with at least one record 
+  # where ADT >= reference_date + days(ref_start_window)
+  subjects_with_record_after_ref_data <- after_ref_data %>% 
+    dplyr::distinct(!!!subject_keys)
+  
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Data frame 1: bor_data_01, ADT >= reference_date + ref_start_window
   #               and assign sort order to select best (i.e. lowest) later
@@ -374,16 +382,13 @@ derive_param_bor <- function(dataset,
     dplyr::mutate(tmp_record_after_reference = FALSE) %>%
     dplyr::select(!!!subject_keys, AVALC, ADT)
   
-  # after_ref_data <- after_ref_data[c(-14),]
-  
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Data frame 2: bor_data_02, ADT < reference_date + ref_start_window 
   #               but subject does have a subsequent read in dataframe 1.
   #               and assign sort order to select best (i.e. lowest) later
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
-  bor_data_02 <- after_ref_data %>% 
-    dplyr::distinct(!!!subject_keys) %>% 
+  bor_data_02 <- subjects_with_record_after_ref_data %>% 
     dplyr::left_join(before_ref_data) %>%
     dplyr::mutate(tmp_order = dplyr::case_when(AVALC %in% c("CR") ~ 1,
                                                AVALC %in% c("PR") ~ 2,
@@ -398,11 +403,14 @@ derive_param_bor <- function(dataset,
   #               but subject does not have a subsequent read in dataframe 1.
   #               and assign sort order to select best (i.e. lowest) later.
   #               (Note: this is NE for subects with 'SD' or 'NON-CR/NON-PD')
+  # 
+  # Note: dplyr::anti_join(before_ref_data, subjects_with_record_after_ref_data)
+  #       All rows in before_ref_data that do not have a match in
+  #       subjects_with_record_after_ref_data.
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
-  bor_data_03 <- before_ref_data_01  %>% 
-    dplyr::distinct(!!!subject_keys) %>% 
-    dplyr::anti_join(after_ref_data) %>%
+  bor_data_03 <- before_ref_data  %>% 
+    dplyr::anti_join(subjects_with_record_after_ref_data) %>%
     dplyr::mutate(tmp_order = dplyr::case_when(AVALC %in% c("CR") ~ 1,
                                                AVALC %in% c("PR") ~ 2,
                                                AVALC %in% c("PD") ~ 5,
@@ -432,7 +440,7 @@ derive_param_bor <- function(dataset,
                                 bor_data_02, 
                                 bor_data_03,
                                 bor_data_04) %>%
-    admiral::filter_extreme(by_vars = !!!subject_keys,
+    admiral::filter_extreme(by_vars = subject_keys,
                             order   = admiral::vars(tmp_order, ADT),
                             mode    = "first") %>%
     dplyr::select(-tmp_order)
@@ -449,7 +457,7 @@ derive_param_bor <- function(dataset,
                     !!!set_values_to),
     
     error = function(cnd) {
-      abort(
+      rlang::abort(
         paste0(
           "Assigning new columns with set_values_to has failed:\n",
           "set_values_to = (\n",

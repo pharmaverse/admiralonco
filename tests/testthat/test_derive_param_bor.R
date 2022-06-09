@@ -52,10 +52,9 @@ adrs <- tibble::tribble(
   "7",      "2020-04-01", "NE"
 ) %>%
   dplyr::mutate(PARAMCD = "OVR") %>%
-  dplyr:bind_rows(tibble::tribble(
+  dplyr::bind_rows(tibble::tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
-    "2",      "2020-03-01", "Y",
-    "4",      "2020-02-01", "Y"
+    "9",      "2020-02-16", "Y"
   ) %>%
     dplyr::mutate(PARAMCD = "PD")) %>%
   dplyr::mutate(
@@ -75,15 +74,30 @@ pd_date <- admiral::date_source(
 )
 
 # derive_param_bor, Test 1 ----
-test_that("derive_param_bor Test 1: default  BOR", {
+test_that("derive_param_bor Test 1: 
+          default  BOR, All Subjects have a record after reference date,  
+          No source_pd", {
+
+  aval_fun_pass <- function(arg) {
+    dplyr::case_when(
+      arg == "CR" ~ 1,
+      arg == "PR" ~ 2,
+      arg == "SD" ~ 3,
+      arg == "NON-CR/NON-PD" ~ 4,
+      arg == "PD" ~ 5,
+      arg == "NE" ~ 6,
+      arg == "MISSING" ~ 7,
+      TRUE ~ NA_real_
+    ) }
+    
   actual <- derive_param_bor(adrs,
                              dataset_adsl     = adsl,
                              filter_source    = PARAMCD == "OVR",
-                             source_pd        = pd_date,
-                             source_datasets  = list(adrs = adrs),
+                             source_pd        = NULL,
+                             source_datasets  = NULL,
                              reference_date   = TRTSDT,
                              ref_start_window = 28,
-                             aval_fun         = dummy_func <- function() { return (1)},
+                             aval_fun         = aval_fun_pass,
                              set_values_to    = admiral::vars(PARAMCD = "BOR",
                                                               PARAM   = "Best Overall Response"))
   
@@ -91,12 +105,12 @@ test_that("derive_param_bor Test 1: default  BOR", {
                                tibble::tribble(
                                  ~USUBJID, ~ADTC,        ~AVALC,          ~AVAL,
                                  "1",      "2020-02-01", "CR",            1,
-                                 "2",      "2020-02-01", "SD",            3,
-                                 "3",      "2020-01-01", "SD",            3,
-                                 "4",      "2020-03-01", "SD",            3,
-                                 "5",      "2020-05-15", "NON-CR/NON-PD", 4,
-                                 "6",      "2020-03-30", "SD",            3,
-                                 "7",      "2020-02-06", "NE",            6,
+                                 "2",      "2020-03-13", "CR",            1,
+                                 "3",      "2019-11-12", "CR",            1,
+                                 "4",      "2020-01-01", "PR",            2,
+                                 "5",      "2020-01-01", "PR",            2,
+                                 "6",      "2020-02-16", "CR",            1,
+                                 "7",      "2020-02-16", "CR",            1,
                                  "8",      "",           "MISSING",       7
                                ) %>%
                               dplyr::mutate(ADT     = lubridate::ymd(ADTC),
@@ -105,15 +119,17 @@ test_that("derive_param_bor Test 1: default  BOR", {
                                             PARAM   = "Best Confirmed Overall Response by Investigator") %>%
                               dplyr::select(-ADTC))
   
-  expect_dfs_equal(
-    base = expected,
-    compare = actual,
-    keys = c("USUBJID", "PARAMCD", "ADT")
+  admiral::expect_dfs_equal(base    = expected,
+                            compare = actual,
+                            keys    = c("USUBJID", "PARAMCD", "ADT")
   )
 })
 
 # derive_param_bor, Test 2 ----
-test_that("derive_param_bor Test 2: accept SD, ND handling, missing as NE", {
+test_that("derive_param_bor Test 2: 
+          Two subjects only have records less than reference date,  
+          No source_pd", {
+            
   adrs_ext <- bind_rows(
     filter(adrs, USUBJID != "7"),
     tibble::tribble(
