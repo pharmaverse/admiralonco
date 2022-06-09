@@ -1,6 +1,14 @@
 globalVariables(c(
+  ".",
   "ADT",
+  "AVALC",
+  "PARAMCD",
   "STUDYID",
+  "temp_rs",
+  "tmp_obs",
+  "tmp_obs_nr_filter_confirmation",
+  "tmp_obs_nr_filter_confirmation.join",
+  "TRTSDT",
   "USUBJID",
   "temp_date"
 ))

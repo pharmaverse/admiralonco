@@ -5,7 +5,8 @@
 #'   date_source derive_var_obs_number derive_vars_merged enumerate expect_dfs_equal
 #'   extract_vars filter_extreme filter_if filter_relative quo_c squote vars2chr 
 #' @importFrom dplyr anti_join bind_rows filter group_by if_else left_join mutate
-#'   right_join select slice vars ungroup
-#' @importFrom magrittr `%>%`
+#'   rename right_join select slice vars ungroup
+#' @importFrom lubridate days
+#' @importFrom magrittr %>%
 #' @importFrom rlang abort enquo quo_get_expr quo_is_null 
 "_PACKAGE"

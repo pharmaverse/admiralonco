@@ -75,6 +75,7 @@ from a reference date.
 }
 \examples{
 library(lubridate)
+library(dplyr)
 adsl <- tibble::tribble(
   ~USUBJID, ~TRTSDT, ~EOSDT,
   "01", ymd("2020-01-14"), ymd("2020-05-06"),
