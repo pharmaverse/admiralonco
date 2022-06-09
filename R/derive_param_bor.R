@@ -133,11 +133,9 @@
 #'   "6",      "2020-02-02",
 #'   "7",      "2020-02-02",
 #'   "8",      "2020-04-01"
-#' ) %>%
-#'   dplyr::mutate(
-#'     TRTSDT = lubridate::ymd(TRTSDTC),
-#'     STUDYID = "XX1234"
-#'   )
+#'   ) %>%
+#'   dplyr::mutate(TRTSDT = lubridate::ymd(TRTSDTC),
+#'                 STUDYID = "XX1234")
 #'
 #' # Create ADRS dataset
 #' ovr_obs <- tibble::tribble(
@@ -172,7 +170,7 @@
 #'   "7",      "2020-02-06", "PR",
 #'   "7",      "2020-02-16", "CR",
 #'   "7",      "2020-04-01", "NE"
-#' ) %>%
+#'   ) %>%
 #'   dplyr::mutate(PARAMCD = "OVR")
 #'
 #' pd_obs <-
@@ -180,25 +178,22 @@
 #'     ~USUBJID, ~ADTC,        ~AVALC,
 #'     "2",      "2020-03-01", "Y",
 #'     "4",      "2020-02-01", "Y"
-#'   ) %>%
+#'     ) %>%
 #'     dplyr::mutate(PARAMCD = "PD"))
+#'     
 #' adrs <- dplyr::bind_rows(ovr_obs, pd_obs) %>%
-#'   dplyr::mutate(
-#'     ADT = lubridate::ymd(ADTC),
-#'     STUDYID = "XX1234"
-#'   ) %>%
+#'   dplyr::mutate(ADT     = lubridate::ymd(ADTC),
+#'                 STUDYID = "XX1234") %>%
 #'   dplyr::select(-ADTC) %>%
 #'   admiral::derive_vars_merged(
 #'     dataset_add = adsl,
 #'     by_vars     = dplyr::vars(STUDYID, USUBJID),
-#'     new_vars    = dplyr::vars(TRTSDT)
-#'   )
+#'     new_vars    = dplyr::vars(TRTSDT) )
 #'
 #' pd_date <- admiral::date_source(
 #'   dataset_name = "adrs",
 #'   date         = ADT,
-#'   filter       = PARAMCD == "PD"
-#' )
+#'   filter       = PARAMCD == "PD")
 #'
 #' # Derive best overall response parameter
 #' derive_param_bor(
@@ -209,12 +204,10 @@
 #'   source_datasets  = list(adrs = adrs),
 #'   reference_date   = TRTSDT,
 #'   ref_start_window = 28,
-#'   set_values_to    = vars(
-#'     PARAMCD        = "CBOR",
-#'     PARAM          = "Best Overall Response by Investigator"
-#'   )
+#'   set_values_to    = dplyr::vars(PARAMCD = "BOR",
+#'                                  PARAM   = "Best Overall Response")
 #' ) %>%
-#'   filter(PARAMCD == "BOR")
+#'   dplyr::filter(PARAMCD == "BOR")
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @export
 #' @name   derive_param_bor
