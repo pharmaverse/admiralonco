@@ -298,7 +298,7 @@ derive_param_confirmed_response <- function(dataset,
   assert_vars(subject_keys)
   assert_data_frame(
     dataset,
-    required_vars = admiral:::quo_c(subject_keys, reference_date, vars(PARAMCD, ADT, AVALC))
+    required_vars = quo_c(subject_keys, reference_date, vars(PARAMCD, ADT, AVALC))
   )
   assert_data_frame(dataset_adsl, required_vars = subject_keys)
   if (!is.null(dataset)) {
@@ -307,9 +307,9 @@ derive_param_confirmed_response <- function(dataset,
 
   # Restrict input dataset
   source_data <- dataset %>%
-    filter(!!filter_source)
-  # filter_pd(source_pd = source_pd,
-  #    source_datasets = source_datasets)
+    filter_pd(filter = !!filter_source,
+              source_pd = source_pd,
+              source_datasets = source_datasets)
 
   # Create observations for potential responses
   cr_data <- filter_confirmation(
