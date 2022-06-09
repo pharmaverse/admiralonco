@@ -83,7 +83,13 @@ jobs:
         run: |
           options(repos = Sys.getenv("R_REPOS"))
           remotes::install_deps(dependencies = TRUE)
-          remotes::install_github("pharmaverse/admiral", ref = "devel")
+          ref <- if (Sys.getenv("GITHUB_REF_NAME") == "main") "main" else "devel"
+          remotes::install_github(
+            "pharmaverse/admiral",
+            ref = ref,
+            dependencies = FALSE,
+            upgrade = "never"
+          )
         shell: Rscript {0}
 
       - name: Check
