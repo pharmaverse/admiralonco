@@ -212,6 +212,8 @@ the new observations.
 }
 \examples{
 
+library(dplyr)
+
 # Create ADSL dataset
 adsl <- tibble::tribble(
   ~USUBJID, ~TRTSDTC,
