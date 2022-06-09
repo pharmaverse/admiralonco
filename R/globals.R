@@ -1,5 +1,9 @@
 globalVariables(c(
   "ADT",
+  "ADT.join",
+  "AVALC",
+  "AVALC.join",
+  "PARAMCD",
   "STUDYID",
   "USUBJID",
   "temp_date"
