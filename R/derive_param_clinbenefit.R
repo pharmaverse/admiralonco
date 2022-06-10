@@ -91,6 +91,8 @@
 #' @examples
 #' library(lubridate)
 #' library(dplyr)
+#' library(admiral)
+#'
 #' adsl <- tibble::tribble(
 #'   ~USUBJID, ~TRTSDT, ~EOSDT,
 #'   "01", ymd("2020-01-14"), ymd("2020-05-06"),
@@ -161,7 +163,6 @@ derive_param_clinbenefit <- function(dataset,
                                      subject_keys = vars(STUDYID, USUBJID)) {
 
   # Assertions and quotes
-  assert_vars(by_vars, optional = TRUE)
   reference_date <- assert_symbol(enquo(reference_date))
   assert_vars(subject_keys)
   assert_data_frame(
@@ -212,7 +213,7 @@ derive_param_clinbenefit <- function(dataset,
 
   rsp_data <- source_datasets[[source_resp$dataset_name]] %>%
     filter_if(source_resp$filter) %>%
-    select(!!!subject_keys, !!!by_vars, !!source_resp$date) %>%
+    select(!!!subject_keys, !!source_resp$date) %>%
     rename(temp_rs = !!source_resp$date)
 
   # Look for valid non-PD measurements after window from reference date
@@ -221,7 +222,7 @@ derive_param_clinbenefit <- function(dataset,
     filter = !!filter_source,
     source_pd = source_pd,
     source_datasets = source_datasets,
-    subject_keys = !!subject_keys
+    subject_keys = vars(!!!subject_keys)
   )
 
   ovr_data <- ovr_data %>%
@@ -245,7 +246,7 @@ derive_param_clinbenefit <- function(dataset,
       mode = "first",
       check_type = "none"
     ) %>%
-    select(!!!subject_keys, !!!by_vars, ADT)
+    select(!!!subject_keys, ADT)
 
   rsp_data <- rsp_data %>%
     rename(ADT = temp_rs)

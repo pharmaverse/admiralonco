@@ -107,6 +107,8 @@ with values equal to the values specified in the same.
 \examples{
 library(lubridate)
 library(dplyr)
+library(admiral)
+
 adsl <- tibble::tribble(
   ~USUBJID, ~TRTSDT, ~EOSDT,
   "01", ymd("2020-01-14"), ymd("2020-05-06"),
