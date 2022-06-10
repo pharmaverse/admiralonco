@@ -303,8 +303,8 @@ resp <- date_source(
 ```
 
 The function `derive_param_clinbenefit()` can then be used to derive the clinical benefit parameter, which we define
-as a patient having had a response or a sustained period of time before first `PD`. In this example the "sustained period"
-has been defined as 42 days after randomization date.
+as a patient having had a response or a sustained period of time before first `PD`. This could also be known as
+disease control. In this example the "sustained period" has been defined as 42 days after randomization date.
 
 ```{r}
 adrs <- adrs %>%
