@@ -3,10 +3,11 @@
 #' Add a clinical benefit/disease control parameter to the input dataset.
 #'
 #' @details
-#' Clinical benefit/disease control is derived for subjects that have at least
-#' one evaluable non-PD response assessment prior to first PD (Progressive Disease)
-#' (i.e., inclusive of `CR`, `PR`, `SD` and exclusive of `NA`, `NE`, `ND`, and `PD`)
-#' and after a specified amount of time from a reference date (`ref_start_window`).
+#' Clinical benefit/disease control is first identified for looking for subjects
+#' having response status, and then derived for subjects that have at least one
+#' evaluable non-PD response assessment prior to first PD (Progressive Disease)
+#' (i.e., inclusive of `CR`, `PR`, `SD` and exclusive of `NA`, `NE`, `ND`, and
+#' `PD`) and after a specified amount of time from a reference date (`ref_start_window`).
 #'
 #' \enumerate{
 #'   \item The input dataset (`dataset`) is restricted to the observations matching
@@ -234,12 +235,6 @@ derive_param_clinbenefit <- function(dataset,
       !(AVALC %in% c("NA", "NE", "ND", "PD")) & !is.na(AVALC) &
         ADT >= !!reference_date + days(ref_start_window)
     ) %>%
-    # Use this approach only for patients that are not already responders
-    anti_join(
-      .,
-      rsp_data,
-      by = vars2chr(subject_keys)
-    ) %>%
     filter_extreme(
       order = vars(ADT),
       by_vars = vars(!!!subject_keys),
@@ -252,6 +247,12 @@ derive_param_clinbenefit <- function(dataset,
     rename(ADT = temp_rs)
 
   new_param <- bind_rows(ovr_data, rsp_data) %>%
+    filter_extreme(
+      order = vars(ADT),
+      by_vars = vars(!!!subject_keys),
+      mode = "first",
+      check_type = "none"
+    ) %>%
     right_join(adsl, by = vars2chr(subject_keys)) %>%
     mutate(AVALC = if_else(!is.na(ADT), "Y", "N")) %>%
     select(-!!reference_date) %>%

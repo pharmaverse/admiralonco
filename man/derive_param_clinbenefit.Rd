@@ -75,10 +75,11 @@ The input dataset with a new parameter for clinical benefit
 Add a clinical benefit/disease control parameter to the input dataset.
 }
 \details{
-Clinical benefit/disease control is derived for subjects that have at least
-one evaluable non-PD response assessment prior to first PD (Progressive Disease)
-(i.e., inclusive of \code{CR}, \code{PR}, \code{SD} and exclusive of \code{NA}, \code{NE}, \code{ND}, and \code{PD})
-and after a specified amount of time from a reference date (\code{ref_start_window}).
+Clinical benefit/disease control is first identified for looking for subjects
+having response status, and then derived for subjects that have at least one
+evaluable non-PD response assessment prior to first PD (Progressive Disease)
+(i.e., inclusive of \code{CR}, \code{PR}, \code{SD} and exclusive of \code{NA}, \code{NE}, \code{ND}, and
+\code{PD}) and after a specified amount of time from a reference date (\code{ref_start_window}).
 
 \enumerate{
 \item The input dataset (\code{dataset}) is restricted to the observations matching
