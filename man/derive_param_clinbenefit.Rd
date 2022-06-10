@@ -11,9 +11,9 @@ derive_param_clinbenefit(
   source_resp,
   source_pd,
   source_datasets,
-  by_vars = NULL,
-  reference_date = TRTSDT,
-  ref_start_window = 28,
+  reference_date,
+  ref_start_window,
+  aval_fun = yn_to_numeric,
   set_values_to,
   subject_keys = vars(STUDYID, USUBJID)
 )
@@ -25,18 +25,18 @@ benefit rate parameter will be added.
 The variables \code{PARAMCD}, \code{AVALC}, \code{ADT}, and those specified by the \code{by_vars}
 parameter are expected.}
 
-\item{dataset_adsl}{ADSL dataset used as input for populating \code{subject_keys}
-in input dataset.
+\item{dataset_adsl}{ADSL input dataset.
 
-The variables specified by the \code{subject_keys} parameter and the \code{reference_date}
-parameter are expected.}
+The variables specified for \code{subject_keys} parameter and the \code{reference_date}
+parameter are expected. For each subject of the specified dataset a new
+observation is added to the input dataset.}
 
 \item{filter_source}{Filter condition in \code{dataset} that represents records
 for overall disease response assessment for a subject at a given timepoint,
 e.g. \code{PARAMCD == "OVR"} or \code{PARAMCD == "OVRLRESP"}.}
 
 \item{source_resp}{A \code{date_source} object specifying the dataset, date variable,
-and filter condition used to identify objective response status.}
+and filter condition used to identify response status.}
 
 \item{source_pd}{A \code{date_source} object specifying the dataset, date variable,
 and filter condition used to identify disease progression.}
@@ -44,11 +44,7 @@ and filter condition used to identify disease progression.}
 \item{source_datasets}{A named list of data sets is expected.
 
 The list must contain the names provided by the \code{dataset_name} field of the
-\code{admiral::date_source()} objects specified for \code{source_pd} and \code{source_resp}.}
-
-\item{by_vars}{A named list returned by \code{vars()} used together with \code{subject_keys}
-to identify groupings within which the earliest date of clinical benefit rate
-status will be chosen.}
+\code{date_source()} objects specified for \code{source_pd} and \code{source_resp}.}
 
 \item{reference_date}{Name of variable representing the index date for
 \code{ref_start_window}. A variable providing a date. An unquoted symbol is expected.}
@@ -57,6 +53,14 @@ status will be chosen.}
 that must elapse before an evaluable non-PD assessment counts toward determining
 clinical benefit.}
 
+\item{aval_fun}{Function to map character analysis value (\code{AVALC}) to numeric
+analysis value (\code{AVAL})
+
+The (first) argument of the function must expect a character vector and the
+function must return a numeric vector.
+
+\emph{Default:} \code{yn_to_numeric} (see \code{admiral::yn_to_numeric()} for details)}
+
 \item{set_values_to}{A named list returned by \code{vars()} containing new variables
 and their static value to be populated for the clinical benefit rate parameter
 records, e.g. \code{vars(PARAMCD = "CBR", PARAM = "Clinical Benefit Rate")}.}
@@ -64,14 +68,17 @@ records, e.g. \code{vars(PARAMCD = "CBR", PARAM = "Clinical Benefit Rate")}.}
 \item{subject_keys}{A named list returned by \code{vars()} containing variables
 used to uniquely identify subjects.}
 }
+\value{
+The input dataset with a new parameter for clinical benefit
+}
 \description{
 Add a clinical benefit/disease control parameter to the input dataset.
 }
 \details{
 Clinical benefit/disease control is first identified for looking for subjects
-having objective response, and then derived for subjects that have at least
-one evaluable non-PD response assessment after a specified amount of time
-from a reference date.
+having response, and then derived for subjects that have at least
+one evaluable non-PD response assessment prior to first PD (Progressive Disease)
+and after a specified amount of time from a reference date.
 }
 \examples{
 library(lubridate)
@@ -106,18 +113,18 @@ adrs <- tibble::tribble(
   "04", "OVR", "NE", ymd("2021-07-24"),
   "04", "OVR", "ND", ymd("2021-09-04"),
 ) \%>\%
-  mutate(STUDYID = "AB42")
+  mutate(STUDYID = "AB42", ANL01FL = "Y")
 
-pd <- admiral::date_source(
+pd <- date_source(
   dataset_name = "adrs",
   date = ADT,
-  filter = PARAMCD == "PD" & AVALC == "Y"
+  filter = PARAMCD == "PD" & AVALC == "Y" & ANL01FL == "Y"
 )
 
-resp <- admiral::date_source(
+resp <- date_source(
   dataset_name = "adrs",
   date = ADT,
-  filter = PARAMCD == "RSP" & AVALC == "Y"
+  filter = PARAMCD == "RSP" & AVALC == "Y" & ANL01FL == "Y"
 )
 
 derive_param_clinbenefit(
@@ -137,3 +144,5 @@ derive_param_clinbenefit(
 \author{
 Andrew Smith
 }
+\keyword{adrs}
+\keyword{derivation}

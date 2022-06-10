@@ -4,9 +4,9 @@
 #'
 #' @details
 #' Clinical benefit/disease control is first identified for looking for subjects
-#' having objective response, and then derived for subjects that have at least
-#' one evaluable non-PD response assessment after a specified amount of time
-#' from a reference date.
+#' having response, and then derived for subjects that have at least
+#' one evaluable non-PD response assessment prior to first PD (Progressive Disease)
+#' and after a specified amount of time from a reference date.
 #'
 #' @param dataset Input dataset. This is the dataset to which the clinical
 #' benefit rate parameter will be added.
@@ -14,18 +14,18 @@
 #'   The variables `PARAMCD`, `AVALC`, `ADT`, and those specified by the `by_vars`
 #'   parameter are expected.
 #'
-#' @param dataset_adsl ADSL dataset used as input for populating `subject_keys`
-#' in input dataset.
-#'
-#'   The variables specified by the `subject_keys` parameter and the `reference_date`
-#'   parameter are expected.
+#' @param dataset_adsl ADSL input dataset.
+#' 
+#'   The variables specified for `subject_keys` parameter and the `reference_date`
+#'   parameter are expected. For each subject of the specified dataset a new
+#'   observation is added to the input dataset.
 #'
 #' @param filter_source Filter condition in `dataset` that represents records
 #' for overall disease response assessment for a subject at a given timepoint,
 #' e.g. `PARAMCD == "OVR"` or `PARAMCD == "OVRLRESP"`.
 #'
 #' @param source_resp A `date_source` object specifying the dataset, date variable,
-#' and filter condition used to identify objective response status.
+#' and filter condition used to identify response status.
 #'
 #' @param source_pd A `date_source` object specifying the dataset, date variable,
 #' and filter condition used to identify disease progression.
@@ -33,11 +33,7 @@
 #' @param source_datasets  A named list of data sets is expected.
 #'
 #'  The list must contain the names provided by the `dataset_name` field of the
-#'  `admiral::date_source()` objects specified for `source_pd` and `source_resp`.
-#'
-#' @param by_vars A named list returned by `vars()` used together with `subject_keys`
-#' to identify groupings within which the earliest date of clinical benefit rate
-#' status will be chosen.
+#'  `date_source()` objects specified for `source_pd` and `source_resp`.
 #'
 #' @param reference_date Name of variable representing the index date for
 #' `ref_start_window`. A variable providing a date. An unquoted symbol is expected.
@@ -46,12 +42,24 @@
 #' that must elapse before an evaluable non-PD assessment counts toward determining
 #' clinical benefit.
 #'
+#' @param aval_fun Function to map character analysis value (`AVALC`) to numeric
+#' analysis value (`AVAL`)
+#'
+#' The (first) argument of the function must expect a character vector and the
+#' function must return a numeric vector.
+#'
+#' *Default:* `yn_to_numeric` (see `admiral::yn_to_numeric()` for details)
+#'
 #' @param set_values_to A named list returned by `vars()` containing new variables
 #' and their static value to be populated for the clinical benefit rate parameter
 #' records, e.g. `vars(PARAMCD = "CBR", PARAM = "Clinical Benefit Rate")`.
 #'
 #' @param subject_keys A named list returned by `vars()` containing variables
 #' used to uniquely identify subjects.
+#'
+#' @return The input dataset with a new parameter for clinical benefit
+#'
+#' @keywords derivation adrs
 #'
 #' @export
 #'
@@ -89,18 +97,18 @@
 #'   "04", "OVR", "NE", ymd("2021-07-24"),
 #'   "04", "OVR", "ND", ymd("2021-09-04"),
 #' ) %>%
-#'   mutate(STUDYID = "AB42")
+#'   mutate(STUDYID = "AB42", ANL01FL = "Y")
 #'
-#' pd <- admiral::date_source(
+#' pd <- date_source(
 #'   dataset_name = "adrs",
 #'   date = ADT,
-#'   filter = PARAMCD == "PD" & AVALC == "Y"
+#'   filter = PARAMCD == "PD" & AVALC == "Y" & ANL01FL == "Y"
 #' )
 #'
-#' resp <- admiral::date_source(
+#' resp <- date_source(
 #'   dataset_name = "adrs",
 #'   date = ADT,
-#'   filter = PARAMCD == "RSP" & AVALC == "Y"
+#'   filter = PARAMCD == "RSP" & AVALC == "Y" & ANL01FL == "Y"
 #' )
 #'
 #' derive_param_clinbenefit(
@@ -122,30 +130,30 @@ derive_param_clinbenefit <- function(dataset,
                                      source_resp,
                                      source_pd,
                                      source_datasets,
-                                     by_vars = NULL,
-                                     reference_date = TRTSDT,
-                                     ref_start_window = 28,
+                                     reference_date,
+                                     ref_start_window,
+                                     aval_fun = yn_to_numeric,
                                      set_values_to,
                                      subject_keys = vars(STUDYID, USUBJID)) {
 
   # Assertions and quotes
   assert_vars(by_vars, optional = TRUE)
   reference_date <- assert_symbol(enquo(reference_date))
+  assert_vars(subject_keys)
   assert_data_frame(
     dataset_adsl,
     required_vars = vars(!!!subject_keys, !!reference_date)
   )
   assert_data_frame(
     dataset,
-    required_vars = vars(!!!by_vars, PARAMCD, AVALC, ADT)
+    required_vars = vars(!!!subject_keys, PARAMCD, AVALC, ADT)
   )
 
   filter_source <- assert_filter_cond(
     enquo(filter_source),
     optional = FALSE
   )
-
-  assert_vars(subject_keys)
+  assert_function(aval_fun)
   assert_s3_class(source_resp, "date_source")
   assert_s3_class(source_pd, "date_source")
   assert_list_of(source_datasets, "data.frame")
@@ -163,7 +171,7 @@ derive_param_clinbenefit <- function(dataset,
   }
 
   ref_start_window <- assert_integer_scalar(ref_start_window)
-  assert_varval_list(set_values_to, accept_expr = TRUE, optional = TRUE)
+  assert_varval_list(set_values_to, optional = TRUE)
   assert_param_does_not_exist(dataset, quo_get_expr(set_values_to$PARAMCD))
 
   # ADSL variables
@@ -176,12 +184,7 @@ derive_param_clinbenefit <- function(dataset,
   adsl <- dataset_adsl %>%
     select(!!!adsl_vars)
 
-  # Get PD date and objective response date
-
-  pd_data <- source_datasets[[source_pd$dataset_name]] %>%
-    filter_if(source_pd$filter) %>%
-    select(!!!subject_keys, !!!by_vars, !!source_pd$date) %>%
-    rename(temp_pd = !!source_pd$date)
+  # Get response date
 
   rsp_data <- source_datasets[[source_resp$dataset_name]] %>%
     filter_if(source_resp$filter) %>%
@@ -193,7 +196,8 @@ derive_param_clinbenefit <- function(dataset,
     dataset = dataset,
     filter = !!filter_source,
     source_pd = source_pd,
-    source_datasets = source_datasets
+    source_datasets = source_datasets,
+    subject_keys = !!subject_keys
   )
 
   ovr_data <- ovr_data %>%
@@ -201,12 +205,8 @@ derive_param_clinbenefit <- function(dataset,
       adsl,
       by = vars2chr(subject_keys)
     ) %>%
-    left_join(
-      pd_data,
-      by = vars2chr(subject_keys)
-    ) %>%
     filter(
-      !(AVALC %in% c("NA", "NE", "ND")) & !is.na(AVALC) &
+      !(AVALC %in% c("NA", "NE", "ND", "PD")) & !is.na(AVALC) &
         ADT >= !!reference_date + days(ref_start_window)
     ) %>%
     # Use this approach only for patients that are not already responders
@@ -217,7 +217,7 @@ derive_param_clinbenefit <- function(dataset,
     ) %>%
     filter_extreme(
       order = vars(ADT),
-      by_vars = vars(!!!subject_keys, !!!by_vars),
+      by_vars = vars(!!!subject_keys),
       mode = "first",
       check_type = "none"
     ) %>%
@@ -229,28 +229,10 @@ derive_param_clinbenefit <- function(dataset,
   new_param <- bind_rows(ovr_data, rsp_data) %>%
     right_join(adsl, by = vars2chr(subject_keys)) %>%
     mutate(AVALC = if_else(!is.na(ADT), "Y", "N")) %>%
-    select(-!!reference_date)
+    select(-!!reference_date) %>%
+    mutate(AVAL = aval_fun(AVALC),
+      !!!set_values_to)
 
-  tryCatch(
-    new_param <- mutate(new_param, !!!set_values_to),
-    error = function(cnd) {
-      abort(
-        paste0(
-          "Assigning new variables failed!\n",
-          "set_values_to = (\n",
-          paste(
-            " ",
-            names(set_values_to),
-            "=",
-            lapply(set_values_to, quo_get_expr),
-            collapse = "\n"
-          ),
-          "\n)\nError message:\n  ",
-          cnd
-        )
-      )
-    }
-  )
 
   bind_rows(dataset, new_param)
 }
