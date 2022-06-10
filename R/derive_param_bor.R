@@ -294,7 +294,8 @@ derive_param_bor <- function(dataset,
                                                              admiral::vars(PARAMCD, ADT, AVALC)))
 
   admiral::assert_data_frame(arg           = dataset_adsl,
-                             required_vars = subject_keys)
+                             required_vars = admiral:::quo_c(subject_keys,
+                                                             reference_date))
 
   admiral::assert_param_does_not_exist(dataset = dataset,
                                        param   = rlang::quo_get_expr(set_values_to$PARAMCD))
@@ -364,12 +365,9 @@ derive_param_bor <- function(dataset,
   #  2.  Records where ADT < reference_date + ref_start_window
   #      but subject does have a subsequent read in dataframe 1.
   #  3.  Records where ADT < reference_date + ref_start_window
-  #      but subject does not have a subsequent read in dataframe 1.
-  #      (this is NE for subects with 'SD' or 'NON-CR/NON-PD')
+  #      and the subject does not have a record in step 1, BOR is set to 'NE' 
+  #      in this case where the subject has only AVALC = 'SD' or'NON-CR/NON-PD'
   #
-  #      Requirement: BOR is set to 'NE', in the case where the subject has only
-  #      AVALC = 'SD' or 'NON-CR/NON-PD' less than xxx days after the reference date
-  #      from ADSL.
   #  4.  Subjects in adsl and not in dataset_filter
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -423,7 +421,7 @@ derive_param_bor <- function(dataset,
   # Data frame 3: bor_data_03, ADT < reference_date + ref_start_window
   #               but subject does not have a subsequent read in dataframe 1.
   #               and assign sort order to select best (i.e. lowest) later.
-  #               (Note: this is NE for subects with 'SD' or 'NON-CR/NON-PD')
+  #               (Note: this is NE for subjects with 'SD' or 'NON-CR/NON-PD')
   #
   # Note: All rows in before_ref_data that do not have a match
   #       in subj_with_rec_after_ref_data are removed with anti_join.
@@ -431,7 +429,9 @@ derive_param_bor <- function(dataset,
 
   bor_data_03 <- before_ref_data  %>%
     dplyr::anti_join(subj_with_rec_after_ref_data) %>%
-    dplyr::mutate(tmp_order = dplyr::case_when(AVALC %in% c("CR") ~ 1,
+    dplyr::mutate(AVALC = dplyr::case_when(AVALC %in% c("CR", "PR", "PD") ~ AVALC,
+                                           AVALC %in% c("SD", "NON-CR/NON-PD") ~ "NE"),
+                  tmp_order = dplyr::case_when(AVALC %in% c("CR") ~ 1,
                                                AVALC %in% c("PR") ~ 2,
                                                AVALC %in% c("PD") ~ 5,
                                                TRUE ~ 6))
@@ -446,11 +446,10 @@ derive_param_bor <- function(dataset,
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   bor_data_04 <- dataset_adsl %>%
-    dplyr::select(!!!subject_keys) %>%
+    dplyr::select(!!!subject_keys, !!rlang::enquo(reference_date)) %>%
     dplyr::mutate(AVALC     = dplyr::case_when(isTRUE(missing_as_ne) ~ "NE",
                                                TRUE ~"MISSING"),
-                  tmp_order = 999) %>%
-    dplyr::select(!!!subject_keys, AVALC, tmp_order)
+                  tmp_order = 999)
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Bind three types of dataframes and select lowest value as BOR
