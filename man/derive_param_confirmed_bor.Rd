@@ -270,8 +270,7 @@ ovr_obs <- tibble::tribble(
 pd_obs <-
   bind_rows(tibble::tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
-    "2",      "2020-03-01", "Y",
-    "4",      "2020-02-01", "Y"
+    "6",      "2020-04-12", "Y"
   ) \%>\%
     mutate(PARAMCD = "PD"))
 adrs <- bind_rows(ovr_obs, pd_obs) \%>\%
