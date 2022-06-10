@@ -358,57 +358,10 @@ derive_param_bor <- function(dataset,
   }
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Create the response dataframes ----
-  #
-  # Three:
-  #  1.  Records where ADT >= reference_date + ref_start_window
-  #  2.  Records where ADT < reference_date + ref_start_window
-  #      but subject does have a subsequent read in dataframe 1.
-  #  3.  Records where ADT < reference_date + ref_start_window
-  #      and the subject does not have a record in step 1, BOR is set to 'NE' 
-  #      in this case where the subject has only AVALC = 'SD' or'NON-CR/NON-PD'
-  #
-  #  4.  Subjects in adsl and not in dataset_filter
+  # Create Sort Order for Selection of Minimum Later ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  # data where ADT >= reference_date + days(ref_start_window)
-  after_ref_data <- dataset_filter %>%
-    dplyr::filter(ADT >= !!reference_date + lubridate::days(ref_start_window))
-
-  # create list of unique subject_keys with at least one record
-  # where ADT >= reference_date + days(ref_start_window)
-  subj_with_rec_after_ref_data <- after_ref_data %>%
-    dplyr::distinct(!!!subject_keys)
-
-  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Data frame 1: bor_data_01, ADT >= reference_date + ref_start_window
-  #               and assign sort order to select best (i.e. lowest) later
-  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-  bor_data_01 <- after_ref_data %>%
-    dplyr::mutate(tmp_order = dplyr::case_when(AVALC %in% c("CR") ~ 1,
-                                               AVALC %in% c("PR") ~ 2,
-                                               AVALC %in% c("SD") ~ 3,
-                                               AVALC %in% c("NON-CR/NON-PD") ~ 4,
-                                               AVALC %in% c("PD") ~ 5,
-                                               AVALC %in% c("NE") ~ 6,
-                                               is.null(AVALC) ~ 7)) %>%
-    dplyr::select(!!!subject_keys, AVALC, tmp_order, ADT, !!rlang::enquo(reference_date))
-
-  # data where ADT < reference_date + days(ref_start_window)
-  before_ref_data <- dataset_filter %>%
-    dplyr::filter(ADT < !!reference_date + lubridate::days(ref_start_window)) %>%
-    dplyr::mutate(tmp_record_after_reference = FALSE) %>%
-    dplyr::select(!!!subject_keys, AVALC, ADT, !!rlang::enquo(reference_date))
-
-  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Data frame 2: bor_data_02, ADT < reference_date + ref_start_window
-  #               but subject does have a subsequent read in dataframe 1.
-  #               and assign sort order to select best (i.e. lowest) later
-  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-  bor_data_02 <- subj_with_rec_after_ref_data %>%
-    dplyr::left_join(before_ref_data) %>%
+  dataset_ordered <- dataset_filter %>%
     dplyr::mutate(tmp_order = dplyr::case_when(AVALC %in% c("CR") ~ 1,
                                                AVALC %in% c("PR") ~ 2,
                                                AVALC %in% c("SD") ~ 3,
@@ -418,9 +371,53 @@ derive_param_bor <- function(dataset,
                                                is.null(AVALC) ~ 7))
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Create the response dataframes ----
+  #
+  # Three:
+  #  1.  Records where ADT >= reference_date + ref_start_window
+  #
+  #  2.  Records where ADT < reference_date + ref_start_window
+  #      but subject does have a subsequent read in dataframe 1.
+  #
+  #  3.  Records where ADT < reference_date + ref_start_window
+  #      and the subject does not have a record in step 1, BOR is set to 'NE'
+  #      in this case where the subject has only AVALC = 'SD' or'NON-CR/NON-PD'
+  #
+  #  4.  Subjects in adsl and not in dataset_filter
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+  # data where ADT >= reference_date + days(ref_start_window)
+  after_ref_data <- dataset_ordered %>%
+    dplyr::filter(ADT >= !!reference_date + lubridate::days(ref_start_window))
+
+  # create list of unique subject_keys with at least one record
+  # where ADT >= reference_date + days(ref_start_window)
+  subj_with_rec_after_ref_data <- after_ref_data %>%
+    dplyr::distinct(!!!subject_keys)
+
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Data frame 1: bor_data_01, ADT >= reference_date + ref_start_window
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+  bor_data_01 <- after_ref_data
+
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  # Data frame 2: bor_data_02, ADT < reference_date + ref_start_window
+  #               but subject does have a subsequent read in dataframe 1.
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+  # data where ADT < reference_date + days(ref_start_window)
+  before_ref_data <- dataset_ordered %>%
+    dplyr::filter(ADT < !!reference_date + lubridate::days(ref_start_window)) %>%
+    dplyr::select(!!!subject_keys, AVALC, ADT, !!rlang::enquo(reference_date), tmp_order)
+
+  # join and keep only those with a record after reference_date + ref_start_window
+  bor_data_02 <- subj_with_rec_after_ref_data %>%
+    dplyr::left_join(before_ref_data)
+
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Data frame 3: bor_data_03, ADT < reference_date + ref_start_window
   #               but subject does not have a subsequent read in dataframe 1.
-  #               and assign sort order to select best (i.e. lowest) later.
   #               (Note: this is NE for subjects with 'SD' or 'NON-CR/NON-PD')
   #
   # Note: All rows in before_ref_data that do not have a match
@@ -429,12 +426,10 @@ derive_param_bor <- function(dataset,
 
   bor_data_03 <- before_ref_data  %>%
     dplyr::anti_join(subj_with_rec_after_ref_data) %>%
-    dplyr::mutate(AVALC = dplyr::case_when(AVALC %in% c("CR", "PR", "PD") ~ AVALC,
-                                           AVALC %in% c("SD", "NON-CR/NON-PD") ~ "NE"),
-                  tmp_order = dplyr::case_when(AVALC %in% c("CR") ~ 1,
-                                               AVALC %in% c("PR") ~ 2,
-                                               AVALC %in% c("PD") ~ 5,
-                                               TRUE ~ 6))
+    dplyr::mutate(tmp_order = dplyr::case_when(AVALC %in% c("CR", "PR", "PD") ~ tmp_order,
+                                               AVALC %in% c("SD", "NON-CR/NON-PD") ~ 6),
+                  AVALC = dplyr::case_when(AVALC %in% c("CR", "PR", "PD") ~ AVALC,
+                                           AVALC %in% c("SD", "NON-CR/NON-PD") ~ "NE"))
 
   # check nothing strange has gone on with joins
   assertthat::are_equal(nrow(bor_data_03) + nrow(bor_data_02),
