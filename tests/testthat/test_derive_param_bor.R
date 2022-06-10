@@ -74,8 +74,8 @@ pd_date <- admiral::date_source(
 )
 
 # derive_param_bor, Test 1 ----
-test_that("derive_param_bor Test 1: 
-          default  BOR, All Subjects have a record after reference date,  
+test_that("derive_param_bor Test 1:
+          default  BOR, All Subjects have a record after reference date,
           No source_pd", {
 
   aval_fun_pass <- function(arg) {
@@ -89,7 +89,7 @@ test_that("derive_param_bor Test 1:
       arg == "MISSING" ~ 7,
       TRUE ~ NA_real_
     ) }
-    
+
   actual <- derive_param_bor(adrs,
                              dataset_adsl     = adsl,
                              filter_source    = PARAMCD == "OVR",
@@ -100,25 +100,26 @@ test_that("derive_param_bor Test 1:
                              aval_fun         = aval_fun_pass,
                              set_values_to    = admiral::vars(PARAMCD = "BOR",
                                                               PARAM   = "Best Overall Response"))
-  
-  expected <- dplyr::bind_rows(adrs,
-                               tibble::tribble(
-                                 ~USUBJID, ~ADTC,        ~AVALC,          ~AVAL,
-                                 "1",      "2020-02-01", "CR",            1,
-                                 "2",      "2020-03-13", "CR",            1,
-                                 "3",      "2019-11-12", "CR",            1,
-                                 "4",      "2020-01-01", "PR",            2,
-                                 "5",      "2020-01-01", "PR",            2,
-                                 "6",      "2020-02-16", "CR",            1,
-                                 "7",      "2020-02-16", "CR",            1,
-                                 "8",      "",           "MISSING",       7
-                               ) %>%
-                              dplyr::mutate(ADT     = lubridate::ymd(ADTC),
-                                            STUDYID = "XX1234",
-                                            PARAMCD = "CBOR",
-                                            PARAM   = "Best Confirmed Overall Response by Investigator") %>%
-                              dplyr::select(-ADTC))
-  
+
+  expected <- dplyr::bind_rows(
+                  adrs,
+                 tibble::tribble(
+                   ~USUBJID, ~ADTC,        ~AVALC,          ~AVAL,
+                   "1",      "2020-02-01", "CR",            1,
+                   "2",      "2020-03-13", "CR",            1,
+                   "3",      "2019-11-12", "CR",            1,
+                   "4",      "2020-01-01", "PR",            2,
+                   "5",      "2020-01-01", "PR",            2,
+                   "6",      "2020-02-16", "CR",            1,
+                   "7",      "2020-02-16", "CR",            1,
+                   "8",      "",           "MISSING",       7
+                 ) %>%
+                dplyr::mutate(ADT     = lubridate::ymd(ADTC),
+                              STUDYID = "XX1234",
+                              PARAMCD = "CBOR",
+                              PARAM   = "Best Confirmed Overall Response by Investigator") %>%
+                dplyr::select(-ADTC))
+
   admiral::expect_dfs_equal(base    = expected,
                             compare = actual,
                             keys    = c("USUBJID", "PARAMCD", "ADT")
@@ -126,10 +127,10 @@ test_that("derive_param_bor Test 1:
 })
 
 # derive_param_bor, Test 2 ----
-test_that("derive_param_bor Test 2: 
-          Two subjects only have records less than reference date,  
+test_that("derive_param_bor Test 2:
+          Two subjects only have records less than reference date,
           No source_pd", {
-            
+
   adrs_ext <- bind_rows(
     filter(adrs, USUBJID != "7"),
     tibble::tribble(
@@ -147,7 +148,7 @@ test_that("derive_param_bor Test 2:
         new_vars = dplyr::vars(TRTSDT)
       )
   )
-  
+
   actual <-
     derive_param_confirmed_bor(
       adrs_ext,
@@ -166,7 +167,7 @@ test_that("derive_param_bor Test 2:
         PARAM = "Best Confirmed Overall Response by Investigator"
       )
     )
-  
+
   expected <- bind_rows(
     adrs_ext,
     tibble::tribble(
@@ -188,14 +189,13 @@ test_that("derive_param_bor Test 2:
       ) %>%
       dplyr::select(-ADTC)
   )
-  
+
   expect_dfs_equal(
     base = expected,
     compare = actual,
     keys = c("USUBJID", "PARAMCD", "ADT")
   )
 })
-
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Amgen Data and non package source TO DELETE ----
@@ -209,7 +209,8 @@ source("~/admiralonco_22_derive_param_bor/R/derive_param_confirmed_bor.R")
 adsl_amgen <- haven::read_sas("/userdata/stat/amg160/onc/20180101/analysis/final/statdata/adam/adsl.sas7bdat")
 
 adrs_amgen <- haven::read_sas("/userdata/stat/amg160/onc/20180101/analysis/final/statdata/adam/adrs.sas7bdat") %>%
-  dplyr::select(USUBJID, STUDYID, TRTSDT, PARAM, PARAMCD, ADT, ASEQ, AVAL, AVALC, dplyr::starts_with("ANL"))
+  dplyr::select(USUBJID, STUDYID, TRTSDT, PARAM, PARAMCD, 
+                ADT, ASEQ, AVAL, AVALC, dplyr::starts_with("ANL"))
 
 pd_date <-  admiral::date_source(
   dataset_name = "adrs_amgen",
