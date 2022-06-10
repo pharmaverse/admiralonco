@@ -15,17 +15,27 @@
 #'   2. All records where `ADT` < `reference_date` + `ref_start_window`  and the subject
 #'      has a record in step 1, are considered for Best Overall Response.
 #'
-#'   3. Records where `ADT` < `reference_date` + `ref_start_window`  and the subject does
-#'      not have a record in step 1 and AVALC %in% c("CR", "PR", "PD") are considered for
+#'   3. Records, where `ADT` < `reference_date` + `ref_start_window` and the subject does
+#'      not have a record in step 1 but AVALC %in% c("CR", "PR", "PD"), are considered for
 #'      Best Overall Response
 #'
-#'   4  Records where `ADT` < `reference_date` + `ref_start_window` and the subject does
+#'   4. Records where `ADT` < `reference_date` + `ref_start_window` and the subject does
 #'      not have a record in step 1 and AVALC %in% c('SD', 'NON-CR/NON-PD') then
 #'      Best Overall Response is set to NE.
 #'
-#'   5. The `AVAL` variable is added and set using the `aval_fun(AVALC)` function
+#'   5. The Best Response, by `subject_keys` of the records in steps 1 to 4, is then
+#'      selected in the following order of preference:
+#'                  AVALC %in% c("CR") ~ 1,
+#'                  AVALC %in% c("PR") ~ 2,
+#'                  AVALC %in% c("SD") ~ 3,
+#'                  AVALC %in% c("NON-CR/NON-PD") ~ 4,
+#'                  AVALC %in% c("PD") ~ 5,
+#'                  AVALC %in% c("NE") ~ 6,
+#'                  is.null(AVALC) ~ 7)) %>%
 #'
-#'   6. The variables specified by the `set_values_to` parameter and records
+#'   6. The `AVAL` variable is added and set using the `aval_fun(AVALC)` function
+#'
+#'   7. The variables specified by the `set_values_to` parameter and records
 #'      are added to the dataframe passed into the `dataset` argument
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 # Function Arguments:
@@ -36,12 +46,18 @@
 #'   The columns `PARAMCD`, `ADT`, and `AVALC`and the columns specified in
 #'   `subject_keys` and `reference_date` are expected.
 #'
+#'    *Required or Optional:* Required
+#'
 #' @param dataset_adsl The ADSL input dataframe
 #'
 #'   The columns specified in `subject_keys` are expected.
 #'
+#'    *Required or Optional:* Required
+#'
 #' @param filter_source Filter to be applied to `dataset` to derive the
 #'                       Best Overall Response
+#'
+#'    *Required or Optional:* Required
 #'
 #' @param source_pd Date of first progressive disease (PD)
 #'
@@ -53,9 +69,12 @@
 #'   *Permitted Values:* a `date_source` object (see `admiral::date_source()`
 #'   for details)
 #'
-#'   *Default:* `NULL`,
+#'   *Default:* `NULL`
 #'
-#' @param source_datasets Source dataframe to be used to calculatethe first PD date
+#'   *Required or Optional:* Optional
+#'
+#' @param source_datasets Source dataframe to be used to calculate the
+#'                        first PD date [Optional]
 #'
 #'   A named list of dataframes is expected (although for BoR) only one dataframe is
 #'   needed. It links the `dataset_name` from `source_pd` with an existing dataframe.
@@ -71,7 +90,9 @@
 #'   and the actual response dataframe in the script is `myadrs`, `source_datasets
 #'   = list(adrs = myadrs)` should be specified.
 #'
-#' @param reference_date Reference date
+#'    *Required or Optional:* Optional
+#'
+#' @param reference_date Reference date  [Required]
 #'
 #'   The reference date is used along with `ref_start_window` to determine those
 #'   records that occur before and after `ADT` (see Details section for further
@@ -79,6 +100,8 @@
 #'   randomization date (`RANDDT`).
 #'
 #'   *Permitted Values:* a numeric date variable
+#'
+#'   *Required or Optional:* Required
 #'
 #' @param ref_start_window Stable disease time window
 #'
@@ -89,6 +112,8 @@
 #'   *Permitted Values:* a non-negative numeric scalar
 #'
 #'   *Default:* 0
+#'
+#'   *Required or Optional:* Optional
 #'
 #' @param missing_as_ne Consider no assessments as `"NE"`?
 #'
@@ -101,24 +126,34 @@
 #'
 #'   *Default:* `FALSE`
 #'
+#'   *Required or Optional:* Required
+#'
 #' @param aval_fun Function to map character analysis value (`AVALC`) to numeric
-#'   analysis value (`AVAL`)
+#'                 analysis value (`AVAL`) [Required]
 #'
 #'   The (first) argument of the function must expect a character vector and the
 #'   function must return a numeric vector.
 #'
-#'   *Default:* `aval_resp` (see `aval_resp()` for details)
+#'   *Default:* `admiralonc::aval_resp` (see `?admiralonc::aval_resp()`)
 #'
-#' @param set_values_to Variables to set
+#'   *Required or Optional:* Required
+#'
+#' @param set_values_to Variables to set [Required]
 #'
 #'   A named list returned by `vars()` defining the variables to be set for the
 #'   new parameter, e.g. `vars(PARAMCD = "CBOR", PARAM = "Best Overall
 #'   Response")` is expected. The values must be symbols, character strings,
 #'   numeric values, or `NA`.
 #'
-#' @param subject_keys Variables to uniquely identify a subject
+#'    *Required or Optional:* Required
 #'
-#'   A list of symbols created using `vars()` is expected.
+#' @param subject_keys Variables to uniquely identify a subject [Required]
+#'
+#'   A list of symbols created using `admiral::vars()`.
+#'
+#'   *Default:* `admiral::vars(STUDYID, USUBJID)`
+#'
+#'   *Required or Optional:* Required
 #'
 #' @examples
 #'
@@ -360,13 +395,13 @@ derive_param_bor <- function(dataset,
                                                AVALC %in% c("PD") ~ 5,
                                                AVALC %in% c("NE") ~ 6,
                                                is.null(AVALC) ~ 7)) %>%
-    dplyr::select(!!!subject_keys, AVALC, tmp_order, ADT)
+    dplyr::select(!!!subject_keys, AVALC, tmp_order, ADT, !!rlang::enquo(reference_date))
 
   # data where ADT < reference_date + days(ref_start_window)
   before_ref_data <- dataset_filter %>%
     dplyr::filter(ADT < !!reference_date + lubridate::days(ref_start_window)) %>%
     dplyr::mutate(tmp_record_after_reference = FALSE) %>%
-    dplyr::select(!!!subject_keys, AVALC, ADT)
+    dplyr::select(!!!subject_keys, AVALC, ADT, !!rlang::enquo(reference_date))
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Data frame 2: bor_data_02, ADT < reference_date + ref_start_window
@@ -390,9 +425,8 @@ derive_param_bor <- function(dataset,
   #               and assign sort order to select best (i.e. lowest) later.
   #               (Note: this is NE for subects with 'SD' or 'NON-CR/NON-PD')
   #
-  # Note: dplyr::anti_join(before_ref_data, subj_with_rec_after_ref_data)
-  #       All rows in before_ref_data that do not have a match
-  #       in subj_with_rec_after_ref_data.
+  # Note: All rows in before_ref_data that do not have a match
+  #       in subj_with_rec_after_ref_data are removed with anti_join.
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   bor_data_03 <- before_ref_data  %>%

@@ -1,6 +1,10 @@
-globalVariables(c(
+utils::globalVariables(c(
   "ADT",
+  "PARAMCD",
+  "AVALC",
   "STUDYID",
   "USUBJID",
-  "temp_date"
+  "temp_date",
+  "dataset_name",
+  "tmp_order"
 ))
