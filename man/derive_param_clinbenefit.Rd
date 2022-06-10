@@ -22,7 +22,7 @@ derive_param_clinbenefit(
 \item{dataset}{Input dataset. This is the dataset to which the clinical
 benefit rate parameter will be added.
 
-The variables \code{PARAMCD}, \code{AVALC}, \code{ADT}, and those specified by the \code{by_vars}
+The variables \code{PARAMCD}, \code{AVALC}, \code{ADT}, and those specified by the \code{subject_keys}
 parameter are expected.}
 
 \item{dataset_adsl}{ADSL input dataset.
@@ -75,10 +75,34 @@ The input dataset with a new parameter for clinical benefit
 Add a clinical benefit/disease control parameter to the input dataset.
 }
 \details{
-Clinical benefit/disease control is first identified for looking for subjects
-having response, and then derived for subjects that have at least
+Clinical benefit/disease control is derived for subjects that have at least
 one evaluable non-PD response assessment prior to first PD (Progressive Disease)
-and after a specified amount of time from a reference date.
+(i.e., inclusive of \code{CR}, \code{PR}, \code{SD} and exclusive of \code{NA}, \code{NE}, \code{ND}, and \code{PD})
+and after a specified amount of time from a reference date (\code{ref_start_window}).
+
+\enumerate{
+\item The input dataset (\code{dataset}) is restricted to the observations matching
+\code{filter_source} and to observations before or at the date specified by
+\code{source_pd}.
+
+\item Variables \code{AVALC}, \code{AVAL}, and \code{ADT} will be populated for each unique subject
+in the input \code{dataset_adsl} as identified by \code{subject_keys}.
+
+\item \code{AVALC} is set to \code{Y} for those subjects in the \code{dataset} meeting the criteria
+for clinical benefit above, and \code{N} for subjects either not meeting the criteria
+in \code{dataset} or present in \code{dataset_adsl} but not present in \code{dataset}.
+
+\item \code{AVAL} is derived using \code{AVALC} as input to the function specified in
+\code{aval_fun}.
+
+\item \code{ADT} is set to the earliest possible date representing an evaluable
+non-PD response assessment prior to first PD.
+
+\item The variables specified by \code{set_values_to} are added to the new observations
+with values equal to the values specified in the same.
+
+\item The new observations are added to \code{dataset}.
+}
 }
 \examples{
 library(lubridate)

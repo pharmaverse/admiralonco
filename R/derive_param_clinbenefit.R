@@ -3,19 +3,43 @@
 #' Add a clinical benefit/disease control parameter to the input dataset.
 #'
 #' @details
-#' Clinical benefit/disease control is first identified for looking for subjects
-#' having response, and then derived for subjects that have at least
+#' Clinical benefit/disease control is derived for subjects that have at least
 #' one evaluable non-PD response assessment prior to first PD (Progressive Disease)
-#' and after a specified amount of time from a reference date.
+#' (i.e., inclusive of `CR`, `PR`, `SD` and exclusive of `NA`, `NE`, `ND`, and `PD`)
+#' and after a specified amount of time from a reference date (`ref_start_window`).
+#'
+#' \enumerate{
+#'   \item The input dataset (`dataset`) is restricted to the observations matching
+#'   `filter_source` and to observations before or at the date specified by
+#'   `source_pd`.
+#'
+#'   \item Variables `AVALC`, `AVAL`, and `ADT` will be populated for each unique subject
+#'   in the input `dataset_adsl` as identified by `subject_keys`.
+#'
+#'   \item `AVALC` is set to `Y` for those subjects in the `dataset` meeting the criteria
+#'   for clinical benefit above, and `N` for subjects either not meeting the criteria
+#'   in `dataset` or present in `dataset_adsl` but not present in `dataset`.
+#'
+#'   \item `AVAL` is derived using `AVALC` as input to the function specified in
+#'   `aval_fun`.
+#'
+#'   \item `ADT` is set to the earliest possible date representing an evaluable
+#'   non-PD response assessment prior to first PD.
+#'
+#'   \item The variables specified by `set_values_to` are added to the new observations
+#'   with values equal to the values specified in the same.
+#'
+#'   \item The new observations are added to `dataset`.
+#'  }
 #'
 #' @param dataset Input dataset. This is the dataset to which the clinical
 #' benefit rate parameter will be added.
 #'
-#'   The variables `PARAMCD`, `AVALC`, `ADT`, and those specified by the `by_vars`
+#'   The variables `PARAMCD`, `AVALC`, `ADT`, and those specified by the `subject_keys`
 #'   parameter are expected.
 #'
 #' @param dataset_adsl ADSL input dataset.
-#' 
+#'
 #'   The variables specified for `subject_keys` parameter and the `reference_date`
 #'   parameter are expected. For each subject of the specified dataset a new
 #'   observation is added to the input dataset.
@@ -230,8 +254,10 @@ derive_param_clinbenefit <- function(dataset,
     right_join(adsl, by = vars2chr(subject_keys)) %>%
     mutate(AVALC = if_else(!is.na(ADT), "Y", "N")) %>%
     select(-!!reference_date) %>%
-    mutate(AVAL = aval_fun(AVALC),
-      !!!set_values_to)
+    mutate(
+      AVAL = aval_fun(AVALC),
+      !!!set_values_to
+    )
 
 
   bind_rows(dataset, new_param)
