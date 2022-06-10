@@ -404,7 +404,7 @@ dataset_vignette(
 ## Derive Response Parameters requiring Confirmation {#confirm}
 
 Any of the above response parameters can be repeated for "confirmed" responses only. For these the functions
-`derive_param_confirmed_response()` and `derive_param_confirmed_bor()` can be used. Here is an example of a BOR parameter
+`derive_param_confirmed_resp()` and `derive_param_confirmed_bor()` can be used. Here is an example of a BOR parameter
 when requiring confirmation.
 
 ```{r}
