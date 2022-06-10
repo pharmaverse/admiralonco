@@ -1,0 +1,68 @@
+Package: admiralonco
+Type: Package
+Title: Oncology Extension Package for ADaM in R Asset Library
+Version: 0.0.0
+Authors@R: c(
+    person("Stefan", "Bundfuss", email = "stefan.bundfuss@roche.com", role = c("aut", "cre")),
+    person("Ross", "Farrugia", role = "aut"),
+    person("Amit", "Jain", role = "aut"),
+    person("Liming (Catherine)", "Jin", role = "aut"),
+    person("Andrew", "Smith", role = "aut"),
+    person("Cloris", "Xue", role = "aut"),
+    person("Caihong", "Xia", role = "aut"),
+    person("Karl", "Kennedy", role = "aut"),
+    person("Konstantina", "Koukourikou", role = "aut"),
+    person("Mary", "Dee", role = "aut"),
+    person("Neharika", "Sharma", role = "aut"),
+    person("Samia", "Kabi", role = "aut"),
+    person("Stephen", "Gormley", role = "aut"),
+    person("Annie", "Yang", role = "aut"),
+    person("Gillian", "Yin", role = "ctb"),
+    person("Aiming", "Yang", role = "ctb"),
+    person("Gopi", "Vegesna", role = "ctb"),
+    person("F. Hoffmann-La Roche AG", role = c("cph", "fnd")),
+    person("GlaxoSmithKline LLC", role = c("cph", "fnd")),
+    person("Amgen Inc.", role = c("cph", "fnd"))
+    )
+Description: A toolbox for programming oncology specific Clinical Data Standards Interchange Consortium
+    (CDISC) compliant Analysis Data Model (ADaM) datasets in R. ADaM datasets are a
+    mandatory part of any New Drug or Biologics License Application submitted to the
+    United States Food and Drug Administration (FDA). Analysis derivations are
+    implemented in accordance with the "Analysis Data Model Implementation Guide"
+    (CDISC Analysis Data Model Team, 2021, <https://www.cdisc.org/standards/foundational/adam/adamig-v1-3-release-package>).
+    The package is an extension package of the admiral package.
+Language: en-US
+License: Apache License (>= 2)
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.0
+Depends: R (>= 3.5)
+Imports:
+    admiral.test,
+    admiral,
+    dplyr,
+    lubridate,
+    magrittr,
+    rlang
+Suggests:
+    devtools,
+    diffdf,
+    lifecycle,
+    lintr,
+    pkgdown,
+    testthat,
+    knitr,
+    methods,
+    miniUI,
+    rmarkdown,
+    roxygen2,
+    spelling,
+    styler,
+    tibble,
+    usethis,
+    covr,
+    DT
+Remotes:
+    pharmaverse/admiral.test@devel
+VignetteBuilder: knitr
