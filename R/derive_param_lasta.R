@@ -4,39 +4,74 @@
 #'     input dataframe passed into the dataset argument.
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @details
-#'    Calculates the last disease assessment for subjects (censored if
-#'    required using argument source_pd which will remove all records in the
-#'    dataframe being passed that occur after the date in source_pd)
+#'    Calculates the last disease assessment.
+#'    Records after PD can be removed using the source_pd and source_datasets
+#'    arguments.
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 # Function Arguments:
 #
-#' @param dataset Input dataframe to which the Last Disease Assessment
-#'                parameter will be added. The variables `PARAMCD`, `AVAL`,
-#'                `AVALC`, `ADT`, and those specified in the `order` and
-#'                `by_vars` argument are expected.
+#' @param dataset Input dataframe from which the Last Disease Assessment will be 
+#'                be derived from and added to.
 #'
+#'   The columns `PARAMCD`, `ADT`, and `AVALC`and the columns specified in
+#'   `subject_keys` and `reference_date` are expected.
+#'
+#'    *Permitted Values:* a `data.frame()` object
+#'
+#'    *Required or Optional:* Required
+#'
+#' @param dataset_adsl The ADSL input dataframe
+#'
+#'   The columns specified in `subject_keys` are expected.
+#'
+#'    *Permitted Values:* a `data.frame()` object
+#'
+#'    *Required or Optional:* Required
+#'
+#' @param filter_source Filter to be applied to `dataset` to derive the
+#'                      Last Disease Assessment
+#'
+#'    *Required or Optional:* Required
+#'    
 #' @param order Sort order, after which the last record shall be taken by
-#'              the `by_vars` to determine Last Disease Assessment
+#'              the `by_vars` to determine Last Disease Assessment. Created
+#'              using `admiral::vars()`.
+#'
+#'    *Permitted Values:* an `admiral::vars` object
+#'
+#'    *Default:* `admiral::vars(STUDYID, USUBJID, ADT)`
+#'    
+#'    *Required or Optional:* Required
 #'
 #' @param by_vars Grouping variables, the last of which (ordered by `order`)
-#'                shall be taken as the Last Disease Assessment record
+#'                shall be taken as the Last Disease Assessment record. Created
+#'                using `admiral::vars()`.
 #'
-#' @param filter_source Filter to be applied to the input dataframe to derive
-#'                      the Last Disease Assessment
+#'    *Permitted Values:* an `admiral::vars` object
+#'    
+#'    *Default:* `admiral::vars(STUDYID, USUBJID)`
 #'
-#' @param source_pd A `date_source` object specifying the dataset_name, date
-#'                  variable, and filter condition used to identify disease
-#'                  progression and subsequently used (if provided) to remove
-#'                  all records after disease progression from `dataset`
-#'                  
+#'    *Required or Optional:* Required
+#'
+#' @param source_pd Date of first progressive disease (PD)
+#'
+#'   If the parameter is specified, the observations of the input `dataset` for
+#'   deriving the new parameter are restricted to observations up to the
+#'   specified date. Observations at the specified date are included. For
+#'   subjects without first PD date all observations are take into account.
+#'
 #'   *Permitted Values:* a `date_source` object (see `admiral::date_source()`
 #'   for details)
 #'
-#'   *Default:* `NULL`,
+#'   *Default:* `NULL`
 #'
-#' @param source_datasets A named `list` containing the name of the dataframe
-#'                        in which to search for the progressive disease as
-#'                        defined in `source_pd`
+#'   *Required or Optional:* Optional
+#'
+#' @param source_datasets Source dataframe to be used to calculate the
+#'                        first PD date
+#'
+#'   A named list of dataframes is expected (although for BoR) only one dataframe is
+#'   needed. It links the `dataset_name` from `source_pd` with an existing dataframe.
 #'
 #'   For example if `source_pd = pd_date` with
 #'   ```
@@ -46,20 +81,27 @@
 #'     filter = PARAMCD == PD
 #'   )
 #'   ```
-#'   and the actual response dataset in the script is `myadrs`, `source_datasets
+#'   and the actual response dataframe in the script is `myadrs`, `source_datasets
 #'   = list(adrs = myadrs)` should be specified.
 #'
-#'   This allows to define `pd_date` at a higher level, e.g., at company level,
-#'   where the actual dataset does not exist.
-#'   
-#' @param subject_keys Variables to uniquely identify a subject, used by
-#'                     `source_pd` to specify a date
+#'    *Required or Optional:* Optional
+#'    
+#' @param subject_keys Variables to uniquely identify a subject
 #'
-#' @param set_values_to A named `list` returned by `vars()` containing new
-#'                      variables and their static value to be populated for
-#'                      the Last Disease Assessment records, e.g.
-#'                      vars(PARAMCD = "LSTAC", PARAM = "Last Disease
-#'                      Assessment Censored at First PD by Investigator")`
+#'   A list of symbols created using `admiral::vars()`.
+#'
+#'   *Default:* `admiral::vars(STUDYID, USUBJID)`
+#'
+#'   *Required or Optional:* Required
+#'
+#' @param set_values_to Variables to set
+#'
+#'   A named list returned by `vars()` defining the variables to be set for the
+#'   new parameter, e.g. `vars(PARAMCD = "LSTAC", PARAM = "Last Disease
+#'    Assessment Censored at First PD by Investigator")` is expected. The values 
+#'    must be symbols, character strings, numeric values, or `NA`.
+#'
+#'    *Required or Optional:* Required
 #'
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @examples
@@ -95,36 +137,45 @@
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @keywords ADRS
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#' @importFrom  magrittr `%>%`
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @return The dataframe passed in the `dataset` argument with additional 
 #'         columns and/or rows as set in the `set_values_to` argument.
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|
 
 derive_param_lasta <- function(dataset,
+                               dataset_adsl,
+                               filter_source,
                                order           = admiral::vars(STUDYID, USUBJID, ADT),
                                by_vars         = admiral::vars(STUDYID, USUBJID),
-                               filter_source   = PARAMCD == "OVR" & ANL01FL == "Y",
                                source_pd       = NULL,
                                source_datasets = NULL,
                                subject_keys    = admiral::vars(STUDYID, USUBJID),
                                set_values_to) {
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Assert statements ----
+  # Assert statements (checked in order of signature) ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-  filter_source <- admiral::assert_filter_cond(arg      = enquo(filter_source),
-                                               optional = TRUE)
-  
-  admiral::assert_vars(arg = by_vars)
   
   admiral::assert_data_frame(arg           = dataset,
                              required_vars = admiral::vars(!!!order,
                                                            !!!by_vars,
-                                                           PARAMCD, AVAL,
-                                                           AVALC, ADT))
+                                                           PARAMCD, AVALC, ADT))
   
+  admiral::assert_data_frame(arg           = dataset_adsl,
+                             required_vars = admiral::quo_c(subject_keys))
+  
+  filter_source <- admiral::assert_filter_cond(arg      = enquo(filter_source),
+                                               optional = TRUE)
+  
+  admiral::assert_vars(arg = order)
+  
+  admiral::assert_vars(arg = by_vars)
+  
+  admiral::assert_vars(arg = subject_keys)
+
   admiral::assert_varval_list(arg         = set_values_to,
-                              accept_expr = TRUE)
+                              required_elements = c("PARAMCD", "PARAM"))
   
   admiral::assert_param_does_not_exist(dataset = dataset,
                                        param   = rlang::quo_get_expr(set_values_to$PARAMCD))
@@ -136,6 +187,7 @@ derive_param_lasta <- function(dataset,
 
   if (!is.null(source_pd)) {
     
+    # asserts on the pd data
     source_names <- names(source_datasets)
     
     admiral::assert_list_element(
@@ -147,7 +199,7 @@ derive_param_lasta <- function(dataset,
         "The dataset names must be included in the list specified for the ",
         "`source_datasets` parameter.\n",
         "Following names were provided by `source_datasets`:\n",
-        admiral:::enumerate(source_names, quote_fun = sQuote))
+        admiral::enumerate(source_names, quote_fun = sQuote))
     )
 
     admiral::assert_s3_class(arg   = source_pd, 
@@ -159,7 +211,7 @@ derive_param_lasta <- function(dataset,
             filter_pd(filter          = !!enquo(filter_source),
                       source_pd       = source_pd,
                       source_datasets = source_datasets,
-                      subject_keys    = admiral::vars(STUDYID, USUBJID))
+                      subject_keys    = subject_keys)
 
   } else {
 

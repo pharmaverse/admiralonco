@@ -6,51 +6,110 @@
 \usage{
 derive_param_lasta(
   dataset,
-  order = admiral::vars(USUBJID, ADT),
-  by_vars = admiral::vars(USUBJID),
-  filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+  dataset_adsl,
+  filter_source,
+  order = admiral::vars(STUDYID, USUBJID, ADT),
+  by_vars = admiral::vars(STUDYID, USUBJID),
   source_pd = NULL,
-  source_datasets = list(adrs = adrs),
+  source_datasets = NULL,
   subject_keys = admiral::vars(STUDYID, USUBJID),
   set_values_to
 )
 }
 \arguments{
-\item{dataset}{Input dataframe to which the Last Disease Assessment
-parameter will be added. The variables \code{PARAMCD}, \code{AVAL},
-\code{AVALC}, \code{ADT}, and those specified in the \code{order} and
-\code{by_vars} argument are expected.}
+\item{dataset}{Input dataframe from which the Last Disease Assessment will be
+be derived from and added to.
+
+The columns \code{PARAMCD}, \code{ADT}, and \code{AVALC}and the columns specified in
+\code{subject_keys} and \code{reference_date} are expected.
+
+\emph{Permitted Values:} a \code{data.frame()} object
+
+\emph{Required or Optional:} Required}
+
+\item{dataset_adsl}{The ADSL input dataframe
+
+The columns specified in \code{subject_keys} are expected.
+
+\emph{Permitted Values:} a \code{data.frame()} object
+
+\emph{Required or Optional:} Required}
+
+\item{filter_source}{Filter to be applied to \code{dataset} to derive the
+Last Disease Assessment
+
+\emph{Required or Optional:} Required}
 
 \item{order}{Sort order, after which the last record shall be taken by
-the \code{by_vars} to determine Last Disease Assessment}
+the \code{by_vars} to determine Last Disease Assessment. Created
+using \code{admiral::vars()}.
+
+\emph{Permitted Values:} an \code{admiral::vars} object
+
+\emph{Default:} \code{admiral::vars(STUDYID, USUBJID, ADT)}
+
+\emph{Required or Optional:} Required}
 
 \item{by_vars}{Grouping variables, the last of which (ordered by \code{order})
-shall be taken as the Last Disease Assessment record}
+shall be taken as the Last Disease Assessment record. Created
+using \code{admiral::vars()}.
 
-\item{filter_source}{Filter to be applied to the input dataframe to derive
-the Last Disease Assessment}
+\emph{Permitted Values:} an \code{admiral::vars} object
 
-\item{source_pd}{A \code{date_source} object specifying the dataset_name, date
-variable, and filter condition used to identify disease
-progression and subsequently used (if provided) to remove
-all records after disease progression from \code{dataset}}
+\emph{Default:} \code{admiral::vars(STUDYID, USUBJID)}
 
-\item{source_datasets}{A named \code{list} containing the name of the dataframe
-in which to search for the progressive disease as
-defined in \code{source_pd}}
+\emph{Required or Optional:} Required}
 
-\item{subject_keys}{Variables to uniquely identify a subject, used by
-\code{source_pd} to specify a date}
+\item{source_pd}{Date of first progressive disease (PD)
 
-\item{set_values_to}{A named \code{list} returned by \code{vars()} containing new
-variables and their static value to be populated for
-the Last Disease Assessment records, e.g.
-vars(PARAMCD = "LSTAC", PARAM = "Last Disease
-Assessment Censored at First PD by Investigator")`}
+If the parameter is specified, the observations of the input \code{dataset} for
+deriving the new parameter are restricted to observations up to the
+specified date. Observations at the specified date are included. For
+subjects without first PD date all observations are take into account.
+
+\emph{Permitted Values:} a \code{date_source} object (see \code{admiral::date_source()}
+for details)
+
+\emph{Default:} \code{NULL}
+
+\emph{Required or Optional:} Optional}
+
+\item{source_datasets}{Source dataframe to be used to calculate the
+first PD date
+
+A named list of dataframes is expected (although for BoR) only one dataframe is
+needed. It links the \code{dataset_name} from \code{source_pd} with an existing dataframe.
+
+For example if \code{source_pd = pd_date} with\preformatted{pd_date <- date_source(
+  dataset_name = "adrs",
+  date = ADT,
+  filter = PARAMCD == PD
+)
+}
+
+and the actual response dataframe in the script is \code{myadrs}, \code{source_datasets = list(adrs = myadrs)} should be specified.
+
+\emph{Required or Optional:} Optional}
+
+\item{subject_keys}{Variables to uniquely identify a subject
+
+A list of symbols created using \code{admiral::vars()}.
+
+\emph{Default:} \code{admiral::vars(STUDYID, USUBJID)}
+
+\emph{Required or Optional:} Required}
+
+\item{set_values_to}{Variables to set
+
+A named list returned by \code{vars()} defining the variables to be set for the
+new parameter, e.g. \code{vars(PARAMCD = "LSTAC", PARAM = "Last Disease Assessment Censored at First PD by Investigator")} is expected. The values
+must be symbols, character strings, numeric values, or \code{NA}.
+
+\emph{Required or Optional:} Required}
 }
 \value{
-The dataframe passed in the \code{dataset} argument with additonal columns
-and/or rows as set in the \code{set_values_to} argument.
+The dataframe passed in the \code{dataset} argument with additional
+columns and/or rows as set in the \code{set_values_to} argument.
 }
 \description{
 \preformatted{Add a Last Disease Assessment parameter for each unique `by_vars` to the 
@@ -58,9 +117,9 @@ input dataframe passed into the dataset argument.
 }
 }
 \details{
-Calculates the last disease assessment for subjects (censored if
-required using argument source_pd which will remove all records in the
-dataframe being passed that occur after the date in source_pd)
+Calculates the last disease assessment.
+Records after PD can be removed using the source_pd and source_datasets
+arguments.
 }
 \examples{
 
