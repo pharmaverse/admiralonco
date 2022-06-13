@@ -428,9 +428,9 @@ derive_param_bor <- function(dataset,
   before_ref_data <- dataset_ordered %>%
     dplyr::filter(ADT < !!reference_date + lubridate::days(ref_start_window))
 
-  # join and keep only those with a record after reference_date + ref_start_window
+  # inner join: keep only those with a record after reference_date + ref_start_window
   bor_data_02 <- subj_with_rec_after_ref_data %>%
-    dplyr::left_join(before_ref_data)
+    dplyr::inner_join(before_ref_data)
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Data frame 3: bor_data_03, ADT < reference_date + ref_start_window
@@ -460,7 +460,7 @@ derive_param_bor <- function(dataset,
   # we keep all variables from ADSL which are also in the input dataset.
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  adsl_cols_to_keep <- names(adsl)[names(adsl) %in% names(dataset)]
+  adsl_cols_to_keep <- names(dataset_adsl)[names(dataset_adsl) %in% names(dataset)]
 
   bor_data_04 <- dataset_adsl %>%
     dplyr::select(adsl_cols_to_keep) %>%

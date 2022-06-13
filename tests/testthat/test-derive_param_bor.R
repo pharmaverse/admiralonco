@@ -130,7 +130,7 @@ testthat::test_that("derive_param_bor Test 1: No source_pd", {
                             keys    = c("USUBJID", "PARAMCD", "ADT"))
 
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Subjects only have records less than reference date ----
+  # Subjects only have records less than reference date (PR/CR) ----
   # Response is PR and CR so will be included
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -163,7 +163,7 @@ testthat::test_that("derive_param_bor Test 1: No source_pd", {
                             keys    = c("USUBJID", "PARAMCD", "ADT"))
 
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Subjects only have records less than reference date ----
+  # Subjects only have records less than reference date (SD) ----
   # Response is SD will not be included and response will be NE
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -259,12 +259,23 @@ testthat::test_that("derive_param_bor Test 2: With source_pd", {
 })
 
 # derive_param_bor, Test 3 ----
-testthat::test_that("derive_param_bor Test 3: Test Error Filters", {
+testthat::test_that("derive_param_bor Test 3: Test Error Mising Records For filter_source", {
+  testthat::expect_error(derive_param_bor(dataset          = adrs,
+                                dataset_adsl     = adsl,
+                                filter_source    = PARAMCD == "MISSING RECORDS",
+                                source_pd        = NULL,
+                                source_datasets  = NULL,
+                                reference_date   = TRTSDT,
+                                ref_start_window = 28,
+                                aval_fun         = aval_fun_pass,
+                                set_values_to    = admiral::vars(PARAMCD = "BOR",
+                                                                 PARAM   = "Best Overall Response")),
+                         'PARAMCD == "MISSING RECORDS" has 0 records')
 
 })
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# Amgen Data and non package source TO DELETE ----
+# Amgen Data TO DELETE ----
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 adsl_amgen <- haven::read_sas("/userdata/stat/amg160/onc/20180101/analysis/final/statdata/adam/adsl.sas7bdat")
@@ -273,8 +284,27 @@ adrs_amgen <- haven::read_sas("/userdata/stat/amg160/onc/20180101/analysis/final
   dplyr::select(USUBJID, STUDYID, TRTSDT, PARAM, PARAMCD,
                 ADT, ASEQ, AVAL, AVALC, dplyr::starts_with("ANL"))
 
+# ask Catherine why duplictae records by ASEQ
+adrs_amgen_first_adt <- adrs_amgen %>%
+  dplyr::arrange(USUBJID, STUDYID, PARAM, PARAMCD, ADT) %>%
+  dplyr::group_by(USUBJID, STUDYID, PARAM, PARAMCD) %>%
+  dplyr::filter(dplyr::row_number() == 1) %>%
+  dplyr::ungroup()
+
+
 pd_date <-  admiral::date_source(
   dataset_name = "adrs_amgen",
   date         = ADT,
   filter       = PARAMCD == "CLINRESP" & AVALC == "PD" # check with Catherine
 )
+
+amgen_adrs <- derive_param_bor(dataset          = adrs_amgen_first_adt,
+                               dataset_adsl     = adsl_amgen,
+                               filter_source    = PARAMCD == "OVRLRESP",
+                               source_pd        = NULL,
+                               source_datasets  = NULL,
+                               reference_date   = TRTSDT,
+                               ref_start_window = 28,
+                               aval_fun         = aval_fun_pass,
+                               set_values_to    = admiral::vars(PARAMCD = "BOR",
+                                                                PARAM   = "Best Overall Response"))
