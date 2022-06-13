@@ -177,9 +177,9 @@
 #'   1. For each subject the best response as derived in the previous step is
 #'   selected, where `"CR"` is best and `"MISSING"` is worst in the order above.
 #'   If the best response is not unique, the first one (with respect to `ADT`)
-#'   is selected. If the selected record is from the input dataet, all variables
-#'   are kept. If the selected record is from `dataset_adsl`, all variables
-#'   which are in both `dataset` and `dataset_adsl` are kept.
+#'   is selected. If the selected record is from the input dataset, all
+#'   variables are kept. If the selected record is from `dataset_adsl`, all
+#'   variables which are in both `dataset` and `dataset_adsl` are kept.
 #'
 #'   1. The `AVAL` variable is added and set to `aval_fun(AVALC)`.
 #'
