@@ -56,17 +56,14 @@ A named list of datasets is expected. It links the \code{dataset_name} from
 
 For example if \code{source_pd = pd_date} with
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{pd_date <- date_source(
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{pd_date <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == PD
 )
 }\if{html}{\out{</div>}}
 
-and the actual response dataset in the script is \code{myadrs}, \code{source_datasets = list(adrs = myadrs)} should be specified.
-
-This allows to define \code{pd_date} at a higher level, e.g., at company level,
-where the actual dataset does not exist.}
+and the actual response dataset in the script is \code{myadrs}, \code{source_datasets = list(adrs = myadrs)} should be specified.}
 
 \item{reference_date}{Reference date
 
@@ -80,7 +77,7 @@ start date (\code{TRTSDT}) or randomization date (\code{RANDDT}).
 
 Assessments at least the specified number of days after the reference date
 with response \code{"CR"}, \code{"PR"}, \code{"SD"}, or \code{"NON-CR/NON-PD"} are considered
-as \code{"SD"} or \code{"NON-CR/NON-PD"} response.
+for \code{"SD"} or \code{"NON-CR/NON-PD"} response.
 
 \emph{Permitted Values:} a non-negative numeric scalar}
 
@@ -146,7 +143,8 @@ Derive confirmed best overall response (BOR) parameter
 \item The input dataset (\code{dataset}) is restricted to the observations matching
 \code{filter_source} and to observations before or at the date specified by
 \code{source_pd}.
-\item The following potential confirmed responses are select from the restricted input dataset:
+\item The following potential confirmed responses are selected from the
+restricted input dataset:
 \itemize{
 \item \code{"CR"}: An assessment is considered as complete response (CR) if
 \itemize{
@@ -163,15 +161,15 @@ assessment and the confirmatory assessment.
 \item \code{AVALC == "PR"},
 \item there is a confirmatory assessment with \code{AVALC \%in\% c("CR",   "PR")} at least \code{ref_confirm} days after the assessment,
 \item all assessments between the assessment and the confirmatory
-assessment are \code{"CR"}, \code{"PR"}, or \code{"NE"},
+assessment are \code{"CR"}, \code{"PR"}, \code{"SD"}, or \code{"NE"},
 \item there is no \code{"PR"} assessment after a \code{"CR"} assessment in the
-confirmation period, and
+confirmation period,
 \item there are at most \code{max_nr_ne} \code{"NE"} assessments between the
-assessment and the confirmatory assessment.
+assessment and the confirmatory assessment, and
+\item if the \code{accept_sd} argument is set to \code{TRUE}, one \code{"SD"}
+assessment in the confirmation period is accepted. Otherwise, no
+\code{"SD"} assessment must occur within the confirmation period.
 }
-
-If the \code{accept_sd} argument is set to \code{TRUE}, one \code{"SD"} assessment
-in the confirmation period is accepted.
 \item \code{"SD"}: An assessment is considered as stable disease (SD) if
 \itemize{
 \item \code{AVALC \%in\% c("CR", "PR", "SD")} and
@@ -189,15 +187,16 @@ in the confirmation period is accepted.
 \item \code{"NE"}: An assessment is considered as not estimable (NE) if
 \itemize{
 \item \code{AVALC == "NE"} or
-\item \code{AVALC \%in\% c("CR", "PR", "SD")} and the assessment is less than
-\code{ref_start_window} days after \code{reference_date}.
+\item \code{AVALC \%in\% c("CR", "PR", "SD", "NON-CR/NON-PD")} and the
+assessment is less than \code{ref_start_window} days after
+\code{reference_date}.
 }
 \item \code{"ND"}: An assessment is considered as not done (ND) if \code{AVALC ==   "ND"}.
 \item \code{"MISSING"}: An assessment is considered as missing (MISSING) if a
 subject has no observation in the input dataset.
 
 If the \code{missing_as_ne} argument is set to \code{TRUE}, \code{AVALC} is set to
-\code{"NE"} for missing assessments.
+\code{"NE"} for these subjects.
 }
 \item For each subject the best response as derived in the previous step is
 selected, where \code{"CR"} is best and \code{"MISSING"} is worst in the order above.
@@ -213,6 +212,8 @@ the new observations.
 \examples{
 
 library(dplyr)
+library(lubridate)
+library(admiral)
 
 # Create ADSL dataset
 adsl <- tibble::tribble(
@@ -224,10 +225,11 @@ adsl <- tibble::tribble(
   "5",      "2020-01-01",
   "6",      "2020-02-02",
   "7",      "2020-02-02",
-  "8",      "2020-04-01"
+  "8",      "2020-04-01",
+  "9",      "2020-03-01"
 ) \%>\%
   mutate(
-    TRTSDT = lubridate::ymd(TRTSDTC),
+    TRTSDT = ymd(TRTSDTC),
     STUDYID = "XX1234"
   )
 
@@ -263,7 +265,11 @@ ovr_obs <- tibble::tribble(
   "6",      "2020-06-01", "CR",
   "7",      "2020-02-06", "PR",
   "7",      "2020-02-16", "CR",
-  "7",      "2020-04-01", "NE"
+  "7",      "2020-04-01", "NE",
+  "9",      "2020-03-16", "CR",
+  "9",      "2020-04-01", "NE",
+  "9",      "2020-04-16", "NE",
+  "9",      "2020-05-01", "CR"
 ) \%>\%
   mutate(PARAMCD = "OVR")
 
@@ -275,17 +281,17 @@ pd_obs <-
     mutate(PARAMCD = "PD"))
 adrs <- bind_rows(ovr_obs, pd_obs) \%>\%
   mutate(
-    ADT = lubridate::ymd(ADTC),
+    ADT = ymd(ADTC),
     STUDYID = "XX1234"
   ) \%>\%
   select(-ADTC) \%>\%
-  admiral::derive_vars_merged(
+  derive_vars_merged(
     dataset_add = adsl,
-    by_vars = dplyr::vars(STUDYID, USUBJID),
-    new_vars = dplyr::vars(TRTSDT)
+    by_vars = vars(STUDYID, USUBJID),
+    new_vars = vars(TRTSDT)
   )
 
-pd_date <- admiral::date_source(
+pd_date <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == "PD"
@@ -308,8 +314,8 @@ derive_param_confirmed_bor(
 ) \%>\%
   filter(PARAMCD == "CBOR")
 
-# Derive confirmed best overall response parameter (accepting SD for PR and
-# considering missings as NE)
+# Derive confirmed best overall response parameter (accepting SD for PR,
+# accept two NEs, and considering missings as NE)
 derive_param_confirmed_bor(
   adrs,
   dataset_adsl = adsl,
@@ -319,6 +325,7 @@ derive_param_confirmed_bor(
   reference_date = TRTSDT,
   ref_start_window = 28,
   ref_confirm = 28,
+  max_nr_ne = 2,
   accept_sd = TRUE,
   missing_as_ne = TRUE,
   set_values_to = vars(

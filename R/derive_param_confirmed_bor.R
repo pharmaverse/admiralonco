@@ -35,7 +35,7 @@
 #'   `source_pd` with an existing dataset.
 #'
 #'   For example if `source_pd = pd_date` with
-#'   ```
+#'   ```{r, eval=FALSE}
 #'   pd_date <- date_source(
 #'     dataset_name = "adrs",
 #'     date = ADT,
@@ -44,9 +44,6 @@
 #'   ```
 #'   and the actual response dataset in the script is `myadrs`, `source_datasets
 #'   = list(adrs = myadrs)` should be specified.
-#'
-#'   This allows to define `pd_date` at a higher level, e.g., at company level,
-#'   where the actual dataset does not exist.
 #'
 #' @param reference_date Reference date
 #'
@@ -60,7 +57,7 @@
 #'
 #'   Assessments at least the specified number of days after the reference date
 #'   with response `"CR"`, `"PR"`, `"SD"`, or `"NON-CR/NON-PD"` are considered
-#'   as `"SD"` or `"NON-CR/NON-PD"` response.
+#'   for `"SD"` or `"NON-CR/NON-PD"` response.
 #'
 #'   *Permitted Values:* a non-negative numeric scalar
 #'
@@ -77,6 +74,7 @@
 #'   *Permitted Values:* a non-negative numeric scalar
 #'
 #'   *Default:* `1`
+#'
 #' @param accept_sd Accept `"SD"` for `"PR"`?
 #'
 #'   If the argument is set to `TRUE`, one `"SD"` assessment between the
@@ -122,7 +120,8 @@
 #'   `filter_source` and to observations before or at the date specified by
 #'   `source_pd`.
 #'
-#'   1. The following potential confirmed responses are select from the restricted input dataset:
+#'   1. The following potential confirmed responses are selected from the
+#'   restricted input dataset:
 #'
 #'       - `"CR"`: An assessment is considered as complete response (CR) if
 #'           - `AVALC == "CR"`,
@@ -138,14 +137,14 @@
 #'           - there is a confirmatory assessment with `AVALC %in% c("CR",
 #'           "PR")` at least `ref_confirm` days after the assessment,
 #'           - all assessments between the assessment and the confirmatory
-#'           assessment are `"CR"`, `"PR"`, or `"NE"`,
+#'           assessment are `"CR"`, `"PR"`, `"SD"`, or `"NE"`,
 #'           - there is no `"PR"` assessment after a `"CR"` assessment in the
-#'           confirmation period, and
+#'           confirmation period,
 #'           - there are at most `max_nr_ne` `"NE"` assessments between the
-#'           assessment and the confirmatory assessment.
-#'
-#'           If the `accept_sd` argument is set to `TRUE`, one `"SD"` assessment
-#'           in the confirmation period is accepted.
+#'           assessment and the confirmatory assessment, and
+#'           - if the `accept_sd` argument is set to `TRUE`, one `"SD"`
+#'           assessment in the confirmation period is accepted. Otherwise, no
+#'           `"SD"` assessment must occur within the confirmation period.
 #'
 #'        - `"SD"`: An assessment is considered as stable disease (SD) if
 #'          - `AVALC %in% c("CR", "PR", "SD")` and
@@ -162,8 +161,9 @@
 #'
 #'        - `"NE"`: An assessment is considered as not estimable (NE) if
 #'            - `AVALC == "NE"` or
-#'            - `AVALC %in% c("CR", "PR", "SD")` and the assessment is less than
-#'            `ref_start_window` days after `reference_date`.
+#'            - `AVALC %in% c("CR", "PR", "SD", "NON-CR/NON-PD")` and the
+#'            assessment is less than `ref_start_window` days after
+#'            `reference_date`.
 #'
 #'        - `"ND"`: An assessment is considered as not done (ND) if `AVALC ==
 #'        "ND"`.
@@ -172,7 +172,7 @@
 #'        subject has no observation in the input dataset.
 #'
 #'            If the `missing_as_ne` argument is set to `TRUE`, `AVALC` is set to
-#'            `"NE"` for missing assessments.
+#'            `"NE"` for these subjects.
 #'
 #'   1. For each subject the best response as derived in the previous step is
 #'   selected, where `"CR"` is best and `"MISSING"` is worst in the order above.
@@ -199,6 +199,8 @@
 #' @examples
 #'
 #' library(dplyr)
+#' library(lubridate)
+#' library(admiral)
 #'
 #' # Create ADSL dataset
 #' adsl <- tibble::tribble(
@@ -210,10 +212,11 @@
 #'   "5",      "2020-01-01",
 #'   "6",      "2020-02-02",
 #'   "7",      "2020-02-02",
-#'   "8",      "2020-04-01"
+#'   "8",      "2020-04-01",
+#'   "9",      "2020-03-01"
 #' ) %>%
 #'   mutate(
-#'     TRTSDT = lubridate::ymd(TRTSDTC),
+#'     TRTSDT = ymd(TRTSDTC),
 #'     STUDYID = "XX1234"
 #'   )
 #'
@@ -249,7 +252,11 @@
 #'   "6",      "2020-06-01", "CR",
 #'   "7",      "2020-02-06", "PR",
 #'   "7",      "2020-02-16", "CR",
-#'   "7",      "2020-04-01", "NE"
+#'   "7",      "2020-04-01", "NE",
+#'   "9",      "2020-03-16", "CR",
+#'   "9",      "2020-04-01", "NE",
+#'   "9",      "2020-04-16", "NE",
+#'   "9",      "2020-05-01", "CR"
 #' ) %>%
 #'   mutate(PARAMCD = "OVR")
 #'
@@ -261,17 +268,17 @@
 #'     mutate(PARAMCD = "PD"))
 #' adrs <- bind_rows(ovr_obs, pd_obs) %>%
 #'   mutate(
-#'     ADT = lubridate::ymd(ADTC),
+#'     ADT = ymd(ADTC),
 #'     STUDYID = "XX1234"
 #'   ) %>%
 #'   select(-ADTC) %>%
-#'   admiral::derive_vars_merged(
+#'   derive_vars_merged(
 #'     dataset_add = adsl,
-#'     by_vars = dplyr::vars(STUDYID, USUBJID),
-#'     new_vars = dplyr::vars(TRTSDT)
+#'     by_vars = vars(STUDYID, USUBJID),
+#'     new_vars = vars(TRTSDT)
 #'   )
 #'
-#' pd_date <- admiral::date_source(
+#' pd_date <- date_source(
 #'   dataset_name = "adrs",
 #'   date = ADT,
 #'   filter = PARAMCD == "PD"
@@ -294,8 +301,8 @@
 #' ) %>%
 #'   filter(PARAMCD == "CBOR")
 #'
-#' # Derive confirmed best overall response parameter (accepting SD for PR and
-#' # considering missings as NE)
+#' # Derive confirmed best overall response parameter (accepting SD for PR,
+#' # accept two NEs, and considering missings as NE)
 #' derive_param_confirmed_bor(
 #'   adrs,
 #'   dataset_adsl = adsl,
@@ -305,6 +312,7 @@
 #'   reference_date = TRTSDT,
 #'   ref_start_window = 28,
 #'   ref_confirm = 28,
+#'   max_nr_ne = 2,
 #'   accept_sd = TRUE,
 #'   missing_as_ne = TRUE,
 #'   set_values_to = vars(
