@@ -125,56 +125,43 @@
 #' ) %>%
 #'   mutate(STUDYID = "XX1234")
 #'
-#' adrs0 <- tibble::tribble(
-#'   ~USUBJID, ~ADTC, ~AVALC,
-#'   "1", "2020-01-02", "PR",
-#'   "1", "2020-02-01", "CR",
-#'   "1", "2020-03-01", "CR",
-#'   "1", "2020-04-01", "SD",
-#'   "2", "2021-06-15", "SD",
-#'   "2", "2021-07-16", "PD",
-#'   "2", "2021-09-14", "PD",
-#'   "3", "2021-09-14", "SD",
-#'   "3", "2021-10-30", "PD",
-#'   "3", "2021-12-25", "CR"
+#' adrs <- tibble::tribble(
+#'   ~USUBJID, ~PARAMCD, ~ADTC, ~AVALC,
+#'   "1", "OVR", "2020-01-02", "PR",
+#'   "1", "OVR", "2020-02-01", "CR",
+#'   "1", "OVR", "2020-03-01", "CR",
+#'   "1", "OVR", "2020-04-01", "SD",
+#'   "1", "PD", NA_character_, "N",
+#'   "2", "OVR", "2021-06-15", "SD",
+#'   "2", "OVR", "2021-07-16", "PD",
+#'   "2", "OVR", "2021-09-14", "PD",
+#'   "2", "PD", "2021-09-14", "Y",
+#'   "3", "OVR", "2021-09-14", "SD",
+#'   "3", "OVR", "2021-10-30", "PD",
+#'   "3", "OVR", "2021-12-25", "CR",
+#'   "3", "PD", "2021-10-30", "Y",
 #' ) %>%
 #'   mutate(
 #'     STUDYID = "XX1234",
 #'     ADT = ymd(ADTC),
-#'     PARAMCD = "OVR",
-#'     PARAM = "Overall Response",
 #'     ANL01FL = "Y"
 #'   ) %>%
 #'   select(-ADTC)
 #'
-#' # Add a parameter for the date of Progressive disease (PARAMCD = PD)
-#' adrs1 <- derive_param_first_event(
-#'   dataset = adrs0,
-#'   dataset_adsl = adsl,
-#'   dataset_source = adrs0,
-#'   filter_source = PARAMCD == "OVR" & AVALC == "PD",
-#'   date_var = ADT,
-#'   set_values_to = vars(
-#'     PARAMCD = "PD",
-#'     PARAM = "Disease Progression",
-#'     ANL01FL = "Y"
-#'   )
-#' )
-#'
 #' # Define the end of the assessment period for responses:
 #' # all responses before or on the first PD will be used.
 #' pd <- date_source(
-#'   dataset_name = "adrs1",
+#'   dataset_name = "adrs",
 #'   date = ADT,
 #'   filter = PARAMCD == "PD" & AVALC == "Y"
 #' )
 #' # Derive the response parameter
 #' derive_param_response(
-#'   dataset = adrs1,
+#'   dataset = adrs,
 #'   dataset_adsl = adsl,
 #'   filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR"),
 #'   source_pd = pd,
-#'   source_datasets = list(adrs1 = adrs1),
+#'   source_datasets = list(adrs = adrs),
 #'   set_values_to = vars(
 #'     PARAMCD = "RSP",
 #'     PARAM = "Response by investigator"
@@ -212,36 +199,23 @@ derive_param_response <- function(dataset,
     assert_param_does_not_exist(dataset, quo_get_expr(set_values_to$PARAMCD))
   }
 
-  # ---- Read in data ----
-  data <- vector("list", length(source_names))
-  # Both dates of PD and Response records are in the same datasets
-  if (length(source_names) == 1) {
-    pddt <- source_datasets[[1]] %>%
-      filter_if(source_pd$filter) %>%
-      mutate(PDDT = ADT) %>%
-      select(!!!subject_keys, PDDT)
-  } else {
-    for (i in seq_along(source_names)) {
-      #---PD  datasets ----
-      if (source_names[[i]] == source_pd$dataset_name) {
-        pddt <- source_datasets[[i]] %>%
-          filter_if(source_pd$filter) %>%
-          mutate(PDDT = ADT) %>%
-          select(!!!subject_keys, PDDT)
-      }
-    }
-  }
-
-  #---- Only records before PD ----
-  resp_before_pd <- dataset %>%
-    left_join(pddt, by = vars2chr(subject_keys)) %>%
-    filter(ADT <= PDDT | is.na(PDDT))
-
+  #----  Only records from `dataset` where `filter_source` before PD ----
+  resp_before_pd <-dataset %>%
+    filter_pd(
+      # Need to specify a filter otherwise:
+      # ERROR ! Argument `filter_source` is missing, with no default
+      filter = !!filter_s,
+      source_pd = source_pd,
+      source_datasets = source_datasets,
+      subject_keys = vars(!!!subject_keys)
+    )
   # ---- Select the 1st response and add a new PARAMCD to the input dataset ----
   dataset %>%
     derive_param_first_event(
       dataset_adsl = dataset_adsl,
       dataset_source = resp_before_pd,
+      # Need to specify a filter otherwise:
+      # ERROR ! Argument `filter_source` is missing, with no default
       filter_source = !!filter_s,
       date_var = ADT,
       set_values_to = set_values_to
