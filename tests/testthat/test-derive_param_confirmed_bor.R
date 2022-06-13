@@ -58,10 +58,10 @@ adrs <- tibble::tribble(
     ADT = lubridate::ymd(ADTC),
     STUDYID = "XX1234"
   ) %>%
-  admiral::derive_vars_merged(
+  derive_vars_merged(
     dataset_add = adsl,
-    by_vars = dplyr::vars(STUDYID, USUBJID),
-    new_vars = dplyr::vars(TRTSDT)
+    by_vars = vars(STUDYID, USUBJID),
+    new_vars = vars(TRTSDT)
   )
 
 pd_date <- admiral::date_source(
@@ -92,16 +92,16 @@ test_that("derive_param_confirmed_bor Test 1: default confirmed BOR", {
   expected <- bind_rows(
     adrs,
     tibble::tribble(
-      ~USUBJID, ~ADTC,        ~AVALC,          ~AVAL,
-      "1",      "2020-02-01", "CR",            1,
-      "2",      "2020-02-01", "SD",            3,
-      "3",      "2020-01-01", "SD",            3,
-      "4",      "2020-03-01", "SD",            3,
-      "5",      "2020-05-15", "NON-CR/NON-PD", 4,
-      "6",      "2020-03-30", "SD",            3,
-      "7",      "2020-02-06", "NE",            6,
-      "8",      "",           "MISSING",       7,
-      "9",      "2020-02-16", "PD",            5
+      ~USUBJID, ~ADTC,         ~AVALC,          ~AVAL,
+      "1",      "2020-02-01",  "CR",            1,
+      "2",      "2020-02-01",  "SD",            3,
+      "3",      "2020-01-01",  "SD",            3,
+      "4",      "2020-03-01",  "SD",            3,
+      "5",      "2020-05-15",  "NON-CR/NON-PD", 4,
+      "6",      "2020-03-30",  "SD",            3,
+      "7",      "2020-02-06",  "NE",            6,
+      "8",      NA_character_, "MISSING",       7,
+      "9",      "2020-02-16",  "PD",            5
     ) %>%
       mutate(
         ADT = lubridate::ymd(ADTC),
@@ -109,7 +109,11 @@ test_that("derive_param_confirmed_bor Test 1: default confirmed BOR", {
         PARAMCD = "CBOR",
         PARAM = "Best Confirmed Overall Response by Investigator"
       ) %>%
-      select(-ADTC)
+      derive_vars_merged(
+        dataset_add = adsl,
+        by_vars = vars(STUDYID, USUBJID),
+        new_vars = vars(TRTSDT)
+      )
   )
 
   expect_dfs_equal(
@@ -132,10 +136,10 @@ test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as
         ADT = lubridate::ymd(ADTC),
         STUDYID = "XX1234"
       ) %>%
-      admiral::derive_vars_merged(
+      derive_vars_merged(
         dataset_add = adsl,
-        by_vars = dplyr::vars(STUDYID, USUBJID),
-        new_vars = dplyr::vars(TRTSDT)
+        by_vars = vars(STUDYID, USUBJID),
+        new_vars = vars(TRTSDT)
       )
   )
 
@@ -161,16 +165,16 @@ test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as
   expected <- bind_rows(
     adrs_ext,
     tibble::tribble(
-      ~USUBJID, ~ADTC,        ~AVALC,          ~AVAL,
-      "1",      "2020-01-01", "PR",            2,
-      "2",      "2020-02-01", "PR",            2,
-      "3",      "2019-11-12", "CR",            1,
-      "4",      "2020-03-01", "SD",            3,
-      "5",      "2020-01-01", "PR",            2,
-      "6",      "2020-03-30", "SD",            3,
-      "7",      "2020-04-02", "ND",            NA,
-      "8",      "",           "NE",            6,
-      "9",      "2020-02-16", "PD",            5
+      ~USUBJID, ~ADTC,         ~AVALC, ~AVAL,
+      "1",      "2020-01-01",  "PR",   2,
+      "2",      "2020-02-01",  "PR",   2,
+      "3",      "2019-11-12",  "CR",   1,
+      "4",      "2020-03-01",  "SD",   3,
+      "5",      "2020-01-01",  "PR",   2,
+      "6",      "2020-03-30",  "SD",   3,
+      "7",      "2020-04-02",  "ND",   NA,
+      "8",      NA_character_, "NE",   6,
+      "9",      "2020-02-16",  "PD",   5
     ) %>%
       mutate(
         ADT = lubridate::ymd(ADTC),
@@ -178,7 +182,11 @@ test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as
         PARAMCD = "CBOR",
         PARAM = "Best Confirmed Overall Response by Investigator"
       ) %>%
-      select(-ADTC)
+      derive_vars_merged(
+        dataset_add = adsl,
+        by_vars = vars(STUDYID, USUBJID),
+        new_vars = vars(TRTSDT)
+      )
   )
 
   expect_dfs_equal(
@@ -203,10 +211,10 @@ test_that("derive_param_confirmed_bor Test 3: error if invalid response values",
       ADT = lubridate::ymd(ADTC),
       STUDYID = "XX1234"
     ) %>%
-    admiral::derive_vars_merged(
+    derive_vars_merged(
       dataset_add = adsl,
-      by_vars = dplyr::vars(STUDYID, USUBJID),
-      new_vars = dplyr::vars(TRTSDT)
+      by_vars = vars(STUDYID, USUBJID),
+      new_vars = vars(TRTSDT)
     )
 
   expect_error(

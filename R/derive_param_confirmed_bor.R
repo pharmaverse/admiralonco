@@ -390,8 +390,7 @@ derive_param_confirmed_bor <- function(dataset,
       all(AVALC.join %in% c("CR", "NE")) &
       count_vals(var = AVALC.join, val = "NE") <= max_nr_ne
   ) %>%
-    mutate(tmp_order = 1) %>%
-    select(!!!subject_keys, AVALC, tmp_order, ADT)
+    mutate(tmp_order = 1)
 
   if (accept_sd) {
     max_nr_sd <- 1
@@ -417,8 +416,7 @@ derive_param_confirmed_bor <- function(dataset,
           count_vals(var = AVALC.join, val = "CR") == 0
       )
   ) %>%
-    mutate(tmp_order = 2) %>%
-    select(!!!subject_keys, AVALC, tmp_order, ADT)
+    mutate(tmp_order = 2)
 
   sd_data <- filter(
     source_data,
@@ -427,8 +425,7 @@ derive_param_confirmed_bor <- function(dataset,
     mutate(
       AVALC = "SD",
       tmp_order = 3
-    ) %>%
-    select(!!!subject_keys, AVALC, tmp_order, ADT)
+    )
 
   non_data <- filter(
     source_data,
@@ -436,12 +433,10 @@ derive_param_confirmed_bor <- function(dataset,
   ) %>%
     mutate(
       tmp_order = 4
-    ) %>%
-    select(!!!subject_keys, AVALC, tmp_order, ADT)
+    )
 
   pd_data <- filter(source_data, AVALC == "PD") %>%
-    mutate(tmp_order = 5) %>%
-    select(!!!subject_keys, AVALC, tmp_order, ADT)
+    mutate(tmp_order = 5)
 
   ne_data <- filter(
     source_data,
@@ -451,8 +446,7 @@ derive_param_confirmed_bor <- function(dataset,
     mutate(
       AVALC = "NE",
       tmp_order = 6
-    ) %>%
-    select(!!!subject_keys, AVALC, tmp_order, ADT)
+    )
 
   nd_data <- filter(
     source_data,
@@ -461,8 +455,7 @@ derive_param_confirmed_bor <- function(dataset,
     mutate(
       AVALC = "ND",
       tmp_order = 7
-    ) %>%
-    select(!!!subject_keys, AVALC, tmp_order, ADT)
+    )
 
   if (missing_as_ne) {
     missing_val <- "NE"
@@ -470,13 +463,15 @@ derive_param_confirmed_bor <- function(dataset,
     missing_val <- "MISSING"
   }
 
+  source_vars <- colnames(source_data)
+  adsl_vars <- colnames(dataset_adsl)
+
   missing_data <- dataset_adsl %>%
-    select(!!!subject_keys) %>%
+    select(!!!subject_keys, intersect(source_vars, adsl_vars)) %>%
     mutate(
       AVALC = missing_val,
       tmp_order = 8
-    ) %>%
-    select(!!!subject_keys, AVALC, tmp_order)
+    )
 
   # Select best response
   bor <- bind_rows(cr_data, pr_data, sd_data, pd_data, non_data, ne_data, nd_data, missing_data) %>%
