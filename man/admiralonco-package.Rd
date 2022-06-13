@@ -4,14 +4,11 @@
 \name{admiralonco-package}
 \alias{admiralonco}
 \alias{admiralonco-package}
-\title{admiralonco: Oncology extension package for ADaM in R Asset Library}
+\title{admiralonco: Oncology Extension Package for ADaM in R Asset Library}
 \description{
-A toolbox for programming oncology specific Clinical Data Standards Interchange Consortium
-    (CDISC) compliant Analysis Data Model (ADaM) datasets in R. ADaM datasets are a
-    mandatory part of any New Drug or Biologics License Application submitted to the
-    United States Food and Drug Administration (FDA). Analysis derivations are
-    implemented in accordance with the "Analysis Data Model Implementation Guide"
-    (CDISC Analysis Data Model Team, 2021, <https://www.cdisc.org/standards/foundational/adam/adamig-v1-3-release-package>).
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
+A toolbox for programming oncology specific Clinical Data Standards Interchange Consortium (CDISC) compliant Analysis Data Model (ADaM) datasets in R. ADaM datasets are a mandatory part of any New Drug or Biologics License Application submitted to the United States Food and Drug Administration (FDA). Analysis derivations are implemented in accordance with the "Analysis Data Model Implementation Guide" (CDISC Analysis Data Model Team, 2021, \url{https://www.cdisc.org/standards/foundational/adam/adamig-v1-3-release-package}). The package is an extension package of the admiral package.
 }
 \author{
 \strong{Maintainer}: Stefan Bundfuss \email{stefan.bundfuss@roche.com}
@@ -21,10 +18,23 @@ Authors:
   \item Ross Farrugia
   \item Amit Jain
   \item Liming (Catherine) Jin
+  \item Andrew Smith
+  \item Cloris Xue
+  \item Caihong Xia
+  \item Karl Kennedy
+  \item Konstantina Koukourikou
+  \item Mary Dee
+  \item Neharika Sharma
+  \item Samia Kabi
+  \item Stephen Gormley
+  \item Annie Yang
 }
 
 Other contributors:
 \itemize{
+  \item Gillian Yin [contributor]
+  \item Aiming Yang [contributor]
+  \item Gopi Vegesna [contributor]
   \item F. Hoffmann-La Roche AG [copyright holder, funder]
   \item GlaxoSmithKline LLC [copyright holder, funder]
   \item Amgen Inc. [copyright holder, funder]
