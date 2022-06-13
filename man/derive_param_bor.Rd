@@ -53,7 +53,7 @@ for details)
 \emph{Required or Optional:} Optional}
 
 \item{source_datasets}{Source dataframe to be used to calculate the
-first PD date \link{Optional}
+first PD date
 
 A named list of dataframes is expected (although for BoR) only one dataframe is
 needed. It links the \code{dataset_name} from \code{source_pd} with an existing dataframe.
@@ -71,7 +71,7 @@ and the actual response dataframe in the script is \code{myadrs}, \code{source_d
 
 \emph{Required or Optional:} Optional}
 
-\item{reference_date}{Reference date  \link{Required}
+\item{reference_date}{Reference date
 
 The reference date is used along with \code{ref_start_window} to determine those
 records that occur before and after \code{ADT} (see Details section for further
@@ -108,7 +108,7 @@ for these subjects.
 \emph{Required or Optional:} Required}
 
 \item{aval_fun}{Function to map character analysis value (\code{AVALC}) to numeric
-analysis value (\code{AVAL}) \link{Required}
+analysis value (\code{AVAL})
 
 The (first) argument of the function must expect a character vector and the
 function must return a numeric vector.
@@ -117,7 +117,7 @@ function must return a numeric vector.
 
 \emph{Required or Optional:} Required}
 
-\item{set_values_to}{Variables to set \link{Required}
+\item{set_values_to}{Variables to set
 
 A named list returned by \code{vars()} defining the variables to be set for the
 new parameter, e.g. \code{vars(PARAMCD = "CBOR", PARAM = "Best Overall Response")} is expected. The values must be symbols, character strings,
@@ -125,7 +125,7 @@ numeric values, or \code{NA}.
 
 \emph{Required or Optional:} Required}
 
-\item{subject_keys}{Variables to uniquely identify a subject \link{Required}
+\item{subject_keys}{Variables to uniquely identify a subject
 
 A list of symbols created using \code{admiral::vars()}.
 
@@ -134,15 +134,15 @@ A list of symbols created using \code{admiral::vars()}.
 \emph{Required or Optional:} Required}
 }
 \value{
-The dataframe passed in the \code{dataset} argument with additional columns
-and/or rows as set in the \code{set_values_to} argument.
+The dataframe passed in the \code{dataset} argument with additional columns and/or
+rows as set in the \code{set_values_to} argument.
 }
 \description{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{Derive Best Overall Response Parameter
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Derives Best Overall Response
 }\if{html}{\out{</div>}}
 }
 \details{
-Calculates the best overall response (BOR) parameter for subjects.
+Calculates the best overall response (BOR) parameter.
 Records after PD can be removed using the source_pd and source_datasets
 arguments.
 
@@ -160,19 +160,23 @@ not have a record in step 1 and AVALC \%in\% c('SD', 'NON-CR/NON-PD') then
 Best Overall Response is set to NE.
 \item The Best Response, by \code{subject_keys} of the records in steps 1 to 4, is then
 selected in the following order of preference:
-AVALC \%in\% c("CR") ~ 1,
-AVALC \%in\% c("PR") ~ 2,
-AVALC \%in\% c("SD") ~ 3,
-AVALC \%in\% c("NON-CR/NON-PD") ~ 4,
-AVALC \%in\% c("PD") ~ 5,
-AVALC \%in\% c("NE") ~ 6,
-is.null(AVALC) ~ 7)) \%>\%
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{        AVALC \%in\% c("CR") ~ 1,
+        AVALC \%in\% c("PR") ~ 2,
+        AVALC \%in\% c("SD") ~ 3,
+        AVALC \%in\% c("NON-CR/NON-PD") ~ 4,
+        AVALC \%in\% c("PD") ~ 5,
+        AVALC \%in\% c("NE") ~ 6,
+        is.null(AVALC) ~ 7)) \%>\%
+}\if{html}{\out{</div>}}
 \item The \code{AVAL} variable is added and set using the \code{aval_fun(AVALC)} function
 \item The variables specified by the \code{set_values_to} parameter and records
 are added to the dataframe passed into the \code{dataset} argument
 }
 }
 \examples{
+
+library(magrittr)
 
 # Create ADSL dataset
 adsl <- tibble::tribble(
@@ -247,6 +251,18 @@ pd_date <- admiral::date_source(
   date         = ADT,
   filter       = PARAMCD == "PD")
 
+aval_fun_pass <- function(arg) {
+        dplyr::case_when(
+          arg == "CR" ~ 11,
+          arg == "PR" ~ 22,
+          arg == "SD" ~ 33,
+          arg == "NON-CR/NON-PD" ~ 44,
+          arg == "PD" ~ 55,
+          arg == "NE" ~ 66,
+          arg == "MISSING" ~ 77,
+          TRUE ~ NA_real_
+        ) }
+
 # Derive best overall response parameter
 derive_param_bor(
   adrs,
@@ -254,6 +270,7 @@ derive_param_bor(
   filter_source    = PARAMCD == "OVR",
   source_pd        = pd_date,
   source_datasets  = list(adrs = adrs),
+  aval_fun         = aval_fun_pass,
   reference_date   = TRTSDT,
   ref_start_window = 28,
   set_values_to    = dplyr::vars(PARAMCD = "BOR",

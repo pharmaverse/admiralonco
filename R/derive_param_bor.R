@@ -1,9 +1,9 @@
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|
 #' @description
-#'     Derive Best Overall Response Parameter
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#'     Derives Best Overall Response
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @details
-#'    Calculates the best overall response (BOR) parameter for subjects.
+#'    Calculates the best overall response (BOR) parameter.
 #'    Records after PD can be removed using the source_pd and source_datasets
 #'    arguments.
 #'
@@ -25,6 +25,7 @@
 #'
 #'   5. The Best Response, by `subject_keys` of the records in steps 1 to 4, is then
 #'      selected in the following order of preference:
+#'
 #'                  AVALC %in% c("CR") ~ 1,
 #'                  AVALC %in% c("PR") ~ 2,
 #'                  AVALC %in% c("SD") ~ 3,
@@ -37,7 +38,7 @@
 #'
 #'   7. The variables specified by the `set_values_to` parameter and records
 #'      are added to the dataframe passed into the `dataset` argument
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 # Function Arguments:
 #'
 #' @param dataset The input dataframe from which the Best Overall Response will
@@ -74,7 +75,7 @@
 #'   *Required or Optional:* Optional
 #'
 #' @param source_datasets Source dataframe to be used to calculate the
-#'                        first PD date [Optional]
+#'                        first PD date
 #'
 #'   A named list of dataframes is expected (although for BoR) only one dataframe is
 #'   needed. It links the `dataset_name` from `source_pd` with an existing dataframe.
@@ -92,7 +93,7 @@
 #'
 #'    *Required or Optional:* Optional
 #'
-#' @param reference_date Reference date  [Required]
+#' @param reference_date Reference date
 #'
 #'   The reference date is used along with `ref_start_window` to determine those
 #'   records that occur before and after `ADT` (see Details section for further
@@ -129,7 +130,7 @@
 #'   *Required or Optional:* Required
 #'
 #' @param aval_fun Function to map character analysis value (`AVALC`) to numeric
-#'                 analysis value (`AVAL`) [Required]
+#'                 analysis value (`AVAL`)
 #'
 #'   The (first) argument of the function must expect a character vector and the
 #'   function must return a numeric vector.
@@ -138,7 +139,7 @@
 #'
 #'   *Required or Optional:* Required
 #'
-#' @param set_values_to Variables to set [Required]
+#' @param set_values_to Variables to set
 #'
 #'   A named list returned by `vars()` defining the variables to be set for the
 #'   new parameter, e.g. `vars(PARAMCD = "CBOR", PARAM = "Best Overall
@@ -147,7 +148,7 @@
 #'
 #'    *Required or Optional:* Required
 #'
-#' @param subject_keys Variables to uniquely identify a subject [Required]
+#' @param subject_keys Variables to uniquely identify a subject
 #'
 #'   A list of symbols created using `admiral::vars()`.
 #'
@@ -156,6 +157,8 @@
 #'   *Required or Optional:* Required
 #'
 #' @examples
+#'
+#' library(magrittr)
 #'
 #' # Create ADSL dataset
 #' adsl <- tibble::tribble(
@@ -230,6 +233,18 @@
 #'   date         = ADT,
 #'   filter       = PARAMCD == "PD")
 #'
+#' aval_fun_pass <- function(arg) {
+#'         dplyr::case_when(
+#'           arg == "CR" ~ 11,
+#'           arg == "PR" ~ 22,
+#'           arg == "SD" ~ 33,
+#'           arg == "NON-CR/NON-PD" ~ 44,
+#'           arg == "PD" ~ 55,
+#'           arg == "NE" ~ 66,
+#'           arg == "MISSING" ~ 77,
+#'           TRUE ~ NA_real_
+#'         ) }
+#'
 #' # Derive best overall response parameter
 #' derive_param_bor(
 #'   adrs,
@@ -237,24 +252,27 @@
 #'   filter_source    = PARAMCD == "OVR",
 #'   source_pd        = pd_date,
 #'   source_datasets  = list(adrs = adrs),
+#'   aval_fun         = aval_fun_pass,
 #'   reference_date   = TRTSDT,
 #'   ref_start_window = 28,
 #'   set_values_to    = dplyr::vars(PARAMCD = "BOR",
 #'                                  PARAM   = "Best Overall Response")
 #' ) %>%
 #'   dplyr::filter(PARAMCD == "BOR")
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @export
 #' @name   derive_param_bor
 #' @title  derive_param_bor
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @author Stephen Gormley
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @keywords ADRS
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
-#' @return The dataframe passed in the `dataset` argument with additional columns
-#'         and/or rows as set in the `set_values_to` argument.
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#' @importFrom  magrittr `%>%`
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#' @return The dataframe passed in the `dataset` argument with additional columns and/or
+#'         rows as set in the `set_values_to` argument.
+#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|
 
 derive_param_bor <- function(dataset,
                              dataset_adsl,
@@ -284,7 +302,7 @@ derive_param_bor <- function(dataset,
   admiral::assert_function(arg = aval_fun)
 
   admiral::assert_varval_list(arg               = set_values_to,
-                              required_elements = "PARAMCD")
+                              required_elements = c("PARAMCD", "PARAM"))
 
   admiral::assert_vars(arg = subject_keys)
 
@@ -294,8 +312,7 @@ derive_param_bor <- function(dataset,
                                                              admiral::vars(PARAMCD, ADT, AVALC)))
 
   admiral::assert_data_frame(arg           = dataset_adsl,
-                             required_vars = admiral:::quo_c(subject_keys,
-                                                             reference_date))
+                             required_vars = admiral:::quo_c(subject_keys))
 
   admiral::assert_param_does_not_exist(dataset = dataset,
                                        param   = rlang::quo_get_expr(set_values_to$PARAMCD))
@@ -377,11 +394,12 @@ derive_param_bor <- function(dataset,
   #  1.  Records where ADT >= reference_date + ref_start_window
   #
   #  2.  Records where ADT < reference_date + ref_start_window
-  #      but subject does have a subsequent read in dataframe 1.
+  #      and the subject does have a subsequent read in dataframe 1.
   #
   #  3.  Records where ADT < reference_date + ref_start_window
-  #      and the subject does not have a record in step 1, BOR is set to 'NE'
-  #      in this case where the subject has only AVALC = 'SD' or'NON-CR/NON-PD'
+  #      and the subject does not have a subsequent read in dataframe 1,
+  #      BOR is set to 'NE' in this case where the subject has only
+  #      AVALC = 'SD' or'NON-CR/NON-PD'
   #
   #  4.  Subjects in adsl and not in dataset_filter
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -408,8 +426,7 @@ derive_param_bor <- function(dataset,
 
   # data where ADT < reference_date + days(ref_start_window)
   before_ref_data <- dataset_ordered %>%
-    dplyr::filter(ADT < !!reference_date + lubridate::days(ref_start_window)) %>%
-    dplyr::select(!!!subject_keys, AVALC, ADT, !!rlang::enquo(reference_date), tmp_order)
+    dplyr::filter(ADT < !!reference_date + lubridate::days(ref_start_window))
 
   # join and keep only those with a record after reference_date + ref_start_window
   bor_data_02 <- subj_with_rec_after_ref_data %>%
@@ -438,10 +455,15 @@ derive_param_bor <- function(dataset,
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Data frame 4: bor_data_04, Subjects in adsl and not in dataset_filter
   #               tmp_order set to 999 so last in order when binded later.
+  #
+  # Note Requirement: For subjects without observations in the input dataset
+  # we keep all variables from ADSL which are also in the input dataset.
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+  adsl_cols_to_keep <- names(adsl)[names(adsl) %in% names(dataset)]
+
   bor_data_04 <- dataset_adsl %>%
-    dplyr::select(!!!subject_keys, !!rlang::enquo(reference_date)) %>%
+    dplyr::select(adsl_cols_to_keep) %>%
     dplyr::mutate(AVALC     = dplyr::case_when(isTRUE(missing_as_ne) ~ "NE",
                                                TRUE ~"MISSING"),
                   tmp_order = 999)
@@ -488,7 +510,7 @@ derive_param_bor <- function(dataset,
     })
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Bind back to passed dataset and return ----
+  # Bind back to passed dataframe in dataset argument and return ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   return_dataframe <- dplyr::bind_rows(dataset,
