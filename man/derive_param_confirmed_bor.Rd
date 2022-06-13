@@ -201,8 +201,9 @@ If the \code{missing_as_ne} argument is set to \code{TRUE}, \code{AVALC} is set 
 \item For each subject the best response as derived in the previous step is
 selected, where \code{"CR"} is best and \code{"MISSING"} is worst in the order above.
 If the best response is not unique, the first one (with respect to \code{ADT})
-is selected. Only the variables \code{AVALC}, \code{ADT}, and the variables specified
-for \code{subject_keys} are kept from the selected observations.
+is selected. If the selected record is from the input dataet, all variables
+are kept. If the selected record is from \code{dataset_adsl}, all variables
+which are in both \code{dataset} and \code{dataset_adsl} are kept.
 \item The \code{AVAL} variable is added and set to \code{aval_fun(AVALC)}.
 \item The variables specified by the \code{set_values_to} parameter are added to
 the new observations.
