@@ -2,7 +2,8 @@
 % Please edit documentation in R/derive_param_response.R
 \name{derive_param_response}
 \alias{derive_param_response}
-\title{Add a Parameter Indicating If a Subject Had a Response}
+\title{Add a Parameter Indicating If a Subject Had a Response before Progressive
+Disease}
 \usage{
 derive_param_response(
   dataset,
@@ -23,7 +24,8 @@ The variables specified by the \code{subject_keys}and \code{ADT} are expected.}
 \itemize{
 \item The variables specified for \code{subject_keys} are expected.
 \item For each observation of the specified dataset a new observation is added
-to the input dataset.
+to the input dataset. This is to capture those patients that may never have
+had a tumor assessment.
 }}
 
 \item{filter_source}{Source filter
@@ -41,7 +43,7 @@ All observations in \code{dataset} defining the response data fulfilling the
 the end of the assessment period as defined by \code{source_pd}.
 
 For example:
-\code{source_pd = date_source ( datasets_name="adrs", date = ADT, filter= PARAMCD == "PD" & AVALC == "Y")}
+\code{source_pd = date_source ( dataset_name = "adrs", date = ADT, filter= PARAMCD == "PD" & AVALC == "Y")}
 would exclude all responses occurring after the first PD date.
 \itemize{
 \item For subjects with at least one response before the end of the assessment
@@ -84,8 +86,7 @@ The input dataset with a new parameter indicating if and when a
 response occurred
 }
 \description{
-Add a new parameter indicating if a response has been observed (AVALC and
-AVAL).
+Add a new parameter indicating if a response has been observed.
 If a response has been observed, \code{AVALC} is set to "Y", \code{AVAL} to 1 and \code{ADT}
 is set to the
 first date when a response has been observed.
@@ -132,56 +133,43 @@ adsl <- tibble::tribble(
 ) \%>\%
   mutate(STUDYID = "XX1234")
 
-adrs0 <- tibble::tribble(
-  ~USUBJID, ~ADTC, ~AVALC,
-  "1", "2020-01-02", "PR",
-  "1", "2020-02-01", "CR",
-  "1", "2020-03-01", "CR",
-  "1", "2020-04-01", "SD",
-  "2", "2021-06-15", "SD",
-  "2", "2021-07-16", "PD",
-  "2", "2021-09-14", "PD",
-  "3", "2021-09-14", "SD",
-  "3", "2021-10-30", "PD",
-  "3", "2021-12-25", "CR"
+adrs <- tibble::tribble(
+  ~USUBJID, ~PARAMCD, ~ADTC, ~AVALC, ~ANL01FL,
+  "1", "OVR", "2020-01-02", "PR", "Y",
+  "1", "OVR", "2020-02-01", "CR", "Y",
+  "1", "OVR", "2020-03-01", "CR", "Y",
+  "1", "OVR", "2020-04-01", "SD", "Y",
+  "1", "PD", NA_character_, "N", "Y",
+  "2", "OVR", "2021-06-15", "SD", "Y",
+  "2", "OVR", "2021-07-16", "PD", "Y",
+  "2", "OVR", "2021-09-14", "PD", "Y",
+  "2", "PD", "2021-09-14", "Y", "Y",
+  "3", "OVR", "2021-09-14", "SD", "Y",
+  "3", "OVR", "2021-10-30", "PD", "Y",
+  "3", "OVR", "2021-12-25", "CR", "Y",
+  "3", "PD", "2021-10-30", "Y", "Y"
 ) \%>\%
   mutate(
     STUDYID = "XX1234",
     ADT = ymd(ADTC),
-    PARAMCD = "OVR",
-    PARAM = "Overall Response",
     ANL01FL = "Y"
   ) \%>\%
   select(-ADTC)
 
-# Add a parameter for the date of Progressive disease (PARAMCD = PD)
-adrs1 <- derive_param_first_event(
-  dataset = adrs0,
-  dataset_adsl = adsl,
-  dataset_source = adrs0,
-  filter_source = PARAMCD == "OVR" & AVALC == "PD",
-  date_var = ADT,
-  set_values_to = vars(
-    PARAMCD = "PD",
-    PARAM = "Disease Progression",
-    ANL01FL = "Y"
-  )
-)
-
 # Define the end of the assessment period for responses:
 # all responses before or on the first PD will be used.
 pd <- date_source(
-  dataset_name = "adrs1",
+  dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == "PD" & AVALC == "Y"
 )
 # Derive the response parameter
 derive_param_response(
-  dataset = adrs1,
+  dataset = adrs,
   dataset_adsl = adsl,
-  filter_source = PARAMCD == "OVR" & AVALC \%in\% c("CR", "PR"),
+  filter_source = PARAMCD == "OVR" & AVALC \%in\% c("CR", "PR") & ANL01FL == "Y",
   source_pd = pd,
-  source_datasets = list(adrs1 = adrs1),
+  source_datasets = list(adrs = adrs),
   set_values_to = vars(
     PARAMCD = "RSP",
     PARAM = "Response by investigator"
@@ -193,5 +181,6 @@ derive_param_response(
 \author{
 Samia Kabi
 }
+\keyword{adrs}
 \keyword{bds}
 \keyword{derivation}
