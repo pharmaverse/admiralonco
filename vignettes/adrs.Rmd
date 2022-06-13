@@ -215,7 +215,7 @@ the `{admiralonco}` parameter derivation functions in the below steps.
 ## Derive Progressive Disease Parameter {#pd}
 
 Now that we have the input records prepared above with any company-specific requirements, we can start to derive
-new parameters. The function `derive_param_first_event()` can be used to find the date of first `PD`.
+new parameters. The function `admiral::derive_param_first_event()` can be used to find the date of first `PD`.
 
 ```{r}
 adrs <- adrs %>%
@@ -245,7 +245,7 @@ dataset_vignette(
 For progressive disease, response and death parameters shown in steps here and below, in our
 examples we show these as `ADRS` parameters, but they could equally be achieved via `ADSL` dates or `ADEVENT`
 parameters. All the parameter derivation functions that use these are flexible to allow sourcing these dates
-from any input source using `date_source()`.
+from any input source using `admiral::date_source()`.
 
 ## Derive Response Parameter {#rsp}
 
@@ -260,7 +260,7 @@ pd <- date_source(
 ```
 
 The function `derive_param_response()` can then be used to find the date of first response. This differs from
-the `derive_param_first_event()` function in that it only looks for events occurring prior to first `PD`.
+the `admiral::derive_param_first_event()` function in that it only looks for events occurring prior to first `PD`.
 In the below example, the response condition has been defined as `CR` or `PR`.
 
 ```{r}
@@ -462,7 +462,7 @@ Then in all the calls to the parameter derivation functions you would replace th
 
 ## Derive Death Parameter {#death}
 
-The function `derive_param_first_event()` can be used to create a new death parameter using death date from `ADSL`.
+The function `admiral::derive_param_first_event()` can be used to create a new death parameter using death date from `ADSL`.
 
 ```{r}
 adrs <- adrs %>%
@@ -516,7 +516,7 @@ dataset_vignette(
 
 ## Derive Measurable Disease at Baseline Parameter {#mdis}
 
-The function `derive_param_exist_flag()` can be used to check whether a patient has measurable disease at baseline,
+The function `admiral::derive_param_exist_flag()` can be used to check whether a patient has measurable disease at baseline,
 according to a company-specific condition. In this example we check `TU` for target lesions during the baseline visit.
 
 ```{r}
@@ -546,12 +546,11 @@ dataset_vignette(
 
 ## Assign `ASEQ` {#aseq}
 
-The function `derive_var_obs_number()` can be used to derive `ASEQ`. An example call is:
+The function `admiral::derive_var_obs_number()` can be used to derive `ASEQ`. An example call is:
 
 ```{r eval=TRUE}
 adrs <- adrs %>%
   derive_var_obs_number(
-    new_var = ASEQ,
     by_vars = vars(STUDYID, USUBJID),
     order = vars(PARAMCD, ADT, VISITNUM),
     check_type = "error"
