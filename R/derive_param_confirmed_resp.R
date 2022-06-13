@@ -45,9 +45,6 @@
 #'   and the actual response dataset in the script is `myadrs`, `source_datasets
 #'   = list(adrs = myadrs)` should be specified.
 #'
-#'   This allows to define `pd_date` at a higher level, e.g., at company level,
-#'   where the actual dataset does not exist.
-#'
 #' @param ref_confirm Minimum time period for confirmation
 #'
 #'   The assessment and the confirmatory assessment for `"CR"` and `"PR"` have
@@ -119,15 +116,15 @@
 #'   \item there is a confirmatory assessment with `AVALC %in% c("CR", "PR")` at
 #'   least `ref_confirm` days after the assessment,
 #'   \item all assessments between the assessment and the confirmatory
-#'   assessment are `"CR"`, `"PR"`, or `"NE"`,
+#'   assessment are `"CR"`, `"PR"`, `"SD"`, or `"NE"`,
 #'   \item there is no `"PR"` assessment after a `"CR"` assessment in the
-#'   confirmation period, and
+#'   confirmation period,
 #'   \item there are at most `max_nr_ne` `"NE"` assessments between the
-#'   assessment and the confirmatory assessment.
-#'        }
-#'
-#'   If the `accept_sd` argument is set to `TRUE`, one `"SD"` assessment in the
-#'   confirmation period of `"PR"` is accepted.
+#'   assessment and the confirmatory assessment,
+#'   \item if the `accept_sd` argument is set to `TRUE`, one `"SD"` assessment
+#'   in the confirmation period is accepted. Otherwise, no `"SD"` assessment
+#'   must occur within the confirmation period.
+#'   }
 #'
 #'   \item For responders `AVALC` is set to `"Y"` and `ADT` to the first date where
 #'   the response criteria are fulfilled. For all other subjects in
@@ -152,6 +149,7 @@
 #' @examples
 #'
 #' library(dplyr)
+#' library(admiral)
 #'
 #' # Create ADSL dataset
 #' adsl <- tibble::tribble(
@@ -163,7 +161,8 @@
 #'   "5",      "2020-01-01",
 #'   "6",      "2020-02-02",
 #'   "7",      "2020-02-02",
-#'   "8",      "2020-04-01"
+#'   "8",      "2020-04-01",
+#'   "9",      "2020-03-01"
 #' ) %>%
 #'   mutate(
 #'     STUDYID = "XX1234"
@@ -201,7 +200,11 @@
 #'   "6",      "2020-06-01", "CR",
 #'   "7",      "2020-02-06", "PR",
 #'   "7",      "2020-02-16", "CR",
-#'   "7",      "2020-04-01", "NE"
+#'   "7",      "2020-04-01", "NE",
+#'   "9",      "2020-03-16", "CR",
+#'   "9",      "2020-04-01", "NE",
+#'   "9",      "2020-04-16", "NE",
+#'   "9",      "2020-05-01", "CR"
 #' ) %>%
 #'   mutate(PARAMCD = "OVR")
 #'
@@ -219,7 +222,7 @@
 #'   ) %>%
 #'   select(-ADTC)
 #'
-#' pd_date <- admiral::date_source(
+#' pd_date <- date_source(
 #'   dataset_name = "adrs",
 #'   date = ADT,
 #'   filter = PARAMCD == "PD"
@@ -240,7 +243,7 @@
 #' ) %>%
 #'   filter(PARAMCD == "CRSP")
 #'
-#' # Derive confirmed best overall response parameter (accepting SD for PR)
+#' # Derive confirmed best overall response parameter (accepting SD for PR and two NEs)
 #' derive_param_confirmed_resp(
 #'   adrs,
 #'   dataset_adsl = adsl,
@@ -248,6 +251,7 @@
 #'   source_pd = pd_date,
 #'   source_datasets = list(adrs = adrs),
 #'   ref_confirm = 28,
+#'   max_nr_ne = 2,
 #'   accept_sd = TRUE,
 #'   set_values_to = vars(
 #'     PARAMCD = "CRSP",
@@ -323,8 +327,7 @@ derive_param_confirmed_resp <- function(dataset,
     mutate(
       AVALC = "Y",
       tmp_order = 1
-    ) %>%
-    select(!!!subject_keys, AVALC, tmp_order, ADT)
+    )
 
   if (accept_sd) {
     max_nr_sd <- 1
@@ -353,16 +356,17 @@ derive_param_confirmed_resp <- function(dataset,
     mutate(
       AVALC = "Y",
       tmp_order = 1
-    ) %>%
-    select(!!!subject_keys, AVALC, tmp_order, ADT)
+    )
+
+  source_vars <- colnames(source_data)
+  adsl_vars <- colnames(dataset_adsl)
 
   missing_data <- dataset_adsl %>%
-    select(!!!subject_keys) %>%
+    select(!!!subject_keys, intersect(source_vars, adsl_vars)) %>%
     mutate(
       AVALC = "N",
       tmp_order = 2
-    ) %>%
-    select(!!!subject_keys, AVALC, tmp_order)
+    )
 
   # Select response
   rsp <- bind_rows(cr_data, pr_data, missing_data) %>%

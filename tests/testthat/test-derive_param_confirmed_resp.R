@@ -58,7 +58,7 @@ adrs <- tibble::tribble(
     STUDYID = "XX1234"
   )
 
-pd_date <- admiral::date_source(
+pd_date <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == "PD"
@@ -84,24 +84,23 @@ test_that("derive_param_confirmed_resp Test 1: default confirmed response", {
   expected <- bind_rows(
     adrs,
     tibble::tribble(
-      ~USUBJID, ~ADTC,        ~AVALC, ~AVAL,
-      "1",      "2020-01-01", "Y",    1,
-      "2",      "",           "N",    0,
-      "3",      "",           "N",    0,
-      "4",      "",           "N",    0,
-      "5",      "",           "N",    0,
-      "6",      "",           "N",    0,
-      "7",      "",           "N",    0,
-      "8",      "",           "N",    0,
-      "9",      "",           "N",    0
+      ~USUBJID, ~ADTC,         ~AVALC, ~AVAL,
+      "1",      "2020-01-01",  "Y",    1,
+      "2",      NA_character_, "N",    0,
+      "3",      NA_character_, "N",    0,
+      "4",      NA_character_, "N",    0,
+      "5",      NA_character_, "N",    0,
+      "6",      NA_character_, "N",    0,
+      "7",      NA_character_, "N",    0,
+      "8",      NA_character_, "N",    0,
+      "9",      NA_character_, "N",    0
     ) %>%
       mutate(
         ADT = lubridate::ymd(ADTC),
         STUDYID = "XX1234",
         PARAMCD = "CRSP",
         PARAM = "Confirmed Response by Investigator"
-      ) %>%
-      select(-ADTC)
+      )
   )
 
   expect_dfs_equal(
@@ -145,24 +144,23 @@ test_that("derive_param_confirmed_resp Test 2: accept SD", {
   expected <- bind_rows(
     adrs_ext,
     tibble::tribble(
-      ~USUBJID, ~ADTC,        ~AVALC, ~AVAL,
-      "1",      "2020-01-01", "Y",    1,
-      "2",      "2020-02-01", "Y",    1,
-      "3",      "2019-11-12", "Y",    1,
-      "4",      "",           "N",    0,
-      "5",      "2020-01-01", "Y",    1,
-      "6",      "",           "N",    0,
-      "7",      "",           "N",    0,
-      "8",      "",           "N",    0,
-      "9",      "",           "N",    0
+      ~USUBJID, ~ADTC,         ~AVALC, ~AVAL,
+      "1",      "2020-01-01",  "Y",    1,
+      "2",      "2020-02-01",  "Y",    1,
+      "3",      "2019-11-12",  "Y",    1,
+      "4",      NA_character_, "N",    0,
+      "5",      "2020-01-01",  "Y",    1,
+      "6",      NA_character_, "N",    0,
+      "7",      NA_character_, "N",    0,
+      "8",      NA_character_, "N",    0,
+      "9",      NA_character_, "N",    0
     ) %>%
       mutate(
         ADT = lubridate::ymd(ADTC),
         STUDYID = "XX1234",
         PARAMCD = "CRSP",
         PARAM = "Confirmed Response by Investigator"
-      ) %>%
-      select(-ADTC)
+      )
   )
 
   expect_dfs_equal(

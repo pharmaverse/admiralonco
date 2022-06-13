@@ -60,10 +60,7 @@ For example if \code{source_pd = pd_date} with
 )
 }\if{html}{\out{</div>}}
 
-and the actual response dataset in the script is \code{myadrs}, \code{source_datasets = list(adrs = myadrs)} should be specified.
-
-This allows to define \code{pd_date} at a higher level, e.g., at company level,
-where the actual dataset does not exist.}
+and the actual response dataset in the script is \code{myadrs}, \code{source_datasets = list(adrs = myadrs)} should be specified.}
 
 \item{ref_confirm}{Minimum time period for confirmation
 
@@ -139,15 +136,15 @@ or at least one observation with
 \item there is a confirmatory assessment with \code{AVALC \%in\% c("CR", "PR")} at
 least \code{ref_confirm} days after the assessment,
 \item all assessments between the assessment and the confirmatory
-assessment are \code{"CR"}, \code{"PR"}, or \code{"NE"},
+assessment are \code{"CR"}, \code{"PR"}, \code{"SD"}, or \code{"NE"},
 \item there is no \code{"PR"} assessment after a \code{"CR"} assessment in the
-confirmation period, and
+confirmation period,
 \item there are at most \code{max_nr_ne} \code{"NE"} assessments between the
-assessment and the confirmatory assessment.
+assessment and the confirmatory assessment,
+\item if the \code{accept_sd} argument is set to \code{TRUE}, one \code{"SD"} assessment
+in the confirmation period is accepted. Otherwise, no \code{"SD"} assessment
+must occur within the confirmation period.
 }
-
-If the \code{accept_sd} argument is set to \code{TRUE}, one \code{"SD"} assessment in the
-confirmation period of \code{"PR"} is accepted.
 
 \item For responders \code{AVALC} is set to \code{"Y"} and \code{ADT} to the first date where
 the response criteria are fulfilled. For all other subjects in
@@ -164,6 +161,7 @@ the new observations.
 \examples{
 
 library(dplyr)
+library(admiral)
 
 # Create ADSL dataset
 adsl <- tibble::tribble(
@@ -175,7 +173,8 @@ adsl <- tibble::tribble(
   "5",      "2020-01-01",
   "6",      "2020-02-02",
   "7",      "2020-02-02",
-  "8",      "2020-04-01"
+  "8",      "2020-04-01",
+  "9",      "2020-03-01"
 ) \%>\%
   mutate(
     STUDYID = "XX1234"
@@ -213,7 +212,11 @@ ovr_obs <- tibble::tribble(
   "6",      "2020-06-01", "CR",
   "7",      "2020-02-06", "PR",
   "7",      "2020-02-16", "CR",
-  "7",      "2020-04-01", "NE"
+  "7",      "2020-04-01", "NE",
+  "9",      "2020-03-16", "CR",
+  "9",      "2020-04-01", "NE",
+  "9",      "2020-04-16", "NE",
+  "9",      "2020-05-01", "CR"
 ) \%>\%
   mutate(PARAMCD = "OVR")
 
@@ -231,7 +234,7 @@ adrs <- bind_rows(ovr_obs, pd_obs) \%>\%
   ) \%>\%
   select(-ADTC)
 
-pd_date <- admiral::date_source(
+pd_date <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == "PD"
@@ -252,7 +255,7 @@ derive_param_confirmed_resp(
 ) \%>\%
   filter(PARAMCD == "CRSP")
 
-# Derive confirmed best overall response parameter (accepting SD for PR)
+# Derive confirmed best overall response parameter (accepting SD for PR and two NEs)
 derive_param_confirmed_resp(
   adrs,
   dataset_adsl = adsl,
@@ -260,6 +263,7 @@ derive_param_confirmed_resp(
   source_pd = pd_date,
   source_datasets = list(adrs = adrs),
   ref_confirm = 28,
+  max_nr_ne = 2,
   accept_sd = TRUE,
   set_values_to = vars(
     PARAMCD = "CRSP",
