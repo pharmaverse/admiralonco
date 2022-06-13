@@ -204,7 +204,7 @@ filter_pd <- function(dataset,
         "The dataset name specified for `source_pd` must be included in the list\n",
         " specified for the `source_datasets` parameter.\n",
         "Following names were provided by `source_datasets`:\n",
-        admiral:::enumerate(source_names, quote_fun = admiral:::squote)
+        admiral::enumerate(source_names, quote_fun = admiral::squote)
       )
     )
   }

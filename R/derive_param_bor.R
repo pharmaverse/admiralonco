@@ -307,12 +307,12 @@ derive_param_bor <- function(dataset,
   admiral::assert_vars(arg = subject_keys)
 
   admiral::assert_data_frame(arg           = dataset,
-                             required_vars = admiral:::quo_c(subject_keys,
-                                                             reference_date,
-                                                             admiral::vars(PARAMCD, ADT, AVALC)))
+                             required_vars = admiral::quo_c(subject_keys,
+                                                            reference_date,
+                                                            admiral::vars(PARAMCD, ADT, AVALC)))
 
   admiral::assert_data_frame(arg           = dataset_adsl,
-                             required_vars = admiral:::quo_c(subject_keys))
+                             required_vars = admiral::quo_c(subject_keys))
 
   admiral::assert_param_does_not_exist(dataset = dataset,
                                        param   = rlang::quo_get_expr(set_values_to$PARAMCD))
@@ -336,7 +336,7 @@ derive_param_bor <- function(dataset,
         "The dataset names must be included in the list specified for the ",
         "`source_datasets` parameter.\n",
         "Following names were provided by `source_datasets`:\n",
-        admiral:::enumerate(source_names, quote_fun = sQuote))
+        admiral::enumerate(source_names, quote_fun = sQuote))
     )
 
     admiral::assert_s3_class(arg   = source_pd,
@@ -449,8 +449,8 @@ derive_param_bor <- function(dataset,
                                            AVALC %in% c("SD", "NON-CR/NON-PD") ~ "NE"))
 
   # check nothing strange has gone on with joins
-  assertthat::are_equal(nrow(bor_data_03) + nrow(bor_data_02),
-                        nrow(before_ref_data))
+  # assertthat::are_equal(nrow(bor_data_03) + nrow(bor_data_02),
+  #                       nrow(before_ref_data))
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Data frame 4: bor_data_04, Subjects in adsl and not in dataset_filter
@@ -517,9 +517,9 @@ derive_param_bor <- function(dataset,
                                        param_bor_values_set)
 
   # check nothing strange has gone on with joins
-  assertthat::are_equal(nrow(return_dataframe),
-                        nrow(dataset) +
-                          nrow(param_bor))
+  # assertthat::are_equal(nrow(return_dataframe),
+  #                       nrow(dataset) +
+  #                         nrow(param_bor))
 
   return(return_dataframe)
 }
