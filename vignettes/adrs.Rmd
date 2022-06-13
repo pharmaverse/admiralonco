@@ -224,7 +224,6 @@ adrs <- adrs %>%
     dataset_source = adrs,
     filter_source = PARAMCD == "OVR" & AVALC == "PD" & ANL01FL=”Y”,
     date_var = ADT,
-    subject_keys = vars(STUDYID, USUBJID),
     set_values_to= vars(
       PARAMCD = "PD",
       PARAM = "Disease Progression by Investigator",
@@ -271,7 +270,6 @@ adrs <- adrs %>%
     filter_source = PARAMCD == "OVR" & AVALC %in% c(“CR”, “PR”) & ANL01FL == "Y",
     source_pd = pd,
     source_datasets = list(adrs = adrs),
-    subject_keys = vars(STUDYID, USUBJID),
     set_values_to = vars(
       PARAMCD = "RSP",
       PARAM = "Response by Investigator (confirmation not required)",
@@ -304,7 +302,8 @@ resp <- date_source(
 
 The function `derive_param_clinbenefit()` can then be used to derive the clinical benefit parameter, which we define
 as a patient having had a response or a sustained period of time before first `PD`. This could also be known as
-disease control. In this example the "sustained period" has been defined as 42 days after randomization date.
+disease control. In this example the "sustained period" has been defined as 42 days after randomization date, using the
+`ref_start_window` argument.
 
 ```{r}
 adrs <- adrs %>%
@@ -314,7 +313,6 @@ adrs <- adrs %>%
     source_resp = rsp,
     source_pd = pd,
     source_datasets = list(adrs = adrs),
-    subject_keys = vars(STUDYID, USUBJID),
     reference_date = RANDDT,
     ref_start_window = 42,
     set_values_to = vars(
@@ -348,7 +346,6 @@ adrs <- adrs %>%
     filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
     source_pd = pd,
     source_datasets = list(adrs = adrs),
-    subject_keys = vars(STUDYID, USUBJID),
     reference_date = RANDDT,
     ref_start_window = 42,
     set_values_to = vars(
@@ -382,7 +379,6 @@ adrs <- adrs %>%
     filter_source = PARAMCD == "BOR" & AVALC %in% c(“CR”, “PR”) & ANL01FL == "Y",
     source_pd = pd,
     source_datasets = list(adrs = adrs),
-    subject_keys = vars(STUDYID, USUBJID),
     set_values_to = vars(
       PARAMCD = "BCP",
       PARAM = "Best Overall Response of CR/PR by Investigator (confirmation not required)",
@@ -405,7 +401,8 @@ dataset_vignette(
 
 Any of the above response parameters can be repeated for "confirmed" responses only. For these the functions
 `derive_param_confirmed_resp()` and `derive_param_confirmed_bor()` can be used. Here is an example of a BOR parameter
-when requiring confirmation.
+when requiring confirmation. The assessment and the confirmatory assessment need to occur at least 28 days apart, using the
+`ref_confirm` argument.
 
 ```{r}
 adrs <- adrs %>%
@@ -414,9 +411,9 @@ adrs <- adrs %>%
     filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
     source_pd = pd,
     source_datasets = list(adrs = adrs),
-    subject_keys = vars(STUDYID, USUBJID),
     reference_date = RANDDT,
     ref_start_window = 42,
+    ref_confirm = 28,
     set_values_to = vars(
       PARAMCD = "CBOR",
       PARAM = "Best Overall Response by Investigator",
@@ -474,7 +471,6 @@ adrs <- adrs %>%
     dataset_source = adsl,
     filter_source = !is.na(DTHDT),
     date_var = DTHDT,
-    subject_keys = vars(STUDYID, USUBJID),
     set_values_to = vars(
       PARAMCD = "DEATH",
       PARAM = "Death",
@@ -500,7 +496,6 @@ to use `source_pd` argument to only look up to first `PD` assessment, but in the
 adrs <- adrs %>%
   derive_param_lasta(
     filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
-    subject_keys = vars(STUDYID, USUBJID),
     set_values_to = vars(
       PARAMCD = "LSTA",
       PARAM = "Last Disease Assessment by Investigator",
@@ -532,7 +527,6 @@ adrs <- adrs %>%
     condition = TUEVAL == "INVESTIGATOR" & TUSTRESC == "TARGET" & VISIT == "BASELINE",
     false_value = "N",
     missing_value = "N",
-    subject_keys = vars(STUDYID, USUBJID),
     set_values_to = vars(
       PARAMCD = "MDIS",
       PARAM = "Measurable Disease at Baseline by Investigator",
