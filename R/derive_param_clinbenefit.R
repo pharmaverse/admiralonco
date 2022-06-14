@@ -24,8 +24,9 @@
 #'   \item `AVAL` is derived using `AVALC` as input to the function specified in
 #'   `aval_fun`.
 #'
-#'   \item `ADT` is set to the earliest possible response date representing an
-#'   evaluable non-PD response assessment prior to first PD.
+#'   \item `ADT` is set to the earlier of the first assessment date representing
+#'   an evaluable non-PD assessment prior to first PD, or the date representing
+#'   the start of response.
 #'
 #'   \item The variables specified by `set_values_to` are added to the new observations
 #'   with values equal to the values specified in the same.

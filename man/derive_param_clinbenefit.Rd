@@ -95,8 +95,9 @@ in \code{dataset} or present in \code{dataset_adsl} but not present in \code{dat
 \item \code{AVAL} is derived using \code{AVALC} as input to the function specified in
 \code{aval_fun}.
 
-\item \code{ADT} is set to the earliest possible response date representing an
-evaluable non-PD response assessment prior to first PD.
+\item \code{ADT} is set to the earlier of the first assessment date representing
+an evaluable non-PD assessment prior to first PD, or the date representing
+the start of response.
 
 \item The variables specified by \code{set_values_to} are added to the new observations
 with values equal to the values specified in the same.
