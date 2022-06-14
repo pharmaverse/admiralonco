@@ -108,15 +108,17 @@ independent of the data.
 
 ### Pre-Defined Time-to-Event Source Objects
 
-The table below shows all pre-defined `onco_tte_source` objects which should cover the most common use cases.
+The table below shows all pre-defined `onco_tte_source` objects which should cover the most
+common use cases.
 
 ```{r echo=FALSE}
 knitr::kable(admiral:::list_onco_tte_source_objects())
 ```
 
-As mentioned in the introduction, each company would create their own version of this with the required filtering
-conditions and metadata as per your company approach. An example of a possible different approach could be as
-follows, where death is sourced from `ADSL`, instead of `ADRS`, and the given `EVNTDESC` is different.
+As mentioned in the introduction, each company would create their own version of this with
+the required filtering conditions and metadata as per your company approach. An example of
+a possible different approach could be as follows, where death is sourced from `ADSL`,
+instead of `ADRS`, and the given `EVNTDESC` is different.
 
 ```{r}
 death_event <- event_source(
@@ -132,11 +134,12 @@ death_event <- event_source(
 )
 ```
 
-An optional step at this stage would be required to enable derivation of duration of response: If using
-`ADRS` / `ADEVENT` parameters as input for any response dates (instead of a variable in `ADSL`) then you would
-need to use `admiral::derive_vars_merged_dt` to add the response date as a temporary variable (e.g. `TEMP_RESPDT`)
-to be able to feed into `admiral::derive_param_tte` as the start date. This could also be repeated as needed for
-IRF and confirmed responses.
+An optional step at this stage would be required to enable derivation of duration of
+response: If using `ADRS` / `ADEVENT` parameters as input for any response dates
+(instead of a variable in `ADSL`) then you would need to use `admiral::derive_vars_merged_dt`
+to add the response date as a temporary variable (e.g. `TEMP_RESPDT`) to be able to feed
+into `admiral::derive_param_tte` as the start date. This could also be repeated as needed
+for IRF and confirmed responses.
 
 Here is an example of the code needed.
 
@@ -151,10 +154,11 @@ adrs <- adrs %>%
   )
 ```
 
-The pre-defined objects can be passed directly to `admiral::derive_param_tte()` to create a new time-to-event parameter.
-Below shows example calls for Overall Survival (OS), Progression Free Survival (PFS), and duration of response (note
-that this is only derived for responder patients so we have to filter source datasets). Note that the reason for including
-a randomization date censor is to catch those patients that never have a tumor assessment.
+The pre-defined objects can be passed directly to `admiral::derive_param_tte()` to create
+a new time-to-event parameter. Below shows example calls for Overall Survival (OS), Progression
+Free Survival (PFS), and duration of response (note that this is only derived for responder
+patients so we have to filter source datasets). Note that the reason for including a
+randomization date censor is to catch those patients that never have a tumor assessment.
 
 ```{r}
 adtte <- derive_param_tte(
@@ -192,8 +196,8 @@ dataset_vignette(
 ### Creating Your Own Time-to-Event Source Objects
 
 We advise you consult the `{admiral}` ["Creating a BDS Time-to-Event ADaM" vignette]
-(https://pharmaverse.github.io/admiral/articles/bds_tte.html) for further guidance on the different options
-available and more examples.
+(https://pharmaverse.github.io/admiral/articles/bds_tte.html) for further guidance on the
+different options available and more examples.
 
 ## Derive Analysis Value (`AVAL`) {#aval}
 
