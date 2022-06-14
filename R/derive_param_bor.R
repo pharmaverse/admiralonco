@@ -34,10 +34,16 @@
 #'                  AVALC %in% c("NE") ~ 6,
 #'                  is.null(AVALC) ~ 7)) %>%
 #'
-#'   6. The `AVAL` variable is added and set using the `aval_fun(AVALC)` function
+#'   6. The `AVAL` column is added and set using the `aval_fun(AVALC)` function
 #'
-#'   7. The variables specified by the `set_values_to` parameter and records
+#'   7. The columns specified by the `set_values_to` parameter and records
 #'      are added to the dataframe passed into the `dataset` argument
+#'
+#'  Also Note: All columns from the input dataset are kept. Subjects with no records in the
+#'  input dataset (after the filter is applied) all records are kept from ADSL which are
+#'  also in the input dataset.  Columns which are not be populated for the new parameter
+#'  or populated differently (e.g., RSSTRESC, VISIT, PARCATy, ANLzzFL, ...) should be
+#'  overwritten using the `set_values_to` parameter.
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 # Function Arguments:
 #'
@@ -47,11 +53,15 @@
 #'   The columns `PARAMCD`, `ADT`, and `AVALC`and the columns specified in
 #'   `subject_keys` and `reference_date` are expected.
 #'
+#'    *Permitted Values:* a `data.frame()` object
+#'
 #'    *Required or Optional:* Required
 #'
 #' @param dataset_adsl The ADSL input dataframe
 #'
 #'   The columns specified in `subject_keys` are expected.
+#'
+#'    *Permitted Values:* a `data.frame()` object
 #'
 #'    *Required or Optional:* Required
 #'
@@ -100,7 +110,7 @@
 #'   information). Usually it is treatment start date (`TRTSDT`) or
 #'   randomization date (`RANDDT`).
 #'
-#'   *Permitted Values:* a numeric date variable
+#'   *Permitted Values:* a numeric date column
 #'
 #'   *Required or Optional:* Required
 #'
@@ -139,18 +149,20 @@
 #'
 #'   *Required or Optional:* Required
 #'
-#' @param set_values_to Variables to set
+#' @param set_values_to New columns to set
 #'
-#'   A named list returned by `vars()` defining the variables to be set for the
+#'   A named list returned by `vars()` defining the columns to be set for the
 #'   new parameter, e.g. `vars(PARAMCD = "CBOR", PARAM = "Best Overall
 #'   Response")` is expected. The values must be symbols, character strings,
 #'   numeric values, or `NA`.
 #'
 #'    *Required or Optional:* Required
 #'
-#' @param subject_keys Variables to uniquely identify a subject
+#' @param subject_keys Columns to uniquely identify a subject
 #'
 #'   A list of symbols created using `admiral::vars()`.
+#'
+#'   *Permitted Values:* an `admiral::vars` object
 #'
 #'   *Default:* `admiral::vars(STUDYID, USUBJID)`
 #'
@@ -283,14 +295,23 @@ derive_param_bor <- function(dataset,
                              ref_start_window = 0,
                              missing_as_ne    = FALSE,
                              aval_fun         = admiralonco::aval_resp(),
-                             set_values_to,
-                             subject_keys     = admiral::vars(STUDYID, USUBJID)) {
+                             subject_keys     = admiral::vars(STUDYID, USUBJID),
+                             set_values_to) {
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Assert statements ----
+  # Assert statements (checked in order of signature) ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+  admiral::assert_data_frame(arg           = dataset,
+                             required_vars = admiral::quo_c(subject_keys,
+                                                            reference_date,
+                                                            admiral::vars(PARAMCD, ADT, AVALC)))
+
+  admiral::assert_data_frame(arg           = dataset_adsl,
+                             required_vars = admiral::quo_c(subject_keys))
 
   filter_source  <- admiral::assert_filter_cond(arg = rlang::enquo(filter_source))
+
   reference_date <- admiral::assert_symbol(arg = rlang::enquo(reference_date))
 
   admiral::assert_integer_scalar(arg      = ref_start_window,
@@ -301,18 +322,10 @@ derive_param_bor <- function(dataset,
 
   admiral::assert_function(arg = aval_fun)
 
-  admiral::assert_varval_list(arg               = set_values_to,
-                              required_elements = c("PARAMCD", "PARAM"))
-
   admiral::assert_vars(arg = subject_keys)
 
-  admiral::assert_data_frame(arg           = dataset,
-                             required_vars = admiral::quo_c(subject_keys,
-                                                            reference_date,
-                                                            admiral::vars(PARAMCD, ADT, AVALC)))
-
-  admiral::assert_data_frame(arg           = dataset_adsl,
-                             required_vars = admiral::quo_c(subject_keys))
+  admiral::assert_varval_list(arg               = set_values_to,
+                              required_elements = c("PARAMCD", "PARAM"))
 
   admiral::assert_param_does_not_exist(dataset = dataset,
                                        param   = rlang::quo_get_expr(set_values_to$PARAMCD))
@@ -437,7 +450,7 @@ derive_param_bor <- function(dataset,
   #               but subject does not have a subsequent read in dataframe 1.
   #               (Note: this is NE for subjects with 'SD' or 'NON-CR/NON-PD')
   #
-  # Note: All rows in before_ref_data that do not have a match
+  # Note: All recrods in before_ref_data that do not have a match
   #       in subj_with_rec_after_ref_data are removed with anti_join.
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -457,7 +470,8 @@ derive_param_bor <- function(dataset,
   #               tmp_order set to 999 so last in order when binded later.
   #
   # Note Requirement: For subjects without observations in the input dataset
-  # we keep all variables from ADSL which are also in the input dataset.
+  # after the filter is applied, we keep all columns from ADSL which
+  # are also in the input dataset.
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   adsl_cols_to_keep <- names(dataset_adsl)[names(dataset_adsl) %in% names(dataset)]

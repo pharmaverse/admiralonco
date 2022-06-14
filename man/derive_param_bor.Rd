@@ -14,8 +14,8 @@ derive_param_bor(
   ref_start_window = 0,
   missing_as_ne = FALSE,
   aval_fun = admiralonco::aval_resp(),
-  set_values_to,
-  subject_keys = admiral::vars(STUDYID, USUBJID)
+  subject_keys = admiral::vars(STUDYID, USUBJID),
+  set_values_to
 )
 }
 \arguments{
@@ -25,11 +25,15 @@ be derived from and added to.
 The columns \code{PARAMCD}, \code{ADT}, and \code{AVALC}and the columns specified in
 \code{subject_keys} and \code{reference_date} are expected.
 
+\emph{Permitted Values:} a \code{data.frame()} object
+
 \emph{Required or Optional:} Required}
 
 \item{dataset_adsl}{The ADSL input dataframe
 
 The columns specified in \code{subject_keys} are expected.
+
+\emph{Permitted Values:} a \code{data.frame()} object
 
 \emph{Required or Optional:} Required}
 
@@ -78,7 +82,7 @@ records that occur before and after \code{ADT} (see Details section for further
 information). Usually it is treatment start date (\code{TRTSDT}) or
 randomization date (\code{RANDDT}).
 
-\emph{Permitted Values:} a numeric date variable
+\emph{Permitted Values:} a numeric date column
 
 \emph{Required or Optional:} Required}
 
@@ -117,19 +121,21 @@ function must return a numeric vector.
 
 \emph{Required or Optional:} Required}
 
-\item{set_values_to}{Variables to set
-
-A named list returned by \code{vars()} defining the variables to be set for the
-new parameter, e.g. \code{vars(PARAMCD = "CBOR", PARAM = "Best Overall Response")} is expected. The values must be symbols, character strings,
-numeric values, or \code{NA}.
-
-\emph{Required or Optional:} Required}
-
-\item{subject_keys}{Variables to uniquely identify a subject
+\item{subject_keys}{Columns to uniquely identify a subject
 
 A list of symbols created using \code{admiral::vars()}.
 
+\emph{Permitted Values:} an \code{admiral::vars} object
+
 \emph{Default:} \code{admiral::vars(STUDYID, USUBJID)}
+
+\emph{Required or Optional:} Required}
+
+\item{set_values_to}{New columns to set
+
+A named list returned by \code{vars()} defining the columns to be set for the
+new parameter, e.g. \code{vars(PARAMCD = "CBOR", PARAM = "Best Overall Response")} is expected. The values must be symbols, character strings,
+numeric values, or \code{NA}.
 
 \emph{Required or Optional:} Required}
 }
@@ -169,10 +175,16 @@ selected in the following order of preference:
         AVALC \%in\% c("NE") ~ 6,
         is.null(AVALC) ~ 7)) \%>\%
 }\if{html}{\out{</div>}}
-\item The \code{AVAL} variable is added and set using the \code{aval_fun(AVALC)} function
-\item The variables specified by the \code{set_values_to} parameter and records
+\item The \code{AVAL} column is added and set using the \code{aval_fun(AVALC)} function
+\item The columns specified by the \code{set_values_to} parameter and records
 are added to the dataframe passed into the \code{dataset} argument
 }
+
+Also Note: All columns from the input dataset are kept. Subjects with no records in the
+input dataset (after the filter is applied) all records are kept from ADSL which are
+also in the input dataset.  Columns which are not be populated for the new parameter
+or populated differently (e.g., RSSTRESC, VISIT, PARCATy, ANLzzFL, ...) should be
+overwritten using the \code{set_values_to} parameter.
 }
 \examples{
 
