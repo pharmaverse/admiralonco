@@ -171,7 +171,7 @@ derive_param_clinbenefit(
     PARAMCD = "CBR"
   )
 ) \%>\%
-filter(PARAMCD == "CBR")
+  filter(PARAMCD == "CBR")
 }
 \author{
 Andrew Smith
