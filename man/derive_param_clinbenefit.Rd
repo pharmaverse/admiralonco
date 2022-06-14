@@ -82,22 +82,36 @@ amount of time from a reference date (\code{ref_start_window}).
 
 \enumerate{
 \item The input dataset (\code{dataset}) is restricted to the observations matching
-\code{filter_source} and to observations before or at the date specified by
-\code{source_pd}.
+\code{filter_source} and to observations before or at the date specified by \code{source_pd}.
 
-\item Variables \code{AVALC}, \code{AVAL}, and \code{ADT} will be populated for each unique subject
-in the input \code{dataset_adsl} as identified by \code{subject_keys}.
+\item This dataset is further restricted to exclude response assessments of \code{NA},
+\code{NE}, \code{ND}, and \code{PD}, missing response assessments, and those less than
+\code{ref_start_window} after \code{reference_date}. The earliest assessment by \code{ADT}
+is then selected.
 
-\item \code{AVALC} is set to \code{Y} for those subjects in the \code{dataset} meeting the criteria
-for clinical benefit above, and \code{N} for subjects either not meeting the criteria
-in \code{dataset} or present in \code{dataset_adsl} but not present in \code{dataset}.
+\item The dataset identified by \code{dataset} in \code{source_resp} is restricted
+according to its \code{filter} argument. The variable corresponding to the \code{date}
+parameter of \code{source_resp} is considered together with \code{ADT} from the
+previous step.
+
+\item For the observations being added to \code{dataset}, \code{ADT} is set to the earlier
+of the first assessment date representing an evaluable non-PD assessment prior
+to first PD, or the date representing the start of response.
+
+\item For the observations being added to \code{dataset}, \code{AVALC} is set to:
+
+\if{html}{\out{<div class="sourceCode">}}\preformatted{- `Y` for those subjects in the `dataset` meeting the criteria for clinical
+benefit above
+
+- `N` for subjects not meeting the clinical benefit criteria in `dataset`
+or the dataset identified in `source_resp`
+
+- `N` for subjects present in `dataset_adsl` but not present in `dataset`
+or the dataset identified in `source_resp`.
+}\if{html}{\out{</div>}}
 
 \item \code{AVAL} is derived using \code{AVALC} as input to the function specified in
 \code{aval_fun}.
-
-\item \code{ADT} is set to the earlier of the first assessment date representing
-an evaluable non-PD assessment prior to first PD, or the date representing
-the start of response.
 
 \item The variables specified by \code{set_values_to} are added to the new observations
 with values equal to the values specified in the same.

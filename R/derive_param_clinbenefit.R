@@ -11,22 +11,35 @@
 #'
 #' \enumerate{
 #'   \item The input dataset (`dataset`) is restricted to the observations matching
-#'   `filter_source` and to observations before or at the date specified by
-#'   `source_pd`.
+#'   `filter_source` and to observations before or at the date specified by `source_pd`.
 #'
-#'   \item Variables `AVALC`, `AVAL`, and `ADT` will be populated for each unique subject
-#'   in the input `dataset_adsl` as identified by `subject_keys`.
+#'   \item This dataset is further restricted to exclude response assessments of `NA`,
+#'   `NE`, `ND`, and `PD`, missing response assessments, and those less than
+#'   `ref_start_window` after `reference_date`. The earliest assessment by `ADT`
+#'   is then selected.
 #'
-#'   \item `AVALC` is set to `Y` for those subjects in the `dataset` meeting the criteria
-#'   for clinical benefit above, and `N` for subjects either not meeting the criteria
-#'   in `dataset` or present in `dataset_adsl` but not present in `dataset`.
+#'   \item The dataset identified by `dataset` in `source_resp` is restricted
+#'   according to its `filter` argument. The variable corresponding to the `date`
+#'   parameter of `source_resp` is considered together with `ADT` from the
+#'   previous step.
+#'
+#'   \item For the observations being added to `dataset`, `ADT` is set to the earlier
+#'   of the first assessment date representing an evaluable non-PD assessment prior
+#'   to first PD, or the date representing the start of response.
+#'
+#'   \item For the observations being added to `dataset`, `AVALC` is set to:
+#'
+#'     - `Y` for those subjects in the `dataset` meeting the criteria for clinical
+#'     benefit above
+#'
+#'     - `N` for subjects not meeting the clinical benefit criteria in `dataset`
+#'     or the dataset identified in `source_resp`
+#'
+#'     - `N` for subjects present in `dataset_adsl` but not present in `dataset`
+#'     or the dataset identified in `source_resp`.
 #'
 #'   \item `AVAL` is derived using `AVALC` as input to the function specified in
 #'   `aval_fun`.
-#'
-#'   \item `ADT` is set to the earlier of the first assessment date representing
-#'   an evaluable non-PD assessment prior to first PD, or the date representing
-#'   the start of response.
 #'
 #'   \item The variables specified by `set_values_to` are added to the new observations
 #'   with values equal to the values specified in the same.
@@ -230,10 +243,6 @@ derive_param_clinbenefit <- function(dataset,
   )
 
   ovr_data <- ovr_data %>%
-    left_join(
-      adsl,
-      by = vars2chr(subject_keys)
-    ) %>%
     filter(
       !(AVALC %in% c("NA", "NE", "ND", "PD")) & !is.na(AVALC) &
         ADT >= !!reference_date + days(ref_start_window)
@@ -243,8 +252,7 @@ derive_param_clinbenefit <- function(dataset,
       by_vars = subject_keys,
       mode = "first",
       check_type = "none"
-    ) %>%
-    select(!!!subject_keys, ADT)
+    )
 
   new_param <- bind_rows(ovr_data, rsp_data) %>%
     filter_extreme(
