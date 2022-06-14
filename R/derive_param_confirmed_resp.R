@@ -325,8 +325,7 @@ derive_param_confirmed_resp <- function(dataset,
       count_vals(var = AVALC.join, val = "NE") <= max_nr_ne
   ) %>%
     mutate(
-      AVALC = "Y",
-      tmp_order = 1
+      AVALC = "Y"
     )
 
   if (accept_sd) {
@@ -354,8 +353,7 @@ derive_param_confirmed_resp <- function(dataset,
       )
   ) %>%
     mutate(
-      AVALC = "Y",
-      tmp_order = 1
+      AVALC = "Y"
     )
 
   source_vars <- colnames(source_data)
@@ -364,18 +362,18 @@ derive_param_confirmed_resp <- function(dataset,
   missing_data <- dataset_adsl %>%
     select(!!!subject_keys, intersect(source_vars, adsl_vars)) %>%
     mutate(
-      AVALC = "N",
-      tmp_order = 2
+      AVALC = "N"
     )
 
-  # Select response
+  # Select response (for missing_data ADT is NA and will be sorted to the end,
+  # i.e., an observation from missing_data is selected only if there is no
+  # observation in cr_data or pr_data)
   rsp <- bind_rows(cr_data, pr_data, missing_data) %>%
     filter_extreme(
       by_vars = subject_keys,
-      order = vars(tmp_order, ADT),
+      order = vars(ADT),
       mode = "first"
     ) %>%
-    select(-tmp_order) %>%
     mutate(
       AVAL = aval_fun(AVALC),
       !!!set_values_to
