@@ -27,7 +27,7 @@ Free Survival). More than one source dataset can be used for the definition of t
 and censoring times.
 
 The majority of the functions used here exist from `{admiral}`, except for the
-`onco_tte_sources` helper object, provided as an example from `{admiralonco}`.
+`tte_sources` helper object, provided as an example from `{admiralonco}`.
 In practice, each company would create their own version of this, as likely the
 exact specifications such as filtering condition or description metadata will vary.
 
@@ -108,8 +108,8 @@ independent of the data.
 
 ### Pre-Defined Time-to-Event Source Objects
 
-The table below shows all pre-defined `onco_tte_source` objects which should cover the most
-common use cases.
+The table below shows all pre-defined `tte_source` objects which should cover the most
+common oncology use cases.
 
 ```{r echo=FALSE}
 knitr::kable(admiral:::list_tte_source_objects(package = "admiralonco"))
