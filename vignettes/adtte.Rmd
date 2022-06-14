@@ -112,7 +112,7 @@ The table below shows all pre-defined `onco_tte_source` objects which should cov
 common use cases.
 
 ```{r echo=FALSE}
-knitr::kable(admiral:::list_onco_tte_source_objects())
+knitr::kable(admiral:::list_tte_source_objects(package = "admiralonco"))
 ```
 
 As mentioned in the introduction, each company would create their own version of this with
