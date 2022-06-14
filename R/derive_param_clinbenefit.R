@@ -6,8 +6,8 @@
 #' Clinical benefit/disease control is first identified for looking for subjects
 #' having response status, and then derived for subjects that have at least one
 #' evaluable non-PD response assessment prior to first PD (Progressive Disease)
-#' (i.e., inclusive of `CR`, `PR`, `SD` and exclusive of `NA`, `NE`, `ND`, and
-#' `PD`) and after a specified amount of time from a reference date (`ref_start_window`).
+#' (i.e., responses exclusive of `NA`, `NE`, `ND`, and `PD`) and after a specified
+#' amount of time from a reference date (`ref_start_window`).
 #'
 #' \enumerate{
 #'   \item The input dataset (`dataset`) is restricted to the observations matching
@@ -24,8 +24,8 @@
 #'   \item `AVAL` is derived using `AVALC` as input to the function specified in
 #'   `aval_fun`.
 #'
-#'   \item `ADT` is set to the earliest possible date representing an evaluable
-#'   non-PD response assessment prior to first PD.
+#'   \item `ADT` is set to the earliest possible response date representing an
+#'   evaluable non-PD response assessment prior to first PD.
 #'
 #'   \item The variables specified by `set_values_to` are added to the new observations
 #'   with values equal to the values specified in the same.

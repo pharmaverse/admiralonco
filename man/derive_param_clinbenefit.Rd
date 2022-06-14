@@ -77,8 +77,8 @@ Add a clinical benefit/disease control parameter to the input dataset.
 Clinical benefit/disease control is first identified for looking for subjects
 having response status, and then derived for subjects that have at least one
 evaluable non-PD response assessment prior to first PD (Progressive Disease)
-(i.e., inclusive of \code{CR}, \code{PR}, \code{SD} and exclusive of \code{NA}, \code{NE}, \code{ND}, and
-\code{PD}) and after a specified amount of time from a reference date (\code{ref_start_window}).
+(i.e., responses exclusive of \code{NA}, \code{NE}, \code{ND}, and \code{PD}) and after a specified
+amount of time from a reference date (\code{ref_start_window}).
 
 \enumerate{
 \item The input dataset (\code{dataset}) is restricted to the observations matching
@@ -95,8 +95,8 @@ in \code{dataset} or present in \code{dataset_adsl} but not present in \code{dat
 \item \code{AVAL} is derived using \code{AVALC} as input to the function specified in
 \code{aval_fun}.
 
-\item \code{ADT} is set to the earliest possible date representing an evaluable
-non-PD response assessment prior to first PD.
+\item \code{ADT} is set to the earliest possible response date representing an
+evaluable non-PD response assessment prior to first PD.
 
 \item The variables specified by \code{set_values_to} are added to the new observations
 with values equal to the values specified in the same.
