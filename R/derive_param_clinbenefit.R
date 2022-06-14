@@ -37,13 +37,12 @@
 #' benefit rate parameter will be added.
 #'
 #'   The variables `PARAMCD`, `AVALC`, `ADT`, and those specified by the `subject_keys`
-#'   parameter are expected.
+#'   parameter and the `reference_date` parameter are expected.
 #'
 #' @param dataset_adsl ADSL input dataset.
 #'
-#'   The variables specified for `subject_keys` parameter and the `reference_date`
-#'   parameter are expected. For each subject of the specified dataset a new
-#'   observation is added to the input dataset.
+#'   The variables specified for `subject_keys`is expected. For each subject of
+#'   the specified dataset a new observation is added to the input dataset.
 #'
 #' @param filter_source Filter condition in `dataset` that represents records
 #' for overall disease response assessment for a subject at a given timepoint,
@@ -95,11 +94,11 @@
 #' library(admiral)
 #'
 #' adsl <- tibble::tribble(
-#'   ~USUBJID, ~TRTSDT, ~EOSDT,
-#'   "01", ymd("2020-01-14"), ymd("2020-05-06"),
-#'   "02", ymd("2021-02-16"), ymd("2021-08-03"),
-#'   "03", ymd("2021-03-09"), ymd("2021-04-24"),
-#'   "04", ymd("2021-04-21"), ymd("2021-09-15")
+#'   ~USUBJID, ~TRTSDT,
+#'   "01", ymd("2020-01-14"),
+#'   "02", ymd("2021-02-16"),
+#'   "03", ymd("2021-03-09"),
+#'   "04", ymd("2021-04-21")
 #' ) %>%
 #'   mutate(STUDYID = "AB42")
 #'
@@ -124,7 +123,12 @@
 #'   "04", "OVR", "NE", ymd("2021-07-24"),
 #'   "04", "OVR", "ND", ymd("2021-09-04"),
 #' ) %>%
-#'   mutate(STUDYID = "AB42", ANL01FL = "Y")
+#'   mutate(STUDYID = "AB42", ANL01FL = "Y") %>%
+#'   derive_vars_merged(
+#'     dataset_add = adsl,
+#'     by_vars = vars(STUDYID, USUBJID),
+#'     new_vars = vars(TRTSDT)
+#'   )
 #'
 #' pd <- date_source(
 #'   dataset_name = "adrs",
@@ -150,7 +154,8 @@
 #'   set_values_to = vars(
 #'     PARAMCD = "CBR"
 #'   )
-#' )
+#' ) %>%
+#'   filter(PARAMCD == "CBR")
 derive_param_clinbenefit <- function(dataset,
                                      dataset_adsl,
                                      filter_source,
@@ -168,11 +173,11 @@ derive_param_clinbenefit <- function(dataset,
   assert_vars(subject_keys)
   assert_data_frame(
     dataset_adsl,
-    required_vars = vars(!!!subject_keys, !!reference_date)
+    required_vars = subject_keys
   )
   assert_data_frame(
     dataset,
-    required_vars = vars(!!!subject_keys, PARAMCD, AVALC, ADT)
+    required_vars = quo_c(subject_keys, reference_date, vars(PARAMCD, AVALC, ADT))
   )
 
   filter_source <- assert_filter_cond(
@@ -196,16 +201,13 @@ derive_param_clinbenefit <- function(dataset,
     )
   }
 
-  ref_start_window <- assert_integer_scalar(ref_start_window)
+  ref_start_window <- assert_integer_scalar(ref_start_window, subset = "non-negative")
   assert_varval_list(set_values_to, optional = TRUE)
   assert_param_does_not_exist(dataset, quo_get_expr(set_values_to$PARAMCD))
 
   # ADSL variables
 
-  adsl_vars <- vars(
-    !!!subject_keys,
-    !!reference_date
-  )
+  adsl_vars <- subject_keys
 
   adsl <- dataset_adsl %>%
     select(!!!adsl_vars)
@@ -215,7 +217,7 @@ derive_param_clinbenefit <- function(dataset,
   rsp_data <- source_datasets[[source_resp$dataset_name]] %>%
     filter_if(source_resp$filter) %>%
     select(!!!subject_keys, !!source_resp$date) %>%
-    rename(temp_rs = !!source_resp$date)
+    rename(ADT = !!source_resp$date)
 
   # Look for valid non-PD measurements after window from reference date
   ovr_data <- filter_pd(
@@ -223,7 +225,7 @@ derive_param_clinbenefit <- function(dataset,
     filter = !!filter_source,
     source_pd = source_pd,
     source_datasets = source_datasets,
-    subject_keys = vars(!!!subject_keys)
+    subject_keys = subject_keys
   )
 
   ovr_data <- ovr_data %>%
@@ -237,25 +239,21 @@ derive_param_clinbenefit <- function(dataset,
     ) %>%
     filter_extreme(
       order = vars(ADT),
-      by_vars = vars(!!!subject_keys),
+      by_vars = subject_keys,
       mode = "first",
       check_type = "none"
     ) %>%
     select(!!!subject_keys, ADT)
 
-  rsp_data <- rsp_data %>%
-    rename(ADT = temp_rs)
-
   new_param <- bind_rows(ovr_data, rsp_data) %>%
     filter_extreme(
       order = vars(ADT),
-      by_vars = vars(!!!subject_keys),
+      by_vars = subject_keys,
       mode = "first",
       check_type = "none"
     ) %>%
     right_join(adsl, by = vars2chr(subject_keys)) %>%
     mutate(AVALC = if_else(!is.na(ADT), "Y", "N")) %>%
-    select(-!!reference_date) %>%
     mutate(
       AVAL = aval_fun(AVALC),
       !!!set_values_to

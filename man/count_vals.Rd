@@ -20,20 +20,20 @@ library(dplyr)
 library(admiralonco)
 data <- tibble::tribble(
   ~USUBJID, ~AVISITN, ~AVALC,
-  "1",      1,        "PR",
-  "1",      2,        "CR",
-  "1",      3,        "NE",
-  "1",      4,        "CR",
-  "1",      5,        "NE",
-  "2",      1,        "CR",
-  "2",      2,        "PR",
-  "2",      3,        "CR",
-  "3",      1,        "CR",
-  "4",      1,        "CR",
-  "4",      2,        "NE",
-  "4",      3,        "NE",
-  "4",      4,        "CR",
-  "4",      5,        "PR"
+  "1", 1, "PR",
+  "1", 2, "CR",
+  "1", 3, "NE",
+  "1", 4, "CR",
+  "1", 5, "NE",
+  "2", 1, "CR",
+  "2", 2, "PR",
+  "2", 3, "CR",
+  "3", 1, "CR",
+  "4", 1, "CR",
+  "4", 2, "NE",
+  "4", 3, "NE",
+  "4", 4, "CR",
+  "4", 5, "PR"
 )
 
 group_by(data, USUBJID) \%>\%

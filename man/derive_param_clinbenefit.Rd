@@ -23,13 +23,12 @@ derive_param_clinbenefit(
 benefit rate parameter will be added.
 
 The variables \code{PARAMCD}, \code{AVALC}, \code{ADT}, and those specified by the \code{subject_keys}
-parameter are expected.}
+parameter and the \code{reference_date} parameter are expected.}
 
 \item{dataset_adsl}{ADSL input dataset.
 
-The variables specified for \code{subject_keys} parameter and the \code{reference_date}
-parameter are expected. For each subject of the specified dataset a new
-observation is added to the input dataset.}
+The variables specified for \code{subject_keys}is expected. For each subject of
+the specified dataset a new observation is added to the input dataset.}
 
 \item{filter_source}{Filter condition in \code{dataset} that represents records
 for overall disease response assessment for a subject at a given timepoint,
@@ -111,11 +110,11 @@ library(dplyr)
 library(admiral)
 
 adsl <- tibble::tribble(
-  ~USUBJID, ~TRTSDT, ~EOSDT,
-  "01", ymd("2020-01-14"), ymd("2020-05-06"),
-  "02", ymd("2021-02-16"), ymd("2021-08-03"),
-  "03", ymd("2021-03-09"), ymd("2021-04-24"),
-  "04", ymd("2021-04-21"), ymd("2021-09-15")
+  ~USUBJID, ~TRTSDT,
+  "01", ymd("2020-01-14"),
+  "02", ymd("2021-02-16"),
+  "03", ymd("2021-03-09"),
+  "04", ymd("2021-04-21")
 ) \%>\%
   mutate(STUDYID = "AB42")
 
@@ -140,7 +139,12 @@ adrs <- tibble::tribble(
   "04", "OVR", "NE", ymd("2021-07-24"),
   "04", "OVR", "ND", ymd("2021-09-04"),
 ) \%>\%
-  mutate(STUDYID = "AB42", ANL01FL = "Y")
+  mutate(STUDYID = "AB42", ANL01FL = "Y") \%>\%
+  derive_vars_merged(
+    dataset_add = adsl,
+    by_vars = vars(STUDYID, USUBJID),
+    new_vars = vars(TRTSDT)
+  )
 
 pd <- date_source(
   dataset_name = "adrs",
@@ -166,7 +170,8 @@ derive_param_clinbenefit(
   set_values_to = vars(
     PARAMCD = "CBR"
   )
-)
+) \%>\%
+filter(PARAMCD == "CBR")
 }
 \author{
 Andrew Smith

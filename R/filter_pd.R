@@ -58,26 +58,26 @@
 #'
 #' # Filter OVR records up to first PD, first PD date provided in separate BDS dataset (adevent)
 #' adrs <- tibble::tribble(
-#'   ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,         ~ANL01FL,
-#'   "CDISCPILOT01", "01-701-1015", "OVR",    "CR",   "2016-01-25", "Y",
-#'   "CDISCPILOT01", "01-701-1015", "OVR",    "SD",   "2016-02-22", NA_character_,
-#'   "CDISCPILOT01", "01-701-1015", "OVR",    "PD",   "2016-02-22", "Y",
-#'   "CDISCPILOT01", "01-701-1015", "BOR",    "CR",   "2016-01-25", "Y",
-#'   "CDISCPILOT01", "01-701-1034", "OVR",    "SD",   "2015-12-07", "Y",
-#'   "CDISCPILOT01", "01-701-1034", "OVR",    "PD",   "2016-04-25", "Y",
-#'   "CDISCPILOT01", "01-701-1034", "OVR",    "PD",   "2016-06-25", "Y",
-#'   "CDISCPILOT01", "01-701-1034", "BOR",    "SD",   "2015-12-07", "Y",
-#'   "CDISCPILOT01", "01-701-1035", "OVR",    "SD",   "2016-04-25", "Y",
-#'   "CDISCPILOT01", "01-701-1035", "OVR",    "PR",   "2016-06-25", "Y",
-#'   "CDISCPILOT01", "01-701-1035", "BOR",    "PR",   "2016-06-25", "Y"
+#'   ~STUDYID, ~USUBJID, ~PARAMCD, ~AVALC, ~ADT, ~ANL01FL,
+#'   "CDISCPILOT01", "01-701-1015", "OVR", "CR", "2016-01-25", "Y",
+#'   "CDISCPILOT01", "01-701-1015", "OVR", "SD", "2016-02-22", NA_character_,
+#'   "CDISCPILOT01", "01-701-1015", "OVR", "PD", "2016-02-22", "Y",
+#'   "CDISCPILOT01", "01-701-1015", "BOR", "CR", "2016-01-25", "Y",
+#'   "CDISCPILOT01", "01-701-1034", "OVR", "SD", "2015-12-07", "Y",
+#'   "CDISCPILOT01", "01-701-1034", "OVR", "PD", "2016-04-25", "Y",
+#'   "CDISCPILOT01", "01-701-1034", "OVR", "PD", "2016-06-25", "Y",
+#'   "CDISCPILOT01", "01-701-1034", "BOR", "SD", "2015-12-07", "Y",
+#'   "CDISCPILOT01", "01-701-1035", "OVR", "SD", "2016-04-25", "Y",
+#'   "CDISCPILOT01", "01-701-1035", "OVR", "PR", "2016-06-25", "Y",
+#'   "CDISCPILOT01", "01-701-1035", "BOR", "PR", "2016-06-25", "Y"
 #' ) %>% mutate(
 #'   ADT = as_date(ADT)
 #' )
 #'
 #' adevent <- tibble::tribble(
-#'   ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,
-#'   "CDISCPILOT01", "01-701-1015", "PD",     "Y",    "2016-02-22",
-#'   "CDISCPILOT01", "01-701-1034", "PD",     "Y",    "2016-04-25"
+#'   ~STUDYID, ~USUBJID, ~PARAMCD, ~AVALC, ~ADT,
+#'   "CDISCPILOT01", "01-701-1015", "PD", "Y", "2016-02-22",
+#'   "CDISCPILOT01", "01-701-1034", "PD", "Y", "2016-04-25"
 #' ) %>% mutate(
 #'   ADT = as_date(ADT)
 #' )
@@ -97,7 +97,7 @@
 #'
 #' # Filter OVR records up to first PD, first PD date provided in ADSL dataset
 #' adsl <- tibble::tribble(
-#'   ~STUDYID,       ~USUBJID,      ~PDDT,
+#'   ~STUDYID, ~USUBJID, ~PDDT,
 #'   "CDISCPILOT01", "01-701-1015", "2016-02-22",
 #'   "CDISCPILOT01", "01-701-1034", "2016-04-25",
 #'   "CDISCPILOT01", "01-701-1035", ""
@@ -119,20 +119,20 @@
 #'
 #' # Filter OVR records up to first PD, first PD date provided in input dataset (PD parameter)
 #' adrs <- tibble::tribble(
-#'   ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,         ~ANL01FL,
-#'   "CDISCPILOT01", "01-701-1015", "OVR",    "CR",   "2016-01-25", "Y",
-#'   "CDISCPILOT01", "01-701-1015", "OVR",    "SD",   "2016-02-22", NA_character_,
-#'   "CDISCPILOT01", "01-701-1015", "OVR",    "PD",   "2016-02-22", "Y",
-#'   "CDISCPILOT01", "01-701-1015", "BOR",    "CR",   "2016-01-25", "Y",
-#'   "CDISCPILOT01", "01-701-1034", "OVR",    "SD",   "2015-12-07", "Y",
-#'   "CDISCPILOT01", "01-701-1034", "OVR",    "PD",   "2016-04-25", "Y",
-#'   "CDISCPILOT01", "01-701-1034", "OVR",    "PD",   "2016-06-25", "Y",
-#'   "CDISCPILOT01", "01-701-1034", "BOR",    "SD",   "2015-12-07", "Y",
-#'   "CDISCPILOT01", "01-701-1035", "OVR",    "SD",   "2016-04-25", "Y",
-#'   "CDISCPILOT01", "01-701-1035", "OVR",    "PR",   "2016-06-25", "Y",
-#'   "CDISCPILOT01", "01-701-1035", "BOR",    "PR",   "2016-06-25", "Y",
-#'   "CDISCPILOT01", "01-701-1015", "PD",     "Y",    "2016-02-22", "Y",
-#'   "CDISCPILOT01", "01-701-1034", "PD",     "Y",    "2016-04-25", "Y"
+#'   ~STUDYID, ~USUBJID, ~PARAMCD, ~AVALC, ~ADT, ~ANL01FL,
+#'   "CDISCPILOT01", "01-701-1015", "OVR", "CR", "2016-01-25", "Y",
+#'   "CDISCPILOT01", "01-701-1015", "OVR", "SD", "2016-02-22", NA_character_,
+#'   "CDISCPILOT01", "01-701-1015", "OVR", "PD", "2016-02-22", "Y",
+#'   "CDISCPILOT01", "01-701-1015", "BOR", "CR", "2016-01-25", "Y",
+#'   "CDISCPILOT01", "01-701-1034", "OVR", "SD", "2015-12-07", "Y",
+#'   "CDISCPILOT01", "01-701-1034", "OVR", "PD", "2016-04-25", "Y",
+#'   "CDISCPILOT01", "01-701-1034", "OVR", "PD", "2016-06-25", "Y",
+#'   "CDISCPILOT01", "01-701-1034", "BOR", "SD", "2015-12-07", "Y",
+#'   "CDISCPILOT01", "01-701-1035", "OVR", "SD", "2016-04-25", "Y",
+#'   "CDISCPILOT01", "01-701-1035", "OVR", "PR", "2016-06-25", "Y",
+#'   "CDISCPILOT01", "01-701-1035", "BOR", "PR", "2016-06-25", "Y",
+#'   "CDISCPILOT01", "01-701-1015", "PD", "Y", "2016-02-22", "Y",
+#'   "CDISCPILOT01", "01-701-1034", "PD", "Y", "2016-04-25", "Y"
 #' ) %>% mutate(
 #'   ADT = as_date(ADT)
 #' )
@@ -152,18 +152,18 @@
 #'
 #' # Filter OVR records up to first PD, first PD date derived from OVR records
 #' adrs <- tibble::tribble(
-#'   ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,         ~ANL01FL,
-#'   "CDISCPILOT01", "01-701-1015", "OVR",    "CR",   "2016-01-25", "Y",
-#'   "CDISCPILOT01", "01-701-1015", "OVR",    "SD",   "2016-02-22", NA_character_,
-#'   "CDISCPILOT01", "01-701-1015", "OVR",    "PD",   "2016-02-22", "Y",
-#'   "CDISCPILOT01", "01-701-1015", "BOR",    "CR",   "2016-01-25", "Y",
-#'   "CDISCPILOT01", "01-701-1034", "OVR",    "SD",   "2015-12-07", "Y",
-#'   "CDISCPILOT01", "01-701-1034", "OVR",    "PD",   "2016-04-25", "Y",
-#'   "CDISCPILOT01", "01-701-1034", "OVR",    "PD",   "2016-06-25", "Y",
-#'   "CDISCPILOT01", "01-701-1034", "BOR",    "SD",   "2015-12-07", "Y",
-#'   "CDISCPILOT01", "01-701-1035", "OVR",    "SD",   "2016-04-25", "Y",
-#'   "CDISCPILOT01", "01-701-1035", "OVR",    "PR",   "2016-06-25", "Y",
-#'   "CDISCPILOT01", "01-701-1035", "BOR",    "PR",   "2016-06-25", "Y"
+#'   ~STUDYID, ~USUBJID, ~PARAMCD, ~AVALC, ~ADT, ~ANL01FL,
+#'   "CDISCPILOT01", "01-701-1015", "OVR", "CR", "2016-01-25", "Y",
+#'   "CDISCPILOT01", "01-701-1015", "OVR", "SD", "2016-02-22", NA_character_,
+#'   "CDISCPILOT01", "01-701-1015", "OVR", "PD", "2016-02-22", "Y",
+#'   "CDISCPILOT01", "01-701-1015", "BOR", "CR", "2016-01-25", "Y",
+#'   "CDISCPILOT01", "01-701-1034", "OVR", "SD", "2015-12-07", "Y",
+#'   "CDISCPILOT01", "01-701-1034", "OVR", "PD", "2016-04-25", "Y",
+#'   "CDISCPILOT01", "01-701-1034", "OVR", "PD", "2016-06-25", "Y",
+#'   "CDISCPILOT01", "01-701-1034", "BOR", "SD", "2015-12-07", "Y",
+#'   "CDISCPILOT01", "01-701-1035", "OVR", "SD", "2016-04-25", "Y",
+#'   "CDISCPILOT01", "01-701-1035", "OVR", "PR", "2016-06-25", "Y",
+#'   "CDISCPILOT01", "01-701-1035", "BOR", "PR", "2016-06-25", "Y"
 #' ) %>% mutate(
 #'   ADT = as_date(ADT)
 #' )

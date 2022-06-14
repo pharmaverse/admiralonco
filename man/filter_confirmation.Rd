@@ -157,15 +157,15 @@ library(admiralonco)
 # filter observations with AVALC == "Y" and AVALC == "Y" at one subsequent visit
 data <- tibble::tribble(
   ~USUBJID, ~AVISITN, ~AVALC,
-  "1",      1,        "Y",
-  "1",      2,        "N",
-  "1",      3,        "Y",
-  "1",      4,        "N",
-  "2",      1,        "Y",
-  "2",      2,        "N",
-  "3",      1,        "Y",
-  "4",      1,        "N",
-  "4",      2,        "N",
+  "1", 1, "Y",
+  "1", 2, "N",
+  "1", 3, "Y",
+  "1", 4, "N",
+  "2", 1, "Y",
+  "2", 2, "N",
+  "3", 1, "Y",
+  "4", 1, "N",
+  "4", 2, "N",
 )
 
 filter_confirmation(
@@ -180,20 +180,20 @@ filter_confirmation(
 # only "CR" or "NE" in between, and at most one "NE" in between
 data <- tibble::tribble(
   ~USUBJID, ~AVISITN, ~AVALC,
-  "1",      1,        "PR",
-  "1",      2,        "CR",
-  "1",      3,        "NE",
-  "1",      4,        "CR",
-  "1",      5,        "NE",
-  "2",      1,        "CR",
-  "2",      2,        "PR",
-  "2",      3,        "CR",
-  "3",      1,        "CR",
-  "4",      1,        "CR",
-  "4",      2,        "NE",
-  "4",      3,        "NE",
-  "4",      4,        "CR",
-  "4",      5,        "PR"
+  "1", 1, "PR",
+  "1", 2, "CR",
+  "1", 3, "NE",
+  "1", 4, "CR",
+  "1", 5, "NE",
+  "2", 1, "CR",
+  "2", 2, "PR",
+  "2", 3, "CR",
+  "3", 1, "CR",
+  "4", 1, "CR",
+  "4", 2, "NE",
+  "4", 3, "NE",
+  "4", 4, "CR",
+  "4", 5, "PR"
 )
 
 filter_confirmation(
