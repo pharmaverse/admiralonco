@@ -3,7 +3,8 @@
 #'     Derives Best Overall Response
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @details
-#'    Calculates the best overall response (BOR) parameter.
+#'    Calculates the best overall response (BOR) parameter, as detailed below.
+#'
 #'    Records after PD can be removed using the source_pd and source_datasets
 #'    arguments.
 #'
@@ -302,6 +303,8 @@ derive_param_bor <- function(dataset,
   # Assert statements (checked in order of signature) ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+  reference_date <- admiral::assert_symbol(arg = rlang::enquo(reference_date))
+
   admiral::assert_data_frame(arg           = dataset,
                              required_vars = admiral::quo_c(subject_keys,
                                                             reference_date,
@@ -311,8 +314,6 @@ derive_param_bor <- function(dataset,
                              required_vars = admiral::quo_c(subject_keys))
 
   filter_source  <- admiral::assert_filter_cond(arg = rlang::enquo(filter_source))
-
-  reference_date <- admiral::assert_symbol(arg = rlang::enquo(reference_date))
 
   admiral::assert_integer_scalar(arg      = ref_start_window,
                                  subset   = "non-negative",
@@ -443,7 +444,8 @@ derive_param_bor <- function(dataset,
 
   # inner join: keep only those with a record after reference_date + ref_start_window
   bor_data_02 <- subj_with_rec_after_ref_data %>%
-    dplyr::inner_join(before_ref_data)
+    dplyr::inner_join(before_ref_data,
+                      by = admiral::vars2chr(subject_keys))
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Data frame 3: bor_data_03, ADT < reference_date + ref_start_window
@@ -455,7 +457,8 @@ derive_param_bor <- function(dataset,
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   bor_data_03 <- before_ref_data  %>%
-    dplyr::anti_join(subj_with_rec_after_ref_data) %>%
+    dplyr::anti_join(subj_with_rec_after_ref_data,
+                     by = admiral::vars2chr(subject_keys)) %>%
     dplyr::mutate(tmp_order = dplyr::case_when(AVALC %in% c("CR", "PR", "PD") ~ tmp_order,
                                                AVALC %in% c("SD", "NON-CR/NON-PD") ~ 6),
                   AVALC = dplyr::case_when(AVALC %in% c("CR", "PR", "PD") ~ AVALC,
@@ -474,10 +477,9 @@ derive_param_bor <- function(dataset,
   # are also in the input dataset.
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  adsl_cols_to_keep <- names(dataset_adsl)[names(dataset_adsl) %in% names(dataset)]
-
   bor_data_04 <- dataset_adsl %>%
-    dplyr::select(adsl_cols_to_keep) %>%
+    dplyr::select(dplyr::intersect(colnames(dataset_adsl),
+                                   colnames(dataset))) %>%
     dplyr::mutate(AVALC     = dplyr::case_when(isTRUE(missing_as_ne) ~ "NE",
                                                TRUE ~"MISSING"),
                   tmp_order = 999)

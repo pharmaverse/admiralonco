@@ -260,51 +260,18 @@ testthat::test_that("derive_param_bor Test 2: With source_pd", {
 
 # derive_param_bor, Test 3 ----
 testthat::test_that("derive_param_bor Test 3: Test Error Mising Records For filter_source", {
-  testthat::expect_error(derive_param_bor(dataset          = adrs,
-                                dataset_adsl     = adsl,
-                                filter_source    = PARAMCD == "MISSING RECORDS",
-                                source_pd        = NULL,
-                                source_datasets  = NULL,
-                                reference_date   = TRTSDT,
-                                ref_start_window = 28,
-                                aval_fun         = aval_fun_pass,
-                                set_values_to    = admiral::vars(PARAMCD = "BOR",
-                                                                 PARAM   = "Best Overall Response")),
-                         'PARAMCD == "MISSING RECORDS" has 0 records')
+  testthat::expect_error(
+    derive_param_bor(
+        dataset          = adrs,
+        dataset_adsl     = adsl,
+        filter_source    = PARAMCD == "MISSING RECORDS",
+        source_pd        = NULL,
+        source_datasets  = NULL,
+        reference_date   = TRTSDT,
+        ref_start_window = 28,
+        aval_fun         = aval_fun_pass,
+        set_values_to    = admiral::vars(PARAMCD = "BOR",
+                                         PARAM   = "Best Overall Response")),
+       'PARAMCD == "MISSING RECORDS" has 0 records')
 
 })
-
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# Amgen Data TO DELETE ----
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-adsl_amgen <- haven::read_sas("/userdata/stat/amg160/onc/20180101/analysis/final/statdata/adam/adsl.sas7bdat")
-
-adrs_amgen <- haven::read_sas("/userdata/stat/amg160/onc/20180101/analysis/final/statdata/adam/adrs.sas7bdat") %>%
-  dplyr::select(USUBJID, STUDYID, TRTSDT, PARAM, PARAMCD,
-                ADT, ASEQ, AVAL, AVALC, dplyr::starts_with("ANL"))
-
-# ask Catherine why duplictae records by ASEQ
-adrs_amgen_first_adt <- adrs_amgen %>%
-  dplyr::arrange(USUBJID, STUDYID, PARAM, PARAMCD, ADT) %>%
-  dplyr::group_by(USUBJID, STUDYID, PARAM, PARAMCD) %>%
-  dplyr::filter(dplyr::row_number() == 1) %>%
-  dplyr::ungroup()
-
-
-pd_date <-  admiral::date_source(
-  dataset_name = "adrs_amgen",
-  date         = ADT,
-  filter       = PARAMCD == "CLINRESP" & AVALC == "PD" # check with Catherine
-)
-
-amgen_adrs <- derive_param_bor(dataset          = adrs_amgen_first_adt,
-                               dataset_adsl     = adsl_amgen,
-                               filter_source    = PARAMCD == "OVRLRESP",
-                               source_pd        = NULL,
-                               source_datasets  = NULL,
-                               reference_date   = TRTSDT,
-                               ref_start_window = 28,
-                               aval_fun         = aval_fun_pass,
-                               set_values_to    = admiral::vars(PARAMCD = "BOR",
-                                                                PARAM   = "Best Overall Response"))
