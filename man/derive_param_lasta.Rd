@@ -50,7 +50,7 @@ using \code{admiral::vars()}.
 
 \emph{Required or Optional:} Required}
 
-\item{by_vars}{Grouping variables, the last of which (ordered by \code{order})
+\item{by_vars}{Grouping columns, the last of which (ordered by \code{order})
 shall be taken as the Last Disease Assessment record. Created
 using \code{admiral::vars()}.
 
@@ -93,7 +93,7 @@ and the actual response dataframe in the script is \code{myadrs}, \code{source_d
 
 \emph{Required or Optional:} Optional}
 
-\item{subject_keys}{Variables to uniquely identify a subject
+\item{subject_keys}{Columns to uniquely identify a subject
 
 A list of symbols created using \code{admiral::vars()}.
 
@@ -101,9 +101,9 @@ A list of symbols created using \code{admiral::vars()}.
 
 \emph{Required or Optional:} Required}
 
-\item{set_values_to}{Variables to set
+\item{set_values_to}{Columns to set
 
-A named list returned by \code{vars()} defining the variables to be set for the
+A named list returned by \code{vars()} defining the columns to be set for the
 new parameter, e.g. \code{vars(PARAMCD = "LSTAC", PARAM = "Last Disease Assessment Censored at First PD by Investigator")} is expected. The values
 must be symbols, character strings, numeric values, or \code{NA}.
 
@@ -114,14 +114,24 @@ The dataframe passed in the \code{dataset} argument with additional
 columns and/or rows as set in the \code{set_values_to} argument.
 }
 \description{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{Add a Last Disease Assessment parameter for each unique `by_vars` to the
-input dataframe passed into the dataset argument.
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Derived Last Disease Assessment
 }\if{html}{\out{</div>}}
 }
 \details{
-Calculates the last disease assessment.
+Calculates the last disease assessment by accessing the last record
+defined in \code{by_vars} after it has been arranged using the \code{order} argument.
+
+Creates the new parameter record with AVAL/AVALC taken from the source
+record and ADT as the last ADT.
+
 Records after PD can be removed using the source_pd and source_datasets
 arguments.
+
+Note: All columns from the input dataset are kept. Subjects with no records
+in the input dataset (after the filter is applied) all records are kept from
+ADSL which are also in the input dataset.  Columns which are not be populated
+for the new parameter/populated differently (e.g., RSSTRESC, VISIT, ANLzzFL)
+should be overwritten using the \code{set_values_to} parameter.
 }
 \examples{
 

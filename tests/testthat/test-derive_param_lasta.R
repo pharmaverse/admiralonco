@@ -19,39 +19,44 @@ library(magrittr)
 # 2. CHECKNOTKEPTCOL ensure not in final dataframe
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-adsl_test <- tibble::tribble(
-  ~USUBJID, ~TRTSDT,           ~EOSDT,                                  ~CHECKKEPTCOL, ~CHECKNOTKEPTCOL,
-  "01",     lubridate::ymd("2020-12-06"), lubridate::ymd("2022-03-06"), "001",         "991",
-  "02",     lubridate::ymd("2021-01-16"), lubridate::ymd("2022-02-03"), "002",         "992",
-  "03",     lubridate::ymd("2021-01-09"), lubridate::ymd("2021-02-24"), "003",         "993",
-  "04",     lubridate::ymd("2021-04-21"), lubridate::ymd("2021-09-15"), "004",         "994",
-  "05",     lubridate::ymd("2021-08-21"), lubridate::ymd("2022-01-11"), "005",         "995"
+adsl <- tibble::tribble(
+  ~USUBJID, ~TRTSDTC,     ~EOSDTC,     ~CHECKKEPTCOL, ~CHECKNOTKEPTCOL,
+  "01",     "2020-12-06", "2022-03-06", "001",         "991",
+  "02",     "2021-01-16", "2022-02-03", "002",         "992",
+  "03",     "2021-01-09", "2021-02-24", "003",         "993",
+  "04",     "2021-04-21", "2021-09-15", "004",         "994",
+  "05",     "2021-08-21", "2022-01-11", "005",         "995"
 ) %>%
-  dplyr::mutate(STUDYID = "a_study_id")
+  dplyr::mutate(STUDYID = "a_study_id",
+                TRTSDT = lubridate::ymd(TRTSDTC),
+                EOSDT = lubridate::ymd(EOSDTC)) %>%
+  dplyr::select(-c(TRTSDTC, EOSDTC))
 
-adrs_test <- tibble::tribble(
-  ~USUBJID, ~PARAMCD, ~AVAL, ~AVALC, ~ASEQ, ~ADT, ~CHECKKEPTCOL,
-  "01", "RSP", NA, "Y", 1, lubridate::ymd("2021-04-08"),"001",
-  "02", "RSP", NA, "N", 1, lubridate::ymd("2021-05-07"),"002",
-  "03", "RSP", NA, "N", 1, NA,"003",
-  "04", "RSP", NA, "N", 1, NA,"004",
-  "01", "PD", NA, "N", 1, NA,"001",
-  "02", "PD", NA, "Y", 1, lubridate::ymd("2021-05-07"),"002",
-  "03", "PD", NA, "N", 1, NA,"003",
-  "04", "PD", NA, "N", 1, NA,"004",
-  "01", "OVR", 3, "SD", 1, lubridate::ymd("2021-03-07"),"001",
-  "01", "OVR", 2, "PR", 1, lubridate::ymd("2021-04-08"),"001",
-  "02", "OVR", 3, "SD", 1, lubridate::ymd("2021-03-07"),"002",
-  "02", "OVR", NA, NA, 1, lubridate::ymd("2021-04-07"),"002",
-  "02", "OVR", 6, "PD", 1, lubridate::ymd("2021-05-07"),"002",
-  "03", "OVR", 3, "SD", 1, lubridate::ymd("2021-01-30"),"003",
-  "03", "OVR", 3, "SD", 2, lubridate::ymd("2021-01-30"),"003",
-  "04", "OVR", NA, "NE", 1, lubridate::ymd("2021-05-21"),"004",
-  "04", "OVR", 5, "NON-PD", 1, lubridate::ymd("2021-06-30"),"004",
-  "04", "OVR", NA, "NE", 1, lubridate::ymd("2021-07-24"),"004",
-  "04", "OVR", NA, "ND", 1, lubridate::ymd("2021-09-30"),"004",
+adrs <- tibble::tribble(
+  ~USUBJID, ~PARAMCD, ~AVAL, ~AVALC, ~ASEQ, ~ADTC, ~CHECKKEPTCOL,
+  "01", "RSP", NA, "Y", 1, "2021-04-08", "001",
+  "02", "RSP", NA, "N", 1, "2021-05-07", "002",
+  "03", "RSP", NA, "N", 1, NA, "003",
+  "04", "RSP", NA, "N", 1, NA, "004",
+  "01", "PD", NA, "N", 1, NA, "001",
+  "02", "PD", NA, "Y", 1, "2021-05-06", "002",
+  "03", "PD", NA, "N", 1, NA, "003",
+  "04", "PD", NA, "N", 1, NA, "004",
+  "01", "OVR", 3, "SD", 1, "2021-03-07", "001",
+  "01", "OVR", 2, "PR", 1, "2021-04-08", "001",
+  "02", "OVR", 3, "SD", 1, "2021-03-07", "002",
+  "02", "OVR", NA, NA, 1, "2021-04-07", "002",
+  "02", "OVR", 6, "PD", 1, "2021-05-07", "002",
+  "03", "OVR", 3, "SD", 1, "2021-01-30", "003",
+  "03", "OVR", 3, "SD", 2, "2021-01-30", "003",
+  "04", "OVR", NA, "NE", 1, "2021-05-21", "004",
+  "04", "OVR", 5, "NON-PD", 1, "2021-06-30", "004",
+  "04", "OVR", NA, "NE", 1, "2021-07-24", "004",
+  "04", "OVR", NA, "ND", 1, "2021-09-30", "004"
 ) %>%
-  dplyr::mutate(STUDYID = "a_study_id")
+  dplyr::mutate(STUDYID = "a_study_id",
+                ADT = lubridate::ymd(ADTC)) %>%
+  dplyr::select(-c(ADTC))
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # testthat calls ----
@@ -60,22 +65,22 @@ adrs_test <- tibble::tribble(
 test_that("Last assesment derived correctly from derive_param_lasta", {
 
   pd_test <-  admiral::date_source(
-    dataset_name = "adrs_test",
+    dataset_name = "adrs",
     date         = ADT,
     filter       = PARAMCD == "PD" & AVALC == "Y" # check with Catherine
   )
 
   # Test 1: No removal of NE and censored up to PD ----
-  actual_output_lstac <- derive_param_lasta(
-    dataset         = adrs_test,
-    dataset_adsl    = adsl_test,
+  actual_01 <- derive_param_lasta(
+    dataset         = adrs,
+    dataset_adsl    = adsl,
     order           = admiral::vars(USUBJID, ADT, ASEQ),
     filter_source   = PARAMCD == "OVR", # & ANL01FL == "Y",
     source_pd       = pd_test,
-    source_datasets = list(adrs_test = adrs_test),
+    source_datasets = list(adrs = adrs),
     set_values_to   = vars(
         PARAMCD = "LSTAC",
-        PARAM = " Last Disease Assessment Censored at First PD by Investigator",
+        PARAM   = "Last Disease Assessment Censored at First PD by Investigator",
         PARCAT1 = "Tumor Response",
         PARCAT2 = "Investigator",
         PARCAT3 = "Recist 1.1",
@@ -83,107 +88,102 @@ test_that("Last assesment derived correctly from derive_param_lasta", {
   )
 
   # expected output
-  expected_output_lstac <- tibble::tribble(
-    ~USUBJID, ~AVAL, ~AVALC, ~ASEQ, ~ADT,
-    "01", 2, "PR", 1, lubridate::ymd("2021-04-08"),
-    "02", NA, NA, 1, lubridate::ymd("2021-04-07"),
-    "03", 3, "SD", 2, lubridate::ymd("2021-01-30"),
-    "04", NA, "ND", 1, lubridate::ymd("2021-09-30"),) %>%
-    dplyr::mutate(PARAMCD = "LSTAC",
-                  PARAM   = " Last Disease Assessment Censored at First PD by Investigator",
-                  PARCAT1 = "Tumor Response",
-                  PARCAT2 = "Investigator",
-                  PARCAT3 = "Recist 1.1",
-                  ANL01FL = "Y",
-                  STUDYID = "a_study_id")
-
-  # join with original data
-  expected_output_lstac_plus_source <- dplyr::bind_rows(adrs_test,
-                                                        expected_output_lstac)
+  expected_01 <- dplyr::bind_rows(
+    adrs,
+    tibble::tribble(
+      ~USUBJID, ~AVAL, ~AVALC, ~ASEQ, ~ADTC,        ~CHECKKEPTCOL,
+      "01",      2,    "PR",   1,     "2021-04-08", "001",
+      "02",      NA,    NA,    1,     "2021-04-07", "002",
+      "03",      3,    "SD",   2,     "2021-01-30", "003",
+      "04",      NA,   "ND",   1,     "2021-09-30", "004",
+      "05",      NA,    NA,    NA,     NA,          "005") %>%
+      dplyr::mutate(ADT     = lubridate::ymd(ADTC),
+                    PARAMCD = "LSTAC",
+                    PARAM   = "Last Disease Assessment Censored at First PD by Investigator",
+                    PARCAT1 = "Tumor Response",
+                    PARCAT2 = "Investigator",
+                    PARCAT3 = "Recist 1.1",
+                    ANL01FL = "Y",
+                    STUDYID = "a_study_id") %>%
+      dplyr::select(-c(ADTC))
+    )
 
   # compare
-  admiral::expect_dfs_equal(actual_output_lstac,
-                            expected_output_lstac_plus_source,
+  admiral::expect_dfs_equal(actual_01,
+                            expected_01,
                             keys = c("USUBJID", "PARAMCD", "ADT", "ASEQ"))
 
   # Test 2: No removal of NE and NOT censored up to PD ----
-  actual_output_lsta <- derive_param_lasta(
-    dataset         = adrs_test,
+  actual_02 <- derive_param_lasta(
+    dataset         = adrs,
+    dataset_adsl    = adsl,
     order           = admiral::vars(USUBJID, ADT, ASEQ),
     filter_source   = PARAMCD == "OVR", # & ANL01FL == "Y",
     source_pd       = NULL,
     source_datasets = NULL,
     set_values_to = vars(
       PARAMCD = "LSTA",
-      PARAM = " Last Disease Assessment by Investigator",
+      PARAM   = "Last Disease Assessment by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
       ANL01FL = "Y")
   )
 
-  # expected output
-  expected_output_lsta <- tibble::tribble(
-    ~USUBJID, ~AVAL, ~AVALC, ~ASEQ, ~ADT,
-    "01", 2, "PR", 1, lubridate::ymd("2021-04-08"),
-    "02", 6, "PD", 1, lubridate::ymd("2021-05-07"),
-    "03", 3, "SD", 2, lubridate::ymd("2021-01-30"),
-    "04", NA, "ND", 1, lubridate::ymd("2021-09-30"),) %>%
-    dplyr::mutate(PARAMCD = "LSTA",
-                  PARAM   = " Last Disease Assessment by Investigator",
-                  PARCAT1 = "Tumor Response",
-                  PARCAT2 = "Investigator",
-                  PARCAT3 = "Recist 1.1",
-                  ANL01FL = "Y",
-                  STUDYID = "a_study_id")
+  # create expected dataframe
+  expected_02 <- expected_01
 
-  # join with original data
-  expected_output_lsta_plus_source <- dplyr::bind_rows(adrs_test,
-                                                        expected_output_lsta)
+  # expected will be the same as previous test except for subject 2, which will now be later
+  # as PDs not removed
+  expected_02$PARAMCD[expected_02$PARAMCD == "LSTAC"] <- "LSTA"
+  expected_02$PARAM[expected_02$PARAMCD == "LSTA"]    <- "Last Disease Assessment by Investigator"
+  expected_02$ADT[expected_02$USUBJID == "02" &
+                    expected_02$PARAMCD == "LSTA"] <- lubridate::ymd("2021-05-07")
+  expected_02$AVAL[expected_02$USUBJID == "02" &
+                    expected_02$PARAMCD == "LSTA"] <- 6
+  expected_02$AVALC[expected_02$USUBJID == "02" &
+                     expected_02$PARAMCD == "LSTA"] <- "PD"
 
   # compare
-  admiral::expect_dfs_equal(actual_output_lsta,
-                            expected_output_lsta_plus_source,
+  admiral::expect_dfs_equal(actual_02,
+                            expected_02,
                             keys = c("USUBJID", "PARAMCD", "ADT", "ASEQ"))
 
   # Test 3: Remove NE and censored up to PD ----
-  actual_output_lstac_ne_removed <- derive_param_lasta(
-    dataset         = adrs_test,
+  actual_03 <- derive_param_lasta(
+    dataset         = adrs,
+    dataset_adsl    = adsl,
     order           = admiral::vars(USUBJID, ADT, ASEQ),
     filter_source   = PARAMCD == "OVR" & !(AVALC %in% c(NA, "NE", "ND", "NA")), # & ANL01FL == "Y",
     source_pd       = pd_test,
-    source_datasets = list(adrs_test = adrs_test),
+    source_datasets = list(adrs = adrs),
     set_values_to   = vars(
       PARAMCD = "LSTAC",
-      PARAM = " Last Disease Assessment Censored at First PD by Investigator",
+      PARAM = "Last Disease Assessment Censored at First PD by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
       ANL01FL = "Y")
   )
 
-  # expected output
-  expected_output_lstac_ne_removed <- tibble::tribble(
-    ~USUBJID, ~AVAL, ~AVALC, ~ASEQ, ~ADT,
-    "01", 2, "PR", 1, lubridate::ymd("2021-04-08"),
-    "02", 3, "SD", 1, lubridate::ymd("2021-03-07"),
-    "03", 3, "SD", 2, lubridate::ymd("2021-01-30"),
-    "04", 5, "NON-PD", 1, lubridate::ymd("2021-06-30"),) %>%
-    dplyr::mutate(PARAMCD = "LSTAC",
-                  PARAM   = " Last Disease Assessment Censored at First PD by Investigator",
-                  PARCAT1 = "Tumor Response",
-                  PARCAT2 = "Investigator",
-                  PARCAT3 = "Recist 1.1",
-                  ANL01FL = "Y",
-                  STUDYID = "a_study_id")
+  # create expected dataframe
+  expected_03 <- expected_01
 
-  # join with original data
-  expected_output_lstac_ne_removed_plus_source <- dplyr::bind_rows(adrs_test,
-                                                        expected_output_lstac_ne_removed)
+  # Subject 2 is now a SD as NA has been removed and records >= PD.
+  expected_03$ADT[expected_03$USUBJID == "02" &
+                    expected_03$PARAMCD == "LSTAC"] <- lubridate::ymd("2021-03-07")
+  expected_03$AVAL[expected_03$USUBJID == "02" & expected_03$PARAMCD == "LSTAC"] <- 3
+  expected_03$AVALC[expected_03$USUBJID == "02" & expected_03$PARAMCD == "LSTAC"] <- "SD"
+
+  # Subject 4 is now a NON-PD as NA has been removed and records >= PD.
+  expected_03$ADT[expected_03$USUBJID == "04" &
+                    expected_03$PARAMCD == "LSTAC"] <- lubridate::ymd("2021-06-30")
+  expected_03$AVAL[expected_03$USUBJID == "04" & expected_03$PARAMCD == "LSTAC"] <- 5
+  expected_03$AVALC[expected_03$USUBJID == "04" & expected_03$PARAMCD == "LSTAC"] <- "NON-PD"
 
   # compare
-  admiral::expect_dfs_equal(actual_output_lstac_ne_removed,
-                            expected_output_lstac_ne_removed_plus_source,
+  admiral::expect_dfs_equal(actual_03,
+                            expected_03,
                             keys = c("USUBJID", "PARAMCD", "ADT", "ASEQ"))
 
 })
@@ -194,8 +194,9 @@ test_that("Errors correctly from derive_param_lasta", {
   testthat::expect_error(
         derive_param_lasta(
             dataset         = "not a dataset",
+            dataset_adsl    = adsl,
             order           = admiral::vars(USUBJID, ADT, ASEQ),
-            filter_source   = PARAMCD == "OVR" & !(AVALC %in% c(NA, "NE", "ND", "NA")), # & ANL01FL == "Y",
+            filter_source   = PARAMCD == "OVR" & !(AVALC %in% c(NA, "NE", "ND", "NA")),
             source_pd       = pd_test,
             source_datasets = list(adrs_test = adrs_test),
             set_values_to   = vars(
@@ -212,8 +213,9 @@ test_that("Errors correctly from derive_param_lasta", {
   testthat::expect_error(
     derive_param_lasta(
       dataset         = adrs_test,
+      dataset_adsl    = adsl,
       order           = admiral::vars(USUBJID, ADT, ASEQ),
-      filter_source   = PARAMCD == "OVR" & !(AVALC %in% c(NA, "NE", "ND", "NA")), # & ANL01FL == "Y",
+      filter_source   = PARAMCD == "OVR" & !(AVALC %in% c(NA, "NE", "ND", "NA")),
       source_pd       = pd_test,
       source_datasets = "not a list",
       set_values_to   = vars(
@@ -230,8 +232,9 @@ test_that("Errors correctly from derive_param_lasta", {
   testthat::expect_error(
     derive_param_lasta(
       dataset         = adrs_test,
+      dataset_adsl    = adsl,
       order           = admiral::vars(USUBJID, ADT, ASEQ),
-      filter_source   = PARAMCD == "OVR" & !(AVALC %in% c(NA, "NE", "ND", "NA")), # & ANL01FL == "Y",
+      filter_source   = PARAMCD == "OVR" & !(AVALC %in% c(NA, "NE", "ND", "NA")),
       source_pd       = pd_test,
       source_datasets = list(adrs_test = adrs_test),
       set_values_to   = "not a list"
@@ -240,13 +243,14 @@ test_that("Errors correctly from derive_param_lasta", {
 
   # Test Error 4: No PARAMCD in dataset ----
   adrs_test_missing_paramcd <-
-    adrs_test %>% dplyr::select(-PARAMCD)
+    adrs %>% dplyr::select(-PARAMCD)
 
   testthat::expect_error(
     derive_param_lasta(
       dataset         = adrs_test_missing_paramcd,
+      dataset_adsl    = adsl,
       order           = admiral::vars(USUBJID, ADT, ASEQ),
-      filter_source   = PARAMCD == "OVR" & !(AVALC %in% c(NA, "NE", "ND", "NA")), # & ANL01FL == "Y",
+      filter_source   = PARAMCD == "OVR" & !(AVALC %in% c(NA, "NE", "ND", "NA")),
       source_pd       = pd_test,
       source_datasets = list(adrs_test = adrs_test),
       set_values_to   = vars(
@@ -258,32 +262,58 @@ test_that("Errors correctly from derive_param_lasta", {
         ANL01FL = "Y")
     ),
     "Required variable `PARAMCD` is missing")
+
+  # Test Error 5 ----
+  testthat::expect_error(
+    derive_param_lasta(
+      dataset         = adrs,
+      dataset_adsl    = adsl,
+      order           = admiral::vars(USUBJID, ADT, ASEQ),
+      filter_source   = PARAMCD == "MISSING",
+      source_pd       = pd_test,
+      source_datasets = list(adrs_test = adrs_test),
+      set_values_to   = vars(
+        PARAMCD = "LSTAC",
+        PARAM = " Last Disease Assessment Censored at First PD by Investigator",
+        PARCAT1 = "Tumor Response",
+        PARCAT2 = "Investigator",
+        PARCAT3 = "Recist 1.1",
+        ANL01FL = "Y")
+    ),
+     'PARAMCD == "MISSING RECORDS" has 0 records')
+
 })
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Amgen Data TO DELETE ----
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-source("~/admiralonco/R/date_source.R")
-source("~/admiralonco/R/derive_param_lasta.R")
-
 adsl_amgen <- haven::read_sas("/userdata/stat/amg160/onc/20180101/analysis/final/statdata/adam/adsl.sas7bdat")
 
 adrs_amgen <- haven::read_sas("/userdata/stat/amg160/onc/20180101/analysis/final/statdata/adam/adrs.sas7bdat") %>%
-  dplyr::select(USUBJID, PARAM, PARAMCD, ADT, ASEQ, AVAL, AVALC, dplyr::starts_with("ANL"))
+  dplyr::select(STUDYID, USUBJID, PARAM, PARAMCD, ADT, ASEQ, AVAL, AVALC, dplyr::starts_with("ANL"))
 
-test_pd <-  date_source(
-  dataset_name = "adrs_amgen",
+test_pd <- admiral::date_source(
+  dataset_name = "adrs_amgen_pd",
   date         = ADT,
   filter       = PARAMCD == "CLINRESP" & AVALC == "PD" # check with Catherine
 )
 
-LSTAC <- derive_param_lasta(
-  dataset      = adrs_amgen,
-  order           = admiral::vars(USUBJID, ADT, ASEQ),
-  filter_source = PARAMCD == "OVRLRESP", # & ANL01FL == "Y",
-  source_pd = test_pd,
-  source_datasets = list(adrs_amgen = adrs_amgen),
+# pd needs to be unique (will report back)
+adrs_amgen_pd <- adrs_amgen %>%
+  dplyr::filter(PARAMCD == "CLINRESP" & AVALC == "PD") %>%
+  dplyr::group_by(STUDYID, USUBJID) %>%
+  dplyr::filter(dplyr::row_number() == 1) %>%
+  dplyr::ungroup()
+
+lstac <- derive_param_lasta(
+  dataset         = adrs_amgen,
+  dataset_adsl    = adsl_amgen,
+  order           = admiral::vars(STUDYID, USUBJID, ADT, ASEQ),
+  by_vars         = admiral::vars(STUDYID, USUBJID, ADT, ASEQ),
+  filter_source   = PARAMCD == "OVRLRESP", # & ANL01FL == "Y",
+  source_pd       = test_pd,
+  source_datasets = list(adrs_amgen_pd = adrs_amgen_pd),
   set_values_to = vars(
     PARAMCD = "LSTAC",
     PARAM = " Last Disease Assessment Censored at First PD by Investigator",
@@ -293,14 +323,12 @@ LSTAC <- derive_param_lasta(
     ANL01FL = "Y")
 )
 
-View(LSTAC %>% dplyr::filter(PARAMCD == "LSTAC"))
-
-
-LSTA <- derive_param_lasta(
-  dataset      = adrs_amgen,
+lsta <- derive_param_lasta(
+  dataset         = adrs_amgen,
+  dataset_adsl    = adsl_amgen,
   order           = admiral::vars(USUBJID, ADT, ASEQ),
-  filter_source = PARAMCD == "OVRLRESP", # & ANL01FL == "Y",
-  source_pd = NULL,
+  filter_source   = PARAMCD == "OVRLRESP", # & ANL01FL == "Y",
+  source_pd       = NULL,
   source_datasets = NULL,
   set_values_to = vars(
     PARAMCD = "LSTA",

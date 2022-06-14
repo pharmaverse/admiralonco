@@ -1,6 +1,7 @@
 utils::globalVariables(c(
   "ADT",
   "PARAMCD",
+  "AVAL",
   "AVALC",
   "STUDYID",
   "USUBJID",

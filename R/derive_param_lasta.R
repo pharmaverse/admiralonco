@@ -1,12 +1,22 @@
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|
 #' @description
-#'     Add a Last Disease Assessment parameter for each unique `by_vars` to the
-#'     input dataframe passed into the dataset argument.
+#'     Derived Last Disease Assessment
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @details
-#'    Calculates the last disease assessment.
+#'    Calculates the last disease assessment by accessing the last record
+#'    defined in `by_vars` after it has been arranged using the `order` argument.
+#'
+#'    Creates the new parameter record with AVAL/AVALC taken from the source
+#'    record and ADT as the last ADT.
+#'
 #'    Records after PD can be removed using the source_pd and source_datasets
 #'    arguments.
+#'
+#'  Note: All columns from the input dataset are kept. Subjects with no records
+#'  in the input dataset (after the filter is applied) all records are kept from
+#'  ADSL which are also in the input dataset.  Columns which are not be populated
+#'  for the new parameter/populated differently (e.g., RSSTRESC, VISIT, ANLzzFL)
+#'  should be overwritten using the `set_values_to` parameter.
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 # Function Arguments:
 #
@@ -43,7 +53,7 @@
 #'
 #'    *Required or Optional:* Required
 #'
-#' @param by_vars Grouping variables, the last of which (ordered by `order`)
+#' @param by_vars Grouping columns, the last of which (ordered by `order`)
 #'                shall be taken as the Last Disease Assessment record. Created
 #'                using `admiral::vars()`.
 #'
@@ -86,7 +96,7 @@
 #'
 #'    *Required or Optional:* Optional
 #'
-#' @param subject_keys Variables to uniquely identify a subject
+#' @param subject_keys Columns to uniquely identify a subject
 #'
 #'   A list of symbols created using `admiral::vars()`.
 #'
@@ -94,9 +104,9 @@
 #'
 #'   *Required or Optional:* Required
 #'
-#' @param set_values_to Variables to set
+#' @param set_values_to Columns to set
 #'
-#'   A named list returned by `vars()` defining the variables to be set for the
+#'   A named list returned by `vars()` defining the columns to be set for the
 #'   new parameter, e.g. `vars(PARAMCD = "LSTAC", PARAM = "Last Disease
 #'    Assessment Censored at First PD by Investigator")` is expected. The values
 #'    must be symbols, character strings, numeric values, or `NA`.
@@ -194,13 +204,14 @@ derive_param_lasta <- function(dataset,
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   admiral::assert_data_frame(arg           = dataset,
-                             required_vars = admiral:::quo_c(subject_keys,
+                             required_vars = admiral::quo_c(subject_keys,
                                                             order,
                                                             by_vars,
-                                                            admiral::vars(PARAMCD, ADT, AVALC)))
+                                                            admiral::vars(PARAMCD, ADT,
+                                                                          AVAL, AVALC)))
 
   admiral::assert_data_frame(arg           = dataset_adsl,
-                             required_vars = admiral:::quo_c(subject_keys))
+                             required_vars = admiral::quo_c(subject_keys))
 
   filter_source <- admiral::assert_filter_cond(arg      = enquo(filter_source),
                                                optional = TRUE)
@@ -217,17 +228,6 @@ derive_param_lasta <- function(dataset,
   admiral::assert_param_does_not_exist(dataset = dataset,
                                        param   = rlang::quo_get_expr(set_values_to$PARAMCD))
 
-#   dataset <<- dataset
-#   dataset_adsl <<- dataset_adsl
-#   filter_source <<- filter_source
-#   order_db  <<- order
-#   order <- order_db
-#   by_vars <<- by_vars
-#   source_pd <<- source_pd
-#   source_datasets <<- source_datasets
-#   subject_keys    <<- subject_keys
-#   set_values_to <<- set_values_to
-# stop("yep derive me")
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # filter_pd and filter_source: Filter source dataset using filter_source----
   # argument and also filter data after progressive disease with filter_pd
@@ -299,11 +299,9 @@ derive_param_lasta <- function(dataset,
   # adsl: Append subjects in ADSL not in dataset_filter ----
   #
   # Note Requirement: For subjects without observations in the input dataset
-  # after the filter is applied, we keep all variables from ADSL which
+  # after the filter is applied, we keep all columns from ADSL which
   # are also in the input dataset.
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-  adsl_cols_to_keep  <- names(dataset_adsl)[names(dataset_adsl) %in% names(dataset)]
 
   # create list of unique subject_keys with at least one record
   subjects_with_data <-  dataset_filter %>%
@@ -312,8 +310,10 @@ derive_param_lasta <- function(dataset,
   # All records in dataset_adsl that do not have a match in subjects_with_data are
   # removed with anti_join.
   adsl_subjects_only <- dataset_adsl %>%
-    dplyr::anti_join(subjects_with_data) %>%
-    dplyr::select(adsl_cols_to_keep)
+    dplyr::anti_join(subjects_with_data,
+                     by = admiral::vars2chr(subject_keys)) %>%
+    dplyr::select(dplyr::intersect(colnames(dataset_adsl),
+                                   colnames(dataset)))
 
   # bind back with dataframe with data
   param_lasta_02 <- param_lasta_01 %>%
@@ -352,11 +352,6 @@ derive_param_lasta <- function(dataset,
 
   return_dataframe <- dplyr::bind_rows(dataset,
                                        param_lasta_values_set)
-
-  # check nothing strange has gone on with joins
-  assertthat::are_equal(nrow(return_dataframe),
-                        nrow(dataset) +
-                          nrow(param_lasta))
 
   return(return_dataframe)
 
