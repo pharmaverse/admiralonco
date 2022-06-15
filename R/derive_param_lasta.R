@@ -222,7 +222,7 @@ derive_param_lasta <- function(dataset,
 
   admiral::assert_vars(arg = subject_keys)
 
-  admiral::assert_varval_list(arg         = set_values_to,
+  admiral::assert_varval_list(arg               = set_values_to,
                               required_elements = c("PARAMCD", "PARAM"))
 
   admiral::assert_param_does_not_exist(dataset = dataset,

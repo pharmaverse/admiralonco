@@ -1,4 +1,4 @@
-library(testthat)
-library(admiralonco)
-
-testthat::test_check("admiralonco")
+# library(testthat)
+# library(admiralonco)
+#
+# testthat::test_check("admiralonco")
