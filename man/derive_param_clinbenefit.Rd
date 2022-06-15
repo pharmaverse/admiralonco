@@ -28,7 +28,9 @@ parameter and the \code{reference_date} parameter are expected.}
 \item{dataset_adsl}{ADSL input dataset.
 
 The variables specified for \code{subject_keys}is expected. For each subject of
-the specified dataset a new observation is added to the input dataset.}
+the specified dataset a new observation is added to the input dataset. Variables
+in \code{dataset_adsl} that also appear in \code{dataset} will be populated with the
+appropriate subject-specific value for these new observations.}
 
 \item{filter_source}{Filter condition in \code{dataset} that represents records
 for overall disease response assessment for a subject at a given timepoint,

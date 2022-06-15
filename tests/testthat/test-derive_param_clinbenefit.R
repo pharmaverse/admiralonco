@@ -1,12 +1,12 @@
 
 adsl <- tibble::tribble(
-  ~USUBJID, ~TRTSDT, ~EOSDT,
-  "01", "2020-12-06", "2022-03-06",
-  "02", "2021-01-16", "2022-02-03",
-  "03", "2021-01-09", "2021-02-24",
-  "04", "2021-04-21", "2021-09-15",
-  "05", "2021-06-10", "2021-10-31",
-  "06", "2021-07-04", "2021-09-01"
+  ~USUBJID, ~TRTSDT,      ~EOSDT,
+  "01",     "2020-12-06", "2022-03-06",
+  "02",     "2021-01-16", "2022-02-03",
+  "03",     "2021-01-09", "2021-02-24",
+  "04",     "2021-04-21", "2021-09-15",
+  "05",     "2021-06-10", "2021-10-31",
+  "06",     "2021-07-04", "2021-09-01"
 ) %>%
   mutate(
     STUDYID = "AB42",
@@ -64,17 +64,20 @@ resp <- admiral::date_source(
 test_that("Clinical benefit rate parameter is derived correctly", {
   input_cbr <- tibble::tribble(
     ~USUBJID, ~PARAMCD, ~AVALC, ~AVAL, ~ADT,
-    "01", "CBR", "Y", 1, "2021-03-07",
-    "02", "CBR", "Y", 1, "2021-03-07",
-    "03", "CBR", "N", 0, NA,
-    "04", "CBR", "N", 0, NA,
-    "05", "CBR", "N", 0, NA,
-    "06", "CBR", "N", 0, NA
+    "01",     "CBR",    "Y",    1,     "2021-03-07",
+    "02",     "CBR",    "Y",    1,     "2021-03-07",
+    "03",     "CBR",    "N",    0,     NA,
+    "04",     "CBR",    "N",    0,     NA,
+    "05",     "CBR",    "N",    0,     NA,
+    "06",     "CBR",    "N",    0,     NA
   ) %>%
     mutate(
       STUDYID = "AB42",
-      ADT = lubridate::as_date(ADT)
-    )
+      ADT = lubridate::as_date(ADT),
+      ANL01FL = "Y"
+    ) %>%
+    left_join(adsl, by = c("STUDYID", "USUBJID")) %>%
+    select(-EOSDT)
 
   expected_output <- bind_rows(adrs, input_cbr)
 
@@ -89,7 +92,8 @@ test_that("Clinical benefit rate parameter is derived correctly", {
     reference_date = TRTSDT,
     ref_start_window = 28,
     set_values_to = vars(
-      PARAMCD = "CBR"
+      PARAMCD = "CBR",
+      ANL01FL = "Y"
     )
   )
 

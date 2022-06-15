@@ -56,7 +56,9 @@
 #' @param dataset_adsl ADSL input dataset.
 #'
 #'   The variables specified for `subject_keys`is expected. For each subject of
-#'   the specified dataset a new observation is added to the input dataset.
+#'   the specified dataset a new observation is added to the input dataset. Variables
+#'   in `dataset_adsl` that also appear in `dataset` will be populated with the
+#'   appropriate subject-specific value for these new observations.
 #'
 #' @param filter_source Filter condition in `dataset` that represents records
 #' for overall disease response assessment for a subject at a given timepoint,
@@ -220,17 +222,15 @@ derive_param_clinbenefit <- function(dataset,
   assert_param_does_not_exist(dataset, quo_get_expr(set_values_to$PARAMCD))
 
   # ADSL variables
-
-  adsl_vars <- subject_keys
-
+  adsl_vars <- intersect(colnames(dataset_adsl), colnames(dataset))
   adsl <- dataset_adsl %>%
-    select(!!!adsl_vars)
+    select(adsl_vars)
 
   # Get response date
 
   rsp_data <- source_datasets[[source_resp$dataset_name]] %>%
     filter_if(source_resp$filter) %>%
-    select(!!!subject_keys, !!source_resp$date) %>%
+    # select(!!!subject_keys, !!source_resp$date) %>%
     rename(ADT = !!source_resp$date)
 
   # Look for valid non-PD measurements after window from reference date
@@ -261,7 +261,7 @@ derive_param_clinbenefit <- function(dataset,
       mode = "first",
       check_type = "none"
     ) %>%
-    right_join(adsl, by = vars2chr(subject_keys)) %>%
+    right_join(adsl, by = adsl_vars) %>%
     mutate(AVALC = if_else(!is.na(ADT), "Y", "N")) %>%
     mutate(
       AVAL = aval_fun(AVALC),
