@@ -259,7 +259,7 @@ filter_confirmation <- function(dataset,
     )
   assert_data_frame(
     dataset,
-    required_vars = admiral::quo_c(by_vars, join_vars, admiral::extract_vars(order))
+    required_vars = admiral:::quo_c(by_vars, join_vars, admiral:::extract_vars(order))
   )
 
   # number observations of the input dataset to get a unique key

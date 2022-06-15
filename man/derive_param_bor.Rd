@@ -148,7 +148,8 @@ rows as set in the \code{set_values_to} argument.
 }\if{html}{\out{</div>}}
 }
 \details{
-Calculates the best overall response (BOR) parameter.
+Calculates the best overall response (BOR) parameter, as detailed below.
+
 Records after PD can be removed using the source_pd and source_datasets
 arguments.
 
