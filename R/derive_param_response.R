@@ -50,13 +50,6 @@
 #'   `filter_source` condition are considered as response if they fall before
 #'   the end of the assessment period as defined by `source_pd`.
 #'
-#'   For example:
-#'   `source_pd = date_source (
-#'     dataset_name = "adrs",
-#'     date = ADT,
-#'     filter= PARAMCD == "PD" & AVALC == "Y")`
-#'   would exclude all responses occurring after the first PD date.
-#'
 #'   + For subjects with at least one response before the end of the assessment
 #'   period, `AVALC` is set to `"Y"`, `AVAL` to `1`, and `ADT` to the first
 #'   date when the response occurred.
