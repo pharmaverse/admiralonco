@@ -62,7 +62,8 @@ Suggests:
     tibble,
     usethis,
     covr,
-    DT
+    DT,
+    lubridate
 Remotes:
     pharmaverse/admiral.test@devel
 VignetteBuilder: knitr
