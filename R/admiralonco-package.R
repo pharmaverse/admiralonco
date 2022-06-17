@@ -9,4 +9,3 @@
 #' @importFrom magrittr `%>%`
 #' @importFrom rlang abort enquo quo_is_null
 "_PACKAGE"
-
