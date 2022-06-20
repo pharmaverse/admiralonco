@@ -57,7 +57,6 @@ jobs:
             dependencies = FALSE,
             upgrade = "never"
           )
-          renv::install("lintr")
         shell: Rscript {0}
 
       - name: Install package
