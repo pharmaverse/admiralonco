@@ -25,10 +25,6 @@ reference:
    - has_keyword('computation')
    
  - title: CDISC Hierarchy
- - subtitle: ADEVENT
-   desc: ADEVENT specific functions
- - contents:
-   - has_keyword('adevent')
  - subtitle: ADRS
    desc: ADRS specific functions
  - contents:
@@ -73,10 +69,3 @@ articles:
    contents:
    - adrs
    - adtte
-   - faq
-# - title: Developer Guides
-#   navbar: Developer Guides
-#   contents:
-#   - guide1
-
-
