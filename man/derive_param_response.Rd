@@ -51,8 +51,7 @@ date when the response occurred.
 
 \item{source_datasets}{Source dataset(s)
 
-A named list of datasets with 1 or 2 elements is expected (e.g. list( adrs
-= adrs, pdds=pdds)).
+A named list of datasets with 1 or 2 elements is expected (e.g. \code{list(adrs = adrs, pdds=pdds)}).
 
 At least \code{dataset} must be defined as a named list.
 \itemize{

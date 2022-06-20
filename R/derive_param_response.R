@@ -21,8 +21,8 @@
 #'
 #' @param source_datasets Source dataset(s)
 #'
-#'   A named list of datasets with 1 or 2 elements is expected (e.g. list( adrs
-#'   = adrs, pdds=pdds)).
+#'   A named list of datasets with 1 or 2 elements is expected (e.g. `list(adrs
+#'   = adrs, pdds=pdds)`).
 #'
 #'   At least `dataset` must be defined as a named list.
 #'
@@ -183,7 +183,7 @@ derive_param_response <- function(dataset,
       "The dataset names must be included in the list specified for the ",
       "`source_datasets` parameter.\n",
       "Following names were provided by `source_datasets`:\n",
-      admiral:::enumerate(source_names, quote_fun = admiral:::squote)
+      admiral::enumerate(source_names, quote_fun = admiral::squote)
     ))
   }
 
