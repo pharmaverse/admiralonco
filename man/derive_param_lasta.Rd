@@ -20,7 +20,7 @@ derive_param_lasta(
 be derived from and added to.
 
 The columns \code{PARAMCD}, \code{ADT}, and \code{AVALC}and the columns specified in
-\code{subject_keys} and \code{reference_date} are expected.
+\code{subject_keys} are expected.
 
 \emph{Permitted Values:} a \code{data.frame()} object
 
@@ -73,7 +73,7 @@ needed. It links the \code{dataset_name} from \code{source_pd} with an existing 
 
 For example if \code{source_pd = pd_date} with
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{pd_date <- date_source(
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{pd_date <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == PD
@@ -113,7 +113,10 @@ Calculates the last disease assessment by accessing the last record
 defined in \code{by_vars} after it has been arranged using the \code{order} argument.
 
 Creates the new parameter record with AVAL/AVALC taken from the source
-record and ADT as the last ADT.
+record. One new record for each subject in the filtered input \code{dataset} is
+added to the input \code{dataset}.
+
+ADT is assigned from the last record as defined in the \code{order} argument.
 
 Records after PD can be removed using the source_pd and source_datasets
 arguments.

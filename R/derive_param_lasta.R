@@ -8,7 +8,10 @@
 #'    defined in `by_vars` after it has been arranged using the `order` argument.
 #'
 #'    Creates the new parameter record with AVAL/AVALC taken from the source
-#'    record and ADT as the last ADT.
+#'    record. One new record for each subject in the filtered input `dataset` is
+#'    added to the input `dataset`.
+#'
+#'    ADT is assigned from the last record as defined in the `order` argument.
 #'
 #'    Records after PD can be removed using the source_pd and source_datasets
 #'    arguments.
@@ -25,7 +28,7 @@
 #'                be derived from and added to.
 #'
 #'   The columns `PARAMCD`, `ADT`, and `AVALC`and the columns specified in
-#'   `subject_keys` and `reference_date` are expected.
+#'   `subject_keys` are expected.
 #'
 #'    *Permitted Values:* a `data.frame()` object
 #'
@@ -77,7 +80,7 @@
 #'   needed. It links the `dataset_name` from `source_pd` with an existing dataframe.
 #'
 #'   For example if `source_pd = pd_date` with
-#'   ```
+#'   ```{r, eval=FALSE}
 #'   pd_date <- date_source(
 #'     dataset_name = "adrs",
 #'     date = ADT,
