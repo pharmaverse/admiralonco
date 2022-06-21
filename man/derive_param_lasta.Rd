@@ -2,17 +2,16 @@
 % Please edit documentation in R/derive_param_lasta.R
 \name{derive_param_lasta}
 \alias{derive_param_lasta}
-\title{derive_param_lasta}
+\title{Adds a Parameter for the Last Disease Assessment}
 \usage{
 derive_param_lasta(
   dataset,
-  dataset_adsl,
   filter_source,
-  order = admiral::vars(STUDYID, USUBJID, ADT),
-  by_vars = admiral::vars(STUDYID, USUBJID),
+  order = vars(STUDYID, USUBJID, ADT),
+  by_vars = vars(STUDYID, USUBJID),
   source_pd = NULL,
   source_datasets = NULL,
-  subject_keys = admiral::vars(STUDYID, USUBJID),
+  subject_keys = vars(STUDYID, USUBJID),
   set_values_to
 )
 }
@@ -27,14 +26,6 @@ The columns \code{PARAMCD}, \code{ADT}, and \code{AVALC}and the columns specifie
 
 \emph{Required or Optional:} Required}
 
-\item{dataset_adsl}{The ADSL input dataframe
-
-The columns specified in \code{subject_keys} are expected.
-
-\emph{Permitted Values:} a \code{data.frame()} object
-
-\emph{Required or Optional:} Required}
-
 \item{filter_source}{Filter to be applied to \code{dataset} to derive the
 Last Disease Assessment
 
@@ -42,21 +33,21 @@ Last Disease Assessment
 
 \item{order}{Sort order, after which the last record shall be taken by
 the \code{by_vars} to determine Last Disease Assessment. Created
-using \code{admiral::vars()}.
+using \code{vars()}.
 
-\emph{Permitted Values:} an \code{admiral::vars} object
+\emph{Permitted Values:} an \code{vars} object
 
-\emph{Default:} \code{admiral::vars(STUDYID, USUBJID, ADT)}
+\emph{Default:} \code{vars(STUDYID, USUBJID, ADT)}
 
 \emph{Required or Optional:} Required}
 
 \item{by_vars}{Grouping columns, the last of which (ordered by \code{order})
 shall be taken as the Last Disease Assessment record. Created
-using \code{admiral::vars()}.
+using \code{vars()}.
 
-\emph{Permitted Values:} an \code{admiral::vars} object
+\emph{Permitted Values:} an \code{vars} object
 
-\emph{Default:} \code{admiral::vars(STUDYID, USUBJID)}
+\emph{Default:} \code{vars(STUDYID, USUBJID)}
 
 \emph{Required or Optional:} Required}
 
@@ -67,7 +58,7 @@ deriving the new parameter are restricted to observations up to the
 specified date. Observations at the specified date are included. For
 subjects without first PD date all observations are take into account.
 
-\emph{Permitted Values:} a \code{date_source} object (see \code{admiral::date_source()}
+\emph{Permitted Values:} a \code{date_source} object (see \code{date_source()}
 for details)
 
 \emph{Default:} \code{NULL}
@@ -95,9 +86,9 @@ and the actual response dataframe in the script is \code{myadrs}, \code{source_d
 
 \item{subject_keys}{Columns to uniquely identify a subject
 
-A list of symbols created using \code{admiral::vars()}.
+A list of symbols created using \code{vars()}.
 
-\emph{Default:} \code{admiral::vars(STUDYID, USUBJID)}
+\emph{Default:} \code{vars(STUDYID, USUBJID)}
 
 \emph{Required or Optional:} Required}
 
@@ -111,10 +102,10 @@ must be symbols, character strings, numeric values, or \code{NA}.
 }
 \value{
 The dataframe passed in the \code{dataset} argument with additional
-columns and/or rows as set in the \code{set_values_to} argument.
+columns and/or rows as set in the \code{set_values_to} argument.ß
 }
 \description{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{Derived Last Disease Assessment
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Derives Last Disease Assessment (optionally) up to first Progressive Disease
 }\if{html}{\out{</div>}}
 }
 \details{
@@ -135,29 +126,30 @@ should be overwritten using the \code{set_values_to} parameter.
 }
 \examples{
 
-\dontrun{
+library(dplyr)
+library(lubridate)
+library(admiral)
+library(tibble)
 
-library(magrittr)
-
-adsl <- tibble::tribble(
+adsl <- tribble(
   ~USUBJID, ~TRTSDT,                      ~EOSDT,
   "01",     lubridate::ymd("2020-12-06"), lubridate::ymd("2022-03-06"),
   "02",     lubridate::ymd("2021-01-16"), lubridate::ymd("2022-02-03"),
   "03",     lubridate::ymd("2021-01-09"), lubridate::ymd("2021-02-24"),
   "04",     lubridate::ymd("2021-04-21"), lubridate::ymd("2021-09-15")
 ) \%>\%
-  dplyr::mutate(STUDYID = "a_study_id")
+  mutate(STUDYID = "a_study_id")
 
-adrs <- tibble::tribble(
+adrs <- tribble(
   ~USUBJID, ~PARAMCD, ~AVAL, ~AVALC, ~ASEQ, ~ADT,
   "01", "RSP", NA, "Y", 1, lubridate::ymd("2021-04-08"),
   "02", "RSP", NA, "N", 1, lubridate::ymd("2021-05-07"),
   "03", "RSP", NA, "N", 1, NA,
   "04", "RSP", NA, "N", 1, NA,
-  "01", "PD",  NA, "N", 1, NA,
-  "02", "PD",  NA, "Y", 1, lubridate::ymd("2021-05-07"),
-  "03", "PD",  NA, "N", 1, NA,
-  "04", "PD",  NA, "N", 1, NA,
+  "01", "PD", NA, "N", 1, NA,
+  "02", "PD", NA, "Y", 1, lubridate::ymd("2021-05-07"),
+  "03", "PD", NA, "N", 1, NA,
+  "04", "PD", NA, "N", 1, NA,
   "01", "OVR", 3, "SD", 1, lubridate::ymd("2021-03-07"),
   "01", "OVR", 2, "PR", 1, lubridate::ymd("2021-04-08"),
   "02", "OVR", 3, "SD", 1, lubridate::ymd("2021-03-07"),
@@ -170,18 +162,18 @@ adrs <- tibble::tribble(
   "04", "OVR", NA, "NE", 1, lubridate::ymd("2021-07-24"),
   "04", "OVR", NA, "ND", 1, lubridate::ymd("2021-09-30"),
 ) \%>\%
-  dplyr::mutate(STUDYID = "a_study_id")
+  mutate(STUDYID = "a_study_id")
 
 pd <- date_source(
   dataset_name = adrs,
   date         = ADT,
-  filter       = PARAMCD == 'PD' & AVALC == 'Y'
+  filter       = PARAMCD == "PD" & AVALC == "Y"
 )
 
 derive_param_lasta(
   dataset,
   filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
-  source_pd = list(pd),
+  source_pd = pd,
   source_datasets = list(adrs = adrs),
   set_values_to = vars(
     PARAMCD = "LSTAC",
@@ -189,10 +181,9 @@ derive_param_lasta(
     PARCAT1 = "Tumor Response",
     PARCAT2 = "Investigator",
     PARCAT3 = "Recist 1.1",
-    ANL01FL = "Y")
+    ANL01FL = "Y"
+  )
 )
-}
-
 }
 \author{
 Stephen Gormley

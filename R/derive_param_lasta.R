@@ -1,7 +1,8 @@
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|
+#' @title  Adds a Parameter for the Last Disease Assessment
+#
 #' @description
-#'     Derived Last Disease Assessment
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#'     Derives Last Disease Assessment (optionally) up to first Progressive Disease
+#
 #' @details
 #'    Calculates the last disease assessment by accessing the last record
 #'    defined in `by_vars` after it has been arranged using the `order` argument.
@@ -17,7 +18,7 @@
 #'  ADSL which are also in the input dataset.  Columns which are not be populated
 #'  for the new parameter/populated differently (e.g., RSSTRESC, VISIT, ANLzzFL)
 #'  should be overwritten using the `set_values_to` parameter.
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#
 # Function Arguments:
 #
 #' @param dataset Input dataframe from which the Last Disease Assessment will be
@@ -30,14 +31,6 @@
 #'
 #'    *Required or Optional:* Required
 #'
-#' @param dataset_adsl The ADSL input dataframe
-#'
-#'   The columns specified in `subject_keys` are expected.
-#'
-#'    *Permitted Values:* a `data.frame()` object
-#'
-#'    *Required or Optional:* Required
-#'
 #' @param filter_source Filter to be applied to `dataset` to derive the
 #'                      Last Disease Assessment
 #'
@@ -45,21 +38,21 @@
 #'
 #' @param order Sort order, after which the last record shall be taken by
 #'              the `by_vars` to determine Last Disease Assessment. Created
-#'              using `admiral::vars()`.
+#'              using `vars()`.
 #'
-#'    *Permitted Values:* an `admiral::vars` object
+#'    *Permitted Values:* an `vars` object
 #'
-#'    *Default:* `admiral::vars(STUDYID, USUBJID, ADT)`
+#'    *Default:* `vars(STUDYID, USUBJID, ADT)`
 #'
 #'    *Required or Optional:* Required
 #'
 #' @param by_vars Grouping columns, the last of which (ordered by `order`)
 #'                shall be taken as the Last Disease Assessment record. Created
-#'                using `admiral::vars()`.
+#'                using `vars()`.
 #'
-#'    *Permitted Values:* an `admiral::vars` object
+#'    *Permitted Values:* an `vars` object
 #'
-#'    *Default:* `admiral::vars(STUDYID, USUBJID)`
+#'    *Default:* `vars(STUDYID, USUBJID)`
 #'
 #'    *Required or Optional:* Required
 #'
@@ -70,7 +63,7 @@
 #'   specified date. Observations at the specified date are included. For
 #'   subjects without first PD date all observations are take into account.
 #'
-#'   *Permitted Values:* a `date_source` object (see `admiral::date_source()`
+#'   *Permitted Values:* a `date_source` object (see `date_source()`
 #'   for details)
 #'
 #'   *Default:* `NULL`
@@ -98,9 +91,9 @@
 #'
 #' @param subject_keys Columns to uniquely identify a subject
 #'
-#'   A list of symbols created using `admiral::vars()`.
+#'   A list of symbols created using `vars()`.
 #'
-#'   *Default:* `admiral::vars(STUDYID, USUBJID)`
+#'   *Default:* `vars(STUDYID, USUBJID)`
 #'
 #'   *Required or Optional:* Required
 #'
@@ -116,29 +109,30 @@
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
 #' @examples
 #'
-#' \dontrun{
+#' library(dplyr)
+#' library(lubridate)
+#' library(admiral)
+#' library(tibble)
 #'
-#' library(magrittr)
-#'
-#' adsl <- tibble::tribble(
+#' adsl <- tribble(
 #'   ~USUBJID, ~TRTSDT,                      ~EOSDT,
 #'   "01",     lubridate::ymd("2020-12-06"), lubridate::ymd("2022-03-06"),
 #'   "02",     lubridate::ymd("2021-01-16"), lubridate::ymd("2022-02-03"),
 #'   "03",     lubridate::ymd("2021-01-09"), lubridate::ymd("2021-02-24"),
 #'   "04",     lubridate::ymd("2021-04-21"), lubridate::ymd("2021-09-15")
 #' ) %>%
-#'   dplyr::mutate(STUDYID = "a_study_id")
+#'   mutate(STUDYID = "a_study_id")
 #'
-#' adrs <- tibble::tribble(
+#' adrs <- tribble(
 #'   ~USUBJID, ~PARAMCD, ~AVAL, ~AVALC, ~ASEQ, ~ADT,
 #'   "01", "RSP", NA, "Y", 1, lubridate::ymd("2021-04-08"),
 #'   "02", "RSP", NA, "N", 1, lubridate::ymd("2021-05-07"),
 #'   "03", "RSP", NA, "N", 1, NA,
 #'   "04", "RSP", NA, "N", 1, NA,
-#'   "01", "PD",  NA, "N", 1, NA,
-#'   "02", "PD",  NA, "Y", 1, lubridate::ymd("2021-05-07"),
-#'   "03", "PD",  NA, "N", 1, NA,
-#'   "04", "PD",  NA, "N", 1, NA,
+#'   "01", "PD", NA, "N", 1, NA,
+#'   "02", "PD", NA, "Y", 1, lubridate::ymd("2021-05-07"),
+#'   "03", "PD", NA, "N", 1, NA,
+#'   "04", "PD", NA, "N", 1, NA,
 #'   "01", "OVR", 3, "SD", 1, lubridate::ymd("2021-03-07"),
 #'   "01", "OVR", 2, "PR", 1, lubridate::ymd("2021-04-08"),
 #'   "02", "OVR", 3, "SD", 1, lubridate::ymd("2021-03-07"),
@@ -151,18 +145,18 @@
 #'   "04", "OVR", NA, "NE", 1, lubridate::ymd("2021-07-24"),
 #'   "04", "OVR", NA, "ND", 1, lubridate::ymd("2021-09-30"),
 #' ) %>%
-#'   dplyr::mutate(STUDYID = "a_study_id")
+#'   mutate(STUDYID = "a_study_id")
 #'
 #' pd <- date_source(
 #'   dataset_name = adrs,
 #'   date         = ADT,
-#'   filter       = PARAMCD == 'PD' & AVALC == 'Y'
+#'   filter       = PARAMCD == "PD" & AVALC == "Y"
 #' )
 #'
 #' derive_param_lasta(
 #'   dataset,
 #'   filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
-#'   source_pd = list(pd),
+#'   source_pd = pd,
 #'   source_datasets = list(adrs = adrs),
 #'   set_values_to = vars(
 #'     PARAMCD = "LSTAC",
@@ -170,63 +164,65 @@
 #'     PARCAT1 = "Tumor Response",
 #'     PARCAT2 = "Investigator",
 #'     PARCAT3 = "Recist 1.1",
-#'     ANL01FL = "Y")
+#'     ANL01FL = "Y"
+#'   )
 #' )
-#'}
-#'
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#
 #' @export
-#' @name   derive_param_lasta
-#' @title  derive_param_lasta
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#
 #' @author Stephen Gormley
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#
 #' @keywords ADRS
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
-#' @importFrom  magrittr `%>%`
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#
 #' @return The dataframe passed in the `dataset` argument with additional
-#'         columns and/or rows as set in the `set_values_to` argument.
-#%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%|
+#'         columns and/or rows as set in the `set_values_to` argument.ß
 
 derive_param_lasta <- function(dataset,
-                               dataset_adsl,
                                filter_source,
-                               order           = admiral::vars(STUDYID, USUBJID, ADT),
-                               by_vars         = admiral::vars(STUDYID, USUBJID),
-                               source_pd       = NULL,
+                               order = vars(STUDYID, USUBJID, ADT),
+                               by_vars = vars(STUDYID, USUBJID),
+                               source_pd = NULL,
                                source_datasets = NULL,
-                               subject_keys    = admiral::vars(STUDYID, USUBJID),
+                               subject_keys = vars(STUDYID, USUBJID),
                                set_values_to) {
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Assert statements (checked in order of signature) ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  admiral::assert_data_frame(arg           = dataset,
-                             required_vars = admiral::quo_c(subject_keys,
-                                                            order,
-                                                            by_vars,
-                                                            admiral::vars(PARAMCD, ADT,
-                                                                          AVAL, AVALC)))
+  assert_data_frame(
+    arg = dataset,
+    required_vars = quo_c(
+      subject_keys,
+      order,
+      by_vars,
+      vars(
+        PARAMCD, ADT,
+        AVAL, AVALC
+      )
+    )
+  )
 
-  admiral::assert_data_frame(arg           = dataset_adsl,
-                             required_vars = admiral::quo_c(subject_keys))
+  filter_source <- assert_filter_cond(
+    arg      = enquo(filter_source),
+    optional = TRUE
+  )
 
-  filter_source <- admiral::assert_filter_cond(arg      = enquo(filter_source),
-                                               optional = TRUE)
+  assert_vars(arg = order)
 
-  admiral::assert_vars(arg = order)
+  assert_vars(arg = by_vars)
 
-  admiral::assert_vars(arg = by_vars)
+  assert_vars(arg = subject_keys)
 
-  admiral::assert_vars(arg = subject_keys)
+  assert_varval_list(
+    arg               = set_values_to,
+    required_elements = c("PARAMCD")
+  )
 
-  admiral::assert_varval_list(arg               = set_values_to,
-                              required_elements = c("PARAMCD", "PARAM"))
-
-  admiral::assert_param_does_not_exist(dataset = dataset,
-                                       param   = rlang::quo_get_expr(set_values_to$PARAMCD))
+  assert_param_does_not_exist(
+    dataset = dataset,
+    param   = rlang::quo_get_expr(set_values_to$PARAMCD)
+  )
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # filter_pd and filter_source: Filter source dataset using filter_source----
@@ -234,33 +230,13 @@ derive_param_lasta <- function(dataset,
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   if (!is.null(source_pd)) {
-
-    # asserts on the pd data
-    source_names <- names(source_datasets)
-
-    admiral::assert_list_element(
-      list         = list(source_pd),
-      element      = "dataset_name",
-      condition    = dataset_name %in% source_names,
-      source_names = source_names,
-      message_text = paste0(
-        "The dataset names must be included in the list specified for the ",
-        "`source_datasets` parameter.\n",
-        "Following names were provided by `source_datasets`:\n",
-        admiral::enumerate(source_names, quote_fun = sQuote))
-    )
-
-    admiral::assert_s3_class(arg   = source_pd,
-                             class = "date_source")
-
-    admiral::assert_data_frame(arg = eval(rlang::parse_expr(source_pd$dataset_name)))
-
     dataset_filter <- dataset %>%
-            filter_pd(filter          = !!enquo(filter_source),
-                      source_pd       = source_pd,
-                      source_datasets = source_datasets,
-                      subject_keys    = subject_keys)
-
+      filter_pd(
+        filter          = !!filter_source,
+        source_pd       = source_pd,
+        source_datasets = source_datasets,
+        subject_keys    = subject_keys
+      )
   } else {
 
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -271,8 +247,7 @@ derive_param_lasta <- function(dataset,
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     dataset_filter <- dataset %>%
-      dplyr::filter(!!enquo(filter_source))
-
+      filter(!!filter_source)
   }
 
   # Error if filter results in 0 records
@@ -280,7 +255,8 @@ derive_param_lasta <- function(dataset,
     err_msg <- sprintf(
       "dataframe passed into %s argument with the filter %s has 0 records",
       "dataset",
-      deparse(rlang::quo_get_expr(filter_source)))
+      deparse(rlang::quo_get_expr(filter_source))
+    )
 
     rlang::abort(err_msg)
   }
@@ -289,35 +265,13 @@ derive_param_lasta <- function(dataset,
   # filter_extreme: Filter last assessment using filter_extreme ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  param_lasta_01 <- dataset_filter %>%
-      admiral::filter_extreme(mode       = "last",
-                              order      = admiral::vars(!!!order),
-                              by_vars    = admiral::vars(!!!by_vars),
-                              check_type = "warning")
-
-  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # adsl: Append subjects in ADSL not in dataset_filter ----
-  #
-  # Note Requirement: For subjects without observations in the input dataset
-  # after the filter is applied, we keep all columns from ADSL which
-  # are also in the input dataset.
-  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-  # create list of unique subject_keys with at least one record
-  subjects_with_data <-  dataset_filter %>%
-    dplyr::distinct(!!!subject_keys)
-
-  # All records in dataset_adsl that do not have a match in subjects_with_data are
-  # removed with anti_join.
-  adsl_subjects_only <- dataset_adsl %>%
-    dplyr::anti_join(subjects_with_data,
-                     by = admiral::vars2chr(subject_keys)) %>%
-    dplyr::select(dplyr::intersect(colnames(dataset_adsl),
-                                   colnames(dataset)))
-
-  # bind back with dataframe with data
-  param_lasta_02 <- param_lasta_01 %>%
-    dplyr::bind_rows(adsl_subjects_only)
+  param_lasta <- dataset_filter %>%
+    filter_extreme(
+      mode       = "last",
+      order      = vars(!!!order),
+      by_vars    = vars(!!!by_vars),
+      check_type = "warning"
+    )
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # set_values_to: Execute set_values_to ----
@@ -325,9 +279,8 @@ derive_param_lasta <- function(dataset,
 
   tryCatch(
 
-    param_lasta_values_set <- param_lasta_02 %>%
-      dplyr::mutate(!!!set_values_to),
-
+    param_lasta_values_set <- param_lasta %>%
+      mutate(!!!set_values_to),
     error = function(cnd) {
       abort(
         paste0(
@@ -344,15 +297,15 @@ derive_param_lasta <- function(dataset,
           cnd
         )
       )
-    })
+    }
+  )
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Bind back to passed dataset and return ----
+  # Bind back to passed dataset ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  return_dataframe <- dplyr::bind_rows(dataset,
-                                       param_lasta_values_set)
-
-  return(return_dataframe)
-
+  return_this_dataframe <- bind_rows(
+    dataset,
+    param_lasta_values_set
+  )
 }
