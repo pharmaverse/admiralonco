@@ -24,7 +24,7 @@
 #' @examples
 #' # This shows the definition of all pre-defined `tte_source` objects that ship
 #' # with {admiralonco}
-#' for (obj in list_tte_source_objects()$object) {
+#' for (obj in admiral::list_tte_source_objects(package = "admiralonco")$object) {
 #'   cat(obj, "\n")
 #'   print(get(obj))
 #'   cat("\n")
