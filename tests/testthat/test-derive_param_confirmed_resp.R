@@ -58,7 +58,7 @@ adrs <- tibble::tribble(
     STUDYID = "XX1234"
   )
 
-pd_date <- date_source(
+pd_date <- admiral::date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == "PD"
