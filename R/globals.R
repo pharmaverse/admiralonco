@@ -11,6 +11,7 @@ globalVariables(c(
   "tmp_obs",
   "tmp_obs_nr_filter_confirmation",
   "tmp_obs_nr_filter_confirmation.join",
+  "tmp_order",
   "TRTSDT",
   "USUBJID",
   "temp_date",
