@@ -6,7 +6,7 @@
 #'   assert_vars assert_varval_list censor_source derive_param_first_event
 #'   derive_var_obs_number derive_vars_merged enumerate event_source
 #'   expect_dfs_equal extract_vars filter_extreme filter_if filter_relative
-#'   list_tte_source_objects quo_c squote vars2chr
+#'   list_tte_source_objects quo_c squote vars2chr yn_to_numeric
 #' @importFrom dplyr bind_rows case_when filter group_by if_else left_join
 #'   mutate select slice vars ungroup
 #' @importFrom lubridate days
