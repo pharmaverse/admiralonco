@@ -6,5 +6,6 @@ globalVariables(c(
   "PARAMCD",
   "STUDYID",
   "USUBJID",
-  "temp_date"
+  "temp_date",
+  "AVALC"
 ))

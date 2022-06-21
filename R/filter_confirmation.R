@@ -307,7 +307,6 @@ filter_confirmation <- function(dataset,
     select(colnames(dataset))
 }
 
-
 #' Count Number of Observations Where a Variable Equals a Value
 #'
 #' Count number of observations where a variable equals a value.
@@ -344,11 +343,13 @@ filter_confirmation <- function(dataset,
 #'   "4",      5,        "PR"
 #' )
 #'
+#' # add variable indicating if PR occurred after CR
 #' group_by(data, USUBJID) %>%
 #'   mutate(nr_nes = count_vals(var = AVALC, val = "NE"))
 count_vals <- function(var, val) {
   length(var[var == val])
 }
+
 #' Minimum Value on a Subset
 #'
 #' The function derives the minimum value of a vector/column on a subset of
