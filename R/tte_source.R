@@ -29,7 +29,6 @@
 #'   print(get(obj))
 #'   cat("\n")
 #' }
-#'
 death_event <- event_source(
   dataset_name = "adrs",
   filter = PARAMCD == "DEATH" & AVALC == "Y" & ANL01FL == "Y",
