@@ -8,7 +8,6 @@ derive_param_lasta(
   dataset,
   filter_source,
   order = vars(STUDYID, USUBJID, ADT),
-  by_vars = vars(STUDYID, USUBJID),
   source_pd = NULL,
   source_datasets = NULL,
   subject_keys = vars(STUDYID, USUBJID),
@@ -32,22 +31,12 @@ Last Disease Assessment
 \emph{Required or Optional:} Required}
 
 \item{order}{Sort order, after which the last record shall be taken by
-the \code{by_vars} to determine Last Disease Assessment. Created
+the \code{subject_keys} to determine Last Disease Assessment. Created
 using \code{vars()}.
 
 \emph{Permitted Values:} an \code{vars} object
 
 \emph{Default:} \code{vars(STUDYID, USUBJID, ADT)}
-
-\emph{Required or Optional:} Required}
-
-\item{by_vars}{Grouping columns, the last of which (ordered by \code{order})
-shall be taken as the Last Disease Assessment record. Created
-using \code{vars()}.
-
-\emph{Permitted Values:} an \code{vars} object
-
-\emph{Default:} \code{vars(STUDYID, USUBJID)}
 
 \emph{Required or Optional:} Required}
 
@@ -102,7 +91,7 @@ must be symbols, character strings, numeric values, or \code{NA}.
 }
 \value{
 The dataframe passed in the \code{dataset} argument with additional
-columns and/or rows as set in the \code{set_values_to} argument.ß
+columns and/or rows as set in the \code{set_values_to} argument.
 }
 \description{
 \if{html}{\out{<div class="sourceCode">}}\preformatted{Derives Last Disease Assessment (optionally) up to first Progressive Disease
@@ -110,22 +99,15 @@ columns and/or rows as set in the \code{set_values_to} argument.ß
 }
 \details{
 Calculates the last disease assessment by accessing the last record
-defined in \code{by_vars} after it has been arranged using the \code{order} argument.
+defined in \code{subject_keys} after it has been arranged using the \code{order} argument.
 
-Creates the new parameter record with AVAL/AVALC taken from the source
-record. One new record for each subject in the filtered input \code{dataset} is
-added to the input \code{dataset}.
-
-ADT is assigned from the last record as defined in the \code{order} argument.
+Creates the new parameter record with AVAL/AVALC/ADT taken from the last source
+record (i.e. the last record defined in \code{subject_keys} after it has been arranged
+using the \code{order} argument). One new record for each subject in the filtered
+input \code{dataset} is added to the input \code{dataset}.
 
 Records after PD can be removed using the source_pd and source_datasets
 arguments.
-
-Note: All columns from the input dataset are kept. Subjects with no records
-in the input dataset (after the filter is applied) all records are kept from
-ADSL which are also in the input dataset.  Columns which are not be populated
-for the new parameter/populated differently (e.g., RSSTRESC, VISIT, ANLzzFL)
-should be overwritten using the \code{set_values_to} parameter.
 }
 \examples{
 

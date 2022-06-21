@@ -5,10 +5,10 @@
 #
 #' @details
 #'    Calculates the last disease assessment by accessing the last record
-#'    defined in `by_vars` after it has been arranged using the `order` argument.
+#'    defined in `subject_keys` after it has been arranged using the `order` argument.
 #'
 #'    Creates the new parameter record with AVAL/AVALC/ADT taken from the last source
-#'    record (i.e. the last record defined in `by_vars` after it has been arranged
+#'    record (i.e. the last record defined in `subject_keys` after it has been arranged
 #'    using the `order` argument). One new record for each subject in the filtered
 #'    input `dataset` is added to the input `dataset`.
 #'
@@ -33,22 +33,12 @@
 #'    *Required or Optional:* Required
 #'
 #' @param order Sort order, after which the last record shall be taken by
-#'              the `by_vars` to determine Last Disease Assessment. Created
+#'              the `subject_keys` to determine Last Disease Assessment. Created
 #'              using `vars()`.
 #'
 #'    *Permitted Values:* an `vars` object
 #'
 #'    *Default:* `vars(STUDYID, USUBJID, ADT)`
-#'
-#'    *Required or Optional:* Required
-#'
-#' @param by_vars Grouping columns, the last of which (ordered by `order`)
-#'                shall be taken as the Last Disease Assessment record. Created
-#'                using `vars()`.
-#'
-#'    *Permitted Values:* an `vars` object
-#'
-#'    *Default:* `vars(STUDYID, USUBJID)`
 #'
 #'    *Required or Optional:* Required
 #'
@@ -171,12 +161,11 @@
 #' @keywords ADRS
 #
 #' @return The dataframe passed in the `dataset` argument with additional
-#'         columns and/or rows as set in the `set_values_to` argument.ß
+#'         columns and/or rows as set in the `set_values_to` argument.
 
 derive_param_lasta <- function(dataset,
                                filter_source,
                                order = vars(STUDYID, USUBJID, ADT),
-                               by_vars = vars(STUDYID, USUBJID),
                                source_pd = NULL,
                                source_datasets = NULL,
                                subject_keys = vars(STUDYID, USUBJID),
@@ -191,7 +180,6 @@ derive_param_lasta <- function(dataset,
     required_vars = quo_c(
       subject_keys,
       order,
-      by_vars,
       vars(
         PARAMCD, ADT,
         AVAL, AVALC
@@ -205,8 +193,6 @@ derive_param_lasta <- function(dataset,
   )
 
   assert_vars(arg = order)
-
-  assert_vars(arg = by_vars)
 
   assert_vars(arg = subject_keys)
 
@@ -264,8 +250,8 @@ derive_param_lasta <- function(dataset,
   param_lasta <- dataset_filter %>%
     filter_extreme(
       mode       = "last",
-      order      = vars(!!!order),
-      by_vars    = vars(!!!by_vars),
+      order      = order,
+      by_vars    = subject_keys,
       check_type = "warning"
     )
 
