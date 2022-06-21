@@ -52,7 +52,6 @@ for (obj in list_tte_source_objects()$object) {
   print(get(obj))
   cat("\n")
 }
-
 }
 \seealso{
 \link[admiral:derive_param_tte]{admiral::derive_param_tte}, \link{tte_source}, \link[admiral:event_source]{admiral::event_source},
