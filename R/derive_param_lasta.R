@@ -286,7 +286,7 @@ derive_param_lasta <- function(dataset,
   # Bind back to passed dataset ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  return_this_dataframe <- bind_rows(
+   bind_rows(
     dataset,
     param_lasta_values_set
   )
