@@ -100,17 +100,15 @@ previous step.
 of the first assessment date representing an evaluable non-PD assessment prior
 to first PD, or the date representing the start of response.
 
-\item For the observations being added to \code{dataset}, \code{AVALC} is set to:
-
-\if{html}{\out{<div class="sourceCode">}}\preformatted{- `Y` for those subjects in the `dataset` meeting the criteria for clinical
+\item For the observations being added to \code{dataset}, \code{AVALC} is set to
+\itemize{
+\item \code{Y} for those subjects in the \code{dataset} meeting the criteria for clinical
 benefit above
-
-- `N` for subjects not meeting the clinical benefit criteria in `dataset`
-or the dataset identified in `source_resp`
-
-- `N` for subjects present in `dataset_adsl` but not present in `dataset`
-or the dataset identified in `source_resp`.
-}\if{html}{\out{</div>}}
+\item \code{N} for subjects not meeting the clinical benefit criteria in \code{dataset}
+or the dataset identified in \code{source_resp}
+\item \code{N} for subjects present in \code{dataset_adsl} but not present in \code{dataset}
+or the dataset identified in \code{source_resp}.
+}
 
 \item \code{AVAL} is derived using \code{AVALC} as input to the function specified in
 \code{aval_fun}.
@@ -118,7 +116,9 @@ or the dataset identified in `source_resp`.
 \item The variables specified by \code{set_values_to} are added to the new observations
 with values equal to the values specified in the same.
 
-\item The new observations are added to \code{dataset}.
+\item The new observations are added to \code{dataset}. Variables held in common
+between \code{dataset} and \code{dataset_adsl} are kept for the new observations, and
+are populated with their values from \code{dataset_adsl}.
 }
 }
 \examples{

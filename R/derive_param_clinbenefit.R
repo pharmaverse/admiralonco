@@ -27,16 +27,15 @@
 #'   of the first assessment date representing an evaluable non-PD assessment prior
 #'   to first PD, or the date representing the start of response.
 #'
-#'   \item For the observations being added to `dataset`, `AVALC` is set to:
+#'   \item For the observations being added to `dataset`, `AVALC` is set to
+#'   + `Y` for those subjects in the `dataset` meeting the criteria for clinical
+#'   benefit above
 #'
-#'     - `Y` for those subjects in the `dataset` meeting the criteria for clinical
-#'     benefit above
+#'   + `N` for subjects not meeting the clinical benefit criteria in `dataset`
+#'   or the dataset identified in `source_resp`
 #'
-#'     - `N` for subjects not meeting the clinical benefit criteria in `dataset`
-#'     or the dataset identified in `source_resp`
-#'
-#'     - `N` for subjects present in `dataset_adsl` but not present in `dataset`
-#'     or the dataset identified in `source_resp`.
+#'   + `N` for subjects present in `dataset_adsl` but not present in `dataset`
+#'   or the dataset identified in `source_resp`.
 #'
 #'   \item `AVAL` is derived using `AVALC` as input to the function specified in
 #'   `aval_fun`.
@@ -44,7 +43,9 @@
 #'   \item The variables specified by `set_values_to` are added to the new observations
 #'   with values equal to the values specified in the same.
 #'
-#'   \item The new observations are added to `dataset`.
+#'   \item The new observations are added to `dataset`. Variables held in common
+#'   between `dataset` and `dataset_adsl` are kept for the new observations, and
+#'   are populated with their values from `dataset_adsl`.
 #'  }
 #'
 #' @param dataset Input dataset. This is the dataset to which the clinical
@@ -230,7 +231,6 @@ derive_param_clinbenefit <- function(dataset,
 
   rsp_data <- source_datasets[[source_resp$dataset_name]] %>%
     filter_if(source_resp$filter) %>%
-    # select(!!!subject_keys, !!source_resp$date) %>%
     rename(ADT = !!source_resp$date)
 
   # Look for valid non-PD measurements after window from reference date
