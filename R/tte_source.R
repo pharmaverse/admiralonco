@@ -8,7 +8,7 @@
 #' please refer to [admiral::derive_param_tte()].
 #'
 #' Printing an object will display input dataset_name, filter (if applicable), date variable,
-#' and appropriate values for EVNTDESC, CNSDTDSC, SRCDOM, SRCVAR, and SRCSEQ.
+#' and appropriate values for `EVNTDESC`, `CNSDTDSC`, `SRCDOM`, `SRCVAR`, and `SRCSEQ`.
 #'
 #' @seealso [admiral::derive_param_tte], [tte_source], [admiral::event_source],
 #'  [admiral::censor_source]
@@ -36,7 +36,6 @@ death_event <- event_source(
   date = ADT,
   set_values_to = vars(
     EVNTDESC = "Death",
-    CNSDTDSC = "NA_character_",
     SRCDOM = "ADRS",
     SRCVAR = "ADT",
     SRCSEQ = ASEQ
@@ -53,8 +52,7 @@ lastalive_censor <- censor_source(
     EVNTDESC = "Alive",
     CNSDTDSC = "Alive During Study",
     SRCDOM = "ADSL",
-    SRCVAR = "LSTALVDT",
-    SRCSEQ = NA_integer_
+    SRCVAR = "LSTALVDT"
   )
 )
 
@@ -67,7 +65,6 @@ pd_event <- event_source(
   date = ADT,
   set_values_to = vars(
     EVNTDESC = "Disease Progression",
-    CNSDTDSC = "NA_character_",
     SRCDOM = "ADRS",
     SRCVAR = "ADT",
     SRCSEQ = ASEQ
@@ -100,8 +97,7 @@ rand_censor <- censor_source(
     EVNTDESC = "Randomization",
     CNSDTDSC = "Randomization",
     SRCDOM = "ADSL",
-    SRCVAR = "RANDDT",
-    SRCSEQ = NA_integer_
+    SRCVAR = "RANDDT"
   )
 )
 
@@ -115,7 +111,6 @@ trts_censor <- censor_source(
     EVNTDESC = "Treatment Start",
     CNSDTDSC = "Treatment Start",
     SRCDOM = "ADSL",
-    SRCVAR = "TRTSDT",
-    SRCSEQ = NA_integer_
+    SRCVAR = "TRTSDT"
   )
 )
