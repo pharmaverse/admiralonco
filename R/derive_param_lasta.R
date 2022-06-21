@@ -1,4 +1,4 @@
-#' @title  Adds a Parameter for the Last Disease Assessment
+#' Adds a Parameter for the Last Disease Assessment
 #
 #' @description
 #'     Derives Last Disease Assessment (optionally) up to first Progressive Disease
