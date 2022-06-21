@@ -76,8 +76,8 @@
 #'
 #' adevent <- tibble::tribble(
 #'   ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,
-#'   "CDISCPILOT01", "01-701-1015", "PD",    "Y",     "2016-02-22",
-#'   "CDISCPILOT01", "01-701-1034", "PD",    "Y",     "2016-04-25"
+#'   "CDISCPILOT01", "01-701-1015", "PD",     "Y",    "2016-02-22",
+#'   "CDISCPILOT01", "01-701-1034", "PD",     "Y",    "2016-04-25"
 #' ) %>% mutate(
 #'   ADT = as_date(ADT)
 #' )
