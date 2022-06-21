@@ -7,20 +7,13 @@
 #'    Calculates the last disease assessment by accessing the last record
 #'    defined in `by_vars` after it has been arranged using the `order` argument.
 #'
-#'    Creates the new parameter record with AVAL/AVALC taken from the source
-#'    record. One new record for each subject in the filtered input `dataset` is
-#'    added to the input `dataset`.
-#'
-#'    ADT is assigned from the last record as defined in the `order` argument.
+#'    Creates the new parameter record with AVAL/AVALC/ADT taken from the last source
+#'    record (i.e. the last record defined in `by_vars` after it has been arranged
+#'    using the `order` argument). One new record for each subject in the filtered
+#'    input `dataset` is added to the input `dataset`.
 #'
 #'    Records after PD can be removed using the source_pd and source_datasets
 #'    arguments.
-#'
-#'  Note: All columns from the input dataset are kept. Subjects with no records
-#'  in the input dataset (after the filter is applied) all records are kept from
-#'  ADSL which are also in the input dataset.  Columns which are not be populated
-#'  for the new parameter/populated differently (e.g., RSSTRESC, VISIT, ANLzzFL)
-#'  should be overwritten using the `set_values_to` parameter.
 #
 # Function Arguments:
 #
