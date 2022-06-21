@@ -2,6 +2,9 @@ globalVariables(c(
   ".",
   "ADT",
   "AVALC",
+  "ADT.join",
+  "AVALC",
+  "AVALC.join",
   "PARAMCD",
   "STUDYID",
   "temp_rs",
@@ -10,5 +13,6 @@ globalVariables(c(
   "tmp_obs_nr_filter_confirmation.join",
   "TRTSDT",
   "USUBJID",
-  "temp_date"
+  "temp_date",
+  "AVALC"
 ))
