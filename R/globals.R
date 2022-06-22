@@ -1,14 +1,13 @@
-utils::globalVariables(c(
+globalVariables(c(
   "ADT",
-  "PARAMCD",
+  "ADT.join",
   "AVALC",
+  "AVALC.join",
+  "PARAMCD",
   "STUDYID",
   "USUBJID",
   "temp_date",
+  "AVALC",
   "dataset_name",
-  "tmp_order",
-  # these are for filter_confirmation and not in devel/globals.R
-  "tmp_obs_nr_filter_confirmation.join",
-  "tmp_obs_nr_filter_confirmation",
-  "tmp_obs_nr_filter_confirmation tmp_obs_nr_filter_confirmation.join"
+  "tmp_order"
 ))
