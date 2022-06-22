@@ -40,7 +40,7 @@ test_that("filter_pd Test 1: first PD in separate BDS dataset", {
   actual_output <- filter_pd(
     dataset = adrs,
     filter = PARAMCD == "OVR",
-    source_pd = date_source(
+    source_pd = admiral::date_source(
       dataset_name = "adevent",
       date = ADT,
       filter = PARAMCD == "PD",
@@ -96,7 +96,7 @@ test_that("filter_pd Test 2: first PD in ADSL dataset", {
   actual_output <- filter_pd(
     dataset = adrs,
     filter = PARAMCD == "OVR",
-    source_pd = date_source(
+    source_pd = admiral::date_source(
       dataset_name = "adsl",
       date = PDDT
     ),
@@ -145,7 +145,7 @@ test_that("filter_pd Test 3: first PD in input dataset", {
   actual_output <- filter_pd(
     dataset = adrs,
     filter = PARAMCD == "OVR",
-    source_pd = date_source(
+    source_pd = admiral::date_source(
       dataset_name = "adrs",
       date = ADT,
       filter = PARAMCD == "PD",
@@ -193,7 +193,7 @@ test_that("filter_pd Test 4: first PD derived from input dataset", {
   actual_output <- filter_pd(
     dataset = adrs,
     filter = PARAMCD == "OVR",
-    source_pd = date_source(
+    source_pd = admiral::date_source(
       dataset_name = "adrs",
       date = ADT,
       filter = PARAMCD == "OVR" & AVALC == "PD",
