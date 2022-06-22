@@ -2,6 +2,9 @@ globalVariables(c(
   ".",
   "ADT",
   "AVALC",
+  "AVAL",
+  "param_lasta",
+  "dataset_name",
   "ADT.join",
   "AVALC",
   "AVALC.join",
@@ -15,5 +18,7 @@ globalVariables(c(
   "TRTSDT",
   "USUBJID",
   "temp_date",
-  "AVALC"
+  "AVALC",
+  "dataset_name",
+  "tmp_order"
 ))
