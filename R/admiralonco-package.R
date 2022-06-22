@@ -8,7 +8,7 @@
 #'   expect_dfs_equal extract_vars filter_extreme filter_if filter_relative
 #'   list_tte_source_objects quo_c squote vars2chr yn_to_numeric
 #' @importFrom dplyr bind_rows case_when filter group_by if_else left_join
-#'   mutate select slice vars ungroup
+#'   mutate rename right_join select slice vars ungroup
 #' @importFrom lubridate days
 #' @importFrom magrittr `%>%`
 #' @importFrom rlang abort enquo quo_get_expr quo_is_null
