@@ -1,8 +1,8 @@
 #' Adds a Parameter for the Best Overall Response (without confirmation)
-#
+#'
 #' @description
 #'     Derives Best Overall Response (optionally) up to first Progressive Disease
-#
+#'
 #' @details
 #'    Calculates the best overall response (BOR) parameter, as detailed below.
 #'
@@ -18,17 +18,9 @@
 #'   3. Subjects with **ONLY** an `SD` or `NON-CR/NON-PD` records where `ADT` <
 #'      `reference_date` + `ref_start_window` are assigned a Best Overall Response of `NE`.
 #'
-#'   4. The Best Response, by `subject_keys` of the records in steps 1 to 3, is then
-#'      selected in the following order of preference:
-#'      ```{r, eval=FALSE}
-#'                  AVALC %in% c("CR") ~ 1,
-#'                  AVALC %in% c("PR") ~ 2,
-#'                  AVALC %in% c("SD") ~ 3,
-#'                  AVALC %in% c("NON-CR/NON-PD") ~ 4,
-#'                  AVALC %in% c("PD") ~ 5,
-#'                  AVALC %in% c("NE") ~ 6,
-#'                  is.null(AVALC) ~ 7)) %>%
-#'      ```
+#'   4. The Best Response, from the records in steps 1 to 3, is then selected in the following
+#'      order of preference: CR, PR, SD, NON-CR/NON-PD, PD, NE, MISSING
+#'
 #'   5. The `AVAL` column is added and set using the `aval_fun(AVALC)` function
 #'
 #'   6. The columns specified by the `set_values_to` parameter and records
@@ -39,9 +31,7 @@
 #'  also in the input dataset.  Columns which are not to be populated for the new parameter
 #'  or populated differently (e.g. `RSSTRESC`, `VISIT`, `PARCATy`, `ANLzzFL`, ...) should be
 #'  overwritten using the `set_values_to` parameter.
-#
-# Function Arguments:
-#
+#'
 #' @param dataset The input dataframe from which the Best Overall Response will
 #'                be derived from and added to.
 #'
@@ -278,11 +268,11 @@
 #' ) %>%
 #'   filter(PARAMCD == "BOR")
 #' @export
-#
+#'
 #' @author Stephen Gormley
-#
+#'
 #' @keywords adrs
-#
+#'
 #' @return The dataframe passed in the `dataset` argument with additional columns and/or
 #'         rows as set in the `set_values_to` argument.
 

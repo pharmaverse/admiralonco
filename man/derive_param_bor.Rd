@@ -158,19 +158,8 @@ Note:
 \code{ref_start_window} are also considered for Best Overall Response.
 \item Subjects with \strong{ONLY} an \code{SD} or \code{NON-CR/NON-PD} records where \code{ADT} <
 \code{reference_date} + \code{ref_start_window} are assigned a Best Overall Response of \code{NE}.
-\item The Best Response, by \code{subject_keys} of the records in steps 1 to 3, is then
-selected in the following order of preference:
-}
-
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{            AVALC \%in\% c("CR") ~ 1,
-            AVALC \%in\% c("PR") ~ 2,
-            AVALC \%in\% c("SD") ~ 3,
-            AVALC \%in\% c("NON-CR/NON-PD") ~ 4,
-            AVALC \%in\% c("PD") ~ 5,
-            AVALC \%in\% c("NE") ~ 6,
-            is.null(AVALC) ~ 7)) \%>\%
-}\if{html}{\out{</div>}}
-\enumerate{
+\item The Best Response, from the records in steps 1 to 3, is then selected in the following
+order of preference: CR, PR, SD, NON-CR/NON-PD, PD, NE, MISSING
 \item The \code{AVAL} column is added and set using the \code{aval_fun(AVALC)} function
 \item The columns specified by the \code{set_values_to} parameter and records
 are added to the dataframe passed into the \code{dataset} argument
@@ -209,37 +198,37 @@ adsl <- tribble(
 
 # Create ADRS dataset
 ovr_obs <- tribble(
-  ~USUBJID, ~ADTC,        ~AVALC, ~ANL01FL,
-  "1",      "2020-01-01", "PR", "Y",
-  "1",      "2020-02-01", "CR", "Y",
-  "1",      "2020-02-16", "NE", "Y",
-  "1",      "2020-03-01", "CR", "Y",
-  "1",      "2020-04-01", "SD", "Y",
-  "2",      "2020-01-01", "SD", "Y",
-  "2",      "2020-02-01", "PR", "Y",
-  "2",      "2020-03-01", "SD", "Y",
-  "2",      "2020-03-13", "CR", "Y",
-  "3",      "2019-11-12", "CR", "Y",
-  "3",      "2019-12-02", "CR", "Y",
-  "3",      "2020-01-01", "SD", "Y",
-  "4",      "2020-01-01", "PR", "Y",
-  "4",      "2020-03-01", "SD", "N",
-  "4",      "2020-04-01", "SD", "Y",
-  "4",      "2020-05-01", "PR", "Y",
-  "4",      "2020-05-15", "NON-CR/NON-PD",  "Y",
-  "5",      "2020-01-01", "PR", "Y",
-  "5",      "2020-01-10", "SD", "Y",
-  "5",      "2020-01-20", "PR", "Y",
-  "5",      "2020-05-15", "NON-CR/NON-PD",  "Y",
-  "6",      "2020-02-06", "PR", "Y",
-  "6",      "2020-02-16", "CR", "Y",
-  "6",      "2020-03-30", "PR", "Y",
-  "6",      "2020-04-12", "PD", "Y",
-  "6",      "2020-05-01", "CR", "Y",
-  "6",      "2020-06-01", "CR", "Y",
-  "7",      "2020-02-06", "PR", "Y",
-  "7",      "2020-02-16", "CR", "Y",
-  "7",      "2020-04-01", "NE", "N"
+  ~USUBJID, ~ADTC, ~AVALC, ~ANL01FL,
+  "1", "2020-01-01", "PR", "Y",
+  "1", "2020-02-01", "CR", "Y",
+  "1", "2020-02-16", "NE", "Y",
+  "1", "2020-03-01", "CR", "Y",
+  "1", "2020-04-01", "SD", "Y",
+  "2", "2020-01-01", "SD", "Y",
+  "2", "2020-02-01", "PR", "Y",
+  "2", "2020-03-01", "SD", "Y",
+  "2", "2020-03-13", "CR", "Y",
+  "3", "2019-11-12", "CR", "Y",
+  "3", "2019-12-02", "CR", "Y",
+  "3", "2020-01-01", "SD", "Y",
+  "4", "2020-01-01", "PR", "Y",
+  "4", "2020-03-01", "SD", "N",
+  "4", "2020-04-01", "SD", "Y",
+  "4", "2020-05-01", "PR", "Y",
+  "4", "2020-05-15", "NON-CR/NON-PD", "Y",
+  "5", "2020-01-01", "PR", "Y",
+  "5", "2020-01-10", "SD", "Y",
+  "5", "2020-01-20", "PR", "Y",
+  "5", "2020-05-15", "NON-CR/NON-PD", "Y",
+  "6", "2020-02-06", "PR", "Y",
+  "6", "2020-02-16", "CR", "Y",
+  "6", "2020-03-30", "PR", "Y",
+  "6", "2020-04-12", "PD", "Y",
+  "6", "2020-05-01", "CR", "Y",
+  "6", "2020-06-01", "CR", "Y",
+  "7", "2020-02-06", "PR", "Y",
+  "7", "2020-02-16", "CR", "Y",
+  "7", "2020-04-01", "NE", "N"
 ) \%>\%
   mutate(PARAMCD = "OVR")
 
