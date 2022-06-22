@@ -121,12 +121,11 @@ a possible different approach could be as follows, where death is sourced from `
 instead of `ADRS`, and the given `EVNTDESC` is different.
 
 ```{r}
-death_event <- event_source(
+adsl_death_event <- event_source(
   dataset_name = "adsl",
   date = DTHDT,
   set_values_to = vars(
     EVNTDESC = "STUDY DEATH",
-    CNSDTDSC = "",
     SRCDOM = "ADSL",
     SRCVAR = "DTHDT",
     SRCSEQ = ASEQ
