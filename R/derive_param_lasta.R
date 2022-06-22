@@ -7,7 +7,7 @@
 #'    Calculates the last disease assessment by accessing the last record
 #'    defined in `subject_keys` after it has been arranged using the `order` argument.
 #'
-#'    Creates the new parameter record with AVAL/AVALC/ADT taken from the last source
+#'    Creates a new parameter record (keeping all columns passed) from the last source
 #'    record (i.e. the last record defined in `subject_keys` after it has been arranged
 #'    using the `order` argument). One new record for each subject in the filtered
 #'    input `dataset` is added to the input `dataset`.
@@ -91,8 +91,7 @@
 #'    must be symbols, character strings, numeric values, or `NA`.
 #'
 #'    *Required or Optional:* Required
-#'
-#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++|
+#
 #' @examples
 #'
 #' library(dplyr)
@@ -153,7 +152,6 @@
 #'     ANL01FL = "Y"
 #'   )
 #' )
-#
 #' @export
 #
 #' @author Stephen Gormley
@@ -179,10 +177,9 @@ derive_param_lasta <- function(dataset,
     arg = dataset,
     required_vars = quo_c(
       subject_keys,
-      order,
+      extract_vars(order),
       vars(
-        PARAMCD, ADT,
-        AVAL, AVALC
+        PARAMCD
       )
     )
   )
@@ -286,7 +283,7 @@ derive_param_lasta <- function(dataset,
   # Bind back to passed dataset ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-   bind_rows(
+  bind_rows(
     dataset,
     param_lasta_values_set
   )

@@ -2,14 +2,11 @@
 
 export(aval_resp)
 export(count_vals)
-<<<<<<< HEAD
-export(derive_param_lasta)
-=======
 export(death_event)
 export(derive_param_confirmed_bor)
 export(derive_param_confirmed_resp)
+export(derive_param_lasta)
 export(derive_param_response)
->>>>>>> devel
 export(filter_confirmation)
 export(filter_pd)
 export(lasta_censor)
@@ -44,10 +41,7 @@ importFrom(admiral,extract_vars)
 importFrom(admiral,filter_extreme)
 importFrom(admiral,filter_if)
 importFrom(admiral,filter_relative)
-<<<<<<< HEAD
-=======
 importFrom(admiral,list_tte_source_objects)
->>>>>>> devel
 importFrom(admiral,quo_c)
 importFrom(admiral,squote)
 importFrom(admiral,vars2chr)
