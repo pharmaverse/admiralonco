@@ -2,7 +2,7 @@
 % Please edit documentation in R/derive_param_bor.R
 \name{derive_param_bor}
 \alias{derive_param_bor}
-\title{derive_param_bor}
+\title{Adds a Parameter for the Best Overall Response (without confirmation)}
 \usage{
 derive_param_bor(
   dataset,
@@ -14,7 +14,7 @@ derive_param_bor(
   ref_start_window = 0,
   missing_as_ne = FALSE,
   aval_fun = admiralonco::aval_resp(),
-  subject_keys = admiral::vars(STUDYID, USUBJID),
+  subject_keys = vars(STUDYID, USUBJID),
   set_values_to
 )
 }
@@ -49,7 +49,7 @@ deriving the new parameter are restricted to observations up to the
 specified date. Observations at the specified date are included. For
 subjects without first PD date all observations are take into account.
 
-\emph{Permitted Values:} a \code{date_source} object (see \code{admiral::date_source()}
+\emph{Permitted Values:} a \code{date_source} object (see \code{date_source()}
 for details)
 
 \emph{Default:} \code{NULL}
@@ -64,7 +64,7 @@ needed. It links the \code{dataset_name} from \code{source_pd} with an existing 
 
 For example if \code{source_pd = pd_date} with
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{pd_date <- date_source(
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{pd_date <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == PD
@@ -123,11 +123,11 @@ function must return a numeric vector.
 
 \item{subject_keys}{Columns to uniquely identify a subject
 
-A list of symbols created using \code{admiral::vars()}.
+A list of symbols created using \code{vars()}.
 
-\emph{Permitted Values:} an \code{admiral::vars} object
+\emph{Permitted Values:} an \code{vars} object
 
-\emph{Default:} \code{admiral::vars(STUDYID, USUBJID)}
+\emph{Default:} \code{vars(STUDYID, USUBJID)}
 
 \emph{Required or Optional:} Required}
 
@@ -144,7 +144,7 @@ The dataframe passed in the \code{dataset} argument with additional columns and/
 rows as set in the \code{set_values_to} argument.
 }
 \description{
-\if{html}{\out{<div class="sourceCode">}}\preformatted{Derives Best Overall Response
+\if{html}{\out{<div class="sourceCode">}}\preformatted{Derives Best Overall Response (optionally) up to first Progressive Disease
 }\if{html}{\out{</div>}}
 }
 \details{
@@ -155,44 +155,44 @@ arguments.
 
 Note:
 \enumerate{
-\item All records where \code{ADT} >= \code{reference_date} + \code{ref_start_window} are considered
-for Best Overall Response.
-\item All records where \code{ADT} < \code{reference_date} + \code{ref_start_window}  and the subject
-has a record in step 1, are considered for Best Overall Response.
-\item Records, where \code{ADT} < \code{reference_date} + \code{ref_start_window} and the subject does
-not have a record in step 1 but AVALC \%in\% c("CR", "PR", "PD"), are considered for
-Best Overall Response
-\item Records where \code{ADT} < \code{reference_date} + \code{ref_start_window} and the subject does
-not have a record in step 1 and AVALC \%in\% c('SD', 'NON-CR/NON-PD') then
-Best Overall Response is set to NE.
-\item The Best Response, by \code{subject_keys} of the records in steps 1 to 4, is then
+\item All \code{CR}, \code{PR} and \code{PD} response records are considered for Best Overall Response.
+\item All \code{SD} or \code{NON-CR/NON-PD} records where \code{ADT} >= \code{reference_date} +
+\code{ref_start_window} are also considered for Best Overall Response.
+\item Patients with \strong{ONLY} \code{SD} or \code{NON-CR/NON-PD} records where \code{ADT} <
+\code{reference_date} + \code{ref_start_window} would give Best Overall Response of \code{NE}.
+\item The Best Response, by \code{subject_keys} of the records in steps 1 to 3, is then
 selected in the following order of preference:
+}
 
-\if{html}{\out{<div class="sourceCode">}}\preformatted{        AVALC \%in\% c("CR") ~ 1,
-        AVALC \%in\% c("PR") ~ 2,
-        AVALC \%in\% c("SD") ~ 3,
-        AVALC \%in\% c("NON-CR/NON-PD") ~ 4,
-        AVALC \%in\% c("PD") ~ 5,
-        AVALC \%in\% c("NE") ~ 6,
-        is.null(AVALC) ~ 7)) \%>\%
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{            AVALC \%in\% c("CR") ~ 1,
+            AVALC \%in\% c("PR") ~ 2,
+            AVALC \%in\% c("SD") ~ 3,
+            AVALC \%in\% c("NON-CR/NON-PD") ~ 4,
+            AVALC \%in\% c("PD") ~ 5,
+            AVALC \%in\% c("NE") ~ 6,
+            is.null(AVALC) ~ 7)) \%>\%
 }\if{html}{\out{</div>}}
+\enumerate{
 \item The \code{AVAL} column is added and set using the \code{aval_fun(AVALC)} function
 \item The columns specified by the \code{set_values_to} parameter and records
 are added to the dataframe passed into the \code{dataset} argument
 }
 
-Also Note: All columns from the input dataset are kept. Subjects with no records in the
-input dataset (after the filter is applied) all records are kept from ADSL which are
-also in the input dataset.  Columns which are not be populated for the new parameter
+Also Note: All columns from the input dataset are kept. For subjects with no records in
+the input dataset (after the filter is applied) all columns are kept from ADSL which are
+also in the input dataset.  Columns which are not to be populated for the new parameter
 or populated differently (e.g., RSSTRESC, VISIT, PARCATy, ANLzzFL, ...) should be
 overwritten using the \code{set_values_to} parameter.
 }
 \examples{
 
 library(magrittr)
+library(dplyr)
+library(tibble)
+library(lubridate)
 
 # Create ADSL dataset
-adsl <- tibble::tribble(
+adsl <- tribble(
   ~USUBJID, ~TRTSDTC,
   "1",      "2020-01-01",
   "2",      "2019-12-12",
@@ -202,12 +202,14 @@ adsl <- tibble::tribble(
   "6",      "2020-02-02",
   "7",      "2020-02-02",
   "8",      "2020-04-01"
-  ) \%>\%
-  dplyr::mutate(TRTSDT = lubridate::ymd(TRTSDTC),
-                STUDYID = "XX1234")
+) \%>\%
+  mutate(
+    TRTSDT = ymd(TRTSDTC),
+    STUDYID = "XX1234"
+  )
 
 # Create ADRS dataset
-ovr_obs <- tibble::tribble(
+ovr_obs <- tribble(
   ~USUBJID, ~ADTC,        ~AVALC,
   "1",      "2020-01-01", "PR",
   "1",      "2020-02-01", "CR",
@@ -239,57 +241,64 @@ ovr_obs <- tibble::tribble(
   "7",      "2020-02-06", "PR",
   "7",      "2020-02-16", "CR",
   "7",      "2020-04-01", "NE"
-  ) \%>\%
-  dplyr::mutate(PARAMCD = "OVR")
+) \%>\%
+  mutate(PARAMCD = "OVR")
 
 pd_obs <-
-  dplyr::bind_rows(tibble::tribble(
+  bind_rows(tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
     "2",      "2020-03-01", "Y",
     "4",      "2020-02-01", "Y"
-    ) \%>\%
-    dplyr::mutate(PARAMCD = "PD"))
+  ) \%>\%
+    mutate(PARAMCD = "PD"))
 
-adrs <- dplyr::bind_rows(ovr_obs, pd_obs) \%>\%
-  dplyr::mutate(ADT     = lubridate::ymd(ADTC),
-                STUDYID = "XX1234") \%>\%
-  dplyr::select(-ADTC) \%>\%
-  admiral::derive_vars_merged(
+adrs <- bind_rows(ovr_obs, pd_obs) \%>\%
+  mutate(
+    ADT = ymd(ADTC),
+    STUDYID = "XX1234"
+  ) \%>\%
+  select(-ADTC) \%>\%
+  derive_vars_merged(
     dataset_add = adsl,
-    by_vars     = dplyr::vars(STUDYID, USUBJID),
-    new_vars    = dplyr::vars(TRTSDT) )
+    by_vars     = vars(STUDYID, USUBJID),
+    new_vars    = vars(TRTSDT)
+  )
 
-pd_date <- admiral::date_source(
+pd_date <- date_source(
   dataset_name = "adrs",
   date         = ADT,
-  filter       = PARAMCD == "PD")
+  filter       = PARAMCD == "PD"
+)
 
 aval_fun_pass <- function(arg) {
-        dplyr::case_when(
-          arg == "CR" ~ 11,
-          arg == "PR" ~ 22,
-          arg == "SD" ~ 33,
-          arg == "NON-CR/NON-PD" ~ 44,
-          arg == "PD" ~ 55,
-          arg == "NE" ~ 66,
-          arg == "MISSING" ~ 77,
-          TRUE ~ NA_real_
-        ) }
+  case_when(
+    arg == "CR" ~ 11,
+    arg == "PR" ~ 22,
+    arg == "SD" ~ 33,
+    arg == "NON-CR/NON-PD" ~ 44,
+    arg == "PD" ~ 55,
+    arg == "NE" ~ 66,
+    arg == "MISSING" ~ 77,
+    TRUE ~ NA_real_
+  )
+}
 
 # Derive best overall response parameter
 derive_param_bor(
   adrs,
-  dataset_adsl     = adsl,
-  filter_source    = PARAMCD == "OVR",
-  source_pd        = pd_date,
-  source_datasets  = list(adrs = adrs),
-  aval_fun         = aval_fun_pass,
-  reference_date   = TRTSDT,
+  dataset_adsl = adsl,
+  filter_source = PARAMCD == "OVR",
+  source_pd = pd_date,
+  source_datasets = list(adrs = adrs),
+  aval_fun = aval_fun_pass,
+  reference_date = TRTSDT,
   ref_start_window = 28,
-  set_values_to    = dplyr::vars(PARAMCD = "BOR",
-                                 PARAM   = "Best Overall Response")
+  set_values_to = vars(
+    PARAMCD = "BOR",
+    PARAM = "Best Overall Response"
+  )
 ) \%>\%
-  dplyr::filter(PARAMCD == "BOR")
+  filter(PARAMCD == "BOR")
 }
 \author{
 Stephen Gormley
