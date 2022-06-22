@@ -102,34 +102,34 @@
 #'
 #' adsl <- tribble(
 #'   ~USUBJID, ~TRTSDT,                      ~EOSDT,
-#'   "01",     lubridate::ymd("2020-12-06"), lubridate::ymd("2022-03-06"),
-#'   "02",     lubridate::ymd("2021-01-16"), lubridate::ymd("2022-02-03"),
-#'   "03",     lubridate::ymd("2021-01-09"), lubridate::ymd("2021-02-24"),
-#'   "04",     lubridate::ymd("2021-04-21"), lubridate::ymd("2021-09-15")
+#'   "01",     ymd("2020-12-06"), ymd("2022-03-06"),
+#'   "02",     ymd("2021-01-16"), ymd("2022-02-03"),
+#'   "03",     ymd("2021-01-09"), ymd("2021-02-24"),
+#'   "04",     ymd("2021-04-21"), ymd("2021-09-15")
 #' ) %>%
 #'   mutate(STUDYID = "a_study_id")
 #'
 #' adrs <- tribble(
 #'   ~USUBJID, ~PARAMCD, ~AVAL, ~AVALC, ~ASEQ, ~ADT,
-#'   "01", "RSP", NA, "Y", 1, lubridate::ymd("2021-04-08"),
-#'   "02", "RSP", NA, "N", 1, lubridate::ymd("2021-05-07"),
+#'   "01", "RSP", NA, "Y", 1, ymd("2021-04-08"),
+#'   "02", "RSP", NA, "N", 1, ymd("2021-05-07"),
 #'   "03", "RSP", NA, "N", 1, NA,
 #'   "04", "RSP", NA, "N", 1, NA,
 #'   "01", "PD", NA, "N", 1, NA,
-#'   "02", "PD", NA, "Y", 1, lubridate::ymd("2021-05-07"),
+#'   "02", "PD", NA, "Y", 1, ymd("2021-05-07"),
 #'   "03", "PD", NA, "N", 1, NA,
 #'   "04", "PD", NA, "N", 1, NA,
-#'   "01", "OVR", 3, "SD", 1, lubridate::ymd("2021-03-07"),
-#'   "01", "OVR", 2, "PR", 1, lubridate::ymd("2021-04-08"),
-#'   "02", "OVR", 3, "SD", 1, lubridate::ymd("2021-03-07"),
-#'   "02", "OVR", NA, NA, 1, lubridate::ymd("2021-04-07"),
-#'   "02", "OVR", 6, "PD", 1, lubridate::ymd("2021-05-07"),
-#'   "03", "OVR", 3, "SD", 1, lubridate::ymd("2021-01-30"),
-#'   "03", "OVR", 3, "SD", 2, lubridate::ymd("2021-01-30"),
-#'   "04", "OVR", NA, "NE", 1, lubridate::ymd("2021-05-21"),
-#'   "04", "OVR", 5, "NON-PD", 1, lubridate::ymd("2021-06-30"),
-#'   "04", "OVR", NA, "NE", 1, lubridate::ymd("2021-07-24"),
-#'   "04", "OVR", NA, "ND", 1, lubridate::ymd("2021-09-30"),
+#'   "01", "OVR", 3, "SD", 1, ymd("2021-03-07"),
+#'   "01", "OVR", 2, "PR", 1, ymd("2021-04-08"),
+#'   "02", "OVR", 3, "SD", 1, ymd("2021-03-07"),
+#'   "02", "OVR", NA, NA, 1, ymd("2021-04-07"),
+#'   "02", "OVR", 6, "PD", 1, ymd("2021-05-07"),
+#'   "03", "OVR", 3, "SD", 1, ymd("2021-01-30"),
+#'   "03", "OVR", 3, "SD", 2, ymd("2021-01-30"),
+#'   "04", "OVR", NA, "NE", 1, ymd("2021-05-21"),
+#'   "04", "OVR", 5, "NON-PD", 1, ymd("2021-06-30"),
+#'   "04", "OVR", NA, "NE", 1, ymd("2021-07-24"),
+#'   "04", "OVR", NA, "ND", 1, ymd("2021-09-30"),
 #' ) %>%
 #'   mutate(STUDYID = "a_study_id")
 #'
@@ -203,7 +203,7 @@ derive_param_lasta <- function(dataset,
 
   assert_param_does_not_exist(
     dataset = dataset,
-    param   = rlang::quo_get_expr(set_values_to$PARAMCD)
+    param   = quo_get_expr(set_values_to$PARAMCD)
   )
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -237,10 +237,10 @@ derive_param_lasta <- function(dataset,
     err_msg <- sprintf(
       "dataframe passed into %s argument with the filter %s has 0 records",
       "dataset",
-      deparse(rlang::quo_get_expr(filter_source))
+      deparse(quo_get_expr(filter_source))
     )
 
-    rlang::abort(err_msg)
+    abort(err_msg)
   }
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -272,7 +272,7 @@ derive_param_lasta <- function(dataset,
             " ",
             names(set_values_to),
             "=",
-            lapply(set_values_to, rlang::quo_get_expr),
+            lapply(set_values_to, quo_get_expr),
             collapse = "\n"
           ),
           "\n)\nError message:\n  ",
