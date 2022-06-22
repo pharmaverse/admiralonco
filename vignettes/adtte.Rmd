@@ -143,10 +143,10 @@ for IRF and confirmed responses.
 Here is an example of the code needed.
 
 ```{r}
-adrs <- adrs %>%
+adsl <- adsl %>%
   derive_vars_merged_dt(
     dataset_add = adrs,
-    filter_add = PARAMCD == "RSP" & AVALC == “Y”,
+    filter_add = PARAMCD == "RSP" & AVALC == "Y" & ANL01FL == "Y",
     by_vars = vars(STUDYID, USUBJID),
     new_vars_prefix = "TEMP_RESP",
     dtc = RSDTC
@@ -181,7 +181,7 @@ adtte <- derive_param_tte(
     start_date = TEMP_RESPDT,
     event_conditions = list(pd_event, death_event),
     censor_conditions = list(lasta_censor),
-    source_datasets = list(adsl = filter(adsl, !is.na(TEMP_RESPDT)), adrs = filter(adrs, !is.na(TEMP_RESPDT))),
+    source_datasets = list(adsl = filter(adsl, !is.na(TEMP_RESPDT)), adrs = adrs),
     set_values_to = vars(PARAMCD = "RSD", PARAM = "Duration of Response")
   )
 ```
