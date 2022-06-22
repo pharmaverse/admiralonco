@@ -164,7 +164,7 @@ testthat::test_that("derive_param_bor Test 1: No source_pd", {
 
   expected_01_def_aval_fun <- expected_01
 
-  expected_01_def_aval_fun$AVAL[28:35] <- c(1,1,1,2,2,1,1,7)
+  expected_01_def_aval_fun$AVAL[28:35] <- c(1, 1, 1, 2, 2, 1, 1, 7)
 
   admiral::expect_dfs_equal(
     base    = expected_01_def_aval_fun,
