@@ -1,6 +1,7 @@
 #' Derive Best Overall Response (without confirmation)
 #'
-#' Derives Best Overall Response (without confirmation), optionally up to first Progressive Disease
+#' Derives Best Overall Response, without confirmation, optionally up to
+#' first Progressive Disease
 #'
 #' @details
 #'    Calculates the best overall response (BOR) parameter, as detailed below.

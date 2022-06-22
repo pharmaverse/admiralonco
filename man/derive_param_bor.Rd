@@ -142,7 +142,8 @@ The dataframe passed in the \code{dataset} argument with additional columns and/
 rows as set in the \code{set_values_to} argument.
 }
 \description{
-Derives Best Overall Response (without confirmation), optionally up to first Progressive Disease
+Derives Best Overall Response, without confirmation, optionally up to
+first Progressive Disease
 }
 \details{
 Calculates the best overall response (BOR) parameter, as detailed below.
