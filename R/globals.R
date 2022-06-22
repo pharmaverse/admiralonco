@@ -7,5 +7,7 @@ globalVariables(c(
   "STUDYID",
   "USUBJID",
   "temp_date",
-  "AVALC"
+  "AVALC",
+  "dataset_name",
+  "tmp_order"
 ))
