@@ -115,7 +115,7 @@ analysis value (\code{AVAL})
 The (first) argument of the function must expect a character vector and the
 function must return a numeric vector.
 
-\emph{Default:} \code{aval_resp} (see \code{?aval_resp()})
+\emph{Default:} \code{aval_resp} (see \code{aval_resp()})
 
 \emph{Required or Optional:} Required}
 

@@ -128,7 +128,7 @@
 #'   The (first) argument of the function must expect a character vector and the
 #'   function must return a numeric vector.
 #'
-#'   *Default:* `aval_resp` (see `?aval_resp()`)
+#'   *Default:* `aval_resp` (see `aval_resp()`)
 #'
 #'   *Required or Optional:* Required
 #'
