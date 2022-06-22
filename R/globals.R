@@ -1,5 +1,8 @@
 globalVariables(c(
   "ADT",
+  "AVAL",
+  "param_lasta",
+  "dataset_name",
   "ADT.join",
   "AVALC",
   "AVALC.join",
