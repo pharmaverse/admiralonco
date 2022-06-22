@@ -15,8 +15,8 @@
 #'   2. All `SD` or `NON-CR/NON-PD` records where `ADT` >= `reference_date` +
 #'      `ref_start_window` are also considered for Best Overall Response.
 #'
-#'   3. Patients with **ONLY** `SD` or `NON-CR/NON-PD` records where `ADT` <
-#'      `reference_date` + `ref_start_window` would give Best Overall Response of `NE`.
+#'   3. Subjects with **ONLY** an `SD` or `NON-CR/NON-PD` records where `ADT` <
+#'      `reference_date` + `ref_start_window` are assigned a Best Overall Response of `NE`.
 #'
 #'   4. The Best Response, by `subject_keys` of the records in steps 1 to 3, is then
 #'      selected in the following order of preference:
@@ -37,7 +37,7 @@
 #'  Also Note: All columns from the input dataset are kept. For subjects with no records in
 #'  the input dataset (after the filter is applied) all columns are kept from ADSL which are
 #'  also in the input dataset.  Columns which are not to be populated for the new parameter
-#'  or populated differently (e.g., RSSTRESC, VISIT, PARCATy, ANLzzFL, ...) should be
+#'  or populated differently (e.g. RSSTRESC, VISIT, PARCATy, ANLzzFL, ...) should be
 #'  overwritten using the `set_values_to` parameter.
 #
 # Function Arguments:
@@ -140,7 +140,7 @@
 #'   The (first) argument of the function must expect a character vector and the
 #'   function must return a numeric vector.
 #'
-#'   *Default:* `admiralonc::aval_resp` (see `?admiralonc::aval_resp()`)
+#'   *Default:* `aval_resp` (see `?aval_resp()`)
 #'
 #'   *Required or Optional:* Required
 #'
@@ -162,13 +162,14 @@
 #'   *Default:* `vars(STUDYID, USUBJID)`
 #'
 #'   *Required or Optional:* Required
-#'
+#
 #' @examples
 #'
 #' library(magrittr)
 #' library(dplyr)
 #' library(tibble)
 #' library(lubridate)
+#' library(admiral)
 #'
 #' # Create ADSL dataset
 #' adsl <- tribble(
@@ -295,7 +296,7 @@ derive_param_bor <- function(dataset,
                              reference_date,
                              ref_start_window = 0,
                              missing_as_ne = FALSE,
-                             aval_fun = admiralonco::aval_resp(),
+                             aval_fun = aval_resp(),
                              subject_keys = vars(STUDYID, USUBJID),
                              set_values_to) {
 
@@ -306,7 +307,7 @@ derive_param_bor <- function(dataset,
   reference_date <- assert_symbol(arg = enquo(reference_date))
 
   assert_data_frame(
-    arg           = dataset,
+    arg = dataset,
     required_vars = quo_c(
       subject_keys,
       reference_date,
@@ -390,26 +391,28 @@ derive_param_bor <- function(dataset,
   #   2. All `SD` or `NON-CR/NON-PD` records where `ADT` >= `reference_date` +
   #     `ref_start_window` are also considered for Best Overall Response.
   #
-  #  3. Patients with **ONLY** `SD` or `NON-CR/NON-PD` records where `ADT` <
+  #  3. Subjects with **ONLY** `SD` or `NON-CR/NON-PD` records where `ADT` <
   #     `reference_date` + `ref_start_window` would give Best Overall Response
   #     of `NE`.
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   dataset_ordered <- dataset_filter %>%
-    mutate(tmp_order = case_when(
-      AVALC %in% c("CR") ~ 1,
-      AVALC %in% c("PR") ~ 2,
-      AVALC %in% c("SD") ~ 3,
-      AVALC %in% c("NON-CR/NON-PD") ~ 4,
-      AVALC %in% c("PD") ~ 5,
-      AVALC %in% c("NE") ~ 6,
-      is.null(AVALC) ~ 7
-    ),
-    AVALC = if_else(
-      AVALC %in% c("SD", "NON-CR/NON-PD") & ADT < !!reference_date + days(ref_start_window),
-      "NE",
-      AVALC
-    ))
+    mutate(
+      tmp_order = case_when(
+        AVALC %in% c("CR") ~ 1,
+        AVALC %in% c("PR") ~ 2,
+        AVALC %in% c("SD") ~ 3,
+        AVALC %in% c("NON-CR/NON-PD") ~ 4,
+        AVALC %in% c("PD") ~ 5,
+        AVALC %in% c("NE") ~ 6,
+        is.null(AVALC) ~ 7
+      ),
+      AVALC = if_else(
+        AVALC %in% c("SD", "NON-CR/NON-PD") & ADT < !!reference_date + days(ref_start_window),
+        "NE",
+        AVALC
+      )
+    )
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # adsl only subjects ----
@@ -512,5 +515,4 @@ derive_param_bor <- function(dataset,
     dataset,
     param_bor_aval_fun
   )
-
 }

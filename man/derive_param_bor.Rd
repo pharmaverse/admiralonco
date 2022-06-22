@@ -13,7 +13,7 @@ derive_param_bor(
   reference_date,
   ref_start_window = 0,
   missing_as_ne = FALSE,
-  aval_fun = admiralonco::aval_resp(),
+  aval_fun = aval_resp(),
   subject_keys = vars(STUDYID, USUBJID),
   set_values_to
 )
@@ -117,7 +117,7 @@ analysis value (\code{AVAL})
 The (first) argument of the function must expect a character vector and the
 function must return a numeric vector.
 
-\emph{Default:} \code{admiralonc::aval_resp} (see \code{?admiralonc::aval_resp()})
+\emph{Default:} \code{aval_resp} (see \code{?aval_resp()})
 
 \emph{Required or Optional:} Required}
 
@@ -158,8 +158,8 @@ Note:
 \item All \code{CR}, \code{PR} and \code{PD} response records are considered for Best Overall Response.
 \item All \code{SD} or \code{NON-CR/NON-PD} records where \code{ADT} >= \code{reference_date} +
 \code{ref_start_window} are also considered for Best Overall Response.
-\item Patients with \strong{ONLY} \code{SD} or \code{NON-CR/NON-PD} records where \code{ADT} <
-\code{reference_date} + \code{ref_start_window} would give Best Overall Response of \code{NE}.
+\item Subjects with \strong{ONLY} an \code{SD} or \code{NON-CR/NON-PD} records where \code{ADT} <
+\code{reference_date} + \code{ref_start_window} are assigned a Best Overall Response of \code{NE}.
 \item The Best Response, by \code{subject_keys} of the records in steps 1 to 3, is then
 selected in the following order of preference:
 }
@@ -181,7 +181,7 @@ are added to the dataframe passed into the \code{dataset} argument
 Also Note: All columns from the input dataset are kept. For subjects with no records in
 the input dataset (after the filter is applied) all columns are kept from ADSL which are
 also in the input dataset.  Columns which are not to be populated for the new parameter
-or populated differently (e.g., RSSTRESC, VISIT, PARCATy, ANLzzFL, ...) should be
+or populated differently (e.g. RSSTRESC, VISIT, PARCATy, ANLzzFL, ...) should be
 overwritten using the \code{set_values_to} parameter.
 }
 \examples{
@@ -190,6 +190,7 @@ library(magrittr)
 library(dplyr)
 library(tibble)
 library(lubridate)
+library(admiral)
 
 # Create ADSL dataset
 adsl <- tribble(
