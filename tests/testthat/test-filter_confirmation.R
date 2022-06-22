@@ -31,8 +31,8 @@ test_that("filter_confirmation Test 1: filter without first_cond", {
 
   expected <- tibble::tribble(
     ~USUBJID, ~AVISITN, ~AVALC,
-    "1", 1, "PR",
-    "4", 1, "PR"
+    "1",      1,        "PR",
+    "4",      1,        "PR"
   )
 
   expect_dfs_equal(
@@ -57,7 +57,7 @@ test_that("filter_confirmation Test 2: filter with first_cond", {
 
   expected <- tibble::tribble(
     ~USUBJID, ~AVISITN, ~AVALC,
-    "1", 2, "CR"
+    "1",      2,        "CR"
   )
 
   expect_dfs_equal(
@@ -82,7 +82,7 @@ test_that("filter_confirmation Test 3: filter with first_cond and summary functi
 
   expected <- tibble::tribble(
     ~USUBJID, ~AVISITN, ~AVALC,
-    "1", 1, "PR"
+    "1",      1,        "PR"
   )
 
   expect_dfs_equal(
