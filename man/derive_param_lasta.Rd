@@ -7,7 +7,7 @@
 derive_param_lasta(
   dataset,
   filter_source,
-  order = vars(STUDYID, USUBJID, ADT),
+  order = vars(ADT),
   source_pd = NULL,
   source_datasets = NULL,
   subject_keys = vars(STUDYID, USUBJID),
@@ -18,8 +18,8 @@ derive_param_lasta(
 \item{dataset}{Input dataframe from which the Last Disease Assessment will be
 be derived from and added to.
 
-The columns \code{PARAMCD}, \code{ADT}, and \code{AVALC}and the columns specified in
-\code{subject_keys} are expected.
+The column \code{PARAMCD} and the columns specified in \code{subject_keys} and
+\code{order} are expected.
 
 \emph{Permitted Values:} a \code{data.frame()} object
 
@@ -34,9 +34,10 @@ Last Disease Assessment
 the \code{subject_keys} to determine Last Disease Assessment. Created
 using \code{vars()}.
 
-\emph{Permitted Values:} an \code{vars} object
+\emph{Permitted Values:} list of variables or \verb{desc(<variable>)} function calls
+created by \code{vars()}, e.g., \code{vars(ADT, desc(AVAL))}
 
-\emph{Default:} \code{vars(STUDYID, USUBJID, ADT)}
+\emph{Default:} \code{vars(ADT)}
 
 \emph{Required or Optional:} Required}
 
@@ -138,9 +139,9 @@ adrs <- tribble(
   "01", "OVR", 3, "SD", 1, ymd("2021-03-07"), "Y",
   "01", "OVR", 2, "PR", 1, ymd("2021-04-08"), "Y",
   "02", "OVR", 3, "SD", 1, ymd("2021-03-07"), "Y",
-  "02", "OVR", NA, NA, 1, ymd("2021-04-07"), "N",
+  "02", "OVR", NA, NA, 1, ymd("2021-04-07"), NA,
   "02", "OVR", 6, "PD", 1, ymd("2021-05-07"), "Y",
-  "03", "OVR", 3, "SD", 1, ymd("2021-01-30"), "Y",
+  "03", "OVR", 3, "SD", 1, ymd("2021-01-30"), NA,
   "03", "OVR", 3, "SD", 2, ymd("2021-01-30"), "Y",
   "04", "OVR", NA, "NE", 1, ymd("2021-05-21"), "Y",
   "04", "OVR", 5, "NON-PD", 1, ymd("2021-06-30"), "Y",
@@ -168,7 +169,8 @@ derive_param_lasta(
     PARCAT3 = "Recist 1.1",
     ANL01FL = "Y"
   )
-)
+) \%>\%
+  filter(PARAMCD == "LSTAC")
 }
 \author{
 Stephen Gormley

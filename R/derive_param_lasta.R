@@ -19,8 +19,8 @@
 #' @param dataset Input dataframe from which the Last Disease Assessment will be
 #'                be derived from and added to.
 #'
-#'   The columns `PARAMCD`, `ADT`, and `AVALC`and the columns specified in
-#'   `subject_keys` are expected.
+#'   The column `PARAMCD` and the columns specified in `subject_keys` and
+#'   `order` are expected.
 #'
 #'    *Permitted Values:* a `data.frame()` object
 #'
@@ -35,9 +35,10 @@
 #'              the `subject_keys` to determine Last Disease Assessment. Created
 #'              using `vars()`.
 #'
-#'    *Permitted Values:* an `vars` object
+#'    *Permitted Values:* list of variables or `desc(<variable>)` function calls
+#'    created by `vars()`, e.g., `vars(ADT, desc(AVAL))`
 #'
-#'    *Default:* `vars(STUDYID, USUBJID, ADT)`
+#'    *Default:* `vars(ADT)`
 #'
 #'    *Required or Optional:* Required
 #'
@@ -121,9 +122,9 @@
 #'   "01", "OVR", 3, "SD", 1, ymd("2021-03-07"), "Y",
 #'   "01", "OVR", 2, "PR", 1, ymd("2021-04-08"), "Y",
 #'   "02", "OVR", 3, "SD", 1, ymd("2021-03-07"), "Y",
-#'   "02", "OVR", NA, NA, 1, ymd("2021-04-07"), "N",
+#'   "02", "OVR", NA, NA, 1, ymd("2021-04-07"), NA,
 #'   "02", "OVR", 6, "PD", 1, ymd("2021-05-07"), "Y",
-#'   "03", "OVR", 3, "SD", 1, ymd("2021-01-30"), "Y",
+#'   "03", "OVR", 3, "SD", 1, ymd("2021-01-30"), NA,
 #'   "03", "OVR", 3, "SD", 2, ymd("2021-01-30"), "Y",
 #'   "04", "OVR", NA, "NE", 1, ymd("2021-05-21"), "Y",
 #'   "04", "OVR", 5, "NON-PD", 1, ymd("2021-06-30"), "Y",
@@ -151,7 +152,8 @@
 #'     PARCAT3 = "Recist 1.1",
 #'     ANL01FL = "Y"
 #'   )
-#' )
+#' ) %>%
+#'   filter(PARAMCD == "LSTAC")
 #' @export
 #
 #' @author Stephen Gormley
@@ -163,7 +165,7 @@
 
 derive_param_lasta <- function(dataset,
                                filter_source,
-                               order = vars(STUDYID, USUBJID, ADT),
+                               order = vars(ADT),
                                source_pd = NULL,
                                source_datasets = NULL,
                                subject_keys = vars(STUDYID, USUBJID),
@@ -189,7 +191,7 @@ derive_param_lasta <- function(dataset,
     optional = TRUE
   )
 
-  assert_vars(arg = order)
+  assert_order_vars(arg = order)
 
   assert_vars(arg = subject_keys)
 
