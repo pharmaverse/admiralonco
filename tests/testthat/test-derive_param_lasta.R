@@ -62,16 +62,17 @@ adrs <- tibble::tribble(
   ) %>%
   dplyr::select(-c(ADTC))
 
+pd_test <- admiral::date_source(
+  dataset_name = "adrs",
+  date         = ADT,
+  filter       = PARAMCD == "PD" & AVALC == "Y" # check with Catherine
+)
+
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # testthat calls ----
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 test_that("Last assesment derived correctly from derive_param_lasta", {
-  pd_test <- admiral::date_source(
-    dataset_name = "adrs",
-    date         = ADT,
-    filter       = PARAMCD == "PD" & AVALC == "Y" # check with Catherine
-  )
 
   # Test 1: No removal of NE and censored up to PD ----
   actual_01 <- derive_param_lasta(
@@ -220,27 +221,7 @@ test_that("Errors correctly from derive_param_lasta", {
     "`dataset` must be a data frame but is"
   )
 
-  # Test Error 2: missing source_datasets argument ----
-  testthat::expect_error(
-    derive_param_lasta(
-      dataset = adrs_test,
-      order = admiral::vars(USUBJID, ADT, ASEQ),
-      filter_source = PARAMCD == "OVR" & !(AVALC %in% c(NA, "NE", "ND", "NA")),
-      source_pd = pd_test,
-      source_datasets = "not a list",
-      set_values_to = vars(
-        PARAMCD = "LSTAC",
-        PARAM = " Last Disease Assessment Censored at First PD by Investigator",
-        PARCAT1 = "Tumor Response",
-        PARCAT2 = "Investigator",
-        PARCAT3 = "Recist 1.1",
-        ANL01FL = "Y"
-      )
-    ),
-    "The dataset names must be included in the list specified for the `source_datasets` parameter."
-  )
-
-  # Test Error 3: missing set_values_to argument ----
+  # Test Error 2: missing set_values_to argument ----
   testthat::expect_error(
     derive_param_lasta(
       dataset         = adrs,
@@ -253,7 +234,7 @@ test_that("Errors correctly from derive_param_lasta", {
     "`set_values_to` must be a named list of quosures where each element"
   )
 
-  # Test Error 4: No PARAMCD in dataset ----
+  # Test Error 3: No PARAMCD in dataset ----
   adrs_test_missing_paramcd <-
     adrs %>% dplyr::select(-PARAMCD)
 

@@ -12,7 +12,7 @@
 #'    using the `order` argument). One new record for each subject in the filtered
 #'    input `dataset` is added to the input `dataset`.
 #'
-#'    Records after PD can be removed using the source_pd and source_datasets
+#'    Records after PD can be removed using the `source_pd` and `source_datasets`
 #'    arguments.
 #
 # Function Arguments:
@@ -59,7 +59,7 @@
 #' @param source_datasets Source dataframe to be used to calculate the
 #'                        first PD date
 #'
-#'   A named list of dataframes is expected (although for BoR) only one dataframe is
+#'   A named list of dataframes is expected (although for BOR) only one dataframe is
 #'   needed. It links the `dataset_name` from `source_pd` with an existing dataframe.
 #'
 #'   For example if `source_pd = pd_date` with
@@ -98,6 +98,7 @@
 #' library(lubridate)
 #' library(admiral)
 #' library(tibble)
+#' library(magrittr)
 #'
 #' adsl <- tribble(
 #'   ~USUBJID, ~TRTSDT,                      ~EOSDT,
@@ -109,37 +110,37 @@
 #'   mutate(STUDYID = "a_study_id")
 #'
 #' adrs <- tribble(
-#'   ~USUBJID, ~PARAMCD, ~AVAL, ~AVALC, ~ASEQ, ~ADT,
-#'   "01", "RSP", NA, "Y", 1, ymd("2021-04-08"),
-#'   "02", "RSP", NA, "N", 1, ymd("2021-05-07"),
-#'   "03", "RSP", NA, "N", 1, NA,
-#'   "04", "RSP", NA, "N", 1, NA,
-#'   "01", "PD", NA, "N", 1, NA,
-#'   "02", "PD", NA, "Y", 1, ymd("2021-05-07"),
-#'   "03", "PD", NA, "N", 1, NA,
-#'   "04", "PD", NA, "N", 1, NA,
-#'   "01", "OVR", 3, "SD", 1, ymd("2021-03-07"),
-#'   "01", "OVR", 2, "PR", 1, ymd("2021-04-08"),
-#'   "02", "OVR", 3, "SD", 1, ymd("2021-03-07"),
-#'   "02", "OVR", NA, NA, 1, ymd("2021-04-07"),
-#'   "02", "OVR", 6, "PD", 1, ymd("2021-05-07"),
-#'   "03", "OVR", 3, "SD", 1, ymd("2021-01-30"),
-#'   "03", "OVR", 3, "SD", 2, ymd("2021-01-30"),
-#'   "04", "OVR", NA, "NE", 1, ymd("2021-05-21"),
-#'   "04", "OVR", 5, "NON-PD", 1, ymd("2021-06-30"),
-#'   "04", "OVR", NA, "NE", 1, ymd("2021-07-24"),
-#'   "04", "OVR", NA, "ND", 1, ymd("2021-09-30"),
+#'   ~USUBJID, ~PARAMCD, ~AVAL, ~AVALC, ~ASEQ, ~ADT, ~ANL01FL,
+#'   "01", "RSP", NA, "Y", 1, ymd("2021-04-08"), NA,
+#'   "02", "RSP", NA, "N", 1, ymd("2021-05-07"), NA,
+#'   "03", "RSP", NA, "N", 1, NA, NA,
+#'   "04", "RSP", NA, "N", 1, NA, NA,
+#'   "01", "PD", NA, "N", 1, NA, NA,
+#'   "02", "PD", NA, "Y", 1, ymd("2021-05-07"), NA,
+#'   "03", "PD", NA, "N", 1, NA, NA,
+#'   "04", "PD", NA, "N", 1, NA, NA,
+#'   "01", "OVR", 3, "SD", 1, ymd("2021-03-07"), "Y",
+#'   "01", "OVR", 2, "PR", 1, ymd("2021-04-08"), "Y",
+#'   "02", "OVR", 3, "SD", 1, ymd("2021-03-07"), "Y",
+#'   "02", "OVR", NA, NA, 1, ymd("2021-04-07"), "N",
+#'   "02", "OVR", 6, "PD", 1, ymd("2021-05-07"), "Y",
+#'   "03", "OVR", 3, "SD", 1, ymd("2021-01-30"), "Y",
+#'   "03", "OVR", 3, "SD", 2, ymd("2021-01-30"), "Y",
+#'   "04", "OVR", NA, "NE", 1, ymd("2021-05-21"), "Y",
+#'   "04", "OVR", 5, "NON-PD", 1, ymd("2021-06-30"), "Y",
+#'   "04", "OVR", NA, "NE", 1, ymd("2021-07-24"), "Y",
+#'   "04", "OVR", NA, "ND", 1, ymd("2021-09-30"), "Y"
 #' ) %>%
 #'   mutate(STUDYID = "a_study_id")
 #'
 #' pd <- date_source(
-#'   dataset_name = adrs,
+#'   dataset_name = "adrs",
 #'   date         = ADT,
 #'   filter       = PARAMCD == "PD" & AVALC == "Y"
 #' )
 #'
 #' derive_param_lasta(
-#'   dataset,
+#'   adrs,
 #'   filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
 #'   source_pd = pd,
 #'   source_datasets = list(adrs = adrs),
@@ -156,7 +157,7 @@
 #
 #' @author Stephen Gormley
 #
-#' @keywords ADRS
+#' @keywords adrs
 #
 #' @return The dataframe passed in the `dataset` argument with additional
 #'         columns and/or rows as set in the `set_values_to` argument.
