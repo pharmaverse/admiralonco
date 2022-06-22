@@ -161,13 +161,13 @@ randomization date censor is to catch those patients that never have a tumor ass
 
 ```{r}
 adtte <- derive_param_tte(
-    dataset_adsl = adsl,
-    start_date = RANDDT,
-    event_conditions = list(death_event),
-    censor_conditions = list(lastalive_censor, rand_censor),
-    source_datasets = list(adsl = adsl, adrs = adrs),
-    set_values_to = vars(PARAMCD = "OS", PARAM = "Overall Survival")
-  ) %>%
+  dataset_adsl = adsl,
+  start_date = RANDDT,
+  event_conditions = list(death_event),
+  censor_conditions = list(lastalive_censor, rand_censor),
+  source_datasets = list(adsl = adsl, adrs = adrs),
+  set_values_to = vars(PARAMCD = "OS", PARAM = "Overall Survival")
+) %>%
   derive_param_tte(
     dataset_adsl = adsl,
     start_date = RANDDT,
