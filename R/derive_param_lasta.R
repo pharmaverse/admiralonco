@@ -1,8 +1,7 @@
-#' Adds a Parameter for the Last Disease Assessment
-#
-#' @description
-#'     Derives Last Disease Assessment (optionally) up to first Progressive Disease
-#
+#' Derives Parameter for the Last Disease Assessment
+#'
+#' Derives Parameter for the Last Disease Assessment (optionally) up to first Progressive Disease
+#'
 #' @details
 #'    Calculates the last disease assessment by accessing the last record
 #'    defined in `subject_keys` after it has been arranged using the `order` argument.
