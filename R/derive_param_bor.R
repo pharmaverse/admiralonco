@@ -37,7 +37,7 @@
 #'  Also Note: All columns from the input dataset are kept. For subjects with no records in
 #'  the input dataset (after the filter is applied) all columns are kept from ADSL which are
 #'  also in the input dataset.  Columns which are not to be populated for the new parameter
-#'  or populated differently (e.g. RSSTRESC, VISIT, PARCATy, ANLzzFL, ...) should be
+#'  or populated differently (e.g. `RSSTRESC`, `VISIT`, `PARCATy`, `ANLzzFL`, ...) should be
 #'  overwritten using the `set_values_to` parameter.
 #
 # Function Arguments:
@@ -82,7 +82,7 @@
 #' @param source_datasets Source dataframe to be used to calculate the
 #'                        first PD date
 #'
-#'   A named list of dataframes is expected (although for BoR) only one dataframe is
+#'   A named list of dataframes is expected (although for BOR) only one dataframe is
 #'   needed. It links the `dataset_name` from `source_pd` with an existing dataframe.
 #'
 #'   For example if `source_pd = pd_date` with
@@ -117,9 +117,7 @@
 #'
 #'   *Permitted Values:* a non-negative numeric scalar
 #'
-#'   *Default:* 0
-#'
-#'   *Required or Optional:* Optional
+#'   *Required or Optional:* Required
 #'
 #' @param missing_as_ne Consider no assessments as `"NE"`?
 #'
@@ -147,7 +145,7 @@
 #' @param set_values_to New columns to set
 #'
 #'   A named list returned by `vars()` defining the columns to be set for the
-#'   new parameter, e.g. `vars(PARAMCD = "CBOR", PARAM = "Best Overall
+#'   new parameter, e.g. `vars(PARAMCD = "BOR", PARAM = "Best Overall
 #'   Response")` is expected. The values must be symbols, character strings,
 #'   numeric values, or `NA`.
 #'
@@ -190,37 +188,37 @@
 #'
 #' # Create ADRS dataset
 #' ovr_obs <- tribble(
-#'   ~USUBJID, ~ADTC,        ~AVALC,
-#'   "1",      "2020-01-01", "PR",
-#'   "1",      "2020-02-01", "CR",
-#'   "1",      "2020-02-16", "NE",
-#'   "1",      "2020-03-01", "CR",
-#'   "1",      "2020-04-01", "SD",
-#'   "2",      "2020-01-01", "SD",
-#'   "2",      "2020-02-01", "PR",
-#'   "2",      "2020-03-01", "SD",
-#'   "2",      "2020-03-13", "CR",
-#'   "3",      "2019-11-12", "CR",
-#'   "3",      "2019-12-02", "CR",
-#'   "3",      "2020-01-01", "SD",
-#'   "4",      "2020-01-01", "PR",
-#'   "4",      "2020-03-01", "SD",
-#'   "4",      "2020-04-01", "SD",
-#'   "4",      "2020-05-01", "PR",
-#'   "4",      "2020-05-15", "NON-CR/NON-PD",
-#'   "5",      "2020-01-01", "PR",
-#'   "5",      "2020-01-10", "SD",
-#'   "5",      "2020-01-20", "PR",
-#'   "5",      "2020-05-15", "NON-CR/NON-PD",
-#'   "6",      "2020-02-06", "PR",
-#'   "6",      "2020-02-16", "CR",
-#'   "6",      "2020-03-30", "PR",
-#'   "6",      "2020-04-12", "PD",
-#'   "6",      "2020-05-01", "CR",
-#'   "6",      "2020-06-01", "CR",
-#'   "7",      "2020-02-06", "PR",
-#'   "7",      "2020-02-16", "CR",
-#'   "7",      "2020-04-01", "NE"
+#'   ~USUBJID, ~ADTC,        ~AVALC, ~ANL01FL,
+#'   "1",      "2020-01-01", "PR", "Y",
+#'   "1",      "2020-02-01", "CR", "Y",
+#'   "1",      "2020-02-16", "NE", "Y",
+#'   "1",      "2020-03-01", "CR", "Y",
+#'   "1",      "2020-04-01", "SD", "Y",
+#'   "2",      "2020-01-01", "SD", "Y",
+#'   "2",      "2020-02-01", "PR", "Y",
+#'   "2",      "2020-03-01", "SD", "Y",
+#'   "2",      "2020-03-13", "CR", "Y",
+#'   "3",      "2019-11-12", "CR", "Y",
+#'   "3",      "2019-12-02", "CR", "Y",
+#'   "3",      "2020-01-01", "SD", "Y",
+#'   "4",      "2020-01-01", "PR", "Y",
+#'   "4",      "2020-03-01", "SD", "N",
+#'   "4",      "2020-04-01", "SD", "Y",
+#'   "4",      "2020-05-01", "PR", "Y",
+#'   "4",      "2020-05-15", "NON-CR/NON-PD",  "Y",
+#'   "5",      "2020-01-01", "PR", "Y",
+#'   "5",      "2020-01-10", "SD", "Y",
+#'   "5",      "2020-01-20", "PR", "Y",
+#'   "5",      "2020-05-15", "NON-CR/NON-PD",  "Y",
+#'   "6",      "2020-02-06", "PR", "Y",
+#'   "6",      "2020-02-16", "CR", "Y",
+#'   "6",      "2020-03-30", "PR", "Y",
+#'   "6",      "2020-04-12", "PD", "Y",
+#'   "6",      "2020-05-01", "CR", "Y",
+#'   "6",      "2020-06-01", "CR", "Y",
+#'   "7",      "2020-02-06", "PR", "Y",
+#'   "7",      "2020-02-16", "CR", "Y",
+#'   "7",      "2020-04-01", "NE", "N"
 #' ) %>%
 #'   mutate(PARAMCD = "OVR")
 #'
@@ -267,7 +265,7 @@
 #' derive_param_bor(
 #'   adrs,
 #'   dataset_adsl = adsl,
-#'   filter_source = PARAMCD == "OVR",
+#'   filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
 #'   source_pd = pd_date,
 #'   source_datasets = list(adrs = adrs),
 #'   aval_fun = aval_fun_pass,
@@ -283,7 +281,7 @@
 #
 #' @author Stephen Gormley
 #
-#' @keywords ADRS
+#' @keywords adrs
 #
 #' @return The dataframe passed in the `dataset` argument with additional columns and/or
 #'         rows as set in the `set_values_to` argument.
@@ -294,9 +292,9 @@ derive_param_bor <- function(dataset,
                              source_pd = NULL,
                              source_datasets = NULL,
                              reference_date,
-                             ref_start_window = 0,
+                             ref_start_window,
                              missing_as_ne = FALSE,
-                             aval_fun = aval_resp(),
+                             aval_fun = aval_resp,
                              subject_keys = vars(STUDYID, USUBJID),
                              set_values_to) {
 
@@ -324,8 +322,7 @@ derive_param_bor <- function(dataset,
 
   assert_integer_scalar(
     arg      = ref_start_window,
-    subset   = "non-negative",
-    optional = TRUE
+    subset   = "non-negative"
   )
 
   assert_logical_scalar(arg = missing_as_ne)
@@ -398,6 +395,11 @@ derive_param_bor <- function(dataset,
 
   dataset_ordered <- dataset_filter %>%
     mutate(
+      AVALC = if_else(
+        AVALC %in% c("SD", "NON-CR/NON-PD") & ADT < !!reference_date + days(ref_start_window),
+        "NE",
+        AVALC
+      ),
       tmp_order = case_when(
         AVALC %in% c("CR") ~ 1,
         AVALC %in% c("PR") ~ 2,
@@ -406,11 +408,6 @@ derive_param_bor <- function(dataset,
         AVALC %in% c("PD") ~ 5,
         AVALC %in% c("NE") ~ 6,
         is.null(AVALC) ~ 7
-      ),
-      AVALC = if_else(
-        AVALC %in% c("SD", "NON-CR/NON-PD") & ADT < !!reference_date + days(ref_start_window),
-        "NE",
-        AVALC
       )
     )
 

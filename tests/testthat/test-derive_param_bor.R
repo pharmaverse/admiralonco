@@ -144,6 +144,35 @@ testthat::test_that("derive_param_bor Test 1: No source_pd", {
   )
 
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  # default  BOR, All Subjects have a record after reference date ----
+  # use default for aval_fun
+  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+  actual_01_def_aval_fun <- derive_param_bor(
+    dataset = adrs,
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR",
+    source_pd = NULL,
+    source_datasets = NULL,
+    reference_date = TRTSDT,
+    ref_start_window = 28,
+    set_values_to = admiral::vars(
+      PARAMCD = "BOR",
+      PARAM = "Best Overall Response"
+    )
+  )
+
+  expected_01_def_aval_fun <- expected_01
+
+  expected_01_def_aval_fun$AVAL[28:35] <- c(1,1,1,2,2,1,1,7)
+
+  admiral::expect_dfs_equal(
+    base    = expected_01_def_aval_fun,
+    compare = actual_01_def_aval_fun,
+    keys    = c("USUBJID", "PARAMCD", "ADT")
+  )
+
+  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Subjects only have records less than reference date (PR/CR) ----
   # Response is PR and CR so will be included
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

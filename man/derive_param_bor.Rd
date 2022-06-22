@@ -11,9 +11,9 @@ derive_param_bor(
   source_pd = NULL,
   source_datasets = NULL,
   reference_date,
-  ref_start_window = 0,
+  ref_start_window,
   missing_as_ne = FALSE,
-  aval_fun = aval_resp(),
+  aval_fun = aval_resp,
   subject_keys = vars(STUDYID, USUBJID),
   set_values_to
 )
@@ -59,7 +59,7 @@ for details)
 \item{source_datasets}{Source dataframe to be used to calculate the
 first PD date
 
-A named list of dataframes is expected (although for BoR) only one dataframe is
+A named list of dataframes is expected (although for BOR) only one dataframe is
 needed. It links the \code{dataset_name} from \code{source_pd} with an existing dataframe.
 
 For example if \code{source_pd = pd_date} with
@@ -94,9 +94,7 @@ information).
 
 \emph{Permitted Values:} a non-negative numeric scalar
 
-\emph{Default:} 0
-
-\emph{Required or Optional:} Optional}
+\emph{Required or Optional:} Required}
 
 \item{missing_as_ne}{Consider no assessments as \code{"NE"}?
 
@@ -134,7 +132,7 @@ A list of symbols created using \code{vars()}.
 \item{set_values_to}{New columns to set
 
 A named list returned by \code{vars()} defining the columns to be set for the
-new parameter, e.g. \code{vars(PARAMCD = "CBOR", PARAM = "Best Overall Response")} is expected. The values must be symbols, character strings,
+new parameter, e.g. \code{vars(PARAMCD = "BOR", PARAM = "Best Overall Response")} is expected. The values must be symbols, character strings,
 numeric values, or \code{NA}.
 
 \emph{Required or Optional:} Required}
@@ -181,7 +179,7 @@ are added to the dataframe passed into the \code{dataset} argument
 Also Note: All columns from the input dataset are kept. For subjects with no records in
 the input dataset (after the filter is applied) all columns are kept from ADSL which are
 also in the input dataset.  Columns which are not to be populated for the new parameter
-or populated differently (e.g. RSSTRESC, VISIT, PARCATy, ANLzzFL, ...) should be
+or populated differently (e.g. \code{RSSTRESC}, \code{VISIT}, \code{PARCATy}, \code{ANLzzFL}, ...) should be
 overwritten using the \code{set_values_to} parameter.
 }
 \examples{
@@ -211,37 +209,37 @@ adsl <- tribble(
 
 # Create ADRS dataset
 ovr_obs <- tribble(
-  ~USUBJID, ~ADTC,        ~AVALC,
-  "1",      "2020-01-01", "PR",
-  "1",      "2020-02-01", "CR",
-  "1",      "2020-02-16", "NE",
-  "1",      "2020-03-01", "CR",
-  "1",      "2020-04-01", "SD",
-  "2",      "2020-01-01", "SD",
-  "2",      "2020-02-01", "PR",
-  "2",      "2020-03-01", "SD",
-  "2",      "2020-03-13", "CR",
-  "3",      "2019-11-12", "CR",
-  "3",      "2019-12-02", "CR",
-  "3",      "2020-01-01", "SD",
-  "4",      "2020-01-01", "PR",
-  "4",      "2020-03-01", "SD",
-  "4",      "2020-04-01", "SD",
-  "4",      "2020-05-01", "PR",
-  "4",      "2020-05-15", "NON-CR/NON-PD",
-  "5",      "2020-01-01", "PR",
-  "5",      "2020-01-10", "SD",
-  "5",      "2020-01-20", "PR",
-  "5",      "2020-05-15", "NON-CR/NON-PD",
-  "6",      "2020-02-06", "PR",
-  "6",      "2020-02-16", "CR",
-  "6",      "2020-03-30", "PR",
-  "6",      "2020-04-12", "PD",
-  "6",      "2020-05-01", "CR",
-  "6",      "2020-06-01", "CR",
-  "7",      "2020-02-06", "PR",
-  "7",      "2020-02-16", "CR",
-  "7",      "2020-04-01", "NE"
+  ~USUBJID, ~ADTC,        ~AVALC, ~ANL01FL,
+  "1",      "2020-01-01", "PR", "Y",
+  "1",      "2020-02-01", "CR", "Y",
+  "1",      "2020-02-16", "NE", "Y",
+  "1",      "2020-03-01", "CR", "Y",
+  "1",      "2020-04-01", "SD", "Y",
+  "2",      "2020-01-01", "SD", "Y",
+  "2",      "2020-02-01", "PR", "Y",
+  "2",      "2020-03-01", "SD", "Y",
+  "2",      "2020-03-13", "CR", "Y",
+  "3",      "2019-11-12", "CR", "Y",
+  "3",      "2019-12-02", "CR", "Y",
+  "3",      "2020-01-01", "SD", "Y",
+  "4",      "2020-01-01", "PR", "Y",
+  "4",      "2020-03-01", "SD", "N",
+  "4",      "2020-04-01", "SD", "Y",
+  "4",      "2020-05-01", "PR", "Y",
+  "4",      "2020-05-15", "NON-CR/NON-PD",  "Y",
+  "5",      "2020-01-01", "PR", "Y",
+  "5",      "2020-01-10", "SD", "Y",
+  "5",      "2020-01-20", "PR", "Y",
+  "5",      "2020-05-15", "NON-CR/NON-PD",  "Y",
+  "6",      "2020-02-06", "PR", "Y",
+  "6",      "2020-02-16", "CR", "Y",
+  "6",      "2020-03-30", "PR", "Y",
+  "6",      "2020-04-12", "PD", "Y",
+  "6",      "2020-05-01", "CR", "Y",
+  "6",      "2020-06-01", "CR", "Y",
+  "7",      "2020-02-06", "PR", "Y",
+  "7",      "2020-02-16", "CR", "Y",
+  "7",      "2020-04-01", "NE", "N"
 ) \%>\%
   mutate(PARAMCD = "OVR")
 
@@ -288,7 +286,7 @@ aval_fun_pass <- function(arg) {
 derive_param_bor(
   adrs,
   dataset_adsl = adsl,
-  filter_source = PARAMCD == "OVR",
+  filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
   source_pd = pd_date,
   source_datasets = list(adrs = adrs),
   aval_fun = aval_fun_pass,
@@ -304,4 +302,4 @@ derive_param_bor(
 \author{
 Stephen Gormley
 }
-\keyword{ADRS}
+\keyword{adrs}
