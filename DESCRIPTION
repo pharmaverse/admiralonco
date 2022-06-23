@@ -51,7 +51,7 @@ Suggests:
     lifecycle,
     lintr,
     pkgdown,
-    testthat,
+    testthat (>= 3.0.0),
     knitr,
     methods,
     miniUI,
@@ -66,3 +66,4 @@ Suggests:
 Remotes:
     pharmaverse/admiral.test@devel
 VignetteBuilder: knitr
+Config/testthat/edition: 3
