@@ -335,9 +335,9 @@ dataset_vignette(
 
 ## Derive Best Overall Response Parameter {#bor}
 
-The function `derive_param_bor()` can be used to derive the best overall response parameter. Similar to the above function
-you can optionally decide what period would you consider a `SD` or `NON-CR/NON-PD` as being eligible from. In this example,
-42 days after randomization date has been used again.
+The function `derive_param_bor()` can be used to derive the best overall response (without confirmation required) parameter.
+Similar to the above function you can optionally decide what period would you consider a `SD` or `NON-CR/NON-PD` as being
+eligible from. In this example, 42 days after randomization date has been used again.
 
 ```{r}
 adrs <- adrs %>%
