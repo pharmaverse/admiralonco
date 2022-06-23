@@ -8,7 +8,8 @@
 An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 60 rows and 81 columns.
 }
 \source{
-Derived from the \code{adsl}, \code{rs} and \code{tu} datasets using \code{{admiralonco}} (\url{https://github.com/pharmaverse/admiralonco/blob/main/inst/templates/ad_adrs.R})
+Derived from the \code{adsl}, \code{rs} and \code{tu} datasets using \code{{admiralonco}}
+(\url{https://github.com/pharmaverse/admiralonco/blob/main/inst/templates/ad_adrs.R})
 }
 \usage{
 admiral_adrs
