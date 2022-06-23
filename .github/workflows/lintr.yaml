@@ -1,77 +1,66 @@
+---
+name: Lint
+
 on:
   workflow_dispatch:
+  workflow_call:
   push:
     branches:
       - main
       - devel
+      - pre-release
   pull_request:
     branches:
       - main
       - devel
-
-name: lint
+      - pre-release
 
 jobs:
   lint:
-    runs-on: ubuntu-20.04
-    env:
-      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    name: Lint Code Base
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
-      - uses: r-lib/actions/setup-r@v1
+      - name: Checkout Code
+        uses: actions/checkout@v3
         with:
-          r-version: 3.6
+          fetch-depth: 0
 
-      - uses: actions/cache@v2
-        if: startsWith(runner.os, 'Linux')
-        with:
-          path: ~/.local/share/renv
-          key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-renv-
-
-      - name: Query dependencies
+      - name: Override SuperLinter configs 💾
         run: |
-          install.packages('remotes')
-          saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
-          writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
-        shell: Rscript {0}
+          # Override markdownlint default config
+          [ ! -e .markdownlint.yaml ] && cat > .markdownlint.yaml <<EOF
+          ###############
+          # Rules by id #
+          ###############
+          MD004: false                  # Unordered list style
+          MD007:
+            indent: 2                   # Unordered list indentation
+          MD013:
+            line_length: 800            # Line length
+          MD026:
+            punctuation: ".,;:!。，；:"  # List of not allowed
+          MD029: false                  # Ordered list item prefix
+          MD033: false                  # Allow inline HTML
+          MD036: false                  # Emphasis used instead of a heading
+          #################
+          # Rules by tags #
+          #################
+          blank_lines: true  # Error on blank lines
+          EOF
+        shell: bash
 
-      - name: Install system dependencies
-        if: runner.os == 'Linux'
-        run: |
-          while read -r cmd
-          do
-            eval sudo $cmd
-          done < <(Rscript -e 'writeLines(remotes::system_requirements("ubuntu", "20.04"))')
-
-      - name: Install dependencies
-        run: |
-          if (!requireNamespace("renv", quietly = TRUE)) install.packages("renv")
-          renv::restore()
-          ref <- if (Sys.getenv("GITHUB_REF_NAME") == "main") "main" else "devel"
-          remotes::install_github(
-            "pharmaverse/admiral",
-            ref = ref,
-            dependencies = FALSE,
-            upgrade = "never"
-          )
-        shell: Rscript {0}
-
-      - name: Install package
-        run: R CMD INSTALL .
-
-      - name: Lint
-        run: |
-          (lints <- lintr::lint_package())
-          saveRDS(lints, file = "lints.rds")
-        shell: Rscript {0}
-
-      - name: Error if lints are detected
-        run: |
-          lints <- readRDS("lints.rds")
-          if (length(lints) > 0L) {
-            stop("Lints detected. Please review and adjust code according to the comments provided.", call. = FALSE)
-          }
-        shell: Rscript {0}
+      - name: Lint Code Base 🧶
+        uses: github/super-linter/slim@v4
+        env:
+          LINTER_RULES_PATH: /
+          DEFAULT_BRANCH: main
+          FILTER_REGEX_EXCLUDE: NEWS.md|testthat/_snaps/.*
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_BASH: true
+          VALIDATE_DOCKERFILE: true
+          VALIDATE_MARKDOWN: true
+          MARKDOWN_CONFIG_FILE: .markdownlint.yaml
+          VALIDATE_R: true
+          VALIDATE_YAML: true
+          LINTR_ERROR_ON_LINT: true
