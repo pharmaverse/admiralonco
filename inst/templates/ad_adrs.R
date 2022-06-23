@@ -84,7 +84,7 @@ adrs <- adrs %>%
 adrs <- adrs %>%
   mutate(
     ANL01FL = case_when(
-      !is.na(AVAL) & ADT>=RANDDT ~ "Y",
+      !is.na(AVAL) & ADT >= RANDDT ~ "Y",
       TRUE ~ NA_character_
     )
   )
@@ -98,7 +98,7 @@ adrs <- adrs %>%
     dataset_source = adrs,
     filter_source = PARAMCD == "OVR" & AVALC == "PD" & ANL01FL == "Y",
     date_var = ADT,
-    set_values_to= vars(
+    set_values_to = vars(
       PARAMCD = "PD",
       PARAM = "Disease Progression by Investigator",
       PARCAT1 = "Tumor Response",

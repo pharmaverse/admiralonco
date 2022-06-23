@@ -72,9 +72,9 @@ rs <- convert_blanks_to_na(rs)
 tu <- convert_blanks_to_na(tu)
 ```
 ```{r echo=FALSE}
-rs <- filter(rs, USUBJID %in% c('01-701-1015', '01-701-1023', '01-703-1086', '01-703-1096', '01-707-1037', '01-716-1024'))
-tu <- filter(tu, USUBJID %in% c('01-701-1015', '01-701-1023', '01-703-1086', '01-703-1096', '01-707-1037', '01-716-1024')) 
-adsl <- filter(adsl, USUBJID %in% c('01-701-1015', '01-701-1023', '01-703-1086', '01-703-1096', '01-707-1037', '01-716-1024')) 
+rs <- filter(rs, USUBJID %in% c("01-701-1015", "01-701-1023", "01-703-1086", "01-703-1096", "01-707-1037", "01-716-1024"))
+tu <- filter(tu, USUBJID %in% c("01-701-1015", "01-701-1023", "01-703-1086", "01-703-1096", "01-707-1037", "01-716-1024"))
+adsl <- filter(adsl, USUBJID %in% c("01-701-1015", "01-701-1023", "01-703-1086", "01-703-1096", "01-707-1037", "01-716-1024"))
 ```
 
 At this step, it may be useful to join `ADSL` to your `RS` domain. Only the
@@ -197,7 +197,7 @@ after randomization date.
 adrs <- adrs %>%
   mutate(
     ANL01FL = case_when(
-      !is.na(AVAL) & ADT>=RANDDT ~ "Y",
+      !is.na(AVAL) & ADT >= RANDDT ~ "Y",
       TRUE ~ NA_character_
     )
   )
@@ -224,7 +224,7 @@ adrs <- adrs %>%
     dataset_source = adrs,
     filter_source = PARAMCD == "OVR" & AVALC == "PD" & ANL01FL == "Y",
     date_var = ADT,
-    set_values_to= vars(
+    set_values_to = vars(
       PARAMCD = "PD",
       PARAM = "Disease Progression by Investigator",
       PARCAT1 = "Tumor Response",
