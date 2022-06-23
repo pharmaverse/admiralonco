@@ -1,7 +1,7 @@
 Package: admiralonco
 Type: Package
-Title: Oncology extension package for ADaM in R Asset Library 
-Version: 0.0.0
+Title: Oncology Extension Package for ADaM in R Asset Library
+Version: 0.1.0
 Authors@R: c(
     person("Stefan", "Bundfuss", email = "stefan.bundfuss@roche.com", role = c("aut", "cre")),
     person("Ross", "Farrugia", role = "aut"),
@@ -31,23 +31,27 @@ Description: A toolbox for programming oncology specific Clinical Data Standards
     implemented in accordance with the "Analysis Data Model Implementation Guide"
     (CDISC Analysis Data Model Team, 2021, <https://www.cdisc.org/standards/foundational/adam/adamig-v1-3-release-package>).
     The package is an extension package of the admiral package.
+Language: en-US
 License: Apache License (>= 2)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0
 Depends: R (>= 3.5)
 Imports:
-    admiraltest,
+    admiral.test,
     admiral,
-    dplyr
+    dplyr,
+    lubridate,
+    magrittr,
+    rlang
 Suggests:
     devtools,
     diffdf,
     lifecycle,
     lintr,
     pkgdown,
-    testthat,
+    testthat (>= 3.0.0),
     knitr,
     methods,
     miniUI,
@@ -59,4 +63,7 @@ Suggests:
     usethis,
     covr,
     DT
+Remotes:
+    pharmaverse/admiral.test@devel
 VignetteBuilder: knitr
+Config/testthat/edition: 3

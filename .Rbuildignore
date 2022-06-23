@@ -1,4 +1,13 @@
+^renv$
+^renv\.lock$
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^.github$
 ^docs$
+^.lintr$
+^admiralonco\.Rcheck$
+^admiralonco.*\.tar\.gz$
+^admiralonco.*\.tgz$
+^_pkgdown\.yml$
+^LICENSE\.md$
+
