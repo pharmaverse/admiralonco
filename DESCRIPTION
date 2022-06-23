@@ -44,7 +44,8 @@ Imports:
     dplyr,
     lubridate,
     magrittr,
-    rlang
+    rlang,
+    tidyselect
 Suggests:
     devtools,
     diffdf,
