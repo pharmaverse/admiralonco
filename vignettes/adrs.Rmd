@@ -57,10 +57,9 @@ included in `{admiraltest}`---are used.
 library(admiral)
 library(admiralonco)
 library(dplyr)
-library(admiraltest)
+library(admiral.test)
 library(lubridate)
 library(stringr)
-library(tibble)
 data("admiral_adsl")
 data("admiral_rs")
 data("admiral_tu")
@@ -74,6 +73,8 @@ tu <- convert_blanks_to_na(tu)
 ```
 ```{r echo=FALSE}
 rs <- filter(rs, USUBJID %in% c('01-701-1015', '01-701-1023', '01-703-1086', '01-703-1096', '01-707-1037', '01-716-1024'))
+tu <- filter(tu, USUBJID %in% c('01-701-1015', '01-701-1023', '01-703-1086', '01-703-1096', '01-707-1037', '01-716-1024')) 
+adsl <- filter(adsl, USUBJID %in% c('01-701-1015', '01-701-1023', '01-703-1086', '01-703-1096', '01-707-1037', '01-716-1024')) 
 ```
 
 At this step, it may be useful to join `ADSL` to your `RS` domain. Only the
@@ -121,7 +122,7 @@ as `PARAMCD`, `PARAM` etc will always be company-specific, but an example is sho
 records feed into the other parameter derivations.
 
 ```{r}
-adrs <- rs %>%
+adrs <- adrs %>%
   filter(RSEVAL == "INVESTIGATOR" & RSTESTCD == "OVRLRESP") %>%
   mutate(
     PARAMCD = "OVR",
@@ -175,8 +176,7 @@ adrs <- adrs %>%
       AVALC == "SD" ~ 3,
       AVALC == "NON-CR/NON-PD" ~ 4,
       AVALC == "PD" ~ 5,
-      AVALC == "NE" ~ 6,
-      TRUE ~ NA_character_
+      AVALC == "NE" ~ 6
     )
   )
 ```
@@ -222,7 +222,7 @@ adrs <- adrs %>%
   derive_param_first_event(
     dataset_adsl = adsl,
     dataset_source = adrs,
-    filter_source = PARAMCD == "OVR" & AVALC == "PD" & ANL01FL=”Y”,
+    filter_source = PARAMCD == "OVR" & AVALC == "PD" & ANL01FL == "Y",
     date_var = ADT,
     set_values_to= vars(
       PARAMCD = "PD",
@@ -253,9 +253,9 @@ The next required step is to define the source location for this newly derived `
 
 ```{r}
 pd <- date_source(
-  dataset_name = “adrs”,
+  dataset_name = "adrs",
   date = ADT,
-  filter = PARAMCD == “PD” & AVALC == “Y”
+  filter = PARAMCD == "PD" & AVALC == "Y"
 )
 ```
 
@@ -267,7 +267,7 @@ In the below example, the response condition has been defined as `CR` or `PR`.
 adrs <- adrs %>%
   derive_param_response(
     dataset_adsl = adsl,
-    filter_source = PARAMCD == "OVR" & AVALC %in% c(“CR”, “PR”) & ANL01FL == "Y",
+    filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
     source_pd = pd,
     source_datasets = list(adrs = adrs),
     set_values_to = vars(
@@ -294,9 +294,9 @@ Similarly, we now define the source location for this newly derived first respon
 
 ```{r}
 resp <- date_source(
-  dataset_name = “adrs”,
+  dataset_name = "adrs",
   date = ADT,
-  filter = PARAMCD == “RSP” & AVALC == “Y”
+  filter = PARAMCD == "RSP" & AVALC == "Y"
 )
 ```
 
@@ -310,7 +310,7 @@ adrs <- adrs %>%
   derive_param_clinbenefit(
     dataset_adsl = adsl,
     filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
-    source_resp = rsp,
+    source_resp = resp,
     source_pd = pd,
     source_datasets = list(adrs = adrs),
     reference_date = RANDDT,
@@ -376,7 +376,7 @@ would be a repeat of the Response parameter, but a more interesting version of t
 adrs <- adrs %>%
   derive_param_response(
     dataset_adsl = adsl,
-    filter_source = PARAMCD == "BOR" & AVALC %in% c(“CR”, “PR”) & ANL01FL == "Y",
+    filter_source = PARAMCD == "BOR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
     source_pd = pd,
     source_datasets = list(adrs = adrs),
     set_values_to = vars(
@@ -439,8 +439,8 @@ Review Facility instead of investigator. For this you would just need to replace
 records, and then feed these as input to the downstream parameter functions.
 
 ```{r}
-adrs <- adrs %>%
-  filter(RSEVAL == "INDEPENDENT ASSESSOR" & RSEVALID == "RADIOLOGIST 1") %>%
+adrsirf <- rs %>%
+  filter(RSEVAL == "INDEPENDENT ASSESSOR" & RSEVALID == "RADIOLOGIST 1" & RSTESTCD == "OVRLRESP") %>%
   mutate(
     PARAMCD = "OVRR1",
     PARAM = "Overall Response by Radiologist 1",
@@ -451,7 +451,7 @@ adrs <- adrs %>%
 ```
 ```{r, echo=FALSE}
 dataset_vignette(
-  adrs,
+  adrsirf,
   display_vars = vars(USUBJID, VISIT, RSTESTCD, RSEVAL, PARAMCD, PARAM, PARCAT1, PARCAT2, PARCAT3),
   filter = PARAMCD == "OVRR1"
 )
@@ -518,11 +518,15 @@ dataset_vignette(
 
 The function `admiral::derive_param_exist_flag()` can be used to check whether a patient has measurable disease at baseline,
 according to a company-specific condition. In this example we check `TU` for target lesions during the baseline visit.
+We need to restrict the columns from `ADSL` as we'll merge all required variables later across all our `ADRS` records.
 
 ```{r}
+adslmdis <- adsl %>%
+  select(STUDYID, USUBJID, !!!adsl_vars)
+
 adrs <- adrs %>%
   derive_param_exist_flag(
-    dataset_adsl = adsl,
+    dataset_adsl = adslmdis,
     dataset_add = tu,
     condition = TUEVAL == "INVESTIGATOR" & TUSTRESC == "TARGET" & VISIT == "BASELINE",
     false_value = "N",
