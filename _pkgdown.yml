@@ -51,8 +51,7 @@ reference:
 
  - title: ADaM Datasets
  - contents:
-   - adrs
-   - adtte
+   - admiral_adrs
 
  - title: User Utilities
  - contents:
