@@ -97,7 +97,7 @@ adrs <- derive_vars_merged(
 dataset_vignette(
   adrs,
   display_vars = vars(USUBJID, RSTESTCD, RSDTC, VISIT, RANDDT),
-  filter = RSTESTCD == "OVRLRESP" & VISIT == "WEEK 2"
+  filter = RSTESTCD == "OVRLRESP"
 )
 ```
 
