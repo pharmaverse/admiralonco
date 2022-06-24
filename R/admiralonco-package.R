@@ -12,4 +12,5 @@
 #' @importFrom lubridate days
 #' @importFrom magrittr `%>%`
 #' @importFrom rlang abort enquo quo_get_expr quo_is_null
+#' @importFrom tidyselect all_of
 "_PACKAGE"

@@ -56,26 +56,18 @@ adrs <- adrs %>%
 
 # Date imputations - here we impute missing day to last possible date
 adrs <- adrs %>%
-  derive_vars_dtm(
+  derive_vars_dt(
     dtc = RSDTC,
     new_vars_prefix = "A",
     date_imputation = "last"
   ) %>%
-  derive_vars_dtm_to_dt(vars(ADTM)) %>%
   mutate(AVISIT = VISIT)
 
 # Set numeric analysis value - here RECIST 1.1 response values are expected
 adrs <- adrs %>%
   mutate(
     AVALC = RSSTRESC,
-    AVAL = case_when(
-      AVALC == "CR" ~ 1,
-      AVALC == "PR" ~ 2,
-      AVALC == "SD" ~ 3,
-      AVALC == "NON-CR/NON-PD" ~ 4,
-      AVALC == "PD" ~ 5,
-      AVALC == "NE" ~ 6
-    )
+    AVAL = aval_resp(AVALC)
   )
 
 # Set analysis flag to include only the records that should contribute to the
@@ -180,11 +172,11 @@ adrs <- adrs %>%
 
 # Best overall response of CR/PR
 adrs <- adrs %>%
-  derive_param_response(
+  derive_param_first_event(
     dataset_adsl = adsl,
+    dataset_source = adrs,
     filter_source = PARAMCD == "BOR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
-    source_pd = pd,
-    source_datasets = list(adrs = adrs),
+    date_var = ADT,
     set_values_to = vars(
       PARAMCD = "BCP",
       PARAM = "Best Overall Response of CR/PR by Investigator (confirmation not required)",
@@ -216,10 +208,13 @@ adrs <- adrs %>%
   )
 
 # Death
+adsldth <- adsl %>%
+  select(STUDYID, USUBJID, DTHDT, !!!adsl_vars)
+
 adrs <- adrs %>%
   derive_param_first_event(
-    dataset_adsl = adsl,
-    dataset_source = adsl,
+    dataset_adsl = adsldth,
+    dataset_source = adsldth,
     filter_source = !is.na(DTHDT),
     date_var = DTHDT,
     set_values_to = vars(
@@ -228,7 +223,8 @@ adrs <- adrs %>%
       PARCAT1 = "Reference Event",
       ANL01FL = "Y"
     )
-  )
+  ) %>%
+  select(-DTHDT)
 
 # Last disease assessment
 adrs <- adrs %>%
@@ -245,6 +241,9 @@ adrs <- adrs %>%
   )
 
 # Measurable disease at baseline
+adslmdis <- adsl %>%
+  select(STUDYID, USUBJID, !!!adsl_vars)
+
 adrs <- adrs %>%
   derive_param_exist_flag(
     dataset_adsl = adslmdis,
@@ -258,6 +257,16 @@ adrs <- adrs %>%
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
       ANL01FL = "Y"
+    )
+  )
+
+# Derive analysis datetime
+adrs <- adrs %>%
+  mutate(
+    ADTM = convert_date_to_dtm(
+      dt = ADT,
+      date_imputation = NULL,
+      time_imputation = "00:00:00"
     )
   )
 

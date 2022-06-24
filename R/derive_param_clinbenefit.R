@@ -225,7 +225,7 @@ derive_param_clinbenefit <- function(dataset,
   # ADSL variables
   adsl_vars <- intersect(colnames(dataset_adsl), colnames(dataset))
   adsl <- dataset_adsl %>%
-    select(adsl_vars)
+    select(all_of(adsl_vars))
 
   # Get response date
 
@@ -254,20 +254,20 @@ derive_param_clinbenefit <- function(dataset,
       check_type = "none"
     )
 
-  new_param <- bind_rows(ovr_data, rsp_data) %>%
+  # NAs are sorted to the end, i.e., adsl records are selected only for patients
+  # without records in ovr_data and rsp_data
+  new_param <- bind_rows(ovr_data, rsp_data, adsl) %>%
     filter_extreme(
       order = vars(ADT),
       by_vars = subject_keys,
       mode = "first",
       check_type = "none"
     ) %>%
-    right_join(adsl, by = adsl_vars) %>%
-    mutate(AVALC = if_else(!is.na(ADT), "Y", "N")) %>%
     mutate(
+      AVALC = if_else(!is.na(ADT), "Y", "N"),
       AVAL = aval_fun(AVALC),
       !!!set_values_to
     )
-
 
   bind_rows(dataset, new_param)
 }
