@@ -6,6 +6,7 @@ on:
       - main
       - devel
       - pre-release
+      - test
 
 name: pkgdown
 
@@ -85,4 +86,6 @@ jobs:
         uses: insightsengineering/r-pkgdown-multiversion@v2
         with:
           path: ${{ github.event.repository.name }}
+          branches-or-tags-to-list: >-
+            ^main$|^devel$|^test$|^pre-release$
           default-landing-page: "devel"
