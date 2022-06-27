@@ -25,12 +25,11 @@ adrs <- admiral_adrs
 
 # Add response date to ADSL for duration of response calculation
 adsl <- adsl %>%
-  derive_vars_merged_dt(
+  derive_vars_merged(
     dataset_add = adrs,
     filter_add = PARAMCD == "RSP" & AVALC == "Y" & ANL01FL == "Y",
     by_vars = vars(STUDYID, USUBJID),
-    new_vars_prefix = "TEMP_RESP",
-    dtc = RSDTC
+    new_vars = vars(TEMP_RESPDT = ADT)
   )
 
 # Use pre-defined tte_source objects to derive Overall Survival, Progression
