@@ -260,16 +260,6 @@ adrs <- adrs %>%
     )
   )
 
-# Derive analysis datetime
-adrs <- adrs %>%
-  mutate(
-    ADTM = convert_date_to_dtm(
-      dt = ADT,
-      date_imputation = NULL,
-      time_imputation = "00:00:00"
-    )
-  )
-
 # Derive analysis sequence
 adrs <- adrs %>%
   derive_var_obs_number(
