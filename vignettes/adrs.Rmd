@@ -42,7 +42,6 @@ otherwise specified.*
 * [Derive Death Parameter](#death)
 * [Derive Last Disease Assessment Parameters](#lsta)
 * [Derive Measurable Disease at Baseline Parameter](#mdis)
-* [Derive `ADTM`](#adtm)
 * [Assign `ASEQ`](#aseq)
 * [Add ADSL variables](#adsl_vars)
 
@@ -549,30 +548,6 @@ dataset_vignette(
   adrs,
   display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, AVALC, ADT, ANL01FL),
   filter = PARAMCD == "MDIS"
-)
-```
-
-## Derive `ADTM`{#adtm}
-
-The function `admiral::convert_date_to_dtm()` can be used to derive `ADTM`. As our test data has
-no times collected, here we just set time as `00:00:00`.
-
-```{r eval=TRUE}
-adrs <- adrs %>%
-  mutate(
-    ADTM = convert_date_to_dtm(
-      dt = ADT,
-      date_imputation = NULL,
-      time_imputation = "00:00:00"
-    )
-  )
-```
-
-```{r, eval=TRUE, echo=FALSE}
-dataset_vignette(
-  adrs,
-  display_vars = vars(USUBJID, PARAMCD, ADT, ADTM),
-  filter = USUBJID == "01-701-1015"
 )
 ```
 
