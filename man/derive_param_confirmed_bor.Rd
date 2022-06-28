@@ -2,7 +2,7 @@
 % Please edit documentation in R/derive_param_confirmed_bor.R
 \name{derive_param_confirmed_bor}
 \alias{derive_param_confirmed_bor}
-\title{Derive Confirmed Best Overall Response Parameter}
+\title{Adds a Parameter for Confirmed Best Overall Response}
 \usage{
 derive_param_confirmed_bor(
   dataset,
@@ -54,9 +54,7 @@ for details)
 A named list of datasets is expected. It links the \code{dataset_name} from
 \code{source_pd} with an existing dataset.
 
-For example if \code{source_pd = pd_date} with
-
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{pd_date <- date_source(
+For example if \code{source_pd = pd_date} with\if{html}{\out{<div class="r">}}\preformatted{pd_date <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == PD
@@ -136,7 +134,7 @@ The input dataset with a new parameter for confirmed best overall
 response
 }
 \description{
-Derive confirmed best overall response (BOR) parameter
+Adds a parameter for confirmed best overall response (BOR)
 }
 \details{
 \enumerate{

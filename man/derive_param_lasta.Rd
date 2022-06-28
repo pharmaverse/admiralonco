@@ -2,7 +2,7 @@
 % Please edit documentation in R/derive_param_lasta.R
 \name{derive_param_lasta}
 \alias{derive_param_lasta}
-\title{Derives Parameter for the Last Disease Assessment}
+\title{Adds a Parameter for the Last Disease Assessment}
 \usage{
 derive_param_lasta(
   dataset,
@@ -61,9 +61,7 @@ first PD date
 A named list of dataframes is expected (although for BOR) only one dataframe is
 needed. It links the \code{dataset_name} from \code{source_pd} with an existing dataframe.
 
-For example if \code{source_pd = pd_date} with
-
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{pd_date <- date_source(
+For example if \code{source_pd = pd_date} with\if{html}{\out{<div class="r">}}\preformatted{pd_date <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == PD
@@ -95,7 +93,8 @@ The dataframe passed in the \code{dataset} argument with additional
 columns and/or rows as set in the \code{set_values_to} argument.
 }
 \description{
-Derives Parameter for the Last Disease Assessment (optionally) up to first Progressive Disease
+Adds a parameter for the last disease assessment (optionally) up to first progressive
+disease
 }
 \details{
 Calculates the last disease assessment by accessing the last record
