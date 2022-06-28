@@ -62,7 +62,8 @@ adtte <- derive_param_tte(
     start_date = TEMP_RESPDT,
     event_conditions = list(pd_event, death_event),
     censor_conditions = list(lasta_censor),
-    source_datasets = list(adsl = filter(adsl, !is.na(TEMP_RESPDT)), adrs = filter(adrs, !is.na(TEMP_RESPDT))),
+    source_datasets = list(adsl = filter(adsl, !is.na(TEMP_RESPDT)),
+      adrs = filter(adrs, !is.na(TEMP_RESPDT))),
     set_values_to = vars(PARAMCD = "RSD", PARAM = "Duration of Response")
   )
 
