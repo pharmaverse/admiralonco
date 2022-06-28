@@ -29,7 +29,7 @@ reference:
 
  - title: Other Keywords
  - subtitle: Pre-Defined Time-to-Event Sources
-   desc: '`tte_source` objects defined by {admiralonco} that can be used as input for `derive_param_tte()`'
+   desc: '`tte_source` objects defined by {admiralonco} that can be used as input for `admiral::derive_param_tte()`'
  - contents:
    - has_keyword('tte_source')
 
