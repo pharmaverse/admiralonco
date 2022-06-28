@@ -1,7 +1,7 @@
-#' Add a Parameter Indicating If a Subject Had a Response before Progressive
+#' Adds a Parameter Indicating If a Subject Had a Response before Progressive
 #' Disease
 #'
-#' Add a new parameter indicating if a response has been observed.
+#' Adds a parameter indicating if a response has been observed.
 #' If a response has been observed, `AVALC` is set to "Y", `AVAL` to 1 and `ADT`
 #'  is set to the
 #' first date when a response has been observed.

@@ -1,6 +1,6 @@
-#' Derive a Clinical Benefit Parameter
+#' Adds a Parameter for Clinical Benefit
 #'
-#' Add a clinical benefit/disease control parameter to the input dataset.
+#' Adds a parameter for clinical benefit/disease control
 #'
 #' @details
 #' Clinical benefit/disease control is first identified for looking for subjects
