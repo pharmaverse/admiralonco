@@ -210,7 +210,7 @@ different options available and more examples.
 The analysis value (`AVAL`) can be derived by calling `admiral::derive_vars_duration()`.
 
 This example derives the time to event in days. Other units can be requested by
-the specifying the `out_unit` parameter.
+specifying the `out_unit` parameter.
 
 ```{r eval=TRUE}
 adtte <- adtte %>%
