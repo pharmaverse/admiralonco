@@ -85,7 +85,7 @@ Add a new parameter indicating if a response has been observed.
 If a response has been observed, \code{AVALC} is set to "Y", \code{AVAL} to 1 and \code{ADT}
 is set to the
 first date when a response has been observed.
-If a response has not been observed, \code{AVALC} is set to "N", AVAL to 0 and
+If a response has not been observed, \code{AVALC} is set to "N", \code{AVAL} to 0 and
 \code{ADT} is set NA.
 }
 \details{

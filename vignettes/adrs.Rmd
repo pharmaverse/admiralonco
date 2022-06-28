@@ -1,0 +1,600 @@
+---
+title: "Creating ADRS"
+output: 
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Creating ADRS}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+This article describes creating an `ADRS` ADaM with common oncology endpoint parameters
+based on RECIST v1.1. Therefore response values are expected as either `CR`, `PR`, `SD`,
+`NON-CR/NON-PD`, `PD` or `NE`.
+
+Examples are currently presented and tested using `ADSL` (ADaM) and `RS`, `TU` (SDTM) inputs.
+However, other domains could be used. The functions and workflow could similarly be used
+to create an intermediary `ADEVENT` ADaM.
+
+**Note**: *All examples assume CDISC SDTM and/or ADaM format as input unless
+otherwise specified.*
+
+# Programming Workflow
+
+* [Read in Data](#readdata)
+* [Pre-processing of Input Records](#input)
+* [Derive Progressive Disease Parameter](#pd)
+* [Derive Response Parameter](#rsp)
+* [Derive Clinical Benefit Parameter](#cb)
+* [Derive Best Overall Response Parameter](#bor)
+* [Derive Best Overall Response of CR/PR Parameter](#bcp)
+* [Derive Response Parameters requiring Confirmation](#confirm)
+* [Derive Parameters using Independent Review Facility (IRF) responses](#irf)
+* [Derive Death Parameter](#death)
+* [Derive Last Disease Assessment Parameters](#lsta)
+* [Derive Measurable Disease at Baseline Parameter](#mdis)
+* [Assign `ASEQ`](#aseq)
+* [Add ADSL variables](#adsl_vars)
+
+## Read in Data {#readdata}
+
+To start, all data frames needed for the creation of `ADRS` should be read into
+the environment.  This will be a company specific process.  Some of the 
+data frames needed may be `ADSL`, `RS` and `TU`.
+
+For example purpose, the SDTM and ADaM datasets (based on CDISC Pilot test data)---which are
+included in `{admiral.test}`---are used.
+
+```{r message=FALSE}
+library(admiral)
+library(admiralonco)
+library(dplyr)
+library(admiral.test)
+library(lubridate)
+library(stringr)
+data("admiral_adsl")
+data("admiral_rs")
+data("admiral_tu")
+
+adsl <- admiral_adsl
+rs <- admiral_rs
+tu <- admiral_tu
+
+rs <- convert_blanks_to_na(rs)
+tu <- convert_blanks_to_na(tu)
+```
+```{r echo=FALSE}
+rs <- filter(rs, USUBJID %in% c("01-701-1015", "01-701-1023", "01-703-1086", "01-703-1096", "01-707-1037", "01-716-1024"))
+tu <- filter(tu, USUBJID %in% c("01-701-1015", "01-701-1023", "01-703-1086", "01-703-1096", "01-707-1037", "01-716-1024"))
+adsl <- filter(adsl, USUBJID %in% c("01-701-1015", "01-701-1023", "01-703-1086", "01-703-1096", "01-707-1037", "01-716-1024"))
+```
+
+At this step, it may be useful to join `ADSL` to your `RS` domain. Only the
+`ADSL` variables used for derivations are selected at this step. The rest of the
+relevant `ADSL` would be added later.
+
+```{r eval=TRUE}
+adsl_vars <- vars(RANDDT)
+adrs <- derive_vars_merged(
+  rs,
+  dataset_add = adsl,
+  new_vars = adsl_vars,
+  by_vars = vars(STUDYID, USUBJID)
+)
+```
+
+```{r, eval=TRUE, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, RSTESTCD, RSDTC, VISIT, RANDDT),
+  filter = RSTESTCD == "OVRLRESP"
+)
+```
+
+## Pre-processing of Input Records {#input}
+
+The first step involves company-specific pre-processing of records for the required input to the downstream parameter functions.
+Note that this could be needed multiple times (e.g. once for investigator and once for Independent Review Facility (IRF) records).
+It could even involve merging input data from other sources besides `RS`, such as `ADTR`.
+
+This step would include any required selection/derivation of `ADT` or applying any necessary partial date imputations,
+updating `AVAL` (e.g. this should be ordered from best to worst response), and setting analysis flag `ANL01FL`. Common options for
+`ANL01FL` would be to set null for invalid assessments or those occurring after next anti-cancer therapy, or to only flag assessments
+on or after after date of first treatment/randomization, or rules to cover the case when a patient has multiple observations per visit
+(e.g. by selecting worst value).
+Another consideration could be extra potential protocol-specific sources of Progressive Disease such as radiological assessments,
+which could be pre-processed here to create a PD record to feed downstream derivations.
+
+The below shows an example of a possible company-specific implementation of this step.
+
+### Select Overall Response Records and Set Parameter Details
+
+In this case we use the overall response records from `RS` from the investigator as our starting point. The parameter details such
+as `PARAMCD`, `PARAM` etc will always be company-specific, but an example is shown below so that you can trace through how these
+records feed into the other parameter derivations.
+
+```{r}
+adrs <- adrs %>%
+  filter(RSEVAL == "INVESTIGATOR" & RSTESTCD == "OVRLRESP") %>%
+  mutate(
+    PARAMCD = "OVR",
+    PARAM = "Overall Response by Investigator",
+    PARCAT1 = "Tumor Response",
+    PARCAT2 = "Investigator",
+    PARCAT3 = "Recist 1.1"
+  )
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, VISIT, RSTESTCD, RSEVAL, PARAMCD, PARAM, PARCAT1, PARCAT2, PARCAT3)
+)
+```
+
+### Partial Date Imputation and Deriving `ADT`, `ADTF`, `AVISIT` etc
+
+If your data collection allows for partial dates, you could apply a company-specific imputation rule at this stage
+when deriving `ADT`. For this example, here we impute missing day to last possible date.
+
+```{r}
+adrs <- adrs %>%
+  derive_vars_dt(
+    dtc = RSDTC,
+    new_vars_prefix = "A",
+    date_imputation = "last"
+  ) %>%
+  mutate(AVISIT = VISIT)
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, RSSTRESC, RSDTC, ADT, ADTF)
+)
+```
+
+### Derive `AVALC` and `AVAL`
+
+Here we populate `AVALC` and create the numeric version as `AVAL` (ordered from best to worst response).
+This ordering is already covered within our RECIST v1.1 parameter derivation functions, and so changing
+`AVAL` here would not change the result of those derivations.
+
+```{r}
+adrs <- adrs %>%
+  mutate(
+    AVALC = RSSTRESC,
+    AVAL = aval_resp(AVALC)
+  )
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, RSSTRESC, AVALC, AVAL)
+)
+```
+
+### Derive `ANL01FL`
+
+When deriving `ANL01FL` this is an opportunity to exclude any records that should not contribute to any downstream
+parameter derivations. In the below example this includes only selecting valid assessments and those occurring on or
+after randomization date.
+
+```{r}
+adrs <- adrs %>%
+  mutate(
+    ANL01FL = case_when(
+      !is.na(AVAL) & ADT >= RANDDT ~ "Y",
+      TRUE ~ NA_character_
+    )
+  )
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, AVALC, ADT, RANDDT, ANL01FL)
+)
+```
+
+Note here that we don't filter out records after first `PD` at this stage, as that is specifically catered for in
+the `{admiralonco}` parameter derivation functions in the below steps.
+
+## Derive Progressive Disease Parameter {#pd}
+
+Now that we have the input records prepared above with any company-specific requirements, we can start to derive
+new parameter records. For the parameter derivations, all values except those overwritten by `set_values_to`
+argument are kept from the earliest occurring input record fulfilling the required criteria.
+
+The function `admiral::derive_param_first_event()` can be used to find the date of first `PD`.
+
+```{r}
+adrs <- adrs %>%
+  derive_param_first_event(
+    dataset_adsl = adsl,
+    dataset_source = adrs,
+    filter_source = PARAMCD == "OVR" & AVALC == "PD" & ANL01FL == "Y",
+    date_var = ADT,
+    set_values_to = vars(
+      PARAMCD = "PD",
+      PARAM = "Disease Progression by Investigator",
+      PARCAT1 = "Tumor Response",
+      PARCAT2 = "Investigator",
+      PARCAT3 = "Recist 1.1",
+      ANL01FL = "Y"
+    )
+  )
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, AVALC, ADT, ANL01FL),
+  filter = PARAMCD == "PD"
+)
+```
+
+For progressive disease, response and death parameters shown in steps here and below, in our
+examples we show these as `ADRS` parameters, but they could equally be achieved via `ADSL` dates or `ADEVENT`
+parameters. All the parameter derivation functions that use these are flexible to allow sourcing these dates
+from any input source using `admiral::date_source()`.
+
+## Derive Response Parameter {#rsp}
+
+The next required step is to define the source location for this newly derived `PD` date.
+
+```{r}
+pd <- date_source(
+  dataset_name = "adrs",
+  date = ADT,
+  filter = PARAMCD == "PD" & AVALC == "Y"
+)
+```
+
+The function `derive_param_response()` can then be used to find the date of first response. This differs from
+the `admiral::derive_param_first_event()` function in that it only looks for events occurring prior to first `PD`.
+In the below example, the response condition has been defined as `CR` or `PR`.
+
+```{r}
+adrs <- adrs %>%
+  derive_param_response(
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
+    source_pd = pd,
+    source_datasets = list(adrs = adrs),
+    set_values_to = vars(
+      PARAMCD = "RSP",
+      PARAM = "Response by Investigator (confirmation not required)",
+      PARCAT1 = "Tumor Response",
+      PARCAT2 = "Investigator",
+      PARCAT3 = "Recist 1.1",
+      ANL01FL = "Y"
+    )
+  )
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, AVALC, ADT, ANL01FL),
+  filter = PARAMCD == "RSP"
+)
+```
+
+## Derive Clinical Benefit Parameter {#cb}
+
+Similarly, we now define the source location for this newly derived first response date.
+
+```{r}
+resp <- date_source(
+  dataset_name = "adrs",
+  date = ADT,
+  filter = PARAMCD == "RSP" & AVALC == "Y"
+)
+```
+
+The function `derive_param_clinbenefit()` can then be used to derive the clinical benefit parameter, which we define
+as a patient having had a response or a sustained period of time before first `PD`. This could also be known as
+disease control. In this example the "sustained period" has been defined as 42 days after randomization date, using the
+`ref_start_window` argument.
+
+```{r}
+adrs <- adrs %>%
+  derive_param_clinbenefit(
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+    source_resp = resp,
+    source_pd = pd,
+    source_datasets = list(adrs = adrs),
+    reference_date = RANDDT,
+    ref_start_window = 42,
+    set_values_to = vars(
+      PARAMCD = "CB",
+      PARAM = "Clinical Benefit by Investigator (confirmation for response not required)",
+      PARCAT1 = "Tumor Response",
+      PARCAT2 = "Investigator",
+      PARCAT3 = "Recist 1.1",
+      ANL01FL = "Y"
+    )
+  )
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, AVALC, ADT, RANDDT, ANL01FL),
+  filter = PARAMCD == "CB"
+)
+```
+
+## Derive Best Overall Response Parameter {#bor}
+
+The function `derive_param_bor()` can be used to derive the best overall response (without confirmation required) parameter.
+Similar to the above function you can optionally decide what period would you consider a `SD` or `NON-CR/NON-PD` as being
+eligible from. In this example, 42 days after randomization date has been used again.
+
+```{r}
+adrs <- adrs %>%
+  derive_param_bor(
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+    source_pd = pd,
+    source_datasets = list(adrs = adrs),
+    reference_date = RANDDT,
+    ref_start_window = 42,
+    set_values_to = vars(
+      PARAMCD = "BOR",
+      PARAM = "Best Overall Response by Investigator (confirmation not required)",
+      PARCAT1 = "Tumor Response",
+      PARCAT2 = "Investigator",
+      PARCAT3 = "Recist 1.1",
+      ANL01FL = "Y"
+    )
+  )
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, AVALC, ADT, RANDDT, ANL01FL),
+  filter = PARAMCD == "BOR"
+)
+```
+
+## Derive Best Overall Response of CR/PR Parameter {#bcp}
+
+The function `derive_param_first_event()` can be used to check if a patient had a response for BOR.
+
+```{r}
+adrs <- adrs %>%
+  derive_param_first_event(
+    dataset_adsl = adsl,
+    dataset_source = adrs,
+    filter_source = PARAMCD == "BOR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
+    date_var = ADT,
+    set_values_to = vars(
+      PARAMCD = "BCP",
+      PARAM = "Best Overall Response of CR/PR by Investigator (confirmation not required)",
+      PARCAT1 = "Tumor Response",
+      PARCAT2 = "Investigator",
+      PARCAT3 = "Recist 1.1",
+      ANL01FL = "Y"
+    )
+  )
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, AVALC, ADT, ANL01FL),
+  filter = PARAMCD == "BCP"
+)
+```
+
+## Derive Response Parameters requiring Confirmation {#confirm}
+
+Any of the above response parameters can be repeated for "confirmed" responses only. For these the functions
+`derive_param_confirmed_resp()` and `derive_param_confirmed_bor()` can be used. Here is an example of a BOR parameter
+when requiring confirmation. The assessment and the confirmatory assessment need to occur at least 28 days apart, using the
+`ref_confirm` argument.
+
+```{r}
+adrs <- adrs %>%
+  derive_param_confirmed_bor(
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+    source_pd = pd,
+    source_datasets = list(adrs = adrs),
+    reference_date = RANDDT,
+    ref_start_window = 42,
+    ref_confirm = 28,
+    set_values_to = vars(
+      PARAMCD = "CBOR",
+      PARAM = "Best Overall Response by Investigator",
+      PARCAT1 = "Tumor Response",
+      PARCAT2 = "Investigator",
+      PARCAT3 = "Recist 1.1",
+      ANL01FL = "Y"
+    )
+  )
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, AVALC, ADT, RANDDT, ANL01FL),
+  filter = PARAMCD == "CBOR"
+)
+```
+
+## Derive Parameters using Independent Review Facility (IRF) responses {#irf}
+
+All of the above steps can be repeated for different sets of records, such as now using assessments from the Independent
+Review Facility instead of investigator. For this you would just need to replace the first steps with selecting the required
+records, and then feed these as input to the downstream parameter functions.
+
+Remember that a new progressive disease and response source object would be required for passing to
+`source_pd` and `source_resp` respectively.
+
+```{r}
+adrsirf <- rs %>%
+  filter(RSEVAL == "INDEPENDENT ASSESSOR" & RSEVALID == "RADIOLOGIST 1" & RSTESTCD == "OVRLRESP") %>%
+  mutate(
+    PARAMCD = "OVRR1",
+    PARAM = "Overall Response by Radiologist 1",
+    PARCAT1 = "Tumor Response",
+    PARCAT2 = "Radiologist",
+    PARCAT3 = "Recist 1.1"
+  )
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrsirf,
+  display_vars = vars(USUBJID, VISIT, RSTESTCD, RSEVAL, PARAMCD, PARAM, PARCAT1, PARCAT2, PARCAT3),
+  filter = PARAMCD == "OVRR1"
+)
+```
+
+Then in all the calls to the parameter derivation functions you would replace the `PARAMCD == "OVR"` source with
+`PARAMCD == "OVRR1"`.
+
+## Derive Death Parameter {#death}
+
+The function `admiral::derive_param_first_event()` can be used to create a new death parameter using death date from `ADSL`.
+We need to restrict the columns from `ADSL` as we'll merge all required variables later across all our `ADRS` records.
+
+```{r}
+adsldth <- adsl %>%
+  select(STUDYID, USUBJID, DTHDT, !!!adsl_vars)
+
+adrs <- adrs %>%
+  derive_param_first_event(
+    dataset_adsl = adsldth,
+    dataset_source = adsldth,
+    filter_source = !is.na(DTHDT),
+    date_var = DTHDT,
+    set_values_to = vars(
+      PARAMCD = "DEATH",
+      PARAM = "Death",
+      PARCAT1 = "Reference Event",
+      ANL01FL = "Y"
+    )
+  ) %>%
+  select(-DTHDT)
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, AVALC, ADT, ANL01FL),
+  filter = PARAMCD == "DEATH"
+)
+```
+
+## Derive Last Disease Assessment Parameters {#lsta}
+
+The function `derive_param_lasta()` can be used to create a parameter for last disease assessment. There is flexibility
+to use `source_pd` argument to only look up to first `PD` assessment, but in the below example all assessments are included.
+
+```{r}
+adrs <- adrs %>%
+  derive_param_lasta(
+    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+    set_values_to = vars(
+      PARAMCD = "LSTA",
+      PARAM = "Last Disease Assessment by Investigator",
+      PARCAT1 = "Tumor Response",
+      PARCAT2 = "Investigator",
+      PARCAT3 = "Recist 1.1",
+      ANL01FL = "Y"
+    )
+  )
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, AVALC, ADT, ANL01FL),
+  filter = PARAMCD == "LSTA"
+)
+```
+
+## Derive Measurable Disease at Baseline Parameter {#mdis}
+
+The function `admiral::derive_param_exist_flag()` can be used to check whether a patient has measurable disease at baseline,
+according to a company-specific condition. In this example we check `TU` for target lesions during the baseline visit.
+We need to restrict the columns from `ADSL` as we'll merge all required variables later across all our `ADRS` records.
+
+```{r}
+adslmdis <- adsl %>%
+  select(STUDYID, USUBJID, !!!adsl_vars)
+
+adrs <- adrs %>%
+  derive_param_exist_flag(
+    dataset_adsl = adslmdis,
+    dataset_add = tu,
+    condition = TUEVAL == "INVESTIGATOR" & TUSTRESC == "TARGET" & VISIT == "BASELINE",
+    false_value = "N",
+    missing_value = "N",
+    set_values_to = vars(
+      PARAMCD = "MDIS",
+      PARAM = "Measurable Disease at Baseline by Investigator",
+      PARCAT2 = "Investigator",
+      PARCAT3 = "Recist 1.1",
+      ANL01FL = "Y"
+    )
+  )
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, AVALC, ADT, ANL01FL),
+  filter = PARAMCD == "MDIS"
+)
+```
+
+## Assign `ASEQ` {#aseq}
+
+The function `admiral::derive_var_obs_number()` can be used to derive `ASEQ`. An example call is:
+
+```{r eval=TRUE}
+adrs <- adrs %>%
+  derive_var_obs_number(
+    by_vars = vars(STUDYID, USUBJID),
+    order = vars(PARAMCD, ADT, VISITNUM),
+    check_type = "error"
+  )
+```
+
+```{r, eval=TRUE, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, PARAMCD, ADT, VISITNUM, AVISIT, ASEQ),
+  filter = USUBJID == "01-701-1015"
+)
+```
+
+## Add ADSL variables {#adsl_vars}
+
+If needed, the other `ADSL` variables can now be added.
+List of ADSL variables already merged held in vector `adsl_vars`.
+
+```{r eval=TRUE}
+adrs <- adrs %>%
+  derive_vars_merged(
+    dataset_add = select(adsl, !!!negate_vars(adsl_vars)),
+    by_vars = vars(STUDYID, USUBJID)
+  )
+```
+
+```{r, eval=TRUE, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, RFSTDTC, RFENDTC, DTHDTC, DTHFL, AGE, AGEU),
+  filter = USUBJID == "01-701-1015"
+)
+```
+
+# Example Script {#example}
+
+ADaM | Sample Code
+---- | --------------
+ADRS | [ad_adrs.R](https://github.com/pharmaverse/admiralonco/blob/main/inst/templates/ad_adrs.R){target="_blank"}
