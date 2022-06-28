@@ -201,9 +201,9 @@ dataset_vignette(
 
 ### Creating Your Own Time-to-Event Source Objects
 
-We advise you consult the `{admiral}` ["Creating a BDS Time-to-Event ADaM" vignette]
-(https://pharmaverse.github.io/admiral/articles/bds_tte.html) for further guidance on the
-different options available and more examples.
+We advise you consult the `{admiral}`
+["Creating a BDS Time-to-Event ADaM" vignette](https://pharmaverse.github.io/admiral/articles/bds_tte.html)
+for further guidance on the different options available and more examples.
 
 ## Derive Analysis Value (`AVAL`) {#aval}
 
