@@ -135,7 +135,7 @@ adsl_death_event <- event_source(
 
 An optional step at this stage would be required to enable derivation of duration of
 response: If using `ADRS` / `ADEVENT` parameters as input for any response dates
-(instead of a variable in `ADSL`) then you would need to use `admiral::derive_vars_merged`
+(instead of a variable in `ADSL`) then you would need to use `admiral::derive_vars_merged()`
 to add the response date as a temporary variable (e.g. `TEMP_RESPDT`) to be able to feed
 into `admiral::derive_param_tte()` as the start date. You would also need to use this
 to filter the input datasets so as to only derive the records for responders.
