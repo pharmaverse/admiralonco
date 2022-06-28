@@ -1,9 +1,11 @@
+url: https://pharmaverse.github.io/admiralonco/
+
 template:
+  bootstrap: 5
   params:
    bootswatch: flatly
-  docsearch:
-    api_key: 2d4895759f79e89d6eb1c3b990bca6d8
-    index_name: pharmaverse
+search:
+  exclude: ['news/index.html']
 repo:
   url:
     home: https://github.com/pharmaverse/admiralonco
@@ -18,12 +20,12 @@ reference:
    desc: Derivations add one or more variables or parameters to the input dataset and return the extended dataset.
  - contents:
    - starts_with("derive")
-   
+
  - title: Computations
    desc: Computations expect vectors as input and return a vector
  - contents:
    - has_keyword('computation')
-   
+
  - title: CDISC Hierarchy
  - subtitle: ADRS
    desc: ADRS specific functions
@@ -33,22 +35,26 @@ reference:
    desc: ADTTE specific functions
  - contents:
    - has_keyword('adtte')
-   
+
  - title: Other Keywords
  - subtitle: Source Specifications
    desc: Classes defining sources for derivations where variables or observations from more than one dataset are considered, e.g., like in `derive_xxxxx()`
  - contents:
    - has_keyword('source_specifications')
-   
+
+ - subtitle: Pre-Defined Time-to-Event Sources
+   desc: '`tte_source` objects defined by {admiralonco} that can be used as input for `derive_param_tte()`'
+ - contents:
+   - has_keyword('tte_source')
+
  - title: ADaM Datasets
  - contents:
-   - adrs
-   - adtte
-   
+   - admiral_adrs
+
  - title: User Utilities
  - contents:
    - has_keyword("user_utility")
-   
+
  - title: Developer Utilities
  - subtitle: Assertions
  - contents:
@@ -62,7 +68,7 @@ reference:
  - subtitle: Various
  - contents:
    - has_keyword("dev_utility")
-   
+
 articles:
  - title: User Guides
    navbar: User Guides

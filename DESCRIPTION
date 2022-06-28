@@ -1,7 +1,7 @@
 Package: admiralonco
 Type: Package
 Title: Oncology Extension Package for ADaM in R Asset Library
-Version: 0.0.0
+Version: 0.1.0
 Authors@R: c(
     person("Stefan", "Bundfuss", email = "stefan.bundfuss@roche.com", role = c("aut", "cre")),
     person("Ross", "Farrugia", role = "aut"),
@@ -44,14 +44,15 @@ Imports:
     dplyr,
     lubridate,
     magrittr,
-    rlang
+    rlang,
+    tidyselect
 Suggests:
     devtools,
     diffdf,
     lifecycle,
     lintr,
     pkgdown,
-    testthat,
+    testthat (>= 3.0.0),
     knitr,
     methods,
     miniUI,
@@ -62,8 +63,8 @@ Suggests:
     tibble,
     usethis,
     covr,
-    DT,
-    lubridate
+    DT
 Remotes:
     pharmaverse/admiral.test@devel
 VignetteBuilder: knitr
+Config/testthat/edition: 3

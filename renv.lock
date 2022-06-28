@@ -67,13 +67,14 @@
     },
     "admiral": {
       "Package": "admiral",
-      "Version": "0.7.0",
+      "Version": "0.8.0",
       "Source": "GitHub",
       "RemoteType": "github",
       "RemoteHost": "api.github.com",
       "RemoteRepo": "admiral",
       "RemoteUsername": "pharmaverse",
-      "RemoteRef": "devel"
+      "RemoteRef": "devel",
+      "Hash": "0d0e7d4a810dc824240286960597278d"
     },
     "admiral.test": {
       "Package": "admiral.test",
@@ -83,7 +84,9 @@
       "RemoteHost": "api.github.com",
       "RemoteRepo": "admiral.test",
       "RemoteUsername": "pharmaverse",
-      "RemoteRef": "devel"
+      "RemoteRef": "devel",
+      "RemoteSha": "4f3bdd59a5a01bd0314a42e1d3ef32ca4d1745fe",
+      "Hash": "d769c62c1ecf20a3af6f5489cad8cbc8"
     },
     "askpass": {
       "Package": "askpass",
@@ -133,13 +136,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "56ae7e1987b340186a8a5a157c2ec358"
-    },
-    "cachem": {
-      "Package": "cachem",
-      "Version": "1.0.6",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "648c5b3d71e6a37e3043617489a0a0e9"
     },
     "callr": {
       "Package": "callr",
@@ -696,10 +692,10 @@
     },
     "spelling": {
       "Package": "spelling",
-      "Version": "2.1",
+      "Version": "2.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "b3a5ecc3351f41eb30ef87f65cbff390"
+      "Hash": "b8c899a5c83f0d897286550481c91798"
     },
     "stringi": {
       "Package": "stringi",

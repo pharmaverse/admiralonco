@@ -51,8 +51,7 @@ date when the response occurred.
 
 \item{source_datasets}{Source dataset(s)
 
-A named list of datasets with 1 or 2 elements is expected (e.g. list( adrs
-= adrs, pdds=pdds)).
+A named list of datasets with 1 or 2 elements is expected (e.g. \code{list(adrs = adrs, pdds=pdds)}).
 
 At least \code{dataset} must be defined as a named list.
 \itemize{
@@ -86,7 +85,7 @@ Add a new parameter indicating if a response has been observed.
 If a response has been observed, \code{AVALC} is set to "Y", \code{AVAL} to 1 and \code{ADT}
 is set to the
 first date when a response has been observed.
-If a response has not been observed, \code{AVALC} is set to "N", AVAL to 0 and
+If a response has not been observed, \code{AVALC} is set to "N", \code{AVAL} to 0 and
 \code{ADT} is set NA.
 }
 \details{
@@ -130,20 +129,20 @@ adsl <- tibble::tribble(
   mutate(STUDYID = "XX1234")
 
 adrs <- tibble::tribble(
-  ~USUBJID, ~PARAMCD, ~ADTC, ~AVALC, ~ANL01FL,
-  "1", "OVR", "2020-01-02", "PR", "Y",
-  "1", "OVR", "2020-02-01", "CR", "Y",
-  "1", "OVR", "2020-03-01", "CR", "Y",
-  "1", "OVR", "2020-04-01", "SD", "Y",
-  "1", "PD", NA_character_, "N", "Y",
-  "2", "OVR", "2021-06-15", "SD", "Y",
-  "2", "OVR", "2021-07-16", "PD", "Y",
-  "2", "OVR", "2021-09-14", "PD", "Y",
-  "2", "PD", "2021-09-14", "Y", "Y",
-  "3", "OVR", "2021-09-14", "SD", "Y",
-  "3", "OVR", "2021-10-30", "PD", "Y",
-  "3", "OVR", "2021-12-25", "CR", "Y",
-  "3", "PD", "2021-10-30", "Y", "Y"
+  ~USUBJID, ~PARAMCD, ~ADTC,         ~AVALC, ~ANL01FL,
+  "1",      "OVR",    "2020-01-02",  "PR",   "Y",
+  "1",      "OVR",    "2020-02-01",  "CR",   "Y",
+  "1",      "OVR",    "2020-03-01",  "CR",   "Y",
+  "1",      "OVR",    "2020-04-01",  "SD",   "Y",
+  "1",      "PD",     NA_character_, "N",    "Y",
+  "2",      "OVR",    "2021-06-15",  "SD",   "Y",
+  "2",      "OVR",    "2021-07-16",  "PD",   "Y",
+  "2",      "OVR",    "2021-09-14",  "PD",   "Y",
+  "2",      "PD",     "2021-09-14",  "Y",    "Y",
+  "3",      "OVR",    "2021-09-14",  "SD",   "Y",
+  "3",      "OVR",    "2021-10-30",  "PD",   "Y",
+  "3",      "OVR",    "2021-12-25",  "CR",   "Y",
+  "3",      "PD",     "2021-10-30",  "Y",    "Y"
 ) \%>\%
   mutate(
     STUDYID = "XX1234",
