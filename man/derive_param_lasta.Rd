@@ -61,7 +61,9 @@ first PD date
 A named list of dataframes is expected (although for BOR) only one dataframe is
 needed. It links the \code{dataset_name} from \code{source_pd} with an existing dataframe.
 
-For example if \code{source_pd = pd_date} with\if{html}{\out{<div class="r">}}\preformatted{pd_date <- date_source(
+For example if \code{source_pd = pd_date} with
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{pd_date <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == PD
