@@ -50,6 +50,19 @@ jobs:
         run: |
           if (!requireNamespace("renv", quietly = TRUE)) install.packages("renv")
           renv::restore()
+          ref <- if (Sys.getenv("GITHUB_REF_NAME") == "main") "main" else "devel"
+          remotes::install_github(
+            "pharmaverse/admiral",
+            ref = ref,
+            dependencies = FALSE,
+            upgrade = "never"
+          )
+          remotes::install_github(
+            "pharmaverse/admiral.test",
+            ref = ref,
+            dependencies = FALSE,
+            upgrade = "never"
+          )
         shell: Rscript {0}
 
       - name: Install package
