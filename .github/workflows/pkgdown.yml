@@ -101,4 +101,4 @@ jobs:
           path: ${{ github.event.repository.name }}
           branches-or-tags-to-list: >-
             ^main$|^devel$|^test$|^pre-release$
-          default-landing-page: "devel"
+          default-landing-page: "test"
