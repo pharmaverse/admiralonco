@@ -1,6 +1,6 @@
-#' Derive Confirmed Best Overall Response Parameter
+#' Adds a Parameter for Confirmed Best Overall Response
 #'
-#' Derive confirmed best overall response (BOR) parameter
+#' Adds a parameter for confirmed best overall response (BOR)
 #'
 #' @param dataset Input dataset
 #'

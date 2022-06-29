@@ -2,7 +2,7 @@
 % Please edit documentation in R/derive_param_confirmed_resp.R
 \name{derive_param_confirmed_resp}
 \alias{derive_param_confirmed_resp}
-\title{Derive Confirmed Response Parameter}
+\title{Adds a Parameter for Confirmed Response}
 \usage{
 derive_param_confirmed_resp(
   dataset,
@@ -109,7 +109,7 @@ A list of symbols created using \code{vars()} is expected.
 The input dataset with a new parameter for confirmed response
 }
 \description{
-Derive confirmed response parameter
+Adds a parameter for confirmed response
 }
 \details{
 \enumerate{

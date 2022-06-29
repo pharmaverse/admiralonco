@@ -2,7 +2,7 @@
 % Please edit documentation in R/derive_param_clinbenefit.R
 \name{derive_param_clinbenefit}
 \alias{derive_param_clinbenefit}
-\title{Derive a Clinical Benefit Parameter}
+\title{Adds a Parameter for Clinical Benefit}
 \usage{
 derive_param_clinbenefit(
   dataset,
@@ -73,7 +73,7 @@ used to uniquely identify subjects.}
 The input dataset with a new parameter for clinical benefit
 }
 \description{
-Add a clinical benefit/disease control parameter to the input dataset.
+Adds a parameter for clinical benefit/disease control
 }
 \details{
 Clinical benefit/disease control is first identified for looking for subjects
