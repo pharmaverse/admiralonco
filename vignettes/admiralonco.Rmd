@@ -37,7 +37,11 @@ for the most common steps are provided by the following vignettes:
 - [Creating ADTTE](adtte.html)
 
 `{admiralonco}` also provides template R scripts as a starting point. They can be
-created by calling `admiral::use_ad_template()`, e.g.,
+created by calling `use_ad_template()` from {admiral}, e.g.,
+
+```{r}
+library(admiral)
+```
 
 ```r
 use_ad_template(
@@ -47,7 +51,8 @@ use_ad_template(
 )
 ```
 
-A list of all available templates can be obtained by `admiral::list_all_templates()`:
+A list of all available templates can be obtained by `list_all_templates()`
+from {admiral}:
 
 ```{r}
 list_all_templates(package = "admiralonco")
