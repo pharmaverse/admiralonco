@@ -7,6 +7,15 @@
     <loc>https://pharmaverse.github.io/admiralonco/devel/LICENSE.html</loc>
   </url>
   <url>
+    <loc>https://pharmaverse.github.io/admiralonco/devel/articles/adrs.html</loc>
+  </url>
+  <url>
+    <loc>https://pharmaverse.github.io/admiralonco/devel/articles/adtte.html</loc>
+  </url>
+  <url>
+    <loc>https://pharmaverse.github.io/admiralonco/devel/articles/index.html</loc>
+  </url>
+  <url>
     <loc>https://pharmaverse.github.io/admiralonco/devel/authors.html</loc>
   </url>
   <url>
@@ -17,6 +26,9 @@
   </url>
   <url>
     <loc>https://pharmaverse.github.io/admiralonco/devel/pull_request_template.html</loc>
+  </url>
+  <url>
+    <loc>https://pharmaverse.github.io/admiralonco/devel/reference/admiral_adrs.html</loc>
   </url>
   <url>
     <loc>https://pharmaverse.github.io/admiralonco/devel/reference/admiralonco-package.html</loc>
