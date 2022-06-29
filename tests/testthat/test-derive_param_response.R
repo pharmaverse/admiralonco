@@ -52,7 +52,7 @@ test_that("Test that response is derived properly", {
     left_join(rsp, by = c("STUDYID", "USUBJID")) %>%
     mutate(
       AVALC = if_else(avalc == 1, "Y", "N", "N"),
-      AVALN = if_else(avalc == 1, 1, 0, 0),
+      AVAL = if_else(avalc == 1, 1, 0, 0),
       PARAMCD = "RSP", PARAM = "Response by investigator"
     ) %>%
     select(-avalc, -PDDT)

@@ -1,6 +1,7 @@
-#' Derives Parameter for the Last Disease Assessment
+#' Adds a Parameter for the Last Disease Assessment
 #'
-#' Derives Parameter for the Last Disease Assessment (optionally) up to first Progressive Disease
+#' Adds a parameter for the last disease assessment (optionally) up to first progressive
+#' disease
 #'
 #' @details
 #'    Calculates the last disease assessment by accessing the last record

@@ -2,7 +2,7 @@
 % Please edit documentation in R/derive_param_lasta.R
 \name{derive_param_lasta}
 \alias{derive_param_lasta}
-\title{Derives Parameter for the Last Disease Assessment}
+\title{Adds a Parameter for the Last Disease Assessment}
 \usage{
 derive_param_lasta(
   dataset,
@@ -95,7 +95,8 @@ The dataframe passed in the \code{dataset} argument with additional
 columns and/or rows as set in the \code{set_values_to} argument.
 }
 \description{
-Derives Parameter for the Last Disease Assessment (optionally) up to first Progressive Disease
+Adds a parameter for the last disease assessment (optionally) up to first progressive
+disease
 }
 \details{
 Calculates the last disease assessment by accessing the last record

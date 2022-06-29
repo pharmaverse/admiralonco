@@ -2,7 +2,7 @@
 % Please edit documentation in R/derive_param_bor.R
 \name{derive_param_bor}
 \alias{derive_param_bor}
-\title{Derive Best Overall Response (without confirmation)}
+\title{Adds a Parameter for Best Overall Response (without confirmation)}
 \usage{
 derive_param_bor(
   dataset,
@@ -142,8 +142,8 @@ The dataframe passed in the \code{dataset} argument with additional columns and/
 rows as set in the \code{set_values_to} argument.
 }
 \description{
-Derives Best Overall Response, without confirmation, optionally up to
-first Progressive Disease
+Adds a parameter for best overall response, without confirmation, optionally up to
+first progressive disease
 }
 \details{
 Calculates the best overall response (BOR) parameter, as detailed below.

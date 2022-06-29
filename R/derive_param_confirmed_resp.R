@@ -1,6 +1,6 @@
-#' Derive Confirmed Response Parameter
+#' Adds a Parameter for Confirmed Response
 #'
-#' Derive confirmed response parameter
+#' Adds a parameter for confirmed response
 #'
 #' @param dataset Input dataset
 #'

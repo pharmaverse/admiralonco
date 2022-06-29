@@ -34,7 +34,7 @@ rand_censor
 trts_censor
 }
 \description{
-These pre-defined \code{tte_source} objects can be used as input to 'admiral::derive_param_tte()`.
+These pre-defined \code{tte_source} objects can be used as input to \code{admiral::derive_param_tte()}.
 }
 \details{
 To see the definition of the various objects simply print the object in the
@@ -54,7 +54,7 @@ for (obj in admiral::list_tte_source_objects(package = "admiralonco")$object) {
 }
 }
 \seealso{
-\link[admiral:derive_param_tte]{admiral::derive_param_tte}, \link{tte_source}, \link[admiral:event_source]{admiral::event_source},
-\link[admiral:censor_source]{admiral::censor_source}
+\code{\link[admiral:derive_param_tte]{admiral::derive_param_tte()}}, \code{\link[admiral:tte_source]{admiral::tte_source()}}, \code{\link[admiral:event_source]{admiral::event_source()}},
+\code{\link[admiral:censor_source]{admiral::censor_source()}}
 }
 \keyword{tte_source}

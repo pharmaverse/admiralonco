@@ -1,6 +1,6 @@
 #' Pre-Defined Time-to-Event Source Objects
 #'
-#' These pre-defined `tte_source` objects can be used as input to 'admiral::derive_param_tte()`.
+#' These pre-defined `tte_source` objects can be used as input to `admiral::derive_param_tte()`.
 #'
 #' @details
 #' To see the definition of the various objects simply print the object in the
@@ -10,8 +10,8 @@
 #' Printing an object will display input dataset_name, filter (if applicable), date variable,
 #' and appropriate values for `EVNTDESC`, `CNSDTDSC`, `SRCDOM`, `SRCVAR`, and `SRCSEQ`.
 #'
-#' @seealso [admiral::derive_param_tte], [tte_source], [admiral::event_source],
-#'  [admiral::censor_source]
+#' @seealso [admiral::derive_param_tte()], [admiral::tte_source()], [admiral::event_source()],
+#'  [admiral::censor_source()]
 #'
 #' @format NULL
 #'

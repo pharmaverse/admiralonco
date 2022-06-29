@@ -2,7 +2,7 @@
 % Please edit documentation in R/derive_param_confirmed_bor.R
 \name{derive_param_confirmed_bor}
 \alias{derive_param_confirmed_bor}
-\title{Derive Confirmed Best Overall Response Parameter}
+\title{Adds a Parameter for Confirmed Best Overall Response}
 \usage{
 derive_param_confirmed_bor(
   dataset,
@@ -136,7 +136,7 @@ The input dataset with a new parameter for confirmed best overall
 response
 }
 \description{
-Derive confirmed best overall response (BOR) parameter
+Adds a parameter for confirmed best overall response (BOR)
 }
 \details{
 \enumerate{
