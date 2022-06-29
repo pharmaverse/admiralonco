@@ -73,8 +73,7 @@
       "RemoteHost": "api.github.com",
       "RemoteRepo": "admiral",
       "RemoteUsername": "pharmaverse",
-      "RemoteRef": "devel",
-      "Hash": "0d0e7d4a810dc824240286960597278d"
+      "RemoteRef": "devel"
     },
     "admiral.test": {
       "Package": "admiral.test",
@@ -84,9 +83,7 @@
       "RemoteHost": "api.github.com",
       "RemoteRepo": "admiral.test",
       "RemoteUsername": "pharmaverse",
-      "RemoteRef": "devel",
-      "RemoteSha": "4f3bdd59a5a01bd0314a42e1d3ef32ca4d1745fe",
-      "Hash": "d769c62c1ecf20a3af6f5489cad8cbc8"
+      "RemoteRef": "devel"
     },
     "askpass": {
       "Package": "askpass",
