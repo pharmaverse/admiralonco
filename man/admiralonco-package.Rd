@@ -17,23 +17,16 @@ Authors:
 \itemize{
   \item Ross Farrugia
   \item Amit Jain
-  \item Liming (Catherine) Jin
   \item Andrew Smith
-  \item Cloris Xue
-  \item Caihong Xia
-  \item Karl Kennedy
-  \item Konstantina Koukourikou
-  \item Mary Dee
-  \item Neharika Sharma
+  \item Teckla Akinyi
   \item Samia Kabi
   \item Stephen Gormley
-  \item Annie Yang
 }
 
 Other contributors:
 \itemize{
-  \item Gillian Yin [contributor]
-  \item Aiming Yang [contributor]
+  \item Karl Kennedy [contributor]
+  \item Matt Marino [contributor]
   \item Gopi Vegesna [contributor]
   \item F. Hoffmann-La Roche AG [copyright holder, funder]
   \item GlaxoSmithKline LLC [copyright holder, funder]
