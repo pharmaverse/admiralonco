@@ -35,13 +35,6 @@
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" href="https://pharmaverse.github.io/admiralonco/devel">devel</a>
-<a class="dropdown-item" href="https://pharmaverse.github.io/admiralonco/test">test</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -110,7 +103,7 @@ and filter condition used to identify disease progression.</p></dd>
 <dt>source_datasets</dt>
 <dd><p>A named list of data sets is expected.</p>
 <p>The list must contain the names provided by the <code>dataset_name</code> field of the
-<code><a href="https://rdrr.io/pkg/admiral/man/date_source.html" class="external-link">date_source()</a></code> objects specified for <code>source_pd</code> and <code>source_resp</code>.</p></dd>
+<code><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">date_source()</a></code> objects specified for <code>source_pd</code> and <code>source_resp</code>.</p></dd>
 <dt>reference_date</dt>
 <dd><p>Name of variable representing the index date for
 <code>ref_start_window</code>. A variable providing a date. An unquoted symbol is expected.</p></dd>
@@ -123,7 +116,7 @@ clinical benefit.</p></dd>
 analysis value (<code>AVAL</code>)</p>
 <p>The (first) argument of the function must expect a character vector and the
 function must return a numeric vector.</p>
-<p><em>Default:</em> <code>yn_to_numeric</code> (see <code><a href="https://rdrr.io/pkg/admiral/man/yn_to_numeric.html" class="external-link">admiral::yn_to_numeric()</a></code> for details)</p></dd>
+<p><em>Default:</em> <code>yn_to_numeric</code> (see <code><a href="https://pharmaverse.github.io/admiral/reference/yn_to_numeric.html" class="external-link">admiral::yn_to_numeric()</a></code> for details)</p></dd>
 <dt>set_values_to</dt>
 <dd><p>A named list returned by <code><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars()</a></code> containing new variables
 and their static value to be populated for the clinical benefit rate parameter
@@ -180,7 +173,7 @@ are populated with their values from <code>dataset_adsl</code>.</p></li>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://lubridate.tidyverse.org" class="external-link">lubridate</a></span><span class="op">)</span></span>
 <span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pharmaverse.github.io/admiral/index.html" class="external-link">admiral</a></span><span class="op">)</span></span>
+<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pharmaverse.github.io/admiral" class="external-link">admiral</a></span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">adsl</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span class="r-in">  <span class="op">~</span><span class="va">USUBJID</span>, <span class="op">~</span><span class="va">TRTSDT</span>,</span>
@@ -213,19 +206,19 @@ are populated with their values from <code>dataset_adsl</code>.</p></li>
 <span class="r-in">  <span class="st">"04"</span>,     <span class="st">"OVR"</span>,    <span class="st">"ND"</span>,   <span class="fu"><a href="https://lubridate.tidyverse.org/reference/ymd.html" class="external-link">ymd</a></span><span class="op">(</span><span class="st">"2021-09-04"</span><span class="op">)</span>,</span>
 <span class="r-in"><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span class="r-in">  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>STUDYID <span class="op">=</span> <span class="st">"AB42"</span>, ANL01FL <span class="op">=</span> <span class="st">"Y"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span class="r-in">  <span class="fu"><a href="https://rdrr.io/pkg/admiral/man/derive_vars_merged.html" class="external-link">derive_vars_merged</a></span><span class="op">(</span></span>
+<span class="r-in">  <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_merged.html" class="external-link">derive_vars_merged</a></span><span class="op">(</span></span>
 <span class="r-in">    dataset_add <span class="op">=</span> <span class="va">adsl</span>,</span>
 <span class="r-in">    by_vars <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">STUDYID</span>, <span class="va">USUBJID</span><span class="op">)</span>,</span>
 <span class="r-in">    new_vars <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">TRTSDT</span><span class="op">)</span></span>
 <span class="r-in">  <span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">pd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/admiral/man/date_source.html" class="external-link">date_source</a></span><span class="op">(</span></span>
+<span class="r-in"><span class="va">pd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">date_source</a></span><span class="op">(</span></span>
 <span class="r-in">  dataset_name <span class="op">=</span> <span class="st">"adrs"</span>,</span>
 <span class="r-in">  date <span class="op">=</span> <span class="va">ADT</span>,</span>
 <span class="r-in">  filter <span class="op">=</span> <span class="va">PARAMCD</span> <span class="op">==</span> <span class="st">"PD"</span> <span class="op">&amp;</span> <span class="va">AVALC</span> <span class="op">==</span> <span class="st">"Y"</span> <span class="op">&amp;</span> <span class="va">ANL01FL</span> <span class="op">==</span> <span class="st">"Y"</span></span>
 <span class="r-in"><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/admiral/man/date_source.html" class="external-link">date_source</a></span><span class="op">(</span></span>
+<span class="r-in"><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">date_source</a></span><span class="op">(</span></span>
 <span class="r-in">  dataset_name <span class="op">=</span> <span class="st">"adrs"</span>,</span>
 <span class="r-in">  date <span class="op">=</span> <span class="va">ADT</span>,</span>
 <span class="r-in">  filter <span class="op">=</span> <span class="va">PARAMCD</span> <span class="op">==</span> <span class="st">"RSP"</span> <span class="op">&amp;</span> <span class="va">AVALC</span> <span class="op">==</span> <span class="st">"Y"</span> <span class="op">&amp;</span> <span class="va">ANL01FL</span> <span class="op">==</span> <span class="st">"Y"</span></span>
