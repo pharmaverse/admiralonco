@@ -35,13 +35,6 @@
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" href="https://pharmaverse.github.io/admiralonco/devel">devel</a>
-<a class="dropdown-item" href="https://pharmaverse.github.io/admiralonco/test">test</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -104,7 +97,7 @@ considered for deriving the confirmed best overall response.</p></dd>
 deriving the new parameter are restricted to observations up to the
 specified date. Observations at the specified date are included. For
 subjects without first PD date all observations are take into account.</p>
-<p><em>Permitted Values:</em> a <code>date_source</code> object (see <code><a href="https://rdrr.io/pkg/admiral/man/date_source.html" class="external-link">admiral::date_source()</a></code>
+<p><em>Permitted Values:</em> a <code>date_source</code> object (see <code><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">admiral::date_source()</a></code>
 for details)</p>
 <p><em>Default:</em> <code>NULL</code>,</p></dd>
 <dt>source_datasets</dt>
@@ -112,7 +105,7 @@ for details)</p>
 <p>A named list of datasets is expected. It links the <code>dataset_name</code> from
 <code>source_pd</code> with an existing dataset.</p>
 <p>For example if <code>source_pd = pd_date</code> with</p>
-<p></p><div class="sourceCode r"><pre><code><span class="va">pd_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/admiral/man/date_source.html" class="external-link">date_source</a></span><span class="op">(</span>
+<p></p><div class="sourceCode r"><pre><code><span class="va">pd_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">date_source</a></span><span class="op">(</span>
   dataset_name <span class="op">=</span> <span class="st">"adrs"</span>,
   date <span class="op">=</span> <span class="va">ADT</span>,
   filter <span class="op">=</span> <span class="va">PARAMCD</span> <span class="op">==</span> <span class="va">PD</span>
@@ -139,7 +132,7 @@ Otherwise, no <code>"SD"</code> assessment must occur between the two assessment
 analysis value (<code>AVAL</code>)</p>
 <p>The (first) argument of the function must expect a character vector and the
 function must return a numeric vector.</p>
-<p><em>Default:</em> <code>yn_to_numeric</code> (see <code><a href="https://rdrr.io/pkg/admiral/man/yn_to_numeric.html" class="external-link">admiral::yn_to_numeric()</a></code> for details)</p></dd>
+<p><em>Default:</em> <code>yn_to_numeric</code> (see <code><a href="https://pharmaverse.github.io/admiral/reference/yn_to_numeric.html" class="external-link">admiral::yn_to_numeric()</a></code> for details)</p></dd>
 <dt>set_values_to</dt>
 <dd><p>Variables to set</p>
 <p>A named list returned by <code><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars()</a></code> defining the variables to be set for the
@@ -201,7 +194,7 @@ the new observations.</p></li>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
 <span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pharmaverse.github.io/admiral/index.html" class="external-link">admiral</a></span><span class="op">)</span></span>
+<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pharmaverse.github.io/admiral" class="external-link">admiral</a></span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Create ADSL dataset</span></span>
 <span class="r-in"><span class="va">adsl</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
@@ -274,7 +267,7 @@ the new observations.</p></li>
 <span class="r-in">  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span class="r-in">  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">ADTC</span><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">pd_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/admiral/man/date_source.html" class="external-link">date_source</a></span><span class="op">(</span></span>
+<span class="r-in"><span class="va">pd_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">date_source</a></span><span class="op">(</span></span>
 <span class="r-in">  dataset_name <span class="op">=</span> <span class="st">"adrs"</span>,</span>
 <span class="r-in">  date <span class="op">=</span> <span class="va">ADT</span>,</span>
 <span class="r-in">  filter <span class="op">=</span> <span class="va">PARAMCD</span> <span class="op">==</span> <span class="st">"PD"</span></span>

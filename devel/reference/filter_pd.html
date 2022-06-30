@@ -41,13 +41,6 @@ response)."><meta property="og:image" content="https://pharmaverse.github.io/adm
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" href="https://pharmaverse.github.io/admiralonco/devel">devel</a>
-<a class="dropdown-item" href="https://pharmaverse.github.io/admiralonco/test">test</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -95,14 +88,14 @@ response).</p>
 <dt>filter</dt>
 <dd><p>Filter condition for restricting the input dataset</p></dd>
 <dt>source_pd</dt>
-<dd><p>A <code><a href="https://rdrr.io/pkg/admiral/man/date_source.html" class="external-link">admiral::date_source()</a></code> object providing the date of first PD</p>
+<dd><p>A <code><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">admiral::date_source()</a></code> object providing the date of first PD</p>
 <p>For each subject the first date (<code>date</code> field) in the provided dataset
 (<code>dataset_name</code> field) restricted by <code>filter</code> field is considered as first
 PD date.</p></dd>
 <dt>source_datasets</dt>
 <dd><p>A named list of data sets is expected.</p>
 <p>The name must match the name provided by the <code>dataset_name</code> field of the
-<code><a href="https://rdrr.io/pkg/admiral/man/date_source.html" class="external-link">admiral::date_source()</a></code> object specified for <code>source_pd</code>.</p></dd>
+<code><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">admiral::date_source()</a></code> object specified for <code>source_pd</code>.</p></dd>
 <dt>subject_keys</dt>
 <dd><p>Variables to uniquely identify a subject</p>
 <p>A list of symbols created using <code><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars()</a></code> is expected.</p>
@@ -134,7 +127,7 @@ date, all records are included.</p></li>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
 <span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="http://lubridate.tidyverse.org" class="external-link">lubridate</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pharmaverse.github.io/admiral/index.html" class="external-link">admiral</a></span><span class="op">)</span></span>
+<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pharmaverse.github.io/admiral" class="external-link">admiral</a></span><span class="op">)</span></span>
 <span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">admiralonco</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Filter OVR records up to first PD, first PD date provided in separate BDS dataset (adevent)</span></span>
@@ -163,7 +156,7 @@ date, all records are included.</p></li>
 <span class="r-in">  ADT <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">as_date</a></span><span class="op">(</span><span class="va">ADT</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">pd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/admiral/man/date_source.html" class="external-link">date_source</a></span><span class="op">(</span></span>
+<span class="r-in"><span class="va">pd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">date_source</a></span><span class="op">(</span></span>
 <span class="r-in">  dataset_name <span class="op">=</span> <span class="st">"adevent"</span>,</span>
 <span class="r-in">  date <span class="op">=</span> <span class="va">ADT</span>,</span>
 <span class="r-in">  filter <span class="op">=</span> <span class="va">PARAMCD</span> <span class="op">==</span> <span class="st">"PD"</span></span>
@@ -195,7 +188,7 @@ date, all records are included.</p></li>
 <span class="r-in">  PDDT <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">as_date</a></span><span class="op">(</span><span class="va">PDDT</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">pd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/admiral/man/date_source.html" class="external-link">date_source</a></span><span class="op">(</span></span>
+<span class="r-in"><span class="va">pd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">date_source</a></span><span class="op">(</span></span>
 <span class="r-in">  dataset_name <span class="op">=</span> <span class="st">"adsl"</span>,</span>
 <span class="r-in">  date <span class="op">=</span> <span class="va">PDDT</span></span>
 <span class="r-in"><span class="op">)</span></span>
@@ -236,7 +229,7 @@ date, all records are included.</p></li>
 <span class="r-in">  ADT <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">as_date</a></span><span class="op">(</span><span class="va">ADT</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">pd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/admiral/man/date_source.html" class="external-link">date_source</a></span><span class="op">(</span></span>
+<span class="r-in"><span class="va">pd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">date_source</a></span><span class="op">(</span></span>
 <span class="r-in">  dataset_name <span class="op">=</span> <span class="st">"adrs"</span>,</span>
 <span class="r-in">  date <span class="op">=</span> <span class="va">ADT</span>,</span>
 <span class="r-in">  filter <span class="op">=</span> <span class="va">PARAMCD</span> <span class="op">==</span> <span class="st">"PD"</span></span>
@@ -276,7 +269,7 @@ date, all records are included.</p></li>
 <span class="r-in">  ADT <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">as_date</a></span><span class="op">(</span><span class="va">ADT</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">pd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/admiral/man/date_source.html" class="external-link">date_source</a></span><span class="op">(</span></span>
+<span class="r-in"><span class="va">pd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">date_source</a></span><span class="op">(</span></span>
 <span class="r-in">  dataset_name <span class="op">=</span> <span class="st">"adrs"</span>,</span>
 <span class="r-in">  date <span class="op">=</span> <span class="va">ADT</span>,</span>
 <span class="r-in">  filter <span class="op">=</span> <span class="va">PARAMCD</span> <span class="op">==</span> <span class="st">"OVR"</span> <span class="op">&amp;</span> <span class="va">ANL01FL</span> <span class="op">==</span> <span class="st">"Y"</span> <span class="op">&amp;</span> <span class="va">AVALC</span> <span class="op">==</span> <span class="st">"PD"</span></span>
