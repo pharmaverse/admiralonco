@@ -3,7 +3,6 @@
 .RData
 .Ruserdata
 docs
-pkgdown/ 
 admiralonco.Rcheck/
 admiralonco*.tar.gz
 admiralonco*.tgz
