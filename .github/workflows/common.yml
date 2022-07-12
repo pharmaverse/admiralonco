@@ -9,11 +9,13 @@ on:
       - main
       - devel
       - pre-release
+      - test
   pull_request:
     branches:
       - main
       - devel
       - pre-release
+      - test
   pull_request_review:
     types: [submitted]
   release:
