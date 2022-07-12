@@ -1,4 +1,5 @@
 ---
+# See https://github.com/pharmaverse/admiraltemplate/tree/main/.github/workflows#readme
 name: Admiral Workflows
 
 on:
@@ -25,48 +26,48 @@ concurrency:
 jobs:
   style:
     name: Code Style 👚
-    uses: pharmaverse/admiraltemplate/.github/workflows/style.yml@main
+    uses: pharmaverse/admiraltemplate/.github/workflows/style.yml@fix-staged-deps
     if: >
       github.event_name == 'push' || github.event_name == 'pull_request'
   spellcheck:
     name: Spelling 🆎
-    uses: pharmaverse/admiraltemplate/.github/workflows/spellcheck.yml@main
+    uses: pharmaverse/admiraltemplate/.github/workflows/spellcheck.yml@fix-staged-deps
     if: >
       github.event_name == 'push' || github.event_name == 'pull_request'
   readme:
     name: Render README 👓
-    uses: pharmaverse/admiraltemplate/.github/workflows/readme-render.yml@main
+    uses: pharmaverse/admiraltemplate/.github/workflows/readme-render.yml@fix-staged-deps
     if: github.event_name == 'push'
   validation:
     name: Validation 🧧
-    uses: pharmaverse/admiraltemplate/.github/workflows/r-pkg-validation.yml@main
+    uses: pharmaverse/admiraltemplate/.github/workflows/r-pkg-validation.yml@fix-staged-deps
     if: github.event_name == 'release'
   check:
     name: Check 🏁
-    uses: pharmaverse/admiraltemplate/.github/workflows/r-cmd-check.yml@main
+    uses: pharmaverse/admiraltemplate/.github/workflows/r-cmd-check.yml@fix-staged-deps
     if: >
       github.event_name == 'push' || github.event_name == 'pull_request'
   docs:
     name: Documentation 📖
-    uses: pharmaverse/admiraltemplate/.github/workflows/pkgdown.yml@main
+    uses: pharmaverse/admiraltemplate/.github/workflows/pkgdown.yml@fix-staged-deps
     if: github.event_name == 'push'
   linter:
     name: Lint 🧶
-    uses: pharmaverse/admiraltemplate/.github/workflows/lintr.yml@main
+    uses: pharmaverse/admiraltemplate/.github/workflows/lintr.yml@fix-staged-deps
     if: >
       github.event_name == 'push' || github.event_name == 'pull_request'
   links:
     name: Links 🔗
-    uses: pharmaverse/admiraltemplate/.github/workflows/links.yml@main
+    uses: pharmaverse/admiraltemplate/.github/workflows/links.yml@fix-staged-deps
     if: >
       github.event_name == 'push' || github.event_name == 'pull_request'
   coverage:
     name: Code Coverage 🧪
-    uses: pharmaverse/admiraltemplate/.github/workflows/code-coverage.yml@main
+    uses: pharmaverse/admiraltemplate/.github/workflows/code-coverage.yml@fix-staged-deps
     if: >
       github.event_name == 'push' || github.event_name == 'pull_request'
   templates:
     name: Check Templates 🔎
-    uses: pharmaverse/admiraltemplate/.github/workflows/check-templates.yml@main
+    uses: pharmaverse/admiraltemplate/.github/workflows/check-templates.yml@fix-staged-deps
     if: >
       github.event_name == 'push' || github.event_name == 'pull_request'
