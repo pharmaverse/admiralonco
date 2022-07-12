@@ -52,6 +52,7 @@ Suggests:
     rmarkdown,
     roxygen2,
     spelling,
+    stringr,
     styler,
     tibble,
     usethis,
