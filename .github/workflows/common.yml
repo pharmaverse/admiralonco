@@ -75,6 +75,6 @@ jobs:
       github.event_name == 'push' || github.event_name == 'pull_request'
   man-pages:
     name: Man pages 📜
-    uses: pharmaverse/admiraltemplate/.github/workflows/man-pages.yml@add-man-pages-workflow
+    uses: pharmaverse/admiraltemplate/.github/workflows/man-pages.yml@main
     if: >
       github.event_name == 'push' || github.event_name == 'pull_request'
