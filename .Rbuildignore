@@ -10,4 +10,6 @@
 ^admiralonco.*\.tgz$
 ^_pkgdown\.yml$
 ^LICENSE\.md$
-
+^README.Rmd$
+^staged_dependencies.yaml$
+^pkgdown$
