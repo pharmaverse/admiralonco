@@ -46,7 +46,7 @@ jobs:
     if: github.event_name == 'release'
   check:
     name: Check 🏁
-    uses: pharmaverse/admiraltemplate/.github/workflows/r-cmd-check.yml@main
+    uses: walkowif/admiraltemplate/.github/workflows/r-cmd-check.yml@walkowif-test
     if: >
       github.event_name == 'push' || github.event_name == 'pull_request'
   docs:
