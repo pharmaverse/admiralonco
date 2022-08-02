@@ -54,9 +54,7 @@ for details)
 A named list of datasets is expected. It links the \code{dataset_name} from
 \code{source_pd} with an existing dataset.
 
-For example if \code{source_pd = pd_date} with
-
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{pd_date <- date_source(
+For example if \code{source_pd = pd_date} with\if{html}{\out{<div class="r">}}\preformatted{pd_date <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == PD
@@ -272,14 +270,15 @@ ovr_obs <- tibble::tribble(
   "9",      "2020-04-16", "NE",
   "9",      "2020-05-01", "CR"
 ) \%>\%
-  mutate(PARAMCD = "OVR")
+  mutate(PARAMCD = "OVR", ANL01FL = "Y")
 
 pd_obs <-
   bind_rows(tibble::tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
     "6",      "2020-04-12", "Y"
   ) \%>\%
-    mutate(PARAMCD = "PD"))
+    mutate(PARAMCD = "PD", ANL01FL = "Y"))
+
 adrs <- bind_rows(ovr_obs, pd_obs) \%>\%
   mutate(
     ADT = ymd(ADTC),
@@ -295,14 +294,14 @@ adrs <- bind_rows(ovr_obs, pd_obs) \%>\%
 pd_date <- date_source(
   dataset_name = "adrs",
   date = ADT,
-  filter = PARAMCD == "PD"
+  filter = PARAMCD == "PD" & ANL01FL == "Y"
 )
 
 # Derive confirmed best overall response parameter
 derive_param_confirmed_bor(
   adrs,
   dataset_adsl = adsl,
-  filter_source = PARAMCD == "OVR",
+  filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
   source_pd = pd_date,
   source_datasets = list(adrs = adrs),
   reference_date = TRTSDT,
@@ -320,7 +319,7 @@ derive_param_confirmed_bor(
 derive_param_confirmed_bor(
   adrs,
   dataset_adsl = adsl,
-  filter_source = PARAMCD == "OVR",
+  filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
   source_pd = pd_date,
   source_datasets = list(adrs = adrs),
   reference_date = TRTSDT,
