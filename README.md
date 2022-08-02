@@ -38,6 +38,7 @@ Here's a summary of our strategy for this package related to R versions:
 * R versions for developers and users will follow the same as `{admiral}` core package.
 * For development the `devel` branch of `{admiral}` core is used as a dependency. For releasing a new `{admiralonco}` version it must run using the latest released `{admiral}` core version, i.e., `main` branch of `{admiral}` core.
 
+
 ## Contact
 
 We use the following for support and communications between user and developer community:
