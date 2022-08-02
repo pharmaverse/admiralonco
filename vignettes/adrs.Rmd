@@ -203,13 +203,26 @@ dataset_vignette(
 )
 ```
 
+Here is an alternative example where those records occurring after next anti-cancer therapy are additionally
+excluded (where `NACTDT` would be pre-derived as first date of next anti-cancer therapy).
+
+```{r, eval=FALSE}
+adrs <- adrs %>%
+  mutate(
+    ANL01FL = case_when(
+      !is.na(AVAL) & ADT >= RANDDT & ADT < NACTDT ~ "Y",
+      TRUE ~ NA_character_
+    )
+  )
+```
+
 Note here that we don't filter out records after first `PD` at this stage, as that is specifically catered for in
-the `{admiralonco}` parameter derivation functions in the below steps.
+the `{admiralonco}` parameter derivation functions in the below steps, via `source_pd` arguments.
+However, if you prefer not to rely on `source_pd` arguments, then the user is free to filter out records after
+first `PD` at this stage in a similar way via a `ANLzzFL` flag, and then you could leave `source_pd` as null in
+all downstream parameter derivation function calls.
 
 ## Derive Progressive Disease Parameter {#pd}
-
-extra example...
-
 
 Now that we have the input records prepared above with any company-specific requirements, we can start to derive
 new parameter records. For the parameter derivations, all values except those overwritten by `set_values_to`
@@ -244,8 +257,11 @@ dataset_vignette(
 
 For progressive disease, response and death parameters shown in steps here and below, in our
 examples we show these as `ADRS` parameters, but they could equally be achieved via `ADSL` dates or `ADEVENT`
-parameters. All the parameter derivation functions that use these are flexible to allow sourcing these dates
-from any input source using `admiral::date_source()`.
+parameters.
+If you prefer to store as an ADSL date, then the function `admiral::derive_var_extreme_dt()` could be used
+to find the date of first `PD` as a variable, rather than as a new parameter record.
+All the parameter derivation functions that use these dates are flexible to allow sourcing these
+from any input source using `admiral::date_source()`. See examples below.
 
 ## Derive Response Parameter {#rsp}
 
@@ -256,6 +272,16 @@ pd <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == "PD" & AVALC == "Y"
+)
+```
+
+An equivalent example if using `ADSL` instead could be as follows (where `PDDT` would be
+pre-derived as first date of progressive disease).
+
+```{r, eval=FALSE}
+pd <- date_source(
+  dataset_name = "adsl",
+  date = PDDT
 )
 ```
 
