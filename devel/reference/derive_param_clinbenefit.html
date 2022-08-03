@@ -35,12 +35,6 @@
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" href="https://pharmaverse.github.io/admiralonco/devel">devel</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -233,7 +227,7 @@ are populated with their values from <code>dataset_adsl</code>.</p></li>
 <span class="r-in"><span class="fu">derive_param_clinbenefit</span><span class="op">(</span></span>
 <span class="r-in">  dataset <span class="op">=</span> <span class="va">adrs</span>,</span>
 <span class="r-in">  dataset_adsl <span class="op">=</span> <span class="va">adsl</span>,</span>
-<span class="r-in">  filter_source <span class="op">=</span> <span class="va">PARAMCD</span> <span class="op">==</span> <span class="st">"OVR"</span>,</span>
+<span class="r-in">  filter_source <span class="op">=</span> <span class="va">PARAMCD</span> <span class="op">==</span> <span class="st">"OVR"</span> <span class="op">&amp;</span> <span class="va">ANL01FL</span> <span class="op">==</span> <span class="st">"Y"</span>,</span>
 <span class="r-in">  source_resp <span class="op">=</span> <span class="va">resp</span>,</span>
 <span class="r-in">  source_pd <span class="op">=</span> <span class="va">pd</span>,</span>
 <span class="r-in">  source_datasets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>adrs <span class="op">=</span> <span class="va">adrs</span><span class="op">)</span>,</span>
