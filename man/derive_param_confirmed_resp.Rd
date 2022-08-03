@@ -32,7 +32,7 @@ of the specified dataset a new observation is added to the input dataset.}
 \item{filter_source}{Source filter
 
 All observations in \code{dataset_source} fulfilling the specified condition are
-considered for deriving the confirmed best overall response.}
+considered for deriving the confirmed response.}
 
 \item{source_pd}{Date of first progressive disease (PD)
 
@@ -240,7 +240,7 @@ pd_date <- date_source(
   filter = PARAMCD == "PD" & ANL01FL == "Y"
 )
 
-# Derive confirmed best overall response parameter
+# Derive confirmed response parameter
 derive_param_confirmed_resp(
   adrs,
   dataset_adsl = adsl,
@@ -255,7 +255,7 @@ derive_param_confirmed_resp(
 ) \%>\%
   filter(PARAMCD == "CRSP")
 
-# Derive confirmed best overall response parameter (accepting SD for PR and two NEs)
+# Derive confirmed response parameter (accepting SD for PR and two NEs)
 derive_param_confirmed_resp(
   adrs,
   dataset_adsl = adsl,
