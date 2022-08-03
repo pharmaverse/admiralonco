@@ -43,9 +43,6 @@ library(admiral)
 library(admiralonco)
 library(dplyr)
 library(admiral.test)
-```
-
-```{r, warning=FALSE, message=FALSE, include=FALSE}
 library(lubridate)
 ```
 
@@ -205,22 +202,24 @@ We advise you consult the `{admiral}`
 for further guidance on the different options available and more examples.
 
 One extra common oncology case we include here is around PFS when censoring
-at next anti-cancer therapy. This could either be controlled using `ANLzzFL` as
-explained in the ADRS vignette, so that records after next anti-cancer therapy
+at new anti-cancer therapy. This could either be controlled using `ANLzzFL` as
+explained in the ADRS vignette, so that records after new anti-cancer therapy
 never contribute to the PD and DEATH parameters. Or alternatively you can control
 this on the ADTTE side by filtering which records are used in
 `admiral::event_source()` and `admiral::censor_source()`.
 The censor could be set as whichever date your analysis requires,
-e.g. date of last tumor assessment prior to next anti-cancer therapy or last
-radiological assessment.
+e.g. date of last tumor assessment prior to new anti-cancer therapy or last
+radiological assessment. If you pass multiple censor dates then remember the
+function will choose the latest occurring of these.
 This case is demonstrated in the below example (where `NACTDT` would be
-pre-derived as first date of next anti-cancer therapy and `LASTANDT` as date of
-last assessment prior to next anti-cancer therapy).
+pre-derived as first date of new anti-cancer therapy, and `LASTANDT` as date of
+last assessment prior to new anti-cancer therapy or last assessment if no new
+anti-cancer therapy).
 
 ```{r, eval=FALSE}
 pd_nact_event <- event_source(
   dataset_name = "adsl",
-  filter = PDDT < NACTDT,
+  filter = PDDT < NACTDT | is.na(NACTDT),
   date = PDDT,
   set_values_to = vars(
     EVNTDESC = "Disease Progression prior to NACT",
@@ -231,7 +230,7 @@ pd_nact_event <- event_source(
 
 death_nact_event <- event_source(
   dataset_name = "adsl",
-  filter = DTHDT < NACTDT,
+  filter = DTHDT < NACTDT | is.na(NACTDT),
   date = DTHDT,
   set_values_to = vars(
     EVNTDESC = "Death prior to NACT",
