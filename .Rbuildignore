@@ -13,3 +13,4 @@
 ^README.Rmd$
 ^staged_dependencies.yaml$
 ^pkgdown$
+^\.lycheeignore$

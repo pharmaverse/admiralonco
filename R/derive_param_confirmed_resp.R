@@ -15,7 +15,7 @@
 #' @param filter_source Source filter
 #'
 #'   All observations in `dataset_source` fulfilling the specified condition are
-#'   considered for deriving the confirmed best overall response.
+#'   considered for deriving the confirmed response.
 #'
 #' @param source_pd Date of first progressive disease (PD)
 #'
@@ -206,14 +206,14 @@
 #'   "9",      "2020-04-16", "NE",
 #'   "9",      "2020-05-01", "CR"
 #' ) %>%
-#'   mutate(PARAMCD = "OVR")
+#'   mutate(PARAMCD = "OVR", ANL01FL = "Y")
 #'
 #' pd_obs <-
 #'   bind_rows(tibble::tribble(
 #'     ~USUBJID, ~ADTC,        ~AVALC,
 #'     "6",      "2020-04-12", "Y"
 #'   ) %>%
-#'     mutate(PARAMCD = "PD"))
+#'     mutate(PARAMCD = "PD", ANL01FL = "Y"))
 #'
 #' adrs <- bind_rows(ovr_obs, pd_obs) %>%
 #'   mutate(
@@ -225,14 +225,14 @@
 #' pd_date <- date_source(
 #'   dataset_name = "adrs",
 #'   date = ADT,
-#'   filter = PARAMCD == "PD"
+#'   filter = PARAMCD == "PD" & ANL01FL == "Y"
 #' )
 #'
-#' # Derive confirmed best overall response parameter
+#' # Derive confirmed response parameter
 #' derive_param_confirmed_resp(
 #'   adrs,
 #'   dataset_adsl = adsl,
-#'   filter_source = PARAMCD == "OVR",
+#'   filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
 #'   source_pd = pd_date,
 #'   source_datasets = list(adrs = adrs),
 #'   ref_confirm = 28,
@@ -243,11 +243,11 @@
 #' ) %>%
 #'   filter(PARAMCD == "CRSP")
 #'
-#' # Derive confirmed best overall response parameter (accepting SD for PR and two NEs)
+#' # Derive confirmed response parameter (accepting SD for PR and two NEs)
 #' derive_param_confirmed_resp(
 #'   adrs,
 #'   dataset_adsl = adsl,
-#'   filter_source = PARAMCD == "OVR",
+#'   filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
 #'   source_pd = pd_date,
 #'   source_datasets = list(adrs = adrs),
 #'   ref_confirm = 28,
