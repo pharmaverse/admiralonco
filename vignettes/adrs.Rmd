@@ -108,7 +108,7 @@ It could even involve merging input data from other sources besides `RS`, such a
 
 This step would include any required selection/derivation of `ADT` or applying any necessary partial date imputations,
 updating `AVAL` (e.g. this should be ordered from best to worst response), and setting analysis flag `ANL01FL`. Common options for
-`ANL01FL` would be to set null for invalid assessments or those occurring after next anti-cancer therapy, or to only flag assessments
+`ANL01FL` would be to set null for invalid assessments or those occurring after new anti-cancer therapy, or to only flag assessments
 on or after after date of first treatment/randomization, or rules to cover the case when a patient has multiple observations per visit
 (e.g. by selecting worst value).
 Another consideration could be extra potential protocol-specific sources of Progressive Disease such as radiological assessments,
@@ -203,8 +203,8 @@ dataset_vignette(
 )
 ```
 
-Here is an alternative example where those records occurring after next anti-cancer therapy are additionally
-excluded (where `NACTDT` would be pre-derived as first date of next anti-cancer therapy).
+Here is an alternative example where those records occurring after new anti-cancer therapy are additionally
+excluded (where `NACTDT` would be pre-derived as first date of new anti-cancer therapy).
 
 ```{r, eval=FALSE}
 adrs <- adrs %>%
