@@ -58,7 +58,5 @@ Suggests:
     usethis,
     covr,
     DT
-Remotes:
-    pharmaverse/admiral.test@devel
 VignetteBuilder: knitr
 Config/testthat/edition: 3
