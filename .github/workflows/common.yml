@@ -32,14 +32,6 @@ on:
 env:
   # R version to use for the workflows
   R_VERSION: "3.6"
-  # Whether to skip multiversion docs
-  # Note that if you have multiple versions of docs,
-  # your URL links are likely to break due to path changes
-  SKIP_MULTIVERSION_DOCS: false
-  # Whether to skip code coverage badge creation
-  # Setting to 'false' will require you to create
-  # an orphan branch called 'badges' in your repository
-  SKIP_COVERAGE_BADGES: false
 
 # Docs on concurrency:
 # https://docs.github.com/en/actions/using-jobs/using-concurrency
@@ -82,7 +74,10 @@ jobs:
     if: github.event_name == 'push'
     with:
       r-version: $R_VERSION
-      skip-multiversion-docs: $SKIP_MULTIVERSION_DOCS
+      # Whether to skip multiversion docs
+      # Note that if you have multiple versions of docs,
+      # your URL links are likely to break due to path changes
+      skip-multiversion-docs: false
   linter:
     name: Lint
     uses: pharmaverse/admiralci/.github/workflows/lintr.yml@main
@@ -101,7 +96,10 @@ jobs:
       github.event_name == 'push' || github.event_name == 'pull_request'
     with:
       r-version: $R_VERSION
-      skip-coverage-badges: $SKIP_COVERAGE_BADGES
+      # Whether to skip code coverage badge creation
+      # Setting to 'false' will require you to create
+      # an orphan branch called 'badges' in your repository
+      skip-coverage-badges: false
   templates:
     name: Check Templates
     uses: pharmaverse/admiralci/.github/workflows/check-templates.yml@main
