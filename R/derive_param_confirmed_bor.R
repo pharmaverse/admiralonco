@@ -55,7 +55,8 @@
 #'
 #' @param ref_start_window Stable disease time window
 #'
-#'   Assessments at least the specified number of days after the reference date
+#'   Assessments at least the specified number of days after the reference date 
+#'   (i.e. where `ADT` >= `reference_date` + `ref_start_window`)
 #'   with response `"CR"`, `"PR"`, `"SD"`, or `"NON-CR/NON-PD"` are considered
 #'   for `"SD"` or `"NON-CR/NON-PD"` response.
 #'
