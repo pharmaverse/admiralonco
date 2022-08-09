@@ -206,15 +206,23 @@ at new anti-cancer therapy. This could either be controlled using `ANLzzFL` as
 explained in the ADRS vignette, so that records after new anti-cancer therapy
 never contribute to the PD and DEATH parameters. Or alternatively you can control
 this on the ADTTE side by filtering which records are used in
-`admiral::event_source()` and `admiral::censor_source()`.
+`admiral::event_source()` and `admiral::censor_source()`, e.g. for PD or death
+event date we can use `filter` argument to exclude events occurring after new
+anti-cancer therapy.
+
 The censor could be set as whichever date your analysis requires,
 e.g. date of last tumor assessment prior to new anti-cancer therapy or last
 radiological assessment. If you pass multiple censor dates then remember the
-function will choose the latest occurring of these.
+function will choose the latest occurring of these, so be cautious here if
+feeding in say one censor date for last assessment prior to new anti-cancer
+therapy and one for last assessment - as the function would choose the maximum of
+these which in this case would be incorrect. The easiest solution here would be
+to pass in one censor date as the date of last assessment prior to new
+anti-cancer therapy or date of last assessment **if no new anti-cancer therapy**.
+
 This case is demonstrated in the below example (where `NACTDT` would be
-pre-derived as first date of new anti-cancer therapy, and `LASTANDT` as date of
-last assessment prior to new anti-cancer therapy or last assessment if no new
-anti-cancer therapy).
+pre-derived as first date of new anti-cancer therapy, and `LASTANDT` as the
+censor date as described above).
 
 ```{r, eval=FALSE}
 pd_nact_event <- event_source(
