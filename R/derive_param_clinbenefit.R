@@ -162,7 +162,7 @@
 #' derive_param_clinbenefit(
 #'   dataset = adrs,
 #'   dataset_adsl = adsl,
-#'   filter_source = PARAMCD == "OVR",
+#'   filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
 #'   source_resp = resp,
 #'   source_pd = pd,
 #'   source_datasets = list(adrs = adrs),
