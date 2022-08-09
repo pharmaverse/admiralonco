@@ -43,9 +43,6 @@ library(admiral)
 library(admiralonco)
 library(dplyr)
 library(admiral.test)
-```
-
-```{r, warning=FALSE, message=FALSE, include=FALSE}
 library(lubridate)
 ```
 
