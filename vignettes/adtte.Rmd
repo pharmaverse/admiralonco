@@ -219,10 +219,12 @@ therapy and one for last assessment - as the function would choose the maximum o
 these which in this case would be incorrect. The easiest solution here would be
 to pass in one censor date as the date of last assessment prior to new
 anti-cancer therapy or date of last assessment **if no new anti-cancer therapy**.
+If you wanted to use different censor dates which could have different `CNSDTDSC`
+values, then you'd need to ensure only one is set per patient.
 
 This case is demonstrated in the below example (where `NACTDT` would be
 pre-derived as first date of new anti-cancer therapy, and `LASTANDT` as the
-censor date as described above).
+single tumor assessment censor date as described above).
 
 ```{r, eval=FALSE}
 pd_nact_event <- event_source(
