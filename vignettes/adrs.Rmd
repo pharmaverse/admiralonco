@@ -108,7 +108,7 @@ It could even involve merging input data from other sources besides `RS`, such a
 
 This step would include any required selection/derivation of `ADT` or applying any necessary partial date imputations,
 updating `AVAL` (e.g. this should be ordered from best to worst response), and setting analysis flag `ANL01FL`. Common options for
-`ANL01FL` would be to set null for invalid assessments or those occurring after next anti-cancer therapy, or to only flag assessments
+`ANL01FL` would be to set null for invalid assessments or those occurring after new anti-cancer therapy, or to only flag assessments
 on or after after date of first treatment/randomization, or rules to cover the case when a patient has multiple observations per visit
 (e.g. by selecting worst value).
 Another consideration could be extra potential protocol-specific sources of Progressive Disease such as radiological assessments,
@@ -203,8 +203,24 @@ dataset_vignette(
 )
 ```
 
+Here is an alternative example where those records occurring after new anti-cancer therapy are additionally
+excluded (where `NACTDT` would be pre-derived as first date of new anti-cancer therapy).
+
+```{r, eval=FALSE}
+adrs <- adrs %>%
+  mutate(
+    ANL01FL = case_when(
+      !is.na(AVAL) & ADT >= RANDDT & ADT < NACTDT ~ "Y",
+      TRUE ~ NA_character_
+    )
+  )
+```
+
 Note here that we don't filter out records after first `PD` at this stage, as that is specifically catered for in
-the `{admiralonco}` parameter derivation functions in the below steps.
+the `{admiralonco}` parameter derivation functions in the below steps, via `source_pd` arguments.
+However, if you prefer not to rely on `source_pd` arguments, then the user is free to filter out records after
+first `PD` at this stage in a similar way via a `ANLzzFL` flag, and then you could leave `source_pd` as null in
+all downstream parameter derivation function calls.
 
 ## Derive Progressive Disease Parameter {#pd}
 
@@ -241,8 +257,11 @@ dataset_vignette(
 
 For progressive disease, response and death parameters shown in steps here and below, in our
 examples we show these as `ADRS` parameters, but they could equally be achieved via `ADSL` dates or `ADEVENT`
-parameters. All the parameter derivation functions that use these are flexible to allow sourcing these dates
-from any input source using `admiral::date_source()`.
+parameters.
+If you prefer to store as an ADSL date, then the function `admiral::derive_var_extreme_dt()` could be used
+to find the date of first `PD` as a variable, rather than as a new parameter record.
+All the parameter derivation functions that use these dates are flexible to allow sourcing these
+from any input source using `admiral::date_source()`. See examples below.
 
 ## Derive Response Parameter {#rsp}
 
@@ -253,6 +272,16 @@ pd <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == "PD" & AVALC == "Y"
+)
+```
+
+An equivalent example if using `ADSL` instead could be as follows (where `PDDT` would be
+pre-derived as first date of progressive disease).
+
+```{r, eval=FALSE}
+pd <- date_source(
+  dataset_name = "adsl",
+  date = PDDT
 )
 ```
 
