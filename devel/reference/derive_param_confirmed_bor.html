@@ -35,12 +35,6 @@
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" href="https://pharmaverse.github.io/admiralonco/devel">devel</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -129,6 +123,7 @@ start date (<code>TRTSDT</code>) or randomization date (<code>RANDDT</code>).</p
 <dt>ref_start_window</dt>
 <dd><p>Stable disease time window</p>
 <p>Assessments at least the specified number of days after the reference date
+(i.e. where <code>ADT</code> &gt;= <code>reference_date</code> + <code>ref_start_window</code>)
 with response <code>"CR"</code>, <code>"PR"</code>, <code>"SD"</code>, or <code>"NON-CR/NON-PD"</code> are considered
 for <code>"SD"</code> or <code>"NON-CR/NON-PD"</code> response.</p>
 <p><em>Permitted Values:</em> a non-negative numeric scalar</p></dd>
