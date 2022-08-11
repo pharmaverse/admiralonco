@@ -102,8 +102,9 @@
 #' @param ref_start_window Stable disease time window
 #'
 #'   The ref_start_window is used along with `reference_date` to determine those
-#'   records that occur before and after `ADT` (see Details section for further
-#'   information).
+#'   records that occur before and after `ADT` (i.e. for a record determine
+#'   whether `ADT` >= `reference_date` + `ref_start_window`),
+#'   see Details section for further information.
 #'
 #'   *Permitted Values:* a non-negative numeric scalar
 #'

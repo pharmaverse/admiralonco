@@ -89,8 +89,9 @@ randomization date (\code{RANDDT}).
 \item{ref_start_window}{Stable disease time window
 
 The ref_start_window is used along with \code{reference_date} to determine those
-records that occur before and after \code{ADT} (see Details section for further
-information).
+records that occur before and after \code{ADT} (i.e. for a record determine
+whether \code{ADT} >= \code{reference_date} + \code{ref_start_window}),
+see Details section for further information.
 
 \emph{Permitted Values:} a non-negative numeric scalar
 
