@@ -72,18 +72,18 @@ pd_date <- admiral::date_source(
 test_that("derive_param_confirmed_resp Test 1: default confirmed response", {
   suppress_warning(
     actual <-
-    derive_param_confirmed_resp(
-      adrs,
-      dataset_adsl = adsl,
-      filter_source = PARAMCD == "OVR",
-      source_pd = pd_date,
-      source_datasets = list(adrs = adrs),
-      ref_confirm = 28,
-      set_values_to = vars(
-        PARAMCD = "CRSP",
-        PARAM = "Confirmed Response by Investigator"
-      )
-    ),
+      derive_param_confirmed_resp(
+        adrs,
+        dataset_adsl = adsl,
+        filter_source = PARAMCD == "OVR",
+        source_pd = pd_date,
+        source_datasets = list(adrs = adrs),
+        ref_confirm = 28,
+        set_values_to = vars(
+          PARAMCD = "CRSP",
+          PARAM = "Confirmed Response by Investigator"
+        )
+      ),
     "Dataset contains CR records followed by PR"
   )
 
@@ -133,20 +133,20 @@ test_that("derive_param_confirmed_resp Test 2: accept SD", {
 
   suppress_warning(
     actual <-
-    derive_param_confirmed_resp(
-      adrs_ext,
-      dataset_adsl = adsl,
-      filter_source = PARAMCD == "OVR",
-      source_pd = pd_date,
-      source_datasets = list(adrs = adrs),
-      ref_confirm = 14,
-      max_nr_ne = 0,
-      accept_sd = TRUE,
-      set_values_to = vars(
-        PARAMCD = "CRSP",
-        PARAM = "Confirmed Response by Investigator"
-      )
-    ),
+      derive_param_confirmed_resp(
+        adrs_ext,
+        dataset_adsl = adsl,
+        filter_source = PARAMCD == "OVR",
+        source_pd = pd_date,
+        source_datasets = list(adrs = adrs),
+        ref_confirm = 14,
+        max_nr_ne = 0,
+        accept_sd = TRUE,
+        set_values_to = vars(
+          PARAMCD = "CRSP",
+          PARAM = "Confirmed Response by Investigator"
+        )
+      ),
     "Dataset contains CR records followed by PR"
   )
 

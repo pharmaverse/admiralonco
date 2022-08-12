@@ -70,7 +70,10 @@ signal_crpr <- function(dataset,
 
   if (nrow(crpr_data) > 0) {
     .datasets$crpr <- crpr_data
-    full_msg <- paste0(msg, "\nRun `get_crpr_dataset()` to access the CR records records followed by PR")
+    full_msg <- paste0(
+      msg,
+      "\nRun `get_crpr_dataset()` to access the CR records records followed by PR"
+    )
     msg_funs <- list(warning = warn, error = abort)
     msg_funs[[check_type]](full_msg)
   }

@@ -23,20 +23,25 @@ adrs <- tribble(
 test_that("signal_crpr Test 1: warning is issued", {
   expect_warning(signal_crpr(
     adrs,
-    order = vars(ADT)),
-    paste("Dataset contains CR records followed by PR.",
-          "Run `get_crpr_dataset()` to access the CR records records followed by PR",
-          sep = "\n"),
-    fixed = TRUE
-    )
+    order = vars(ADT)
+  ),
+  paste("Dataset contains CR records followed by PR.",
+    "Run `get_crpr_dataset()` to access the CR records records followed by PR",
+    sep = "\n"
+  ),
+  fixed = TRUE
+  )
 })
 
 # get_crpr_dataset ----
 ## Test 2: dataset if returned ----
 test_that("get_crpr_dataset() Test 2: dataset if returned", {
-  suppress_warning(signal_crpr(adrs,
-                               order = vars(ADT)),
-                   "Dataset contains CR records followed by PR")
+  suppress_warning(
+    signal_crpr(adrs,
+      order = vars(ADT)
+    ),
+    "Dataset contains CR records followed by PR"
+  )
 
   expect_dfs_equal(
     base = tribble(
