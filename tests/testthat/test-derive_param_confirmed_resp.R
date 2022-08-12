@@ -1,5 +1,8 @@
+library(tibble)
+library(dplyr)
+library(lubridate)
 
-adsl <- tibble::tribble(
+adsl <- tribble(
   ~USUBJID, ~TRTSDTC,
   "1",      "2020-01-01",
   "2",      "2019-12-12",
@@ -15,7 +18,7 @@ adsl <- tibble::tribble(
     STUDYID = "XX1234"
   )
 
-adrs <- tibble::tribble(
+adrs <- tribble(
   ~USUBJID, ~ADTC,        ~AVALC,
   "1",      "2020-01-01", "PR",
   "1",      "2020-02-01", "CR",
@@ -48,13 +51,13 @@ adrs <- tibble::tribble(
   "9",      "2020-03-06", "SD"
 ) %>%
   mutate(PARAMCD = "OVR") %>%
-  bind_rows(tibble::tribble(
+  bind_rows(tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
     "9",      "2020-02-16", "Y"
   ) %>%
     mutate(PARAMCD = "PD")) %>%
   mutate(
-    ADT = lubridate::ymd(ADTC),
+    ADT = ymd(ADTC),
     STUDYID = "XX1234"
   )
 
@@ -65,9 +68,10 @@ pd_date <- admiral::date_source(
 )
 
 # derive_param_confirmed_resp ----
-## derive_param_confirmed_resp Test 1: default confirmed response ----
+## Test 1: default confirmed response ----
 test_that("derive_param_confirmed_resp Test 1: default confirmed response", {
-  actual <-
+  suppress_warning(
+    actual <-
     derive_param_confirmed_resp(
       adrs,
       dataset_adsl = adsl,
@@ -79,7 +83,9 @@ test_that("derive_param_confirmed_resp Test 1: default confirmed response", {
         PARAMCD = "CRSP",
         PARAM = "Confirmed Response by Investigator"
       )
-    )
+    ),
+    "Dataset contains CR records followed by PR"
+  )
 
   expected <- bind_rows(
     adrs,
@@ -110,7 +116,7 @@ test_that("derive_param_confirmed_resp Test 1: default confirmed response", {
   )
 })
 
-## derive_param_confirmed_resp Test 2: accept SD ----
+## Test 2: accept SD ----
 test_that("derive_param_confirmed_resp Test 2: accept SD", {
   adrs_ext <- bind_rows(
     filter(adrs, USUBJID != "7"),
@@ -125,7 +131,8 @@ test_that("derive_param_confirmed_resp Test 2: accept SD", {
       )
   )
 
-  actual <-
+  suppress_warning(
+    actual <-
     derive_param_confirmed_resp(
       adrs_ext,
       dataset_adsl = adsl,
@@ -139,11 +146,13 @@ test_that("derive_param_confirmed_resp Test 2: accept SD", {
         PARAMCD = "CRSP",
         PARAM = "Confirmed Response by Investigator"
       )
-    )
+    ),
+    "Dataset contains CR records followed by PR"
+  )
 
   expected <- bind_rows(
     adrs_ext,
-    tibble::tribble(
+    tribble(
       ~USUBJID, ~ADTC,         ~AVALC, ~AVAL,
       "1",      "2020-01-01",  "Y",    1,
       "2",      "2020-02-01",  "Y",    1,
@@ -170,9 +179,9 @@ test_that("derive_param_confirmed_resp Test 2: accept SD", {
   )
 })
 
-## derive_param_confirmed_resp Test 3: error if invalid response values ----
+## Test 3: error if invalid response values ----
 test_that("derive_param_confirmed_resp Test 3: error if invalid response values", {
-  adrs <- tibble::tribble(
+  adrs <- tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
     "1",      "2020-01-01", "PR",
     "1",      "2020-02-01", "CR",

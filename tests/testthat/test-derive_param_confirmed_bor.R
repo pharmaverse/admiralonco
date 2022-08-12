@@ -71,8 +71,9 @@ pd_date <- admiral::date_source(
 )
 
 # derive_param_confirmed_bor ----
-## derive_param_confirmed_bor Test 1: default confirmed BOR ----
+## Test 1: default confirmed BOR ----
 test_that("derive_param_confirmed_bor Test 1: default confirmed BOR", {
+  suppress_warning(
   actual <-
     derive_param_confirmed_bor(
       adrs,
@@ -87,7 +88,9 @@ test_that("derive_param_confirmed_bor Test 1: default confirmed BOR", {
         PARAMCD = "CBOR",
         PARAM = "Best Confirmed Overall Response by Investigator"
       )
-    )
+    ),
+  "Dataset contains CR records followed by PR"
+  )
 
   expected <- bind_rows(
     adrs,
@@ -123,7 +126,7 @@ test_that("derive_param_confirmed_bor Test 1: default confirmed BOR", {
   )
 })
 
-## derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as NE ----
+## Test 2: accept SD, ND handling, missing as NE ----
 test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as NE", {
   adrs_ext <- bind_rows(
     filter(adrs, USUBJID != "7"),
@@ -143,6 +146,7 @@ test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as
       )
   )
 
+  suppress_warning(
   actual <-
     derive_param_confirmed_bor(
       adrs_ext,
@@ -160,7 +164,9 @@ test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as
         PARAMCD = "CBOR",
         PARAM = "Best Confirmed Overall Response by Investigator"
       )
-    )
+    ),
+  "Dataset contains CR records followed by PR"
+  )
 
   expected <- bind_rows(
     adrs_ext,
@@ -196,7 +202,7 @@ test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as
   )
 })
 
-## derive_param_confirmed_bor Test 3: error if invalid response values ----
+## Test 3: error if invalid response values ----
 test_that("derive_param_confirmed_bor Test 3: error if invalid response values", {
   adrs <- tibble::tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
