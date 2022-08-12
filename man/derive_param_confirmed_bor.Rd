@@ -76,6 +76,7 @@ start date (\code{TRTSDT}) or randomization date (\code{RANDDT}).
 \item{ref_start_window}{Stable disease time window
 
 Assessments at least the specified number of days after the reference date
+(i.e. where \code{ADT} >= \code{reference_date} + \code{ref_start_window})
 with response \code{"CR"}, \code{"PR"}, \code{"SD"}, or \code{"NON-CR/NON-PD"} are considered
 for \code{"SD"} or \code{"NON-CR/NON-PD"} response.
 
