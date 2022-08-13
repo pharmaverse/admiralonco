@@ -150,6 +150,7 @@ adrs <- adrs %>%
   derive_vars_dt(
     dtc = RSDTC,
     new_vars_prefix = "A",
+    highest_imputation = "D",
     date_imputation = "last"
   ) %>%
   mutate(AVISIT = VISIT)
