@@ -190,7 +190,7 @@ adrs <- adrs %>%
 
 # Confirmed response versions of the above parameters
 adrs <- adrs %>%
-  derive_param_confirmed_response(
+  derive_param_confirmed_resp(
     dataset_adsl = adsl,
     filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
     source_pd = pd,
