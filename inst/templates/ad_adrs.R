@@ -265,7 +265,7 @@ adrs <- adrs %>%
 adrs <- adrs %>%
   derive_var_obs_number(
     by_vars = vars(STUDYID, USUBJID),
-    order = vars(PARAMCD, ADT, VISITNUM),
+    order = vars(PARAMCD, ADT, VISITNUM, RSSEQ),
     check_type = "error"
   )
 
