@@ -400,7 +400,6 @@ If you'd like to provide your own company-specific ordering here you could do th
 
 ```{r, eval=FALSE}
 aval_resp_new <- function(arg) {
-  assert_character_vector(arg)
   case_when(
     arg == "CR" ~ 7,
     arg == "PR" ~ 6,
