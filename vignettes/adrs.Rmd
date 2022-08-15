@@ -393,6 +393,29 @@ dataset_vignette(
 )
 ```
 
+Note that the above gives pre-defined `AVAL` values of:
+`"CR" ~ 1`, `"PR" ~ 2`, `"SD" ~ 3`, `"NON-CR/NON-PD" ~ 4`, `"PD" ~ 5`, `"NE" ~ 6`, `"MISSING" ~ 7`.
+
+If you'd like to provide your own company-specific ordering here you could do this as follows:
+
+```{r, eval=FALSE}
+aval_resp_new <- function(arg) {
+  assert_character_vector(arg)
+  case_when(
+    arg == "CR" ~ 7,
+    arg == "PR" ~ 6,
+    arg == "SD" ~ 5,
+    arg == "NON-CR/NON-PD" ~ 4,
+    arg == "PD" ~ 3,
+    arg == "NE" ~ 2,
+    arg == "MISSING" ~ 1,
+    TRUE ~ NA_real_
+  )
+}
+```
+
+Then add the additional argument `aval_fun = aval_resp_new` to the above `derive_param_bor()` call.
+
 ## Derive Best Overall Response of CR/PR Parameter {#bcp}
 
 The function `derive_param_first_event()` can be used to check if a patient had a response for BOR.
