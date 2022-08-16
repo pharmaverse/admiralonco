@@ -1,4 +1,5 @@
 #' @keywords internal
+#' @family internal
 #' @importFrom admiral assert_character_scalar assert_character_vector
 #'   assert_data_frame assert_filter_cond assert_list_of assert_function
 #'   assert_integer_scalar assert_list_of assert_logical_scalar

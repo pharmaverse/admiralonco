@@ -16,30 +16,47 @@ repo:
     cran_dates: false
 reference:
 
- - title: Derivations
-   desc: Derivations add one or more variables or parameters to the input dataset and return the extended dataset.
+ - title: Derivations for Adding Variables
+ - subtitle: ADRS-specific
+   desc: Derivation Functions helpful for building the ADRS dataset
  - contents:
-   - starts_with("derive")
+   - starts_with("der_adrs")
+ - subtitle: ADTTE-specific
+   desc: Derivation Functions helpful for building the ADTTE dataset
+ - contents:
+   - starts_with("der_adtte")
 
- - title: CDISC Hierarchy
- - subtitle: ADRS
-   desc: ADRS specific functions
+ - title: Derivations for Adding Parameters
+ - subtitle: ADRS-specific
+   desc: Parameter Derivation Functions helpful for building the ADRS dataset
  - contents:
-   - has_keyword('adrs')
+   - has_keyword("der_prm_adrs")
+ - subtitle: TTE-specific
+   desc: Parameter Derivation Functions helpful for building the ADTTE dataset
+ - contents:
+   - has_keyword("der_prm_adtte")
 
- - title: Other Keywords
- - subtitle: Pre-Defined Time-to-Event Sources
-   desc: '`tte_source` objects defined by {admiralonco} that can be used as input for `admiral::derive_param_tte()`'
+ - title: Advanced Functions
  - contents:
-   - has_keyword('tte_source')
+   - has_keyword("source_specifications")
 
- - title: ADaM Datasets
+ - title: Utility Functions
+ - subtitle: Utilities for Filtering Observations
  - contents:
-   - admiral_adrs
+   - has_keyword('utils_fil')
 
- - title: User Utilities
+ - title: Example Datasets
+   desc: You can run `use_ad_template()` to produce additional datasets
  - contents:
-   - has_keyword("user_utility")
+   - has_keyword('datasets')
+
+ - title: Relocated/Deprecated
+ - subtitle: Functions moved to another admiraldev package
+ - contents:
+   - has_keyword("move_adm_dev")
+ - subtitle: Deprecated
+ - contents:
+   - has_keyword("deprecated")
 
 articles:
  - title: User Guides

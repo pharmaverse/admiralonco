@@ -99,7 +99,9 @@
 #' @return The input dataset with a new parameter indicating if and when a
 #' response occurred
 #'
-#' @keywords derivation bds adrs
+#' @family der_prm_adrs
+#'
+#' @keywords der_prm_adrs
 #'
 #' @export
 #'

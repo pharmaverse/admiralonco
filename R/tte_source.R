@@ -17,7 +17,8 @@
 #'
 #' @export
 #'
-#' @keywords tte_source
+#' @family source_specifications
+#' @keywords source_specifications
 #'
 #' @rdname tte_source_objects
 #'
@@ -41,7 +42,7 @@ death_event <- event_source(
   )
 )
 
-#' @keywords tte_source
+#' @keywords source_specifications
 #' @rdname tte_source_objects
 #' @export
 lastalive_censor <- censor_source(
@@ -55,7 +56,7 @@ lastalive_censor <- censor_source(
   )
 )
 
-#' @keywords tte_source
+#' @keywords source_specifications
 #' @rdname tte_source_objects
 #' @export
 pd_event <- event_source(
@@ -70,7 +71,7 @@ pd_event <- event_source(
   )
 )
 
-#' @keywords tte_source
+#' @keywords source_specifications
 #' @rdname tte_source_objects
 #' @export
 lasta_censor <- censor_source(
@@ -86,7 +87,7 @@ lasta_censor <- censor_source(
   )
 )
 
-#' @keywords tte_source
+#' @keywords source_specifications
 #' @rdname tte_source_objects
 #' @export
 rand_censor <- censor_source(
@@ -100,7 +101,7 @@ rand_censor <- censor_source(
   )
 )
 
-#' @keywords tte_source
+#' @keywords source_specifications
 #' @rdname tte_source_objects
 #' @export
 trts_censor <- censor_source(
