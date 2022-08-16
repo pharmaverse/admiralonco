@@ -16,27 +16,15 @@ repo:
     cran_dates: false
 reference:
 
- - title: Derivations for Adding Variables
- - subtitle: ADRS-specific
-   desc: Derivation Functions helpful for building the ADRS dataset
- - contents:
-   - starts_with("der_adrs")
- - subtitle: ADTTE-specific
-   desc: Derivation Functions helpful for building the ADTTE dataset
- - contents:
-   - starts_with("der_adtte")
-
  - title: Derivations for Adding Parameters
  - subtitle: ADRS-specific
    desc: Parameter Derivation Functions helpful for building the ADRS dataset
  - contents:
    - has_keyword("der_prm_adrs")
- - subtitle: TTE-specific
-   desc: Parameter Derivation Functions helpful for building the ADTTE dataset
- - contents:
-   - has_keyword("der_prm_adtte")
 
  - title: Advanced Functions
+ - subtitle: Pre-Defined Time-to-Event Sources
+   desc: '`tte_source` objects defined by {admiralonco} that can be used as input for `admiral::derive_param_tte()`'
  - contents:
    - has_keyword("source_specifications")
 
@@ -46,7 +34,7 @@ reference:
    - has_keyword('utils_fil')
 
  - title: Example Datasets
-   desc: You can run `use_ad_template()` to produce additional datasets
+   desc: You can run `admiral::use_ad_template()` to produce additional datasets
  - contents:
    - has_keyword('datasets')
 
