@@ -57,4 +57,5 @@ for (obj in admiral::list_tte_source_objects(package = "admiralonco")$object) {
 \code{\link[admiral:derive_param_tte]{admiral::derive_param_tte()}}, \code{\link[admiral:tte_source]{admiral::tte_source()}}, \code{\link[admiral:event_source]{admiral::event_source()}},
 \code{\link[admiral:censor_source]{admiral::censor_source()}}
 }
-\keyword{tte_source}
+\concept{source_specifications}
+\keyword{source_specifications}

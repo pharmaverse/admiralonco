@@ -17,4 +17,5 @@ admiral_adrs
 \description{
 An example response analysis dataset
 }
+\concept{datasets}
 \keyword{datasets}

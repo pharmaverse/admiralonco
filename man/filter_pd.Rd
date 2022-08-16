@@ -189,8 +189,15 @@ filter_pd(
   source_datasets = list(adrs = adrs)
 )
 }
+\seealso{
+Utilities for Filtering Observations: 
+\code{\link{count_vals}()},
+\code{\link{filter_confirmation}()},
+\code{\link{max_cond}()},
+\code{\link{min_cond}()}
+}
 \author{
 Teckla Akinyi, Stefan Bundfuss
 }
-\keyword{adrs}
-\keyword{user_utility}
+\concept{utils_fil}
+\keyword{utils_fil}

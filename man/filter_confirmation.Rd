@@ -243,8 +243,15 @@ filter_confirmation(
     )
 )
 }
+\seealso{
+Utilities for Filtering Observations: 
+\code{\link{count_vals}()},
+\code{\link{filter_pd}()},
+\code{\link{max_cond}()},
+\code{\link{min_cond}()}
+}
 \author{
 Stefan Bundfuss
 }
-\keyword{adam}
-\keyword{user_utility}
+\concept{utils_fil}
+\keyword{utils_fil}

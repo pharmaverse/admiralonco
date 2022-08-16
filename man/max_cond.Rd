@@ -37,7 +37,15 @@ group_by(data, USUBJID) \%>\% mutate(
   pr_after_cr = last_pr_vis > first_cr_vis
 )
 }
+\seealso{
+Utilities for Filtering Observations: 
+\code{\link{count_vals}()},
+\code{\link{filter_confirmation}()},
+\code{\link{filter_pd}()},
+\code{\link{min_cond}()}
+}
 \author{
 Stefan Bundfuss
 }
-\keyword{user_utility}
+\concept{utils_fil}
+\keyword{utils_fil}
