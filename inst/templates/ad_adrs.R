@@ -188,8 +188,48 @@ adrs <- adrs %>%
     )
   )
 
-# Confirmed best overall response
+# Confirmed response versions of the above parameters
 adrs <- adrs %>%
+  derive_param_confirmed_resp(
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
+    source_pd = pd,
+    source_datasets = list(adrs = adrs),
+    ref_confirm = 28,
+    set_values_to = vars(
+      PARAMCD = "CRSP",
+      PARAM = "Confirmed Response by Investigator",
+      PARCAT1 = "Tumor Response",
+      PARCAT2 = "Investigator",
+      PARCAT3 = "Recist 1.1",
+      ANL01FL = "Y"
+    )
+  )
+
+confirmed_resp <- date_source(
+  dataset_name = "adrs",
+  date = ADT,
+  filter = PARAMCD == "CRSP" & AVALC == "Y"
+)
+
+adrs <- adrs %>%
+  derive_param_clinbenefit(
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+    source_resp = confirmed_resp,
+    source_pd = pd,
+    source_datasets = list(adrs = adrs),
+    reference_date = RANDDT,
+    ref_start_window = 42,
+    set_values_to = vars(
+      PARAMCD = "CCB",
+      PARAM = "Confirmed Clinical Benefit by Investigator",
+      PARCAT1 = "Tumor Response",
+      PARCAT2 = "Investigator",
+      PARCAT3 = "Recist 1.1",
+      ANL01FL = "Y"
+    )
+  ) %>%
   derive_param_confirmed_bor(
     dataset_adsl = adsl,
     filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
@@ -200,7 +240,21 @@ adrs <- adrs %>%
     ref_confirm = 28,
     set_values_to = vars(
       PARAMCD = "CBOR",
-      PARAM = "Best Overall Response by Investigator",
+      PARAM = "Best Confirmed Overall Response by Investigator",
+      PARCAT1 = "Tumor Response",
+      PARCAT2 = "Investigator",
+      PARCAT3 = "Recist 1.1",
+      ANL01FL = "Y"
+    )
+  ) %>%
+  derive_param_first_event(
+    dataset_adsl = adsl,
+    dataset_source = adrs,
+    filter_source = PARAMCD == "CBOR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
+    date_var = ADT,
+    set_values_to = vars(
+      PARAMCD = "CBCP",
+      PARAM = "Best Confirmed Overall Response of CR/PR by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
