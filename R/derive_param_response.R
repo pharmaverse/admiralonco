@@ -19,19 +19,15 @@
 #'   to the input dataset. This is to capture those patients that may never have
 #'   had a tumor assessment.
 #'
-#' @param source_datasets Source dataset(s)
+#' @param source_datasets Source dataset
 #'
-#'   A named list of datasets with 1 or 2 elements is expected (e.g. `list(adrs
-#'   = adrs, pdds=pdds)`).
+#'   A named list of a dataset with 1 element is expected
+#'   (e.g. `list(adrs= adrs)`).
 #'
 #'   At least `dataset` must be defined as a named list.
 #'
 #'   + If 1 element is defined, it implies that the response data and the data
 #'   used in `pd_source` are in the same dataset `dataset`.
-#'
-#'   + If 2 elements are defined, then 1 dataset contains the response data
-#'   (`dataset`) and the other the data used in `pd_source` (e.g.
-#'   `pd_source$dataset_name`)
 #'
 #'   The variables specified by the `subject_keys` and `ADT` are expected in
 #'   the input `dataset`.
