@@ -274,8 +274,7 @@ adtte <- derive_param_tte(
 
 The analysis value (`AVAL`) can be derived by calling `admiral::derive_vars_duration()`.
 
-This example derives the time to event in days. Other units can be requested by
-specifying the `out_unit` parameter.
+This example derives the time to event in days. 
 
 ```{r eval=TRUE}
 adtte <- adtte %>%
@@ -290,6 +289,27 @@ adtte <- adtte %>%
 dataset_vignette(
   adtte
 )
+```
+
+Other time units, such as months that we commonly see in oncology analyses, can be requested
+by specifying the `out_unit` parameter. See the example below. Note that because of the underlying
+`lubridate::time_length()` function that is used here this may perform slightly differently to
+your expectations, e.g. both `time_length(ymd("2021-01-01") %--% ymd("2021-02-01"), "month")`
+and `time_length(ymd("2021-02-01") %--% ymd("2021-03-01"), "month")` results in exactly 1 month,
+which is a logical approach but it gives a different result to the convention of assuming every
+month has exactly equal days and just using `/30.4375` here or some other such convention. The
+difference would only be noticed for small durations, but if the user prefers an alternative
+approach they could calculate in the default days and then add extra processing to convert to months
+with their company-specific convention.
+
+```{r, eval=FALSE}
+adtte_months <- adtte %>%
+  derive_vars_duration(
+    new_var = AVAL,
+    start_date = STARTDT,
+    end_date = ADT,
+    out_unit = "months"
+  )
 ```
 
 ## Derive Analysis Sequence Number (`ASEQ`) {#aseq}
