@@ -55,6 +55,7 @@ For example purpose, the SDTM and ADaM datasets (based on CDISC Pilot test data)
 included in `{admiral.test}`---are used.
 
 ```{r message=FALSE}
+library(admiraldev)
 library(admiral)
 library(admiralonco)
 library(dplyr)
