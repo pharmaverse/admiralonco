@@ -33,6 +33,7 @@ RoxygenNote: 7.2.0
 Depends: R (>= 3.5)
 Imports:
     admiral,
+    admiraldev,
     dplyr,
     lubridate,
     magrittr,
