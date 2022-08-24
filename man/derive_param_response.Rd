@@ -49,17 +49,15 @@ date when the response occurred.
 \code{ADT} to \code{NA}.
 }}
 
-\item{source_datasets}{Source dataset(s)
+\item{source_datasets}{Source dataset
 
-A named list of datasets with 1 or 2 elements is expected (e.g. \code{list(adrs = adrs, pdds=pdds)}).
+A named list of a dataset with 1 element is expected
+(e.g. \code{list(adrs= adrs)}).
 
 At least \code{dataset} must be defined as a named list.
 \itemize{
 \item If 1 element is defined, it implies that the response data and the data
 used in \code{pd_source} are in the same dataset \code{dataset}.
-\item If 2 elements are defined, then 1 dataset contains the response data
-(\code{dataset}) and the other the data used in \code{pd_source} (e.g.
-\code{pd_source$dataset_name})
 }
 
 The variables specified by the \code{subject_keys} and \code{ADT} are expected in
