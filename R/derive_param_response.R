@@ -21,16 +21,14 @@
 #'
 #' @param source_datasets Source dataset
 #'
-#'   A named list of a dataset with 1 element is expected
-#'   (e.g. `list(adrs= adrs)`).
+#'   A named list of datasets with one element is expected
+#'    (e.g. `list(adrs= adrs)`).
 #'
-#'   At least `dataset` must be defined as a named list.
+#'   The name must match the `dataset_name` field of the
+#'   `admiral::date_source()` object specified for `source_pd`.
 #'
-#'   + If 1 element is defined, it implies that the response data and the data
-#'   used in `pd_source` are in the same dataset `dataset`.
-#'
-#'   The variables specified by the `subject_keys` and `ADT` are expected in
-#'   the input `dataset`.
+#'   The variables specified by the `subject_keys` argument and the `date`
+#'    field of the `admiral::date_source()` object are expected in the dataset.
 #'
 #' @param filter_source Source filter
 #'
