@@ -11,7 +11,7 @@ adrs <- tribble(
   "1",      "2020-04-01", "SD",
   "2",      "2020-02-06", "PR",
   "2",      "2020-02-16", "CR",
-  "2",      "2020-03-30", "PR",
+  "2",      "2020-03-30", "PR"
 ) %>%
   mutate(
     ADT = ymd(ADTC),
@@ -46,13 +46,14 @@ test_that("get_crpr_dataset() Test 2: dataset if returned", {
   expect_dfs_equal(
     base = tribble(
       ~USUBJID, ~ADTC,        ~AVALC,
-      "2",      "2020-02-16", "CR"
+      "2",      "2020-02-16", "CR",
+      "2",      "2020-03-30", "PR"
     ) %>%
       mutate(
         ADT = ymd(ADTC),
         STUDYID = "XX1234"
       ),
     compare = get_crpr_dataset(),
-    keys = c("USUBJID")
+    keys = c("USUBJID", "ADT")
   )
 })

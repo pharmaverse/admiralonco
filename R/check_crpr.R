@@ -69,6 +69,18 @@ signal_crpr <- function(dataset,
   )
 
   if (nrow(crpr_data) > 0) {
+    pr_data <- filter_confirmation(
+      dataset,
+      by_vars = subject_keys,
+      order = order,
+      join_vars = vars(AVALC),
+      join_type = "before",
+      filter = AVALC == "PR" & AVALC.join == "CR"
+    )
+
+    crpr_data <- bind_rows(crpr_data, pr_data) %>%
+      arrange(!!!subject_keys, !!!order)
+
     .datasets$crpr <- crpr_data
     full_msg <- paste0(
       msg,
