@@ -51,17 +51,14 @@ date when the response occurred.
 
 \item{source_datasets}{Source dataset
 
-A named list of a dataset with 1 element is expected
+A named list of datasets with one element is expected
 (e.g. \code{list(adrs= adrs)}).
 
-At least \code{dataset} must be defined as a named list.
-\itemize{
-\item If 1 element is defined, it implies that the response data and the data
-used in \code{pd_source} are in the same dataset \code{dataset}.
-}
+The name must match the \code{dataset_name} field of the
+\code{admiral::date_source()} object specified for \code{source_pd}.
 
-The variables specified by the \code{subject_keys} and \code{ADT} are expected in
-the input \code{dataset}.}
+The variables specified by the \code{subject_keys} argument and the \code{date}
+field of the \code{admiral::date_source()} object are expected in the dataset.}
 
 \item{set_values_to}{Variables to set
 
