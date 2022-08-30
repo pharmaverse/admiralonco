@@ -314,11 +314,18 @@ derive_param_confirmed_resp <- function(dataset,
     )
   }
 
+  # Check for CR followed by PR (this should not occur in clean data)
+  signal_crpr(
+    source_data,
+    order = vars(ADT)
+  )
+
   # Create observations for potential responses
   cr_data <- filter_confirmation(
     source_data,
     by_vars = subject_keys,
     join_vars = vars(AVALC, ADT),
+    join_type = "after",
     order = vars(ADT),
     first_cond = AVALC.join == "CR" &
       ADT.join >= ADT + days(ref_confirm),
@@ -339,6 +346,7 @@ derive_param_confirmed_resp <- function(dataset,
     source_data,
     by_vars = subject_keys,
     join_vars = vars(AVALC, ADT),
+    join_type = "after",
     order = vars(ADT),
     first_cond = AVALC.join %in% c("CR", "PR") &
       ADT.join >= ADT + days(ref_confirm),
@@ -351,7 +359,8 @@ derive_param_confirmed_resp <- function(dataset,
           var = ADT.join,
           cond = AVALC.join == "CR"
         ) > max_cond(var = ADT.join, cond = AVALC.join == "PR") |
-          count_vals(var = AVALC.join, val = "CR") == 0
+          count_vals(var = AVALC.join, val = "CR") == 0 |
+          count_vals(var = AVALC.join, val = "PR") == 0
       )
   ) %>%
     mutate(

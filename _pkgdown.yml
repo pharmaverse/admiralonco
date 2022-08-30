@@ -33,7 +33,10 @@ reference:
  - contents:
   - has_keyword('utils_fmt')
 
- - title: Utility Functions
+ - subtitle: Utilities for Dataset Checking
+ - contents:
+   - has_keyword('utils_ds_chk')
+
  - subtitle: Utilities for Filtering Observations
  - contents:
    - has_keyword('utils_fil')
