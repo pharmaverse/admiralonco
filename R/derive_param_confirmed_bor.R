@@ -503,8 +503,8 @@ derive_param_confirmed_bor <- function(dataset,
 #'
 #' @author Stefan Bundfuss
 #'
-#' @family move_adm_dev
-#' @keywords move_adm_dev
+#' @family utils_fmt
+#' @keywords utils_fmt
 #'
 #' @export
 #'

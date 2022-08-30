@@ -29,6 +29,11 @@ reference:
    - has_keyword("source_specifications")
 
  - title: Utility Functions
+ - subtitle: Utilities for Formatting Observations
+ - contents:
+  - has_keyword('utils_fmt')
+
+ - title: Utility Functions
  - subtitle: Utilities for Filtering Observations
  - contents:
    - has_keyword('utils_fil')
