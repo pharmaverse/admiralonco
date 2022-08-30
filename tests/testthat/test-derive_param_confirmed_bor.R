@@ -71,23 +71,26 @@ pd_date <- admiral::date_source(
 )
 
 # derive_param_confirmed_bor ----
-## derive_param_confirmed_bor Test 1: default confirmed BOR ----
+## Test 1: default confirmed BOR ----
 test_that("derive_param_confirmed_bor Test 1: default confirmed BOR", {
-  actual <-
-    derive_param_confirmed_bor(
-      adrs,
-      dataset_adsl = adsl,
-      filter_source = PARAMCD == "OVR",
-      source_pd = pd_date,
-      source_datasets = list(adrs = adrs),
-      reference_date = TRTSDT,
-      ref_start_window = 28,
-      ref_confirm = 28,
-      set_values_to = vars(
-        PARAMCD = "CBOR",
-        PARAM = "Best Confirmed Overall Response by Investigator"
-      )
-    )
+  suppress_warning(
+    actual <-
+      derive_param_confirmed_bor(
+        adrs,
+        dataset_adsl = adsl,
+        filter_source = PARAMCD == "OVR",
+        source_pd = pd_date,
+        source_datasets = list(adrs = adrs),
+        reference_date = TRTSDT,
+        ref_start_window = 28,
+        ref_confirm = 28,
+        set_values_to = vars(
+          PARAMCD = "CBOR",
+          PARAM = "Best Confirmed Overall Response by Investigator"
+        )
+      ),
+    "Dataset contains CR records followed by PR"
+  )
 
   expected <- bind_rows(
     adrs,
@@ -123,7 +126,7 @@ test_that("derive_param_confirmed_bor Test 1: default confirmed BOR", {
   )
 })
 
-## derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as NE ----
+## Test 2: accept SD, ND handling, missing as NE ----
 test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as NE", {
   adrs_ext <- bind_rows(
     filter(adrs, USUBJID != "7"),
@@ -143,24 +146,27 @@ test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as
       )
   )
 
-  actual <-
-    derive_param_confirmed_bor(
-      adrs_ext,
-      dataset_adsl = adsl,
-      filter_source = PARAMCD == "OVR",
-      source_pd = pd_date,
-      source_datasets = list(adrs = adrs),
-      reference_date = TRTSDT,
-      ref_start_window = 28,
-      ref_confirm = 14,
-      max_nr_ne = 0,
-      accept_sd = TRUE,
-      missing_as_ne = TRUE,
-      set_values_to = vars(
-        PARAMCD = "CBOR",
-        PARAM = "Best Confirmed Overall Response by Investigator"
-      )
-    )
+  suppress_warning(
+    actual <-
+      derive_param_confirmed_bor(
+        adrs_ext,
+        dataset_adsl = adsl,
+        filter_source = PARAMCD == "OVR",
+        source_pd = pd_date,
+        source_datasets = list(adrs = adrs),
+        reference_date = TRTSDT,
+        ref_start_window = 28,
+        ref_confirm = 14,
+        max_nr_ne = 0,
+        accept_sd = TRUE,
+        missing_as_ne = TRUE,
+        set_values_to = vars(
+          PARAMCD = "CBOR",
+          PARAM = "Best Confirmed Overall Response by Investigator"
+        )
+      ),
+    "Dataset contains CR records followed by PR"
+  )
 
   expected <- bind_rows(
     adrs_ext,
@@ -196,7 +202,7 @@ test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as
   )
 })
 
-## derive_param_confirmed_bor Test 3: error if invalid response values ----
+## Test 3: error if invalid response values ----
 test_that("derive_param_confirmed_bor Test 3: error if invalid response values", {
   adrs <- tibble::tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
