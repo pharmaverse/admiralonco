@@ -12,6 +12,6 @@
 #'   left_join mutate rename right_join select slice vars ungroup
 #' @importFrom lubridate days
 #' @importFrom magrittr `%>%`
-#' @importFrom rlang abort enquo quo_get_expr quo_is_null warn
+#' @importFrom rlang abort enquo inform quo_get_expr quo_is_null warn
 #' @importFrom tidyselect all_of
 "_PACKAGE"
