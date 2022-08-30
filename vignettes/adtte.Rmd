@@ -13,6 +13,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+
+library(admiraldev)
 ```
 
 # Introduction
@@ -39,7 +41,6 @@ otherwise specified.*
 The examples of this vignette require the following packages.
 
 ```{r, warning=FALSE, message=FALSE}
-library(admiraldev)
 library(admiral)
 library(admiralonco)
 library(dplyr)

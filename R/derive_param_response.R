@@ -19,22 +19,16 @@
 #'   to the input dataset. This is to capture those patients that may never have
 #'   had a tumor assessment.
 #'
-#' @param source_datasets Source dataset(s)
+#' @param source_datasets Source dataset
 #'
-#'   A named list of datasets with 1 or 2 elements is expected (e.g. `list(adrs
-#'   = adrs, pdds=pdds)`).
+#'   A named list of datasets with one element is expected
+#'    (e.g. `list(adrs= adrs)`).
 #'
-#'   At least `dataset` must be defined as a named list.
+#'   The name must match the `dataset_name` field of the
+#'   `admiral::date_source()` object specified for `source_pd`.
 #'
-#'   + If 1 element is defined, it implies that the response data and the data
-#'   used in `pd_source` are in the same dataset `dataset`.
-#'
-#'   + If 2 elements are defined, then 1 dataset contains the response data
-#'   (`dataset`) and the other the data used in `pd_source` (e.g.
-#'   `pd_source$dataset_name`)
-#'
-#'   The variables specified by the `subject_keys` and `ADT` are expected in
-#'   the input `dataset`.
+#'   The variables specified by the `subject_keys` argument and the `date`
+#'    field of the `admiral::date_source()` object are expected in the dataset.
 #'
 #' @param filter_source Source filter
 #'
