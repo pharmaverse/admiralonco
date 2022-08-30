@@ -31,7 +31,7 @@ reference:
  - title: Utility Functions
  - subtitle: Utilities for Formatting Observations
  - contents:
-  - has_keyword('utils_fmt')
+   - has_keyword('utils_fmt')
 
  - subtitle: Utilities for Dataset Checking
  - contents:
