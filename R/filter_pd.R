@@ -47,7 +47,8 @@
 #'
 #' @export
 #'
-#' @keywords user_utility adrs
+#' @keywords utils_fil
+#' @family utils_fil
 #'
 #' @examples
 #'

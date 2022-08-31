@@ -103,7 +103,9 @@
 #'
 #' @return The input dataset with a new parameter for clinical benefit
 #'
-#' @keywords derivation adrs
+#' @family der_prm_adrs
+#'
+#' @keywords der_prm_adrs
 #'
 #' @export
 #'

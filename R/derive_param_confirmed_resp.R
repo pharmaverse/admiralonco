@@ -143,7 +143,9 @@
 #'
 #' @return The input dataset with a new parameter for confirmed response
 #'
-#' @keywords derivation adrs
+#' @family der_prm_adrs
+#'
+#' @keywords der_prm_adrs
 #'
 #' @author Stefan Bundfuss
 #'

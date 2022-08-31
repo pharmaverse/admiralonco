@@ -176,7 +176,16 @@ derive_param_lasta(
 ) \%>\%
   filter(PARAMCD == "LSTAC")
 }
+\seealso{
+ADRS Functions for adding Parameters: 
+\code{\link{derive_param_bor}()},
+\code{\link{derive_param_clinbenefit}()},
+\code{\link{derive_param_confirmed_bor}()},
+\code{\link{derive_param_confirmed_resp}()},
+\code{\link{derive_param_response}()}
+}
 \author{
 Stephen Gormley
 }
-\keyword{adrs}
+\concept{der_prm_adrs}
+\keyword{der_prm_adrs}

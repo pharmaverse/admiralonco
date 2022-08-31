@@ -275,7 +275,9 @@
 #'
 #' @author Stephen Gormley
 #'
-#' @keywords adrs
+#' @family der_prm_adrs
+#'
+#' @keywords der_prm_adrs
 #'
 #' @return The dataframe passed in the `dataset` argument with additional columns and/or
 #'         rows as set in the `set_values_to` argument.

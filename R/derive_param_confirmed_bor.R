@@ -195,7 +195,9 @@
 #' @return The input dataset with a new parameter for confirmed best overall
 #'   response
 #'
-#' @keywords derivation adrs
+#' @family der_prm_adrs
+#'
+#' @keywords der_prm_adrs
 #'
 #' @author Stefan Bundfuss
 #'
@@ -514,7 +516,8 @@ derive_param_confirmed_bor <- function(dataset,
 #'
 #' @author Stefan Bundfuss
 #'
-#' @keywords user_utility
+#' @family utils_fmt
+#' @keywords utils_fmt
 #'
 #' @export
 #'
