@@ -54,10 +54,20 @@ reference:
  - contents:
    - has_keyword("deprecated")
 
-articles:
- - title: User Guides
-   navbar: User Guides
-   contents:
-   - admiralonco
-   - adrs
-   - adtte
+navbar:
+  structure:
+    left: [getstarted, reference, articles, news]
+  components:
+    getstarted:
+      text: Get Started
+      href: articles/admiralonco.html
+    reference:
+      text: Reference
+      href: reference/index.html
+    articles:
+      text: User Guides
+      menu:
+      - text: Creating ADRS
+        href: articles/adrs.html
+      - text: Creating ADTTE
+        href: articles/adtte.html
