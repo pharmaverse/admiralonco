@@ -26,9 +26,10 @@ test_that("signal_crpr Test 1: warning is issued", {
     adrs,
     order = vars(ADT)
   ),
-  paste("Dataset contains CR records followed by PR.",
-        "Run `get_crpr_dataset()` to access the CR records records followed by PR",
-        sep = "\n"
+  paste(
+    "Dataset contains CR records followed by PR.",
+    "Run `get_crpr_dataset()` to access the CR records records followed by PR",
+    sep = "\n"
   ),
   fixed = TRUE
   )
@@ -44,9 +45,10 @@ test_that("signal_crpr Test 2: error with custom message", {
     check_type = "error",
     msg = "The modified dataset contains CR records followed by PR."
   ),
-  paste("The modified dataset contains CR records followed by PR.",
-        "Run `get_crpr_dataset()` to access the CR records records followed by PR",
-        sep = "\n"
+  paste(
+    "The modified dataset contains CR records followed by PR.",
+    "Run `get_crpr_dataset()` to access the CR records records followed by PR",
+    sep = "\n"
   ),
   fixed = TRUE
   )
