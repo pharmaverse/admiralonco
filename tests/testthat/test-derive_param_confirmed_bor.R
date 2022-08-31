@@ -1,5 +1,8 @@
+library(tibble)
+library(dplyr)
+library(lubridate)
 
-adsl <- tibble::tribble(
+adsl <- tribble(
   ~USUBJID, ~TRTSDTC,
   "1",      "2020-01-01",
   "2",      "2019-12-12",
@@ -12,11 +15,11 @@ adsl <- tibble::tribble(
   "9",      "2020-02-01"
 ) %>%
   mutate(
-    TRTSDT = lubridate::ymd(TRTSDTC),
+    TRTSDT = ymd(TRTSDTC),
     STUDYID = "XX1234"
   )
 
-adrs <- tibble::tribble(
+adrs <- tribble(
   ~USUBJID, ~ADTC,        ~AVALC,
   "1",      "2020-01-01", "PR",
   "1",      "2020-02-01", "CR",
@@ -49,13 +52,13 @@ adrs <- tibble::tribble(
   "9",      "2020-03-06", "SD"
 ) %>%
   mutate(PARAMCD = "OVR") %>%
-  bind_rows(tibble::tribble(
+  bind_rows(tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
     "9",      "2020-02-16", "Y"
   ) %>%
     mutate(PARAMCD = "PD")) %>%
   mutate(
-    ADT = lubridate::ymd(ADTC),
+    ADT = ymd(ADTC),
     STUDYID = "XX1234"
   ) %>%
   derive_vars_merged(
@@ -64,7 +67,7 @@ adrs <- tibble::tribble(
     new_vars = vars(TRTSDT)
   )
 
-pd_date <- admiral::date_source(
+pd_date <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == "PD"
@@ -94,7 +97,7 @@ test_that("derive_param_confirmed_bor Test 1: default confirmed BOR", {
 
   expected <- bind_rows(
     adrs,
-    tibble::tribble(
+    tribble(
       ~USUBJID, ~ADTC,         ~AVALC,          ~AVAL,
       "1",      "2020-02-01",  "CR",            1,
       "2",      "2020-02-01",  "SD",            3,
@@ -107,7 +110,7 @@ test_that("derive_param_confirmed_bor Test 1: default confirmed BOR", {
       "9",      "2020-02-16",  "PD",            5
     ) %>%
       mutate(
-        ADT = lubridate::ymd(ADTC),
+        ADT = ymd(ADTC),
         STUDYID = "XX1234",
         PARAMCD = "CBOR",
         PARAM = "Best Confirmed Overall Response by Investigator"
@@ -130,13 +133,13 @@ test_that("derive_param_confirmed_bor Test 1: default confirmed BOR", {
 test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as NE", {
   adrs_ext <- bind_rows(
     filter(adrs, USUBJID != "7"),
-    tibble::tribble(
+    tribble(
       ~USUBJID, ~ADTC,        ~AVALC,
       "7",      "2020-04-02", "ND"
     ) %>%
       mutate(
         PARAMCD = "OVR",
-        ADT = lubridate::ymd(ADTC),
+        ADT = ymd(ADTC),
         STUDYID = "XX1234"
       ) %>%
       derive_vars_merged(
@@ -170,7 +173,7 @@ test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as
 
   expected <- bind_rows(
     adrs_ext,
-    tibble::tribble(
+    tribble(
       ~USUBJID, ~ADTC,         ~AVALC, ~AVAL,
       "1",      "2020-01-01",  "PR",   2,
       "2",      "2020-02-01",  "PR",   2,
@@ -183,7 +186,7 @@ test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as
       "9",      "2020-02-16",  "PD",   5
     ) %>%
       mutate(
-        ADT = lubridate::ymd(ADTC),
+        ADT = ymd(ADTC),
         STUDYID = "XX1234",
         PARAMCD = "CBOR",
         PARAM = "Best Confirmed Overall Response by Investigator"
@@ -204,7 +207,7 @@ test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as
 
 ## Test 3: error if invalid response values ----
 test_that("derive_param_confirmed_bor Test 3: error if invalid response values", {
-  adrs <- tibble::tribble(
+  adrs <- tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
     "1",      "2020-01-01", "PR",
     "1",      "2020-02-01", "CR",
@@ -214,7 +217,7 @@ test_that("derive_param_confirmed_bor Test 3: error if invalid response values",
   ) %>%
     mutate(
       PARAMCD = "OVR",
-      ADT = lubridate::ymd(ADTC),
+      ADT = ymd(ADTC),
       STUDYID = "XX1234"
     ) %>%
     derive_vars_merged(

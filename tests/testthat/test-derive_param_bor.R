@@ -4,7 +4,9 @@
 #  Requirements: https://github.com/pharmaverse/admiralonco/issues/22  #
 ######################################################################## !
 
-library(magrittr)
+library(tibble)
+library(dplyr)
+library(lubridate)
 
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Create Test Data ----
@@ -19,7 +21,7 @@ library(magrittr)
 # 2. CHECKNOTKEPTCOL ensure not in final dataframe
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-adsl <- tibble::tribble(
+adsl <- tribble(
   ~USUBJID, ~TRTSDTC,      ~CHECKKEPTCOL, ~CHECKNOTKEPTCOL,
   "1",      "2020-01-01",  "001",         "991",
   "2",      "2019-12-12",  "002",         "992",
@@ -30,12 +32,12 @@ adsl <- tibble::tribble(
   "7",      "2020-02-02",  "007",         "997",
   "8",      "2020-04-01",  "008",         "999"
 ) %>%
-  dplyr::mutate(
-    TRTSDT = lubridate::ymd(TRTSDTC),
+  mutate(
+    TRTSDT = ymd(TRTSDTC),
     STUDYID = "XX1234"
   )
 
-adrs <- tibble::tribble(
+adrs <- tribble(
   ~USUBJID, ~ADTC, ~AVALC, ~CHECKKEPTCOL,
   "1", "2020-01-01", "PR", "001",
   "1", "2020-02-01", "CR", "001",
@@ -65,21 +67,21 @@ adrs <- tibble::tribble(
   "7", "2020-02-16", "CR", "007",
   "7", "2020-04-01", "NE", "007"
 ) %>%
-  dplyr::mutate(
+  mutate(
     PARAMCD = "OVR",
-    ADT = lubridate::ymd(ADTC),
+    ADT = ymd(ADTC),
     STUDYID = "XX1234"
   ) %>%
-  dplyr::select(-ADTC) %>%
-  admiral::derive_vars_merged(
+  select(-ADTC) %>%
+  derive_vars_merged(
     dataset_add = adsl,
-    by_vars = dplyr::vars(STUDYID, USUBJID),
-    new_vars = dplyr::vars(TRTSDT)
+    by_vars = vars(STUDYID, USUBJID),
+    new_vars = vars(TRTSDT)
   )
 
 # Function to create numeric AVAL from AVALC, overwrites ADMIRAL defauly.
 aval_fun_pass <- function(arg) {
-  dplyr::case_when(
+  case_when(
     arg == "CR" ~ 11,
     arg == "PR" ~ 22,
     arg == "SD" ~ 33,
@@ -92,9 +94,9 @@ aval_fun_pass <- function(arg) {
 }
 
 # excepcted dataframe, deviations from this are handeled in each individual test
-expected_01 <- dplyr::bind_rows(
+expected_01 <- bind_rows(
   adrs,
-  tibble::tribble(
+  tribble(
     ~USUBJID, ~ADTC, ~AVALC, ~AVAL, ~TRTSDTC, ~CHECKKEPTCOL,
     "1", "2020-02-01", "CR", 11, "2020-01-01", "001",
     "2", "2020-03-13", "CR", 11, "2019-12-12", "002",
@@ -105,18 +107,18 @@ expected_01 <- dplyr::bind_rows(
     "7", "2020-02-16", "CR", 11, "2020-02-02", "007",
     "8", "", "MISSING", 77, "2020-04-01", "008"
   ) %>%
-    dplyr::mutate(
-      ADT = lubridate::ymd(ADTC),
-      TRTSDT = lubridate::ymd(TRTSDTC),
+    mutate(
+      ADT = ymd(ADTC),
+      TRTSDT = ymd(TRTSDTC),
       STUDYID = "XX1234",
       PARAMCD = "BOR",
       PARAM = "Best Overall Response"
     ) %>%
-    dplyr::select(-ADTC, -TRTSDTC)
+    select(-ADTC, -TRTSDTC)
 )
 
 # derive_param_bor, Test 1 ----
-testthat::test_that("derive_param_bor Test 1: No source_pd", {
+test_that("derive_param_bor Test 1: No source_pd", {
 
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # default  BOR, All Subjects have a record after reference date ----
@@ -131,13 +133,13 @@ testthat::test_that("derive_param_bor Test 1: No source_pd", {
     reference_date = TRTSDT,
     ref_start_window = 28,
     aval_fun = aval_fun_pass,
-    set_values_to = admiral::vars(
+    set_values_to = vars(
       PARAMCD = "BOR",
       PARAM = "Best Overall Response"
     )
   )
 
-  admiral::expect_dfs_equal(
+  expect_dfs_equal(
     base    = expected_01,
     compare = actual_01,
     keys    = c("USUBJID", "PARAMCD", "ADT")
@@ -156,7 +158,7 @@ testthat::test_that("derive_param_bor Test 1: No source_pd", {
     source_datasets = NULL,
     reference_date = TRTSDT,
     ref_start_window = 28,
-    set_values_to = admiral::vars(
+    set_values_to = vars(
       PARAMCD = "BOR",
       PARAM = "Best Overall Response"
     )
@@ -166,7 +168,7 @@ testthat::test_that("derive_param_bor Test 1: No source_pd", {
 
   expected_01_def_aval_fun$AVAL[28:35] <- c(1, 1, 1, 2, 2, 1, 1, 7)
 
-  admiral::expect_dfs_equal(
+  expect_dfs_equal(
     base    = expected_01_def_aval_fun,
     compare = actual_01_def_aval_fun,
     keys    = c("USUBJID", "PARAMCD", "ADT")
@@ -180,9 +182,9 @@ testthat::test_that("derive_param_bor Test 1: No source_pd", {
   # set subject 7 to only have records before ADT
   adrs_01 <- adrs
   adrs_01$ADT[adrs_01$USUBJID == "7"][1:3] <- c(
-    lubridate::ymd("2020-01-01"),
-    lubridate::ymd("2020-01-02"),
-    lubridate::ymd("2020-01-03")
+    ymd("2020-01-01"),
+    ymd("2020-01-02"),
+    ymd("2020-01-03")
   )
 
   actual_02 <- derive_param_bor(
@@ -194,7 +196,7 @@ testthat::test_that("derive_param_bor Test 1: No source_pd", {
     reference_date = TRTSDT,
     ref_start_window = 28,
     aval_fun = aval_fun_pass,
-    set_values_to = admiral::vars(
+    set_values_to = vars(
       PARAMCD = "BOR",
       PARAM = "Best Overall Response"
     )
@@ -203,13 +205,13 @@ testthat::test_that("derive_param_bor Test 1: No source_pd", {
   # expected will be the same as previous test except ADT for subject 7
   expected_02 <- expected_01
   expected_02$ADT[expected_02$USUBJID == "7"][1:4] <- c(
-    lubridate::ymd("2020-01-01"),
-    lubridate::ymd("2020-01-02"),
-    lubridate::ymd("2020-01-03"),
-    lubridate::ymd("2020-01-02")
+    ymd("2020-01-01"),
+    ymd("2020-01-02"),
+    ymd("2020-01-03"),
+    ymd("2020-01-02")
   )
 
-  admiral::expect_dfs_equal(
+  expect_dfs_equal(
     base    = expected_02,
     compare = actual_02,
     keys    = c("USUBJID", "PARAMCD", "ADT")
@@ -233,7 +235,7 @@ testthat::test_that("derive_param_bor Test 1: No source_pd", {
     reference_date = TRTSDT,
     ref_start_window = 28,
     aval_fun = aval_fun_pass,
-    set_values_to = admiral::vars(
+    set_values_to = vars(
       PARAMCD = "BOR",
       PARAM = "Best Overall Response"
     )
@@ -242,11 +244,11 @@ testthat::test_that("derive_param_bor Test 1: No source_pd", {
   # Expected Updated for Subject 7, response is now NE and 6 with a earlier ADT (first)
   expected_03 <- expected_02
   expected_03$AVALC[expected_03$USUBJID == "7"] <- "SD"
-  expected_03$ADT[expected_02$USUBJID == "7"][4] <- c(lubridate::ymd("2020-01-01"))
+  expected_03$ADT[expected_02$USUBJID == "7"][4] <- c(ymd("2020-01-01"))
   expected_03$AVALC[expected_02$USUBJID == "7"][4] <- "NE"
   expected_03$AVAL[expected_02$USUBJID == "7"][4] <- 66
 
-  admiral::expect_dfs_equal(
+  expect_dfs_equal(
     base    = expected_03,
     compare = actual_03,
     keys    = c("USUBJID", "PARAMCD", "ADT")
@@ -254,29 +256,29 @@ testthat::test_that("derive_param_bor Test 1: No source_pd", {
 })
 
 # derive_param_bor, Test 2 ----
-testthat::test_that("derive_param_bor Test 2: With source_pd", {
-  pd_date <- admiral::date_source(
+test_that("derive_param_bor Test 2: With source_pd", {
+  pd_date <- date_source(
     dataset_name = "adrs_pd",
     date         = ADT,
     filter       = PARAMCD == "PD"
   )
 
   # Add PD rows to input ADRS dataset
-  pd_records <- tibble::tribble(
+  pd_records <- tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
     "9",      "2020-02-16", "Y",
     "2",      "2020-03-01", "Y", # This subjects best response should now be PR
     "6",      "2020-02-05", "Y" # This subjects best response should now be MISSING
   ) %>%
-    dplyr::mutate(
+    mutate(
       PARAMCD = "PD",
-      ADT = lubridate::ymd(ADTC),
+      ADT = ymd(ADTC),
       STUDYID = "XX1234"
     ) %>%
-    dplyr::select(-ADTC)
+    select(-ADTC)
 
   adrs_pd <- adrs %>%
-    dplyr::bind_rows(pd_records)
+    bind_rows(pd_records)
 
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # default  BOR, All Subjects have a record after reference date ----
@@ -291,7 +293,7 @@ testthat::test_that("derive_param_bor Test 2: With source_pd", {
     reference_date = TRTSDT,
     ref_start_window = 28,
     aval_fun = aval_fun_pass,
-    set_values_to = admiral::vars(
+    set_values_to = vars(
       PARAMCD = "BOR",
       PARAM = "Best Overall Response"
     )
@@ -299,7 +301,7 @@ testthat::test_that("derive_param_bor Test 2: With source_pd", {
 
   # add PD recodrs to expected
   expected_pd_01 <- expected_01 %>%
-    dplyr::bind_rows(pd_records)
+    bind_rows(pd_records)
 
   # This is now PR as PD removed CR recrods
   expected_pd_01$AVALC[expected_pd_01$USUBJID == 2 &
@@ -307,7 +309,7 @@ testthat::test_that("derive_param_bor Test 2: With source_pd", {
   expected_pd_01$AVAL[expected_pd_01$USUBJID == 2 &
     expected_pd_01$PARAMCD == "BOR"] <- 22
   expected_pd_01$ADT[expected_pd_01$USUBJID == 2 &
-    expected_pd_01$PARAMCD == "BOR"] <- lubridate::ymd("2020-02-01")
+    expected_pd_01$PARAMCD == "BOR"] <- ymd("2020-02-01")
 
 
   # This is now MISSING as PD removed all records
@@ -318,7 +320,7 @@ testthat::test_that("derive_param_bor Test 2: With source_pd", {
   expected_pd_01$ADT[expected_pd_01$USUBJID == 6 &
     expected_pd_01$PARAMCD == "BOR"] <- NA
 
-  admiral::expect_dfs_equal(
+  expect_dfs_equal(
     base    = expected_pd_01,
     compare = actual_pd_01,
     keys    = c("USUBJID", "PARAMCD", "ADT")
@@ -326,8 +328,8 @@ testthat::test_that("derive_param_bor Test 2: With source_pd", {
 })
 
 # derive_param_bor, Test 3 ----
-testthat::test_that("derive_param_bor Test 3: Test Error Mising Records For filter_source", {
-  testthat::expect_error(
+test_that("derive_param_bor Test 3: Test Error Mising Records For filter_source", {
+  expect_error(
     derive_param_bor(
       dataset = adrs,
       dataset_adsl = adsl,
@@ -337,7 +339,7 @@ testthat::test_that("derive_param_bor Test 3: Test Error Mising Records For filt
       reference_date = TRTSDT,
       ref_start_window = 28,
       aval_fun = aval_fun_pass,
-      set_values_to = admiral::vars(
+      set_values_to = vars(
         PARAMCD = "BOR",
         PARAM = "Best Overall Response"
       )

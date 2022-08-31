@@ -1,9 +1,10 @@
 test_that("Test that response is derived properly", {
+  library(tibble)
   library(lubridate)
   library(dplyr)
-  library(admiral)
   library(rlang)
-  adsl <- tibble::tribble(
+
+  adsl <- tribble(
     ~USUBJID,
     "1",
     "2",
@@ -12,7 +13,7 @@ test_that("Test that response is derived properly", {
   ) %>%
     mutate(STUDYID = "XX1234")
 
-  adrs1 <- tibble::tribble(
+  adrs1 <- tribble(
     ~USUBJID, ~ADTC, ~PARAMCD, ~AVALC,
     "1", "2020-01-02", "OVR", "PR",
     "1", "2020-02-01", "OVR", "CR",

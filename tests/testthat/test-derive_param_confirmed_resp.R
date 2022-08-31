@@ -61,7 +61,7 @@ adrs <- tribble(
     STUDYID = "XX1234"
   )
 
-pd_date <- admiral::date_source(
+pd_date <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == "PD"
@@ -89,7 +89,7 @@ test_that("derive_param_confirmed_resp Test 1: default confirmed response", {
 
   expected <- bind_rows(
     adrs,
-    tibble::tribble(
+    tribble(
       ~USUBJID, ~ADTC,         ~AVALC, ~AVAL,
       "1",      "2020-01-01",  "Y",    1,
       "2",      NA_character_, "N",    0,
@@ -102,7 +102,7 @@ test_that("derive_param_confirmed_resp Test 1: default confirmed response", {
       "9",      NA_character_, "N",    0
     ) %>%
       mutate(
-        ADT = lubridate::ymd(ADTC),
+        ADT = ymd(ADTC),
         STUDYID = "XX1234",
         PARAMCD = "CRSP",
         PARAM = "Confirmed Response by Investigator"
@@ -120,13 +120,13 @@ test_that("derive_param_confirmed_resp Test 1: default confirmed response", {
 test_that("derive_param_confirmed_resp Test 2: accept SD", {
   adrs_ext <- bind_rows(
     filter(adrs, USUBJID != "7"),
-    tibble::tribble(
+    tribble(
       ~USUBJID, ~ADTC,        ~AVALC,
       "7",      "2020-04-02", "ND"
     ) %>%
       mutate(
         PARAMCD = "OVR",
-        ADT = lubridate::ymd(ADTC),
+        ADT = ymd(ADTC),
         STUDYID = "XX1234"
       )
   )
@@ -165,7 +165,7 @@ test_that("derive_param_confirmed_resp Test 2: accept SD", {
       "9",      NA_character_, "N",    0
     ) %>%
       mutate(
-        ADT = lubridate::ymd(ADTC),
+        ADT = ymd(ADTC),
         STUDYID = "XX1234",
         PARAMCD = "CRSP",
         PARAM = "Confirmed Response by Investigator"
@@ -191,7 +191,7 @@ test_that("derive_param_confirmed_resp Test 3: error if invalid response values"
   ) %>%
     mutate(
       PARAMCD = "OVR",
-      ADT = lubridate::ymd(ADTC),
+      ADT = ymd(ADTC),
       STUDYID = "XX1234"
     )
 

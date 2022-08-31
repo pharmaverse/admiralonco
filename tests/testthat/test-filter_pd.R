@@ -1,7 +1,11 @@
+library(tibble)
+library(dplyr)
+library(lubridate)
+
 # filter_pd ----
 ## filter_pd Test 1: first PD in separate BDS dataset ----
 test_that("filter_pd Test 1: first PD in separate BDS dataset", {
-  adrs <- tibble::tribble(
+  adrs <- tribble(
     ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,
     "CDISCPILOT01", "01-701-1015", "OVR",    "CR",   "2016-01-25",
     "CDISCPILOT01", "01-701-1015", "OVR",    "PD",   "2016-02-22",
@@ -13,19 +17,19 @@ test_that("filter_pd Test 1: first PD in separate BDS dataset", {
     "CDISCPILOT01", "01-701-1035", "OVR",    "SD",   "2016-04-25",
     "CDISCPILOT01", "01-701-1035", "OVR",    "PR",   "2016-06-25",
     "CDISCPILOT01", "01-701-1035", "BOR",    "PR",   "2016-06-25"
-  ) %>% dplyr::mutate(
-    ADT = lubridate::as_date(ADT)
+  ) %>% mutate(
+    ADT = as_date(ADT)
   )
 
-  adevent <- tibble::tribble(
+  adevent <- tribble(
     ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,
     "CDISCPILOT01", "01-701-1015", "PD",     "Y",    "2016-02-22",
     "CDISCPILOT01", "01-701-1034", "PD",     "Y",    "2016-04-25"
-  ) %>% dplyr::mutate(
-    ADT = lubridate::as_date(ADT)
+  ) %>% mutate(
+    ADT = as_date(ADT)
   )
 
-  expected_output <- tibble::tribble(
+  expected_output <- tribble(
     ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,
     "CDISCPILOT01", "01-701-1015", "OVR",    "CR",   "2016-01-25",
     "CDISCPILOT01", "01-701-1015", "OVR",    "PD",   "2016-02-22",
@@ -33,14 +37,14 @@ test_that("filter_pd Test 1: first PD in separate BDS dataset", {
     "CDISCPILOT01", "01-701-1034", "OVR",    "PD",   "2016-04-25",
     "CDISCPILOT01", "01-701-1035", "OVR",    "SD",   "2016-04-25",
     "CDISCPILOT01", "01-701-1035", "OVR",    "PR",   "2016-06-25",
-  ) %>% dplyr::mutate(
-    ADT = lubridate::as_date(ADT)
+  ) %>% mutate(
+    ADT = as_date(ADT)
   )
 
   actual_output <- filter_pd(
     dataset = adrs,
     filter = PARAMCD == "OVR",
-    source_pd = admiral::date_source(
+    source_pd = date_source(
       dataset_name = "adevent",
       date = ADT,
       filter = PARAMCD == "PD",
@@ -57,7 +61,7 @@ test_that("filter_pd Test 1: first PD in separate BDS dataset", {
 
 ## filter_pd Test 2: first PD in ADSL dataset ----
 test_that("filter_pd Test 2: first PD in ADSL dataset", {
-  adrs <- tibble::tribble(
+  adrs <- tribble(
     ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,
     "CDISCPILOT01", "01-701-1015", "OVR",    "CR",   "2016-01-25",
     "CDISCPILOT01", "01-701-1015", "OVR",    "PD",   "2016-02-22",
@@ -69,19 +73,19 @@ test_that("filter_pd Test 2: first PD in ADSL dataset", {
     "CDISCPILOT01", "01-701-1035", "OVR",    "SD",   "2016-04-25",
     "CDISCPILOT01", "01-701-1035", "OVR",    "PR",   "2016-06-25",
     "CDISCPILOT01", "01-701-1035", "BOR",    "PR",   "2016-06-25"
-  ) %>% dplyr::mutate(
-    ADT = lubridate::as_date(ADT)
+  ) %>% mutate(
+    ADT = as_date(ADT)
   )
 
-  adsl <- tibble::tribble(
+  adsl <- tribble(
     ~STUDYID,       ~USUBJID,      ~PDDT,
     "CDISCPILOT01", "01-701-1015", "2016-02-22",
     "CDISCPILOT01", "01-701-1034", "2016-04-25"
-  ) %>% dplyr::mutate(
-    PDDT = lubridate::as_date(PDDT)
+  ) %>% mutate(
+    PDDT = as_date(PDDT)
   )
 
-  expected_output <- tibble::tribble(
+  expected_output <- tribble(
     ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,
     "CDISCPILOT01", "01-701-1015", "OVR",    "CR",   "2016-01-25",
     "CDISCPILOT01", "01-701-1015", "OVR",    "PD",   "2016-02-22",
@@ -89,14 +93,14 @@ test_that("filter_pd Test 2: first PD in ADSL dataset", {
     "CDISCPILOT01", "01-701-1034", "OVR",    "PD",   "2016-04-25",
     "CDISCPILOT01", "01-701-1035", "OVR",    "SD",   "2016-04-25",
     "CDISCPILOT01", "01-701-1035", "OVR",    "PR",   "2016-06-25",
-  ) %>% dplyr::mutate(
-    ADT = lubridate::as_date(ADT)
+  ) %>% mutate(
+    ADT = as_date(ADT)
   )
 
   actual_output <- filter_pd(
     dataset = adrs,
     filter = PARAMCD == "OVR",
-    source_pd = admiral::date_source(
+    source_pd = date_source(
       dataset_name = "adsl",
       date = PDDT
     ),
@@ -112,7 +116,7 @@ test_that("filter_pd Test 2: first PD in ADSL dataset", {
 
 ## filter_pd Test 3: first PD in input dataset ----
 test_that("filter_pd Test 3: first PD in input dataset", {
-  adrs <- tibble::tribble(
+  adrs <- tribble(
     ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,
     "CDISCPILOT01", "01-701-1015", "OVR",    "CR",   "2016-01-25",
     "CDISCPILOT01", "01-701-1015", "OVR",    "PD",   "2016-02-22",
@@ -126,11 +130,11 @@ test_that("filter_pd Test 3: first PD in input dataset", {
     "CDISCPILOT01", "01-701-1035", "BOR",    "PR",   "2016-06-25",
     "CDISCPILOT01", "01-701-1015", "PD",     "Y",    "2016-02-22",
     "CDISCPILOT01", "01-701-1034", "PD",     "Y",    "2016-04-25"
-  ) %>% dplyr::mutate(
-    ADT = lubridate::as_date(ADT)
+  ) %>% mutate(
+    ADT = as_date(ADT)
   )
 
-  expected_output <- tibble::tribble(
+  expected_output <- tribble(
     ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,
     "CDISCPILOT01", "01-701-1015", "OVR",    "CR",   "2016-01-25",
     "CDISCPILOT01", "01-701-1015", "OVR",    "PD",   "2016-02-22",
@@ -138,14 +142,14 @@ test_that("filter_pd Test 3: first PD in input dataset", {
     "CDISCPILOT01", "01-701-1034", "OVR",    "PD",   "2016-04-25",
     "CDISCPILOT01", "01-701-1035", "OVR",    "SD",   "2016-04-25",
     "CDISCPILOT01", "01-701-1035", "OVR",    "PR",   "2016-06-25",
-  ) %>% dplyr::mutate(
-    ADT = lubridate::as_date(ADT)
+  ) %>% mutate(
+    ADT = as_date(ADT)
   )
 
   actual_output <- filter_pd(
     dataset = adrs,
     filter = PARAMCD == "OVR",
-    source_pd = admiral::date_source(
+    source_pd = date_source(
       dataset_name = "adrs",
       date = ADT,
       filter = PARAMCD == "PD",
@@ -162,7 +166,7 @@ test_that("filter_pd Test 3: first PD in input dataset", {
 
 ## filter_pd Test 4: first PD derived from input dataset ----
 test_that("filter_pd Test 4: first PD derived from input dataset", {
-  adrs <- tibble::tribble(
+  adrs <- tribble(
     ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,
     "CDISCPILOT01", "01-701-1015", "OVR",    "CR",   "2016-01-25",
     "CDISCPILOT01", "01-701-1015", "OVR",    "PD",   "2016-02-22",
@@ -174,11 +178,11 @@ test_that("filter_pd Test 4: first PD derived from input dataset", {
     "CDISCPILOT01", "01-701-1035", "OVR",    "SD",   "2016-04-25",
     "CDISCPILOT01", "01-701-1035", "OVR",    "PR",   "2016-06-25",
     "CDISCPILOT01", "01-701-1035", "BOR",    "PR",   "2016-06-25"
-  ) %>% dplyr::mutate(
-    ADT = lubridate::as_date(ADT)
+  ) %>% mutate(
+    ADT = as_date(ADT)
   )
 
-  expected_output <- tibble::tribble(
+  expected_output <- tribble(
     ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,
     "CDISCPILOT01", "01-701-1015", "OVR",    "CR",   "2016-01-25",
     "CDISCPILOT01", "01-701-1015", "OVR",    "PD",   "2016-02-22",
@@ -186,14 +190,14 @@ test_that("filter_pd Test 4: first PD derived from input dataset", {
     "CDISCPILOT01", "01-701-1034", "OVR",    "PD",   "2016-04-25",
     "CDISCPILOT01", "01-701-1035", "OVR",    "SD",   "2016-04-25",
     "CDISCPILOT01", "01-701-1035", "OVR",    "PR",   "2016-06-25",
-  ) %>% dplyr::mutate(
-    ADT = lubridate::as_date(ADT)
+  ) %>% mutate(
+    ADT = as_date(ADT)
   )
 
   actual_output <- filter_pd(
     dataset = adrs,
     filter = PARAMCD == "OVR",
-    source_pd = admiral::date_source(
+    source_pd = date_source(
       dataset_name = "adrs",
       date = ADT,
       filter = PARAMCD == "OVR" & AVALC == "PD",

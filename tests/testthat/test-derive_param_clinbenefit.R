@@ -1,5 +1,8 @@
+library(tibble)
+library(dplyr)
+library(lubridate)
 
-adsl <- tibble::tribble(
+adsl <- tribble(
   ~USUBJID, ~TRTSDT,      ~EOSDT,
   "01",     "2020-12-06", "2022-03-06",
   "02",     "2021-01-16", "2022-02-03",
@@ -10,11 +13,11 @@ adsl <- tibble::tribble(
 ) %>%
   mutate(
     STUDYID = "AB42",
-    TRTSDT = lubridate::as_date(TRTSDT),
-    EOSDT = lubridate::as_date(EOSDT),
+    TRTSDT = as_date(TRTSDT),
+    EOSDT = as_date(EOSDT),
   )
 
-adrs <- tibble::tribble(
+adrs <- tribble(
   ~USUBJID, ~PARAMCD, ~AVALC, ~ADT,
   "01",     "RSP",    "Y",    "2021-04-08",
   "02",     "RSP",    "N",    "2021-05-07",
@@ -40,29 +43,29 @@ adrs <- tibble::tribble(
 ) %>%
   mutate(
     STUDYID = "AB42",
-    ADT = lubridate::as_date(ADT),
+    ADT = as_date(ADT),
     ANL01FL = "Y"
   ) %>%
-  admiral::derive_vars_merged(
+  derive_vars_merged(
     dataset_add = adsl,
     by_vars = vars(STUDYID, USUBJID),
     new_vars = vars(TRTSDT)
   )
 
-pd <- admiral::date_source(
+pd <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == "PD" & AVALC == "Y" & ANL01FL == "Y"
 )
 
-resp <- admiral::date_source(
+resp <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == "RSP" & AVALC == "Y" & ANL01FL == "Y"
 )
 
 test_that("Clinical benefit rate parameter is derived correctly", {
-  input_cbr <- tibble::tribble(
+  input_cbr <- tribble(
     ~USUBJID, ~PARAMCD, ~AVALC, ~AVAL, ~ADT,
     "01",     "CBR",    "Y",    1,     "2021-03-07",
     "02",     "CBR",    "Y",    1,     "2021-03-07",
@@ -73,14 +76,13 @@ test_that("Clinical benefit rate parameter is derived correctly", {
   ) %>%
     mutate(
       STUDYID = "AB42",
-      ADT = lubridate::as_date(ADT),
+      ADT = as_date(ADT),
       ANL01FL = "Y"
     ) %>%
     left_join(adsl, by = c("STUDYID", "USUBJID")) %>%
     select(-EOSDT)
 
   expected_output <- bind_rows(adrs, input_cbr)
-
 
   actual_output <- derive_param_clinbenefit(
     dataset = adrs,
