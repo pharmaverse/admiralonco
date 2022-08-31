@@ -35,12 +35,6 @@
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" href="https://pharmaverse.github.io/admiralonco/devel">devel</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -61,57 +55,15 @@
     </div>
 
     <div class="section level2">
-      <h2 id="derivations">Derivations<a class="anchor" aria-label="anchor" href="#derivations"></a></h2>
-      
-      <p class="section-desc"></p><p>Derivations add one or more variables or parameters to the input dataset and return the extended dataset.</p>
-
-      
-    </div><div id="" class="section level2">
-      
-      
-      
-
-      <dl><dt>
-          
-          <code><a href="derive_param_bor.html">derive_param_bor()</a></code> 
-        </dt>
-        <dd>Adds a Parameter for Best Overall Response (without confirmation)</dd>
-      </dl><dl><dt>
-          
-          <code><a href="derive_param_clinbenefit.html">derive_param_clinbenefit()</a></code> 
-        </dt>
-        <dd>Adds a Parameter for Clinical Benefit</dd>
-      </dl><dl><dt>
-          
-          <code><a href="derive_param_confirmed_bor.html">derive_param_confirmed_bor()</a></code> 
-        </dt>
-        <dd>Adds a Parameter for Confirmed Best Overall Response</dd>
-      </dl><dl><dt>
-          
-          <code><a href="derive_param_confirmed_resp.html">derive_param_confirmed_resp()</a></code> 
-        </dt>
-        <dd>Adds a Parameter for Confirmed Response</dd>
-      </dl><dl><dt>
-          
-          <code><a href="derive_param_lasta.html">derive_param_lasta()</a></code> 
-        </dt>
-        <dd>Adds a Parameter for the Last Disease Assessment</dd>
-      </dl><dl><dt>
-          
-          <code><a href="derive_param_response.html">derive_param_response()</a></code> 
-        </dt>
-        <dd>Adds a Parameter Indicating If a Subject Had a Response before Progressive
-Disease</dd>
-      </dl></div><div class="section level2">
-      <h2 id="cdisc-hierarchy">CDISC Hierarchy<a class="anchor" aria-label="anchor" href="#cdisc-hierarchy"></a></h2>
+      <h2 id="derivations-for-adding-parameters">Derivations for Adding Parameters<a class="anchor" aria-label="anchor" href="#derivations-for-adding-parameters"></a></h2>
       
       
 
       
     </div><div class="section level2">
       
-      <h3 id="adrs">ADRS<a class="anchor" aria-label="anchor" href="#adrs"></a></h3>
-      <p class="section-desc"></p><p>ADRS specific functions</p>
+      <h3 id="adrs-specific">ADRS-specific<a class="anchor" aria-label="anchor" href="#adrs-specific"></a></h3>
+      <p class="section-desc"></p><p>Parameter Derivation Functions helpful for building the ADRS dataset</p>
 
       
     </div><div id="" class="section level2">
@@ -150,13 +102,8 @@ Disease</dd>
         </dt>
         <dd>Adds a Parameter Indicating If a Subject Had a Response before Progressive
 Disease</dd>
-      </dl><dl><dt>
-          
-          <code><a href="filter_pd.html">filter_pd()</a></code> 
-        </dt>
-        <dd>Filter up to First PD (Progressive Disease) Date</dd>
       </dl></div><div class="section level2">
-      <h2 id="other-keywords">Other Keywords<a class="anchor" aria-label="anchor" href="#other-keywords"></a></h2>
+      <h2 id="advanced-functions">Advanced Functions<a class="anchor" aria-label="anchor" href="#advanced-functions"></a></h2>
       
       
 
@@ -178,24 +125,14 @@ Disease</dd>
         </dt>
         <dd>Pre-Defined Time-to-Event Source Objects</dd>
       </dl></div><div class="section level2">
-      <h2 id="adam-datasets">ADaM Datasets<a class="anchor" aria-label="anchor" href="#adam-datasets"></a></h2>
+      <h2 id="utility-functions">Utility Functions<a class="anchor" aria-label="anchor" href="#utility-functions"></a></h2>
       
       
 
       
-    </div><div id="" class="section level2">
+    </div><div class="section level2">
       
-      
-      
-
-      <dl><dt>
-          
-          <code><a href="admiral_adrs.html">admiral_adrs</a></code> 
-        </dt>
-        <dd>Response Analysis Dataset</dd>
-      </dl></div><div class="section level2">
-      <h2 id="user-utilities">User Utilities<a class="anchor" aria-label="anchor" href="#user-utilities"></a></h2>
-      
+      <h3 id="utilities-for-formatting-observations">Utilities for Formatting Observations<a class="anchor" aria-label="anchor" href="#utilities-for-formatting-observations"></a></h3>
       
 
       
@@ -209,12 +146,18 @@ Disease</dd>
           <code><a href="aval_resp.html">aval_resp()</a></code> 
         </dt>
         <dd>Map Character Response Values to Numeric Values</dd>
-      </dl><dl><dt>
-          
-          <code><a href="filter_pd.html">filter_pd()</a></code> 
-        </dt>
-        <dd>Filter up to First PD (Progressive Disease) Date</dd>
-      </dl><dl><dt>
+      </dl></div><div class="section level2">
+      
+      <h3 id="utilities-for-dataset-checking">Utilities for Dataset Checking<a class="anchor" aria-label="anchor" href="#utilities-for-dataset-checking"></a></h3>
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
           
           <code><a href="get_crpr_dataset.html">get_crpr_dataset()</a></code> 
         </dt>
@@ -224,7 +167,69 @@ Disease</dd>
           <code><a href="signal_crpr.html">signal_crpr()</a></code> 
         </dt>
         <dd>Signal CR Records Followed by PR</dd>
-      </dl></div>
+      </dl></div><div class="section level2">
+      
+      <h3 id="utilities-for-filtering-observations">Utilities for Filtering Observations<a class="anchor" aria-label="anchor" href="#utilities-for-filtering-observations"></a></h3>
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="filter_pd.html">filter_pd()</a></code> 
+        </dt>
+        <dd>Filter up to First PD (Progressive Disease) Date</dd>
+      </dl></div><div class="section level2">
+      <h2 id="example-datasets">Example Datasets<a class="anchor" aria-label="anchor" href="#example-datasets"></a></h2>
+      
+      <p class="section-desc"></p><p>You can run <code><a href="https://pharmaverse.github.io/admiral/reference/use_ad_template.html" class="external-link">admiral::use_ad_template()</a></code> to produce additional datasets</p>
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      <dl><dt>
+          
+          <code><a href="admiral_adrs.html">admiral_adrs</a></code> 
+        </dt>
+        <dd>Response Analysis Dataset</dd>
+      </dl></div><div class="section level2">
+      <h2 id="relocated-deprecated">Relocated/Deprecated<a class="anchor" aria-label="anchor" href="#relocated-deprecated"></a></h2>
+      
+      
+
+      
+    </div><div class="section level2">
+      
+      <h3 id="functions-moved-to-another-admiraldev-package">Functions moved to another admiraldev package<a class="anchor" aria-label="anchor" href="#functions-moved-to-another-admiraldev-package"></a></h3>
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      
+    </div><div class="section level2">
+      
+      <h3 id="deprecated">Deprecated<a class="anchor" aria-label="anchor" href="#deprecated"></a></h3>
+      
+
+      
+    </div><div id="" class="section level2">
+      
+      
+      
+
+      
+    </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
 
