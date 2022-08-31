@@ -48,10 +48,10 @@
 #'    
 #' @param dataset_adsl ADSL input dataset.
 #'
-#'    The variables specified for `subject_keys` is expected. For each subject of
-#'    the specified `dataset` a new observation is added to the input `dataset`. Variables
+#'    The value specified in the `subject_keys` argument is expected. For each subject in
+#'    the passed `dataset` a new row is added to the input `dataset`. Columns
 #'    in `dataset_adsl` that also appear in `dataset` will be populated with the
-#'    appropriate subject-specific value for these new observations.
+#'    appropriate subject-specific value for these new rows.
 #'
 #'    *Permitted Values:* a `data.frame()` object
 #'
