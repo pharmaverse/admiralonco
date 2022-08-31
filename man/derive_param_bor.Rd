@@ -29,9 +29,12 @@ The columns \code{PARAMCD}, \code{ADT}, and \code{AVALC}and the columns specifie
 
 \emph{Required or Optional:} Required}
 
-\item{dataset_adsl}{The ADSL input dataframe
+\item{dataset_adsl}{ADSL input dataset.
 
-The columns specified in \code{subject_keys} are expected.
+The value specified in the \code{subject_keys} argument is expected. For each subject in
+the passed \code{dataset} a new row is added to the input \code{dataset}. Columns
+in \code{dataset_adsl} that also appear in \code{dataset} will be populated with the
+appropriate subject-specific value for these new rows.
 
 \emph{Permitted Values:} a \code{data.frame()} object
 
@@ -165,6 +168,10 @@ order of preference: CR, PR, SD, NON-CR/NON-PD, PD, NE, MISSING
 \item The columns specified by the \code{set_values_to} parameter and records
 are added to the dataframe passed into the \code{dataset} argument
 }
+
+Note: The calculation of BOR is irrespective of the number of days from the reference date
+in which the response occurs, use the \code{reference_date} and/or \code{ref_start_window} arguments
+to remove any responses that may occur before a certain window.
 
 Also Note: All columns from the input dataset are kept. For subjects with no records in
 the input dataset (after the filter is applied) all columns are kept from ADSL which are
