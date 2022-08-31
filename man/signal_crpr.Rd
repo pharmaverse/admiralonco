@@ -28,7 +28,7 @@ A list of symbols created using \code{vars()} is expected.}
 
 \emph{Default}: \code{"warning"}
 
-\emph{Permitted Values}: \code{"warning"} or \code{"error"}}
+\emph{Permitted Values}: \code{"message"}, \code{"warning"} or \code{"error"}}
 }
 \value{
 No return value, called for side effects
@@ -62,7 +62,7 @@ signal_crpr(adrs, order = vars(ADT))
 \seealso{
 \code{\link[=get_crpr_dataset]{get_crpr_dataset()}}
 
-Utilities for Dataset Checking: 
+Other utils_ds_chk: 
 \code{\link{get_crpr_dataset}()}
 }
 \author{

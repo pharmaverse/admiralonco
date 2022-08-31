@@ -51,7 +51,7 @@ get_crpr_dataset()
 \seealso{
 \code{\link[=signal_crpr]{signal_crpr()}}
 
-Utilities for Dataset Checking: 
+Other utils_ds_chk: 
 \code{\link{signal_crpr}()}
 }
 \author{
