@@ -116,6 +116,11 @@ on or after after date of first treatment/randomization, or rules to cover the c
 Another consideration could be extra potential protocol-specific sources of Progressive Disease such as radiological assessments,
 which could be pre-processed here to create a PD record to feed downstream derivations.
 
+For the derivation of the parameters it is expected that the subject identifier
+variables (usually `STUDYID` and `USUBJID`) and `ADT` are a unique key. This can
+be achieved by deriving an analysis flag (`ANLzzFL`). See [Derive
+`ANL01FL`](#anl01fl) for an example.
+
 The below shows an example of a possible company-specific implementation of this step.
 
 ### Select Overall Response Records and Set Parameter Details
@@ -184,19 +189,25 @@ dataset_vignette(
 )
 ```
 
-### Derive `ANL01FL`
+### Derive `ANL01FL` {#anl01fl}
 
-When deriving `ANL01FL` this is an opportunity to exclude any records that should not contribute to any downstream
-parameter derivations. In the below example this includes only selecting valid assessments and those occurring on or
-after randomization date.
+When deriving `ANL01FL` this is an opportunity to exclude any records that
+should not contribute to any downstream parameter derivations. In the below
+example this includes only selecting valid assessments and those occurring on or
+after randomization date. If there is more than one assessment at a date, the
+worst one is flagged.
 
 ```{r}
 adrs <- adrs %>%
-  mutate(
-    ANL01FL = case_when(
-      !is.na(AVAL) & ADT >= RANDDT ~ "Y",
-      TRUE ~ NA_character_
-    )
+  restrict_derivation(
+    derivation = derive_var_extreme_flag,
+    args = params(
+      by_vars = vars(STUDYID, USUBJID, ADT),
+      order = vars(AVAL, RSSEQ),
+      new_var = ANL01FL,
+      mode = "last"
+    ),
+    filter = !is.na(AVAL) & ADT >= RANDDT
   )
 ```
 ```{r, echo=FALSE}

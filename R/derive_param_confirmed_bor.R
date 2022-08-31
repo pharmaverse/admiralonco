@@ -7,6 +7,9 @@
 #'   The `PARAMCD`, `ADT`, and `AVALC` variables and the variables specified by
 #'   `subject_keys` and `reference_date` are expected.
 #'
+#'   After applying `filter_source` and `source_pd` the variable `ADT` and the
+#'   variables specified by `subject_keys` must be a unique key of the dataset.
+#'
 #' @param dataset_adsl ADSL input dataset
 #'
 #'   The variables specified for `subject_keys` are expected. For each subject

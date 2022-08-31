@@ -23,7 +23,10 @@ derive_param_clinbenefit(
 benefit rate parameter will be added.
 
 The variables \code{PARAMCD}, \code{AVALC}, \code{ADT}, and those specified by the \code{subject_keys}
-parameter and the \code{reference_date} parameter are expected.}
+parameter and the \code{reference_date} parameter are expected.
+
+After applying \code{filter_source} and \code{source_pd} the variable \code{ADT} and the
+variables specified by \code{subject_keys} must be a unique key of the dataset.}
 
 \item{dataset_adsl}{ADSL input dataset.
 
