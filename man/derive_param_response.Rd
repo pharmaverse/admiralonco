@@ -18,7 +18,10 @@ derive_param_response(
 \arguments{
 \item{dataset}{Input dataset
 
-The variables specified by the \code{subject_keys}and \code{ADT} are expected.}
+The variables specified by the \code{subject_keys}and \code{ADT} are expected.
+
+After applying \code{filter_source} and \code{source_pd} the variable \code{ADT} and the
+variables specified by \code{subject_keys} must be a unique key of the dataset.}
 
 \item{dataset_adsl}{Input dataset
 \itemize{

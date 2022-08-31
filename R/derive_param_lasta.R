@@ -23,6 +23,9 @@
 #'   The column `PARAMCD` and the columns specified in `subject_keys` and
 #'   `order` are expected.
 #'
+#'   After applying `filter_source` and `source_pd` the variables specified by
+#'   `subject_keys` and `order` must be a unique key of the dataset.
+#'
 #'    *Permitted Values:* a `data.frame()` object
 #'
 #'    *Required or Optional:* Required
