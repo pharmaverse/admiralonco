@@ -179,7 +179,7 @@ derive_param_response <- function(dataset,
       "The dataset names must be included in the list specified for the ",
       "`source_datasets` parameter.\n",
       "Following names were provided by `source_datasets`:\n",
-      admiral::enumerate(source_names, quote_fun = admiral::squote)
+      enumerate(source_names, quote_fun = squote)
     ))
   }
 
