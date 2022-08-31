@@ -318,7 +318,8 @@ derive_param_confirmed_resp <- function(dataset,
   # Check for CR followed by PR (this should not occur in clean data)
   signal_crpr(
     source_data,
-    order = vars(ADT)
+    order = vars(ADT),
+    subject_keys = subject_keys
   )
 
   # Create observations for potential responses
