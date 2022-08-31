@@ -29,7 +29,7 @@
 #'  Note: The calculation of BOR is irrespective of the number of days from the reference date
 #'  in which the response occurs, use the `reference_date` and/or `ref_start_window` arguments
 #'  to remove any responses that may occur before a certain window.
-#'  
+#'
 #'  Also Note: All columns from the input dataset are kept. For subjects with no records in
 #'  the input dataset (after the filter is applied) all columns are kept from ADSL which are
 #'  also in the input dataset.  Columns which are not to be populated for the new parameter
@@ -45,7 +45,7 @@
 #'    *Permitted Values:* a `data.frame()` object
 #'
 #'    *Required or Optional:* Required
-#'    
+#'
 #' @param dataset_adsl ADSL input dataset.
 #'
 #'    The value specified in the `subject_keys` argument is expected. For each subject in
@@ -301,9 +301,9 @@ derive_param_bor <- function(dataset,
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   reference_date <- assert_symbol(arg = enquo(reference_date))
-  
+
   assert_vars(arg = subject_keys)
-  
+
   assert_data_frame(
     arg = dataset,
     required_vars = quo_c(
