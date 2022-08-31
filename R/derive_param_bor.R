@@ -26,6 +26,10 @@
 #'   6. The columns specified by the `set_values_to` parameter and records
 #'      are added to the dataframe passed into the `dataset` argument
 #'
+#'  Note: The calculation of BOR is irrespective of the number of days from the reference date
+#'  in which the response occurs, use the `reference_date` and/or `ref_start_window` arguments
+#'  to remove any responses that may occur before a certain window.
+#'  
 #'  Also Note: All columns from the input dataset are kept. For subjects with no records in
 #'  the input dataset (after the filter is applied) all columns are kept from ADSL which are
 #'  also in the input dataset.  Columns which are not to be populated for the new parameter
@@ -41,10 +45,13 @@
 #'    *Permitted Values:* a `data.frame()` object
 #'
 #'    *Required or Optional:* Required
+#'    
+#' @param dataset_adsl ADSL input dataset.
 #'
-#' @param dataset_adsl The ADSL input dataframe
-#'
-#'   The columns specified in `subject_keys` are expected.
+#'    The value specified in the `subject_keys` argument is expected. For each subject in
+#'    the passed `dataset` a new row is added to the input `dataset`. Columns
+#'    in `dataset_adsl` that also appear in `dataset` will be populated with the
+#'    appropriate subject-specific value for these new rows.
 #'
 #'    *Permitted Values:* a `data.frame()` object
 #'
@@ -288,13 +295,15 @@ derive_param_bor <- function(dataset,
                              aval_fun = aval_resp,
                              subject_keys = vars(STUDYID, USUBJID),
                              set_values_to) {
-
+  
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Assert statements (checked in order of signature) ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
+  
   reference_date <- assert_symbol(arg = enquo(reference_date))
-
+  
+  assert_vars(arg = subject_keys)
+  
   assert_data_frame(
     arg = dataset,
     required_vars = quo_c(
@@ -303,40 +312,38 @@ derive_param_bor <- function(dataset,
       vars(PARAMCD, ADT, AVALC)
     )
   )
-
+  
   assert_data_frame(
     arg           = dataset_adsl,
     required_vars = quo_c(subject_keys)
   )
-
+  
   filter_source <- assert_filter_cond(arg = enquo(filter_source))
-
+  
   assert_integer_scalar(
     arg      = ref_start_window,
     subset   = "non-negative"
   )
-
+  
   assert_logical_scalar(arg = missing_as_ne)
-
+  
   assert_function(arg = aval_fun)
-
-  assert_vars(arg = subject_keys)
-
+  
   assert_varval_list(
     arg               = set_values_to,
     required_elements = c("PARAMCD")
   )
-
+  
   assert_param_does_not_exist(
     dataset = dataset,
     param   = quo_get_expr(set_values_to$PARAMCD)
   )
-
+  
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # filter_pd and filter_source: Filter source dataset using filter_source----
   # argument and also filter data after progressive disease with filter_pd
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
+  
   if (!is.null(source_pd)) {
     dataset_filter <- dataset %>%
       filter_pd(
@@ -346,18 +353,18 @@ derive_param_bor <- function(dataset,
         subject_keys    = subject_keys
       )
   } else {
-
+    
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     # filter_source: Filter using filter_source argument ----
     # This would also be used to filter out records from dataset that are greater
     # than e.g. ADSL.TRTSDT
     # Not filtering data after progressive disease with filter_pd
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
+    
     dataset_filter <- dataset %>%
       filter(!!enquo(filter_source))
   }
-
+  
   # Error if filter results in 0 records
   if (nrow(dataset_filter) == 0) {
     err_msg <- sprintf(
@@ -365,10 +372,10 @@ derive_param_bor <- function(dataset,
       "dataset",
       deparse(quo_get_expr(filter_source))
     )
-
+    
     abort(err_msg)
   }
-
+  
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Create Sort Order for Selection of Minimum Later ----
   #
@@ -383,7 +390,7 @@ derive_param_bor <- function(dataset,
   #     `reference_date` + `ref_start_window` would give Best Overall Response
   #     of `NE`.
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
+  
   dataset_ordered <- dataset_filter %>%
     mutate(
       AVALC = if_else(
@@ -401,14 +408,14 @@ derive_param_bor <- function(dataset,
         is.null(AVALC) ~ 7
       )
     )
-
+  
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # adsl only subjects ----
   # Note Requirement: For subjects without observations in the input dataset
   # after the filter is applied, we keep all columns from ADSL which
   # are also in the input dataset.
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
+  
   adsl_data <- dataset_adsl %>%
     select(intersect(
       colnames(dataset_adsl),
@@ -421,11 +428,11 @@ derive_param_bor <- function(dataset,
       ),
       tmp_order = 999
     )
-
+  
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Bind two types of dataframes and select lowest value as BOR
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
+  
   param_bor <- bind_rows(
     dataset_ordered,
     adsl_data
@@ -436,13 +443,13 @@ derive_param_bor <- function(dataset,
       mode = "first"
     ) %>%
     select(-tmp_order)
-
+  
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # set_values_to: Execute set_values_to ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
+  
   tryCatch(
-
+    
     param_bor_values_set <- param_bor %>%
       mutate(
         !!!set_values_to
@@ -465,13 +472,13 @@ derive_param_bor <- function(dataset,
       )
     }
   )
-
+  
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # aval_fun(AVALC): Execute aval_fun ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
+  
   tryCatch(
-
+    
     param_bor_aval_fun <- param_bor_values_set %>%
       mutate(
         AVAL = aval_fun(AVALC)
@@ -494,11 +501,11 @@ derive_param_bor <- function(dataset,
       )
     }
   )
-
+  
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Bind back to passed dataframe in dataset argument and return ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
+  
   bind_rows(
     dataset,
     param_bor_aval_fun
