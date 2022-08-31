@@ -26,6 +26,10 @@
 #'   6. The columns specified by the `set_values_to` parameter and records
 #'      are added to the dataframe passed into the `dataset` argument
 #'
+#'  Note: The calculation of BOR is irrespective of the number of days from the reference date
+#'  in which the response occurs, use the `reference_date` and/or `ref_start_window` arguments
+#'  to remove any responses that may occur before a certain window.
+#'  
 #'  Also Note: All columns from the input dataset are kept. For subjects with no records in
 #'  the input dataset (after the filter is applied) all columns are kept from ADSL which are
 #'  also in the input dataset.  Columns which are not to be populated for the new parameter
@@ -41,10 +45,13 @@
 #'    *Permitted Values:* a `data.frame()` object
 #'
 #'    *Required or Optional:* Required
+#'    
+#' @param dataset_adsl ADSL input dataset.
 #'
-#' @param dataset_adsl The ADSL input dataframe
-#'
-#'   The columns specified in `subject_keys` are expected.
+#'    The variables specified for `subject_keys` is expected. For each subject of
+#'    the specified `dataset` a new observation is added to the input `dataset`. Variables
+#'    in `dataset_adsl` that also appear in `dataset` will be populated with the
+#'    appropriate subject-specific value for these new observations.
 #'
 #'    *Permitted Values:* a `data.frame()` object
 #'
@@ -294,7 +301,9 @@ derive_param_bor <- function(dataset,
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   reference_date <- assert_symbol(arg = enquo(reference_date))
-
+  
+  assert_vars(arg = subject_keys)
+  
   assert_data_frame(
     arg = dataset,
     required_vars = quo_c(
@@ -319,8 +328,6 @@ derive_param_bor <- function(dataset,
   assert_logical_scalar(arg = missing_as_ne)
 
   assert_function(arg = aval_fun)
-
-  assert_vars(arg = subject_keys)
 
   assert_varval_list(
     arg               = set_values_to,
