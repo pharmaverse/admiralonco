@@ -3,6 +3,8 @@ test_that("Test that response is derived properly", {
   library(lubridate)
   library(dplyr)
   library(rlang)
+  library(admiraldev)
+  library(admiral)
 
   adsl <- tribble(
     ~USUBJID,
