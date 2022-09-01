@@ -3,7 +3,7 @@
 #' Adds a parameter for clinical benefit/disease control
 #'
 #' @details
-#' Clinical benefit/disease control is first identified for looking for subjects
+#' Clinical benefit/disease control is first identified by looking for subjects
 #' having response status, and then derived for subjects that have at least one
 #' evaluable non-PD response assessment prior to first PD (Progressive Disease)
 #' (i.e., responses exclusive of `NA`, `NE`, `ND`, and `PD`) and after a specified
