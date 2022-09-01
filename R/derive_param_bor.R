@@ -26,6 +26,10 @@
 #'   6. The columns specified by the `set_values_to` parameter and records
 #'      are added to the dataframe passed into the `dataset` argument
 #'
+#'  Note: The calculation of BOR is irrespective of the number of days from the reference date
+#'  in which the response occurs, use the `reference_date` and/or `ref_start_window` arguments
+#'  to remove any responses that may occur before a certain window.
+#'
 #'  Also Note: All columns from the input dataset are kept. For subjects with no records in
 #'  the input dataset (after the filter is applied) all columns are kept from ADSL which are
 #'  also in the input dataset.  Columns which are not to be populated for the new parameter
@@ -38,25 +42,19 @@
 #'   The columns `PARAMCD`, `ADT`, and `AVALC`and the columns specified in
 #'   `subject_keys` and `reference_date` are expected.
 #'
-#'   After applying `filter_source` and `source_pd` the variable `ADT` and the
-#'   variables specified by `subject_keys` must be a unique key of the dataset.
-#'
 #'    *Permitted Values:* a `data.frame()` object
 #'
-#'    *Required or Optional:* Required
+#' @param dataset_adsl ADSL input dataset.
 #'
-#' @param dataset_adsl The ADSL input dataframe
-#'
-#'   The columns specified in `subject_keys` are expected.
+#'    The value specified in the `subject_keys` argument is expected. For each subject in
+#'    the passed `dataset` a new row is added to the input `dataset`. Columns
+#'    in `dataset_adsl` that also appear in `dataset` will be populated with the
+#'    appropriate subject-specific value for these new rows.
 #'
 #'    *Permitted Values:* a `data.frame()` object
-#'
-#'    *Required or Optional:* Required
 #'
 #' @param filter_source Filter to be applied to `dataset` to derive the
 #'                       Best Overall Response
-#'
-#'    *Required or Optional:* Required
 #'
 #' @param source_pd Date of first progressive disease (PD)
 #'
@@ -67,10 +65,6 @@
 #'
 #'   *Permitted Values:* a `date_source` object (see `date_source()`
 #'   for details)
-#'
-#'   *Default:* `NULL`
-#'
-#'   *Required or Optional:* Optional
 #'
 #' @param source_datasets Source dataframe to be used to calculate the
 #'                        first PD date
@@ -89,8 +83,6 @@
 #'   and the actual response dataframe in the script is `myadrs`, `source_datasets
 #'   = list(adrs = myadrs)` should be specified.
 #'
-#'    *Required or Optional:* Optional
-#'
 #' @param reference_date Reference date
 #'
 #'   The reference date is used along with `ref_start_window` to determine those
@@ -99,8 +91,6 @@
 #'   randomization date (`RANDDT`).
 #'
 #'   *Permitted Values:* a numeric date column
-#'
-#'   *Required or Optional:* Required
 #'
 #' @param ref_start_window Stable disease time window
 #'
@@ -111,8 +101,6 @@
 #'
 #'   *Permitted Values:* a non-negative numeric scalar
 #'
-#'   *Required or Optional:* Required
-#'
 #' @param missing_as_ne Consider no assessments as `"NE"`?
 #'
 #'   If the argument is set to `TRUE`, the response is set to `"NE"` for
@@ -122,19 +110,11 @@
 #'
 #'   *Permitted Values:* a logical scalar
 #'
-#'   *Default:* `FALSE`
-#'
-#'   *Required or Optional:* Required
-#'
 #' @param aval_fun Function to map character analysis value (`AVALC`) to numeric
 #'                 analysis value (`AVAL`)
 #'
 #'   The (first) argument of the function must expect a character vector and the
 #'   function must return a numeric vector.
-#'
-#'   *Default:* `aval_resp` (see `aval_resp()`)
-#'
-#'   *Required or Optional:* Required
 #'
 #' @param set_values_to New columns to set
 #'
@@ -143,18 +123,12 @@
 #'   Response")` is expected. The values must be symbols, character strings,
 #'   numeric values, or `NA`.
 #'
-#'    *Required or Optional:* Required
-#'
 #' @param subject_keys Columns to uniquely identify a subject
 #'
 #'   A list of symbols created using `vars()`.
 #'
 #'   *Permitted Values:* an `vars` object
 #'
-#'   *Default:* `vars(STUDYID, USUBJID)`
-#'
-#'   *Required or Optional:* Required
-#
 #' @examples
 #'
 #' library(magrittr)
@@ -275,9 +249,7 @@
 #'
 #' @author Stephen Gormley
 #'
-#' @family der_prm_adrs
-#'
-#' @keywords der_prm_adrs
+#' @keywords adrs
 #'
 #' @return The dataframe passed in the `dataset` argument with additional columns and/or
 #'         rows as set in the `set_values_to` argument.
@@ -299,6 +271,8 @@ derive_param_bor <- function(dataset,
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   reference_date <- assert_symbol(arg = enquo(reference_date))
+
+  assert_vars(arg = subject_keys)
 
   assert_data_frame(
     arg = dataset,
@@ -324,8 +298,6 @@ derive_param_bor <- function(dataset,
   assert_logical_scalar(arg = missing_as_ne)
 
   assert_function(arg = aval_fun)
-
-  assert_vars(arg = subject_keys)
 
   assert_varval_list(
     arg               = set_values_to,
