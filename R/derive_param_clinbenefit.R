@@ -9,6 +9,11 @@
 #' (i.e., responses exclusive of `NA`, `NE`, `ND`, and `PD`) and after a specified
 #' amount of time from a reference date (`ref_start_window`).
 #'
+#' #' #' Note: the user can exclude any additional response values using the `filter_source`
+#' argument.
+#'
+#' Example: filter_source = PARAMCD == "OVR" & AVALC != "NON-CR/NON-PD"
+#'
 #' \enumerate{
 #'   \item The input dataset (`dataset`) is restricted to the observations matching
 #'   `filter_source` and to observations before or at the date specified by `source_pd`.
