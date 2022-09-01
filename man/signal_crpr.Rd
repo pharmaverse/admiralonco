@@ -62,7 +62,7 @@ signal_crpr(adrs, order = vars(ADT))
 \seealso{
 \code{\link[=get_crpr_dataset]{get_crpr_dataset()}}
 
-Other utils_ds_chk: 
+Utilities for Dataset Checking: 
 \code{\link{get_crpr_dataset}()}
 }
 \author{
