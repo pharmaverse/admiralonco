@@ -9,10 +9,15 @@
 #' (i.e., responses exclusive of `NA`, `NE`, `ND`, and `PD`) and after a specified
 #' amount of time from a reference date (`ref_start_window`).
 #'
-#' #' #' Note: the user can exclude any additional response values using the `filter_source`
+#' Note: the user can exclude any additional response values using the `filter_source`
 #' argument.
 #'
 #' Example: filter_source = PARAMCD == "OVR" & AVALC != "NON-CR/NON-PD"
+#'
+#' Response is considered as a Confirmed Best Response based on arguments fed into
+#' `source_resp`, which in most cases will be `CR` or `PR`. However, this can
+#' vary based on the the date variable used and any additional filter conditions specified
+#' in `source_resp`.
 #'
 #' \enumerate{
 #'   \item The input dataset (`dataset`) is restricted to the observations matching
