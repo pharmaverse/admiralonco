@@ -27,7 +27,7 @@ adrs <- tribble(
   "04",     "RSP",    "N",    NA,
   "06",     "RSP",    "N",    NA,
   "01",     "PD",     "N",    NA,
-  "02",     "PD",     "Y",    "2021-03-07",
+  "02",     "PD",     "Y",    "2021-05-07",
   "03",     "PD",     "N",    NA,
   "04",     "PD",     "N",    NA,
   "06",     "PD",     "Y",    "2021-08-20",
@@ -35,7 +35,7 @@ adrs <- tribble(
   "01",     "OVR",    "PR",   "2021-04-08",
   "02",     "OVR",    "SD",   "2021-03-07",
   "02",     "OVR",    NA,     "2021-04-07",
-  "02",     "OVR",    "PD",   "2021-03-07",
+  "02",     "OVR",    "PD",   "2021-05-07",
   "03",     "OVR",    "SD",   "2021-01-30",
   "04",     "OVR",    "NE",   "2021-05-21",
   "04",     "OVR",    "NA",   "2021-06-30",
@@ -165,4 +165,3 @@ test_that("Clinical benefit rate parameter is derived correctly Test 2: No sourc
                    keys = c("USUBJID", "PARAMCD", "ADT")
   )
 })
-
