@@ -27,7 +27,7 @@ adrs <- tribble(
   "04",     "RSP",    "N",    NA,
   "06",     "RSP",    "N",    NA,
   "01",     "PD",     "N",    NA,
-  "02",     "PD",     "Y",    "2021-05-07",
+  "02",     "PD",     "Y",    "2021-03-07",
   "03",     "PD",     "N",    NA,
   "04",     "PD",     "N",    NA,
   "06",     "PD",     "Y",    "2021-08-20",
@@ -35,7 +35,7 @@ adrs <- tribble(
   "01",     "OVR",    "PR",   "2021-04-08",
   "02",     "OVR",    "SD",   "2021-03-07",
   "02",     "OVR",    NA,     "2021-04-07",
-  "02",     "OVR",    "PD",   "2021-05-07",
+  "02",     "OVR",    "PD",   "2021-03-07",
   "03",     "OVR",    "SD",   "2021-01-30",
   "04",     "OVR",    "NE",   "2021-05-21",
   "04",     "OVR",    "NA",   "2021-06-30",
@@ -105,3 +105,64 @@ test_that("Clinical benefit rate parameter is derived correctly", {
     keys = c("USUBJID", "PARAMCD", "ADT")
   )
 })
+
+# Clinical benefit rate parameter is derived correctly, Test 2 ----
+test_that("Clinical benefit rate parameter is derived correctly Test 2: No source_pd", {
+  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  # source_pd = NULL, so changing PD data for subject 2 in adrs on records
+  # 7 and 15 to ensure clincal benefit is still output.
+  #
+  #  Note: source_pd above is not actually doing anything (check with stefan)
+  # "02",     "PD",     "Y",    "2021-03-07",<- changed to 2021-03-06, which would be filtered
+  #                                             if source_pd not null
+  # "03",     "PD",     "N",    NA,
+  # "04",     "PD",     "N",    NA,
+  # :
+  # :
+  # "02",     "OVR",    NA,     "2021-04-07",
+  # "02",     "OVR",    "PD",   "2021-03-07", <- changed to 2021-03-06, which would be filtered
+  #                                             if source_pd not null
+  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  
+  adrs$ADT[c(7,15)]   <- as_date("2021-03-06")
+  
+  input_cbr <- tribble(
+    ~USUBJID, ~PARAMCD, ~AVALC, ~AVAL, ~ADT,
+    "01",     "CBR",    "Y",    1,     "2021-03-07",
+    "02",     "CBR",    "Y",    1,     "2021-03-07",
+    "03",     "CBR",    "N",    0,     NA,
+    "04",     "CBR",    "N",    0,     NA,
+    "05",     "CBR",    "N",    0,     NA,
+    "06",     "CBR",    "N",    0,     NA
+  ) %>%
+    mutate(
+      STUDYID = "AB42",
+      ADT = as_date(ADT),
+      ANL01FL = "Y"
+    ) %>%
+    left_join(adsl, by = c("STUDYID", "USUBJID")) %>%
+    select(-EOSDT)
+  
+  expected_output_no_source_pd <- bind_rows(adrs, input_cbr)
+  
+  actual_output_no_source_pd <- derive_param_clinbenefit(
+    dataset = adrs,
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR",
+    source_resp = resp,
+    source_pd = NULL,
+    source_datasets = list(adrs = adrs),
+    reference_date = TRTSDT,
+    ref_start_window = 28,
+    set_values_to = vars(
+      PARAMCD = "CBR",
+      ANL01FL = "Y"
+    )
+  )
+  
+  expect_dfs_equal(actual_output_no_source_pd, 
+                   expected_output_no_source_pd,
+                   keys = c("USUBJID", "PARAMCD", "ADT")
+  )
+})
+

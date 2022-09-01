@@ -42,12 +42,7 @@
 #'   The columns `PARAMCD`, `ADT`, and `AVALC`and the columns specified in
 #'   `subject_keys` and `reference_date` are expected.
 #'
-#'   After applying `filter_source` and `source_pd` the variable `ADT` and the
-#'   variables specified by `subject_keys` must be a unique key of the dataset.
-#'
 #'    *Permitted Values:* a `data.frame()` object
-#'
-#'    *Required or Optional:* Required
 #'
 #' @param dataset_adsl ADSL input dataset.
 #'
@@ -58,12 +53,8 @@
 #'
 #'    *Permitted Values:* a `data.frame()` object
 #'
-#'    *Required or Optional:* Required
-#'
 #' @param filter_source Filter to be applied to `dataset` to derive the
 #'                       Best Overall Response
-#'
-#'    *Required or Optional:* Required
 #'
 #' @param source_pd Date of first progressive disease (PD)
 #'
@@ -74,10 +65,6 @@
 #'
 #'   *Permitted Values:* a `date_source` object (see `date_source()`
 #'   for details)
-#'
-#'   *Default:* `NULL`
-#'
-#'   *Required or Optional:* Optional
 #'
 #' @param source_datasets Source dataframe to be used to calculate the
 #'                        first PD date
@@ -96,8 +83,6 @@
 #'   and the actual response dataframe in the script is `myadrs`, `source_datasets
 #'   = list(adrs = myadrs)` should be specified.
 #'
-#'    *Required or Optional:* Optional
-#'
 #' @param reference_date Reference date
 #'
 #'   The reference date is used along with `ref_start_window` to determine those
@@ -106,8 +91,6 @@
 #'   randomization date (`RANDDT`).
 #'
 #'   *Permitted Values:* a numeric date column
-#'
-#'   *Required or Optional:* Required
 #'
 #' @param ref_start_window Stable disease time window
 #'
@@ -118,8 +101,6 @@
 #'
 #'   *Permitted Values:* a non-negative numeric scalar
 #'
-#'   *Required or Optional:* Required
-#'
 #' @param missing_as_ne Consider no assessments as `"NE"`?
 #'
 #'   If the argument is set to `TRUE`, the response is set to `"NE"` for
@@ -129,19 +110,11 @@
 #'
 #'   *Permitted Values:* a logical scalar
 #'
-#'   *Default:* `FALSE`
-#'
-#'   *Required or Optional:* Required
-#'
 #' @param aval_fun Function to map character analysis value (`AVALC`) to numeric
 #'                 analysis value (`AVAL`)
 #'
 #'   The (first) argument of the function must expect a character vector and the
 #'   function must return a numeric vector.
-#'
-#'   *Default:* `aval_resp` (see `aval_resp()`)
-#'
-#'   *Required or Optional:* Required
 #'
 #' @param set_values_to New columns to set
 #'
@@ -150,18 +123,12 @@
 #'   Response")` is expected. The values must be symbols, character strings,
 #'   numeric values, or `NA`.
 #'
-#'    *Required or Optional:* Required
-#'
 #' @param subject_keys Columns to uniquely identify a subject
 #'
 #'   A list of symbols created using `vars()`.
 #'
 #'   *Permitted Values:* an `vars` object
 #'
-#'   *Default:* `vars(STUDYID, USUBJID)`
-#'
-#'   *Required or Optional:* Required
-#
 #' @examples
 #'
 #' library(magrittr)

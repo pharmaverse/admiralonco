@@ -26,8 +26,6 @@ A list of symbols created using \code{vars()} is expected.}
 
 \item{check_type}{Type of message to issue when detecting PR after CR.
 
-\emph{Default}: \code{"warning"}
-
 \emph{Permitted Values}: \code{"message"}, \code{"warning"} or \code{"error"}}
 }
 \value{

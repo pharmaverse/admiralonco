@@ -9,7 +9,7 @@ derive_param_clinbenefit(
   dataset_adsl,
   filter_source,
   source_resp,
-  source_pd,
+  source_pd = NULL,
   source_datasets,
   reference_date,
   ref_start_window,
@@ -61,9 +61,7 @@ clinical benefit.}
 analysis value (\code{AVAL})
 
 The (first) argument of the function must expect a character vector and the
-function must return a numeric vector.
-
-\emph{Default:} \code{yn_to_numeric} (see \code{admiral::yn_to_numeric()} for details)}
+function must return a numeric vector.}
 
 \item{set_values_to}{A named list returned by \code{vars()} containing new variables
 and their static value to be populated for the clinical benefit rate parameter

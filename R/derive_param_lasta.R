@@ -28,12 +28,8 @@
 #'
 #'    *Permitted Values:* a `data.frame()` object
 #'
-#'    *Required or Optional:* Required
-#'
 #' @param filter_source Filter to be applied to `dataset` to derive the
 #'                      Last Disease Assessment
-#'
-#'    *Required or Optional:* Required
 #'
 #' @param order Sort order, after which the last record shall be taken by
 #'              the `subject_keys` to determine Last Disease Assessment. Created
@@ -41,10 +37,6 @@
 #'
 #'    *Permitted Values:* list of variables or `desc(<variable>)` function calls
 #'    created by `vars()`, e.g., `vars(ADT, desc(AVAL))`
-#'
-#'    *Default:* `vars(ADT)`
-#'
-#'    *Required or Optional:* Required
 #'
 #' @param source_pd Date of first progressive disease (PD)
 #'
@@ -55,11 +47,7 @@
 #'
 #'   *Permitted Values:* a `date_source` object (see `date_source()`
 #'   for details)
-#'
-#'   *Default:* `NULL`
-#'
-#'   *Required or Optional:* Optional
-#'
+#'   
 #' @param source_datasets Source dataframe to be used to calculate the
 #'                        first PD date
 #'
@@ -77,15 +65,9 @@
 #'   and the actual response dataframe in the script is `myadrs`, `source_datasets
 #'   = list(adrs = myadrs)` should be specified.
 #'
-#'    *Required or Optional:* Optional
-#'
 #' @param subject_keys Columns to uniquely identify a subject
 #'
 #'   A list of symbols created using `vars()`.
-#'
-#'   *Default:* `vars(STUDYID, USUBJID)`
-#'
-#'   *Required or Optional:* Required
 #'
 #' @param set_values_to Columns to set
 #'
@@ -93,8 +75,6 @@
 #'   new parameter, e.g. `vars(PARAMCD = "LSTAC", PARAM = "Last Disease
 #'    Assessment Censored at First PD by Investigator")` is expected. The values
 #'    must be symbols, character strings, numeric values, or `NA`.
-#'
-#'    *Required or Optional:* Required
 #
 #' @examples
 #'

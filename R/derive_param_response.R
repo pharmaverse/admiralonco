@@ -164,8 +164,8 @@
 derive_param_response <- function(dataset,
                                   dataset_adsl,
                                   filter_source,
-                                  source_pd,
-                                  source_datasets,
+                                  source_pd = NULL,
+                                  source_datasets = NULL,
                                   set_values_to,
                                   subject_keys = vars(STUDYID, USUBJID)) {
 
@@ -173,34 +173,41 @@ derive_param_response <- function(dataset,
   assert_data_frame(dataset)
   assert_data_frame(dataset_adsl)
   filter_s <- assert_filter_cond(enquo(filter_source), optional = TRUE)
-  assert_list_of(source_datasets, "data.frame")
-  source_names <- names(source_datasets)
-
-  assert_s3_class(source_pd, "date_source")
-  if (!(source_pd$dataset_name %in% source_names)) {
-    abort(paste(
-      "The dataset names must be included in the list specified for the ",
-      "`source_datasets` parameter.\n",
-      "Following names were provided by `source_datasets`:\n",
-      enumerate(source_names, quote_fun = squote)
-    ))
-  }
-
+  
   assert_varval_list(set_values_to, accept_expr = TRUE, optional = TRUE)
   if (!is.null(set_values_to$PARAMCD) & !is.null(dataset)) {
     assert_param_does_not_exist(dataset, quo_get_expr(set_values_to$PARAMCD))
   }
+  
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  # filter_pd and filter_source: Filter source dataset using filter_source----
+  # argument and also filter data after progressive disease with filter_pd
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  
+  if (!is.null(source_pd)) {
+    #----  Only records from `dataset` where `filter_source` before PD ----
+    resp_before_pd <- dataset %>%
+      filter_pd(
+        # Need to specify a filter otherwise:
+        # ERROR ! Argument `filter_source` is missing, with no default
+        filter = !!filter_s,
+        source_pd = source_pd,
+        source_datasets = source_datasets,
+        subject_keys = vars(!!!subject_keys)
+      )
+  } else {
+    
+    #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    # filter_source: Filter using filter_source argument ----
+    # This would also be used to filter out records from dataset that are greater
+    # than e.g. ADSL.TRTSDT
+    # Not filtering data after progressive disease with filter_pd
+    #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    
+    resp_before_pd <- dataset %>%
+      filter(!!enquo(filter_s))
+  }
 
-  #----  Only records from `dataset` where `filter_source` before PD ----
-  resp_before_pd <- dataset %>%
-    filter_pd(
-      # Need to specify a filter otherwise:
-      # ERROR ! Argument `filter_source` is missing, with no default
-      filter = !!filter_s,
-      source_pd = source_pd,
-      source_datasets = source_datasets,
-      subject_keys = vars(!!!subject_keys)
-    )
   # ---- Select the 1st response and add a new PARAMCD to the input dataset ----
   dataset %>%
     derive_param_first_event(

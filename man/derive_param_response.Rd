@@ -9,8 +9,8 @@ derive_param_response(
   dataset,
   dataset_adsl,
   filter_source,
-  source_pd,
-  source_datasets,
+  source_pd = NULL,
+  source_datasets = NULL,
   set_values_to,
   subject_keys = vars(STUDYID, USUBJID)
 )
