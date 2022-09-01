@@ -7,6 +7,9 @@
 #'   The `PARAMCD`, `ADT`, and `AVALC` variables and the variables specified by
 #'   `subject_keys` and `reference_date` are expected.
 #'
+#'   After applying `filter_source` and `source_pd` the variable `ADT` and the
+#'   variables specified by `subject_keys` must be a unique key of the dataset.
+#'
 #' @param dataset_adsl ADSL input dataset
 #'
 #'   The variables specified for `subject_keys` are expected. For each subject
@@ -140,7 +143,9 @@
 #'
 #' @return The input dataset with a new parameter for confirmed response
 #'
-#' @keywords derivation adrs
+#' @family der_prm_adrs
+#'
+#' @keywords der_prm_adrs
 #'
 #' @author Stefan Bundfuss
 #'
@@ -315,7 +320,8 @@ derive_param_confirmed_resp <- function(dataset,
   # Check for CR followed by PR (this should not occur in clean data)
   signal_crpr(
     source_data,
-    order = vars(ADT)
+    order = vars(ADT),
+    subject_keys = subject_keys
   )
 
   # Create observations for potential responses

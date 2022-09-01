@@ -42,6 +42,9 @@
 #'   The columns `PARAMCD`, `ADT`, and `AVALC`and the columns specified in
 #'   `subject_keys` and `reference_date` are expected.
 #'
+#'   After applying `filter_source` and `source_pd` the variable `ADT` and the
+#'   variables specified by `subject_keys` must be a unique key of the dataset.
+#'
 #'    *Permitted Values:* a `data.frame()` object
 #'
 #'    *Required or Optional:* Required
@@ -279,7 +282,9 @@
 #'
 #' @author Stephen Gormley
 #'
-#' @keywords adrs
+#' @family der_prm_adrs
+#'
+#' @keywords der_prm_adrs
 #'
 #' @return The dataframe passed in the `dataset` argument with additional columns and/or
 #'         rows as set in the `set_values_to` argument.

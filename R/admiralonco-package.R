@@ -1,4 +1,5 @@
 #' @keywords internal
+#' @family internal
 #' @importFrom admiral censor_source count_vals derive_param_first_event
 #'   derive_var_obs_number derive_vars_merged event_source filter_confirmation
 #'   filter_extreme filter_relative list_tte_source_objects max_cond min_cond
@@ -13,6 +14,6 @@
 #'   left_join mutate rename right_join select slice vars ungroup
 #' @importFrom lubridate days
 #' @importFrom magrittr `%>%`
-#' @importFrom rlang abort enquo quo_get_expr quo_is_null warn
+#' @importFrom rlang abort enquo inform quo_get_expr quo_is_null warn
 #' @importFrom tidyselect all_of
 "_PACKAGE"

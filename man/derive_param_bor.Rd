@@ -25,6 +25,9 @@ be derived from and added to.
 The columns \code{PARAMCD}, \code{ADT}, and \code{AVALC}and the columns specified in
 \code{subject_keys} and \code{reference_date} are expected.
 
+After applying \code{filter_source} and \code{source_pd} the variable \code{ADT} and the
+variables specified by \code{subject_keys} must be a unique key of the dataset.
+
 \emph{Permitted Values:} a \code{data.frame()} object
 
 \emph{Required or Optional:} Required}
@@ -289,7 +292,16 @@ derive_param_bor(
 ) \%>\%
   filter(PARAMCD == "BOR")
 }
+\seealso{
+ADRS Functions for adding Parameters: 
+\code{\link{derive_param_clinbenefit}()},
+\code{\link{derive_param_confirmed_bor}()},
+\code{\link{derive_param_confirmed_resp}()},
+\code{\link{derive_param_lasta}()},
+\code{\link{derive_param_response}()}
+}
 \author{
 Stephen Gormley
 }
-\keyword{adrs}
+\concept{der_prm_adrs}
+\keyword{der_prm_adrs}

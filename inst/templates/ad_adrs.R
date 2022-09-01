@@ -73,13 +73,18 @@ adrs <- adrs %>%
 
 # Set analysis flag to include only the records that should contribute to the
 # parameter derivations - here only valid assessments and those occurring on or
-# after randomization date
+# after randomization date, if there is more than one assessment per date the
+# worst one is flagged
 adrs <- adrs %>%
-  mutate(
-    ANL01FL = case_when(
-      !is.na(AVAL) & ADT >= RANDDT ~ "Y",
-      TRUE ~ NA_character_
-    )
+  restrict_derivation(
+    derivation = derive_var_extreme_flag,
+    args = params(
+      by_vars = vars(STUDYID, USUBJID, ADT),
+      order = vars(AVAL, RSSEQ),
+      new_var = ANL01FL,
+      mode = "last"
+    ),
+    filter = !is.na(AVAL) & ADT >= RANDDT
   )
 
 # ---- Parameter derivations ----
