@@ -76,11 +76,21 @@ The input dataset with a new parameter for clinical benefit
 Adds a parameter for clinical benefit/disease control
 }
 \details{
-Clinical benefit/disease control is first identified for looking for subjects
+Clinical benefit/disease control is first identified by looking for subjects
 having response status, and then derived for subjects that have at least one
 evaluable non-PD response assessment prior to first PD (Progressive Disease)
 (i.e., responses exclusive of \code{NA}, \code{NE}, \code{ND}, and \code{PD}) and after a specified
 amount of time from a reference date (\code{ref_start_window}).
+
+Note: the user can exclude any additional response values using the \code{filter_source}
+argument.
+
+Example: filter_source = PARAMCD == "OVR" & AVALC != "NON-CR/NON-PD"
+
+Response is considered as a Confirmed Best Response based on arguments fed into
+\code{source_resp}, which in most cases will be \code{CR} or \code{PR}. However, this can
+vary based on the the date variable used and any additional filter conditions specified
+in \code{source_resp}.
 
 \enumerate{
 \item The input dataset (\code{dataset}) is restricted to the observations matching
