@@ -115,12 +115,6 @@
 #'
 #'   The (first) argument of the function must expect a character vector and the
 #'   function must return a numeric vector.
-#'
-#' @param subject_keys Columns to uniquely identify a subject
-#'
-#'   A list of symbols created using `vars()`.
-#'
-#'   *Permitted Values:* an `vars` object
 #'   
 #' @param set_values_to New columns to set
 #'
@@ -128,6 +122,12 @@
 #'   new parameter, e.g. `vars(PARAMCD = "BOR", PARAM = "Best Overall
 #'   Response")` is expected. The values must be symbols, character strings,
 #'   numeric values, or `NA`.
+#'
+#' @param subject_keys Columns to uniquely identify a subject
+#'
+#'   A list of symbols created using `vars()`.
+#'
+#'   *Permitted Values:* an `vars` object
 #'
 #' @examples
 #'

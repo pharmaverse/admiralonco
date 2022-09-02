@@ -14,8 +14,8 @@ derive_param_bor(
   ref_start_window,
   missing_as_ne = FALSE,
   aval_fun = aval_resp,
-  subject_keys = vars(STUDYID, USUBJID),
-  set_values_to
+  set_values_to,
+  subject_keys = vars(STUDYID, USUBJID)
 )
 }
 \arguments{
@@ -99,17 +99,17 @@ analysis value (\code{AVAL})
 The (first) argument of the function must expect a character vector and the
 function must return a numeric vector.}
 
-\item{subject_keys}{Columns to uniquely identify a subject
-
-A list of symbols created using \code{vars()}.
-
-\emph{Permitted Values:} an \code{vars} object}
-
 \item{set_values_to}{New columns to set
 
 A named list returned by \code{vars()} defining the columns to be set for the
 new parameter, e.g. \code{vars(PARAMCD = "BOR", PARAM = "Best Overall Response")} is expected. The values must be symbols, character strings,
 numeric values, or \code{NA}.}
+
+\item{subject_keys}{Columns to uniquely identify a subject
+
+A list of symbols created using \code{vars()}.
+
+\emph{Permitted Values:} an \code{vars} object}
 }
 \value{
 The dataframe passed in the \code{dataset} argument with additional columns and/or
