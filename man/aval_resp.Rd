@@ -31,4 +31,5 @@ aval_resp(c("CR", "PR", "SD", "NON-CR/NON-PD", "PD", "NE", "MISSING", "ND", NA_c
 \author{
 Stefan Bundfuss
 }
-\keyword{user_utility}
+\concept{utils_fmt}
+\keyword{utils_fmt}
