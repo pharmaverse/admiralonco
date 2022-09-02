@@ -292,7 +292,8 @@ derive_param_confirmed_resp <- function(dataset,
       filter_pd(
         filter = !!filter_source,
         source_pd = source_pd,
-        source_datasets = source_datasets
+        source_datasets = source_datasets,
+        subject_keys = subject_keys
       )
   } else {
     
