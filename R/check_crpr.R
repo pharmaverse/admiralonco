@@ -17,14 +17,18 @@
 #'
 #'   *Default*: `"warning"`
 #'
-#'   *Permitted Values*: `"warning"` or `"error"`
+#'   *Permitted Values*: `"message"`, `"warning"` or `"error"`
 #'
 #' @return No return value, called for side effects
 #'
 #' @seealso [get_crpr_dataset()]
 #'
 #' @export
-#' @keywords user_utility
+#'
+#' @family utils_ds_chk
+#'
+#' @keywords utils_ds_chk
+#'
 #' @author Stefan Bundfuss
 #'
 #' @examples
@@ -54,10 +58,9 @@ signal_crpr <- function(dataset,
                         msg = "Dataset contains CR records followed by PR.",
                         subject_keys = vars(STUDYID, USUBJID),
                         check_type = "warning") {
-  assert_order_vars(order)
+  assert_character_scalar(msg)
   assert_vars(subject_keys)
-  assert_data_frame(dataset, required_vars = quo_c(order, subject_keys))
-  assert_character_scalar(check_type, values = c("warning", "error"))
+  assert_character_scalar(check_type, values = c("message", "warning", "error"))
 
   crpr_data <- filter_confirmation(
     dataset,
@@ -86,7 +89,7 @@ signal_crpr <- function(dataset,
       msg,
       "\nRun `get_crpr_dataset()` to access the CR records records followed by PR"
     )
-    msg_funs <- list(warning = warn, error = abort)
+    msg_funs <- list(message = inform, warning = warn, error = abort)
     msg_funs[[check_type]](full_msg)
   }
 }
@@ -112,7 +115,9 @@ signal_crpr <- function(dataset,
 #'
 #' @seealso [signal_crpr()]
 #'
-#' @keywords user_utility
+#' @family utils_ds_chk
+#'
+#' @keywords utils_ds_chk
 #'
 #' @examples
 #' library(tibble)

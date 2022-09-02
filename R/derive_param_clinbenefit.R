@@ -64,6 +64,9 @@
 #'   The variables `PARAMCD`, `AVALC`, `ADT`, and those specified by the `subject_keys`
 #'   parameter and the `reference_date` parameter are expected.
 #'
+#'   After applying `filter_source` and `source_pd` the variable `ADT` and the
+#'   variables specified by `subject_keys` must be a unique key of the dataset.
+#'
 #' @param dataset_adsl ADSL input dataset.
 #'
 #'   The variables specified for `subject_keys`is expected. For each subject of
@@ -110,7 +113,9 @@
 #'
 #' @return The input dataset with a new parameter for clinical benefit
 #'
-#' @keywords derivation adrs
+#' @family der_prm_adrs
+#'
+#' @keywords der_prm_adrs
 #'
 #' @export
 #'

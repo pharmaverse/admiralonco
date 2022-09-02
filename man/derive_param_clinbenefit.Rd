@@ -23,7 +23,10 @@ derive_param_clinbenefit(
 benefit rate parameter will be added.
 
 The variables \code{PARAMCD}, \code{AVALC}, \code{ADT}, and those specified by the \code{subject_keys}
-parameter and the \code{reference_date} parameter are expected.}
+parameter and the \code{reference_date} parameter are expected.
+
+After applying \code{filter_source} and \code{source_pd} the variable \code{ADT} and the
+variables specified by \code{subject_keys} must be a unique key of the dataset.}
 
 \item{dataset_adsl}{ADSL input dataset.
 
@@ -200,8 +203,16 @@ derive_param_clinbenefit(
 ) \%>\%
   filter(PARAMCD == "CBR")
 }
+\seealso{
+ADRS Functions for adding Parameters: 
+\code{\link{derive_param_bor}()},
+\code{\link{derive_param_confirmed_bor}()},
+\code{\link{derive_param_confirmed_resp}()},
+\code{\link{derive_param_lasta}()},
+\code{\link{derive_param_response}()}
+}
 \author{
 Andrew Smith
 }
-\keyword{adrs}
-\keyword{derivation}
+\concept{der_prm_adrs}
+\keyword{der_prm_adrs}

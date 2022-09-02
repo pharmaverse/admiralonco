@@ -18,7 +18,10 @@ derive_param_response(
 \arguments{
 \item{dataset}{Input dataset
 
-The variables specified by the \code{subject_keys}and \code{ADT} are expected.}
+The variables specified by the \code{subject_keys}and \code{ADT} are expected.
+
+After applying \code{filter_source} and \code{source_pd} the variable \code{ADT} and the
+variables specified by \code{subject_keys} must be a unique key of the dataset.}
 
 \item{dataset_adsl}{Input dataset
 \itemize{
@@ -168,9 +171,16 @@ derive_param_response(
 ) \%>\%
   arrange(USUBJID, PARAMCD, ADT)
 }
+\seealso{
+ADRS Functions for adding Parameters: 
+\code{\link{derive_param_bor}()},
+\code{\link{derive_param_clinbenefit}()},
+\code{\link{derive_param_confirmed_bor}()},
+\code{\link{derive_param_confirmed_resp}()},
+\code{\link{derive_param_lasta}()}
+}
 \author{
 Samia Kabi
 }
-\keyword{adrs}
-\keyword{bds}
-\keyword{derivation}
+\concept{der_prm_adrs}
+\keyword{der_prm_adrs}

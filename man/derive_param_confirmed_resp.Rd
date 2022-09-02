@@ -22,7 +22,10 @@ derive_param_confirmed_resp(
 \item{dataset}{Input dataset
 
 The \code{PARAMCD}, \code{ADT}, and \code{AVALC} variables and the variables specified by
-\code{subject_keys} and \code{reference_date} are expected.}
+\code{subject_keys} and \code{reference_date} are expected.
+
+After applying \code{filter_source} and \code{source_pd} the variable \code{ADT} and the
+variables specified by \code{subject_keys} must be a unique key of the dataset.}
 
 \item{dataset_adsl}{ADSL input dataset
 
@@ -272,8 +275,16 @@ derive_param_confirmed_resp(
 ) \%>\%
   filter(PARAMCD == "CRSP")
 }
+\seealso{
+ADRS Functions for adding Parameters: 
+\code{\link{derive_param_bor}()},
+\code{\link{derive_param_clinbenefit}()},
+\code{\link{derive_param_confirmed_bor}()},
+\code{\link{derive_param_lasta}()},
+\code{\link{derive_param_response}()}
+}
 \author{
 Stefan Bundfuss
 }
-\keyword{adrs}
-\keyword{derivation}
+\concept{der_prm_adrs}
+\keyword{der_prm_adrs}

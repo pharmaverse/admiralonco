@@ -12,6 +12,9 @@
 #'
 #'   The variables specified by the `subject_keys`and `ADT` are expected.
 #'
+#'   After applying `filter_source` and `source_pd` the variable `ADT` and the
+#'   variables specified by `subject_keys` must be a unique key of the dataset.
+#'
 #' @param dataset_adsl Input dataset
 #'
 #'   + The variables specified for `subject_keys` are expected.
@@ -93,7 +96,9 @@
 #' @return The input dataset with a new parameter indicating if and when a
 #' response occurred
 #'
-#' @keywords derivation bds adrs
+#' @family der_prm_adrs
+#'
+#' @keywords der_prm_adrs
 #'
 #' @export
 #'
