@@ -85,7 +85,9 @@ Otherwise, no \code{"SD"} assessment must occur between the two assessments.
 analysis value (\code{AVAL})
 
 The (first) argument of the function must expect a character vector and the
-function must return a numeric vector.}
+function must return a numeric vector.
+
+\emph{Default:} \code{yn_to_numeric} (see \code{admiral::yn_to_numeric()} for details)}
 
 \item{set_values_to}{Variables to set
 
