@@ -205,7 +205,7 @@ derive_param_response <- function(dataset,
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     resp_before_pd <- dataset %>%
-      filter(!!filter_source)
+      filter(!!filter_s)
   }
 
   # ---- Select the 1st response and add a new PARAMCD to the input dataset ----
