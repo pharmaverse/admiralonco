@@ -19,6 +19,13 @@ adsl <- tribble(
     EOSDT = as_date(EOSDT),
   )
 
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# sgorm123: changed ADT below for USUBJID == "02" and PARAMCD == "PD" to "2021-03-06".
+#           The previous date was after all responses, so filter_pd redundant.
+#           Expected output is now different for the first test, but the same for
+#           Test 2 which ignores PD.
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
 adrs <- tribble(
   ~USUBJID, ~PARAMCD, ~AVALC, ~ADT,
   "01",     "RSP",    "Y",    "2021-04-08",
@@ -27,7 +34,7 @@ adrs <- tribble(
   "04",     "RSP",    "N",    NA,
   "06",     "RSP",    "N",    NA,
   "01",     "PD",     "N",    NA,
-  "02",     "PD",     "Y",    "2021-05-07",
+  "02",     "PD",     "Y",    "2021-03-06", # changed to "2021-03-06", sgorm123
   "03",     "PD",     "N",    NA,
   "04",     "PD",     "N",    NA,
   "06",     "PD",     "Y",    "2021-08-20",
@@ -35,7 +42,7 @@ adrs <- tribble(
   "01",     "OVR",    "PR",   "2021-04-08",
   "02",     "OVR",    "SD",   "2021-03-07",
   "02",     "OVR",    NA,     "2021-04-07",
-  "02",     "OVR",    "PD",   "2021-05-07",
+  "02",     "OVR",    "PD",   "2021-03-06", # changed to "2021-03-06", sgorm123
   "03",     "OVR",    "SD",   "2021-01-30",
   "04",     "OVR",    "NE",   "2021-05-21",
   "04",     "OVR",    "NA",   "2021-06-30",
@@ -70,7 +77,7 @@ test_that("Clinical benefit rate parameter is derived correctly", {
   input_cbr <- tribble(
     ~USUBJID, ~PARAMCD, ~AVALC, ~AVAL, ~ADT,
     "01",     "CBR",    "Y",    1,     "2021-03-07",
-    "02",     "CBR",    "Y",    1,     "2021-03-07",
+    "02",     "CBR",    "N",    0,     NA,   # sgorm123: no longer AVALC = "Y" as SD is after PD
     "03",     "CBR",    "N",    0,     NA,
     "04",     "CBR",    "N",    0,     NA,
     "05",     "CBR",    "N",    0,     NA,
@@ -108,28 +115,11 @@ test_that("Clinical benefit rate parameter is derived correctly", {
 
 # Clinical benefit rate parameter is derived correctly, Test 2 ----
 test_that("Clinical benefit rate parameter is derived correctly Test 2: No source_pd", {
-  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # source_pd = NULL, so changing PD data for subject 2 in adrs on records
-  # 7 and 15 to ensure clincal benefit is still output.
-  #
-  #  Note: source_pd above is not actually doing anything (check with stefan)
-  # "02",     "PD",     "Y",    "2021-03-07",<- changed to 2021-03-06, which would be filtered
-  #                                             if source_pd not null
-  # "03",     "PD",     "N",    NA,
-  # "04",     "PD",     "N",    NA,
-  # :
-  # :
-  # "02",     "OVR",    NA,     "2021-04-07",
-  # "02",     "OVR",    "PD",   "2021-03-07", <- changed to 2021-03-06, which would be filtered
-  #                                             if source_pd not null
-  #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  
-  adrs$ADT[c(7,15)]   <- as_date("2021-03-06")
-  
+
   input_cbr <- tribble(
     ~USUBJID, ~PARAMCD, ~AVALC, ~AVAL, ~ADT,
     "01",     "CBR",    "Y",    1,     "2021-03-07",
-    "02",     "CBR",    "Y",    1,     "2021-03-07",
+    "02",     "CBR",    "Y",    1,     "2021-03-07", # sgorm123: AVALC = "Y" as PD is now ignored
     "03",     "CBR",    "N",    0,     NA,
     "04",     "CBR",    "N",    0,     NA,
     "05",     "CBR",    "N",    0,     NA,

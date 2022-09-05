@@ -281,7 +281,7 @@ test_that("derive_param_confirmed_bor Test 4: No source_pd", {
       "6",      "2020-03-30",  "SD",            3,
       "7",      "2020-02-06",  "NE",            6,
       "8",      NA_character_, "MISSING",       7,
-      "9",      "2020-03-06",  "SD",            3  # expected is now SD (check with Stefan)
+      "9",      "2020-03-06",  "SD",            3  # expected is now SD
     ) %>%
       mutate(
         ADT = ymd(ADTC),
