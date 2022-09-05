@@ -205,12 +205,12 @@ derive_param_clinbenefit <- function(dataset,
     optional = FALSE
   )
   assert_function(aval_fun)
-  assert_s3_class(source_resp, "date_source", optional = FALSE) 
-  assert_s3_class(source_pd, "date_source", optional = TRUE) 
-  assert_list_of(source_datasets, "data.frame", optional = FALSE) 
+  assert_s3_class(source_resp, "date_source", optional = FALSE)
+  assert_s3_class(source_pd, "date_source", optional = TRUE)
+  assert_list_of(source_datasets, "data.frame", optional = FALSE)
 
   source_names <- names(source_datasets)
-  
+
   if (!is.null(source_pd)) {
     if (!all(c(source_pd$dataset_name, source_resp$dataset_name) %in% source_names)) {
       abort(
