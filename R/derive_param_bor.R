@@ -26,9 +26,9 @@
 #'   6. The columns specified by the `set_values_to` parameter and records
 #'      are added to the dataframe passed into the `dataset` argument
 #'
-#'  Note: The calculation of BOR is irrespective of the number of days from the reference date
-#'  in which the response occurs, use the `reference_date` and/or `ref_start_window` arguments
-#'  to remove any responses that may occur before a certain window.
+#'  Note: Any responses of SD or NON-CR/NON-PD that occur before reference_date + 
+#'  ref_start_window are ignored in the calculation of BOR. All other responses are included
+#'  in the calculation of BOR, irrespective of the number of days from the reference date.
 #'
 #'  Also Note: All columns from the input dataset are kept. For subjects with no records in
 #'  the input dataset (after the filter is applied) all columns are kept from ADSL which are
@@ -41,12 +41,15 @@
 #'
 #'   The columns `PARAMCD`, `ADT`, and `AVALC`and the columns specified in
 #'   `subject_keys` and `reference_date` are expected.
-#'
+#'   
+#'   After applying `filter_source` and/or `source_pd` the column `ADT` and the
+#'   columns specified by `subject_keys` must be a unique key of the dataframe.
+#' 
 #'    *Permitted Values:* a `data.frame()` object
 #'
 #' @param dataset_adsl ADSL input dataset.
 #'
-#'    The value specified in the `subject_keys` argument is expected. For each subject in
+#'    The columns specified in the subject_keys argument are expected. For each subject in
 #'    the passed `dataset` a new row is added to the input `dataset`. Columns
 #'    in `dataset_adsl` that also appear in `dataset` will be populated with the
 #'    appropriate subject-specific value for these new rows.
@@ -334,7 +337,7 @@ derive_param_bor <- function(dataset,
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     dataset_filter <- dataset %>%
-      filter(!!enquo(filter_source))
+      filter(!!filter_source)
   }
 
   # Error if filter results in 0 records

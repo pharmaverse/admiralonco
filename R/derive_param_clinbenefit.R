@@ -54,7 +54,7 @@
 #'   The variables `PARAMCD`, `AVALC`, `ADT`, and those specified by the `subject_keys`
 #'   parameter and the `reference_date` parameter are expected.
 #'
-#'   After applying `filter_source` and `source_pd` the variable `ADT` and the
+#'   After applying `filter_source` and/or `source_pd` the variable `ADT` and the
 #'   variables specified by `subject_keys` must be a unique key of the dataset.
 #'
 #' @param dataset_adsl ADSL input dataset.
@@ -274,7 +274,7 @@ derive_param_clinbenefit <- function(dataset,
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     ovr_data <- dataset %>%
-      filter(!!enquo(filter_source))
+      filter(!!filter_source)
   }
 
   ovr_data <- ovr_data %>%

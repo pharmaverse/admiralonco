@@ -27,7 +27,7 @@ derive_param_confirmed_bor(
 The \code{PARAMCD}, \code{ADT}, and \code{AVALC} variables and the variables specified by
 \code{subject_keys} and \code{reference_date} are expected.
 
-After applying \code{filter_source} and \code{source_pd} the variable \code{ADT} and the
+After applying \code{filter_source} and/or \code{source_pd} the variable \code{ADT} and the
 variables specified by \code{subject_keys} must be a unique key of the dataset.}
 
 \item{dataset_adsl}{ADSL input dataset

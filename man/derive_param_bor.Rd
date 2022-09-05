@@ -25,11 +25,14 @@ be derived from and added to.
 The columns \code{PARAMCD}, \code{ADT}, and \code{AVALC}and the columns specified in
 \code{subject_keys} and \code{reference_date} are expected.
 
+After applying \code{filter_source} and/or \code{source_pd} the column \code{ADT} and the
+columns specified by \code{subject_keys} must be a unique key of the dataframe.
+
 \emph{Permitted Values:} a \code{data.frame()} object}
 
 \item{dataset_adsl}{ADSL input dataset.
 
-The value specified in the \code{subject_keys} argument is expected. For each subject in
+The columns specified in the subject_keys argument are expected. For each subject in
 the passed \code{dataset} a new row is added to the input \code{dataset}. Columns
 in \code{dataset_adsl} that also appear in \code{dataset} will be populated with the
 appropriate subject-specific value for these new rows.
@@ -139,9 +142,9 @@ order of preference: CR, PR, SD, NON-CR/NON-PD, PD, NE, MISSING
 are added to the dataframe passed into the \code{dataset} argument
 }
 
-Note: The calculation of BOR is irrespective of the number of days from the reference date
-in which the response occurs, use the \code{reference_date} and/or \code{ref_start_window} arguments
-to remove any responses that may occur before a certain window.
+Note: Any responses of SD or NON-CR/NON-PD that occur before reference_date +
+ref_start_window are ignored in the calculation of BOR. All other responses are included
+in the calculation of BOR, irrespective of the number of days from the reference date.
 
 Also Note: All columns from the input dataset are kept. For subjects with no records in
 the input dataset (after the filter is applied) all columns are kept from ADSL which are

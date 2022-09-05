@@ -19,13 +19,6 @@ adsl <- tribble(
     EOSDT = as_date(EOSDT),
   )
 
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-# sgorm123: changed ADT below for USUBJID == "02" and PARAMCD == "PD" to "2021-03-06".
-#           The previous date was after all responses, so filter_pd redundant.
-#           Expected output is now different for the first test, but the same for
-#           Test 2 which ignores PD.
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
 adrs <- tribble(
   ~USUBJID, ~PARAMCD, ~AVALC, ~ADT,
   "01",     "RSP",    "Y",    "2021-04-08",
@@ -34,7 +27,7 @@ adrs <- tribble(
   "04",     "RSP",    "N",    NA,
   "06",     "RSP",    "N",    NA,
   "01",     "PD",     "N",    NA,
-  "02",     "PD",     "Y",    "2021-03-06", # changed to "2021-03-06", sgorm123
+  "02",     "PD",     "Y",    "2021-05-07",
   "03",     "PD",     "N",    NA,
   "04",     "PD",     "N",    NA,
   "06",     "PD",     "Y",    "2021-08-20",
@@ -42,13 +35,14 @@ adrs <- tribble(
   "01",     "OVR",    "PR",   "2021-04-08",
   "02",     "OVR",    "SD",   "2021-03-07",
   "02",     "OVR",    NA,     "2021-04-07",
-  "02",     "OVR",    "PD",   "2021-03-06", # changed to "2021-03-06", sgorm123
+  "02",     "OVR",    "PD",   "2021-05-07", 
   "03",     "OVR",    "SD",   "2021-01-30",
   "04",     "OVR",    "NE",   "2021-05-21",
   "04",     "OVR",    "NA",   "2021-06-30",
   "04",     "OVR",    "NE",   "2021-07-24",
   "04",     "OVR",    "ND",   "2021-09-30",
-  "06",     "OVR",    "PD",   "2021-08-20"
+  "06",     "OVR",    "PD",   "2021-08-20",
+  "06",     "OVR",    "SD",   "2021-09-22", 
 ) %>%
   mutate(
     STUDYID = "AB42",
@@ -77,7 +71,7 @@ test_that("Clinical benefit rate parameter is derived correctly", {
   input_cbr <- tribble(
     ~USUBJID, ~PARAMCD, ~AVALC, ~AVAL, ~ADT,
     "01",     "CBR",    "Y",    1,     "2021-03-07",
-    "02",     "CBR",    "N",    0,     NA, # sgorm123: no longer AVALC = "Y" as SD is after PD
+    "02",     "CBR",    "Y",    1,     "2021-03-07",
     "03",     "CBR",    "N",    0,     NA,
     "04",     "CBR",    "N",    0,     NA,
     "05",     "CBR",    "N",    0,     NA,
@@ -118,11 +112,11 @@ test_that("Clinical benefit rate parameter is derived correctly Test 2: No sourc
   input_cbr <- tribble(
     ~USUBJID, ~PARAMCD, ~AVALC, ~AVAL, ~ADT,
     "01",     "CBR",    "Y",    1,     "2021-03-07",
-    "02",     "CBR",    "Y",    1,     "2021-03-07", # sgorm123: AVALC = "Y" as PD is now ignored
+    "02",     "CBR",    "Y",    1,     "2021-03-07",
     "03",     "CBR",    "N",    0,     NA,
     "04",     "CBR",    "N",    0,     NA,
     "05",     "CBR",    "N",    0,     NA,
-    "06",     "CBR",    "N",    0,     NA
+    "06",     "CBR",    "Y",    1,     "2021-09-22",
   ) %>%
     mutate(
       STUDYID = "AB42",

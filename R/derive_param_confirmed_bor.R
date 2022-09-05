@@ -7,7 +7,7 @@
 #'   The `PARAMCD`, `ADT`, and `AVALC` variables and the variables specified by
 #'   `subject_keys` and `reference_date` are expected.
 #'
-#'   After applying `filter_source` and `source_pd` the variable `ADT` and the
+#'   After applying `filter_source` and/or `source_pd` the variable `ADT` and the
 #'   variables specified by `subject_keys` must be a unique key of the dataset.
 #'
 #' @param dataset_adsl ADSL input dataset
@@ -374,7 +374,7 @@ derive_param_confirmed_bor <- function(dataset,
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     source_data <- dataset %>%
-      filter(!!enquo(filter_source))
+      filter(!!filter_source)
   }
 
   # Check for invalid AVALC values

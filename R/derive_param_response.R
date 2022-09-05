@@ -12,7 +12,7 @@
 #'
 #'   The variables specified by the `subject_keys`and `ADT` are expected.
 #'
-#'   After applying `filter_source` and `source_pd` the variable `ADT` and the
+#'   After applying `filter_source` and/or `source_pd` the variable `ADT` and the
 #'   variables specified by `subject_keys` must be a unique key of the dataset.
 #'
 #' @param dataset_adsl Input dataset
@@ -205,7 +205,7 @@ derive_param_response <- function(dataset,
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
     resp_before_pd <- dataset %>%
-      filter(!!enquo(filter_s))
+      filter(!!filter_source)
   }
 
   # ---- Select the 1st response and add a new PARAMCD to the input dataset ----

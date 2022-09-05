@@ -21,8 +21,8 @@ be derived from and added to.
 The column \code{PARAMCD} and the columns specified in \code{subject_keys} and
 \code{order} are expected.
 
-After applying \code{filter_source} and \code{source_pd} the variables specified by
-\code{subject_keys} and \code{order} must be a unique key of the dataset.
+After applying \code{filter_source} and/or \code{source_pd} the columns specified by
+\code{subject_keys} and \code{order} must be a unique key of the dataframe
 
 \emph{Permitted Values:} a \code{data.frame()} object}
 
