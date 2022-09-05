@@ -38,13 +38,13 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.0
 Depends: R (>= 3.5)
 Imports:
-    admiral,
+    admiral (>= 0.8.0),
     admiraldev,
-    dplyr,
-    lubridate,
-    magrittr,
-    rlang,
-    tidyselect
+    dplyr (>= 0.8.4),
+    lubridate (>= 1.7.4),
+    magrittr (>= 1.5),
+    rlang (>= 0.4.4),
+    tidyselect (>= 1.0.0)
 Suggests:
     admiral.test,
     devtools,
