@@ -47,7 +47,7 @@
 #'
 #'   *Permitted Values:* a `date_source` object (see `date_source()`
 #'   for details)
-#'   
+#'
 #' @param source_datasets Source dataframe to be used to calculate the
 #'                        first PD date
 #'
