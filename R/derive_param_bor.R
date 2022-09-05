@@ -26,7 +26,7 @@
 #'   6. The columns specified by the `set_values_to` parameter and records
 #'      are added to the dataframe passed into the `dataset` argument
 #'
-#'  Note: Any responses of SD or NON-CR/NON-PD that occur before reference_date + 
+#'  Note: Any responses of SD or NON-CR/NON-PD that occur before reference_date +
 #'  ref_start_window are ignored in the calculation of BOR. All other responses are included
 #'  in the calculation of BOR, irrespective of the number of days from the reference date.
 #'
@@ -41,10 +41,10 @@
 #'
 #'   The columns `PARAMCD`, `ADT`, and `AVALC`and the columns specified in
 #'   `subject_keys` and `reference_date` are expected.
-#'   
+#'
 #'   After applying `filter_source` and/or `source_pd` the column `ADT` and the
 #'   columns specified by `subject_keys` must be a unique key of the dataframe.
-#' 
+#'
 #'    *Permitted Values:* a `data.frame()` object
 #'
 #' @param dataset_adsl ADSL input dataset.
