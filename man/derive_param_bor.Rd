@@ -142,8 +142,8 @@ order of preference: CR, PR, SD, NON-CR/NON-PD, PD, NE, MISSING
 are added to the dataframe passed into the \code{dataset} argument
 }
 
-Note: Any responses of SD or NON-CR/NON-PD that occur before reference_date +
-ref_start_window are ignored in the calculation of BOR. All other responses are included
+Note: Any responses of SD or NON-CR/NON-PD that occur before \code{reference_date} +
+\code{ref_start_window} are ignored in the calculation of BOR. All other responses are included
 in the calculation of BOR, irrespective of the number of days from the reference date.
 
 Also Note: All columns from the input dataset are kept. For subjects with no records in
