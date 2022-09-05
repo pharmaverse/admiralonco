@@ -13,7 +13,7 @@ Oncology extension package for ADaM in R Asset Library `{admiral}`
 
 ## Purpose
 
-To provide a complementary (to `{admiral}`) toolbox that enables to develop oncology disease area specifics.
+To provide a complementary (to `{admiral}`) toolbox that enables users to develop oncology disease area specifics.
 
 ## Installation
 
