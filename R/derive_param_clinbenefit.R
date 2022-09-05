@@ -249,12 +249,12 @@ derive_param_clinbenefit <- function(dataset,
   rsp_data <- source_datasets[[source_resp$dataset_name]] %>%
     filter_if(source_resp$filter) %>%
     rename(ADT = !!source_resp$date)
-  
+
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # filter_pd and filter_source: Filter source dataset using filter_source----
   # argument and also filter data after progressive disease with filter_pd
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  
+
   if (!is.null(source_pd)) {
     # Look for valid non-PD measurements after window from reference date
     ovr_data <- filter_pd(
@@ -265,14 +265,14 @@ derive_param_clinbenefit <- function(dataset,
       subject_keys = subject_keys
     )
   } else {
-    
+
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     # filter_source: Filter using filter_source argument ----
     # This would also be used to filter out records from dataset that are greater
     # than e.g. ADSL.TRTSDT
     # Not filtering data after progressive disease with filter_pd
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    
+
     ovr_data <- dataset %>%
       filter(!!enquo(filter_source))
   }

@@ -94,16 +94,16 @@ test_that("derive_param_response Test 2: No source_pd", {
   rsp <- adrs1 %>%
     filter(PARAMCD == "OVR" & AVALC %in% c("CR", "PR")) %>%
     left_join(adrs1 %>%
-                filter(PARAMCD == "PD") %>%
-                select(STUDYID, USUBJID, PDDT = ADT),
-              by = c("STUDYID", "USUBJID")
+      filter(PARAMCD == "PD") %>%
+      select(STUDYID, USUBJID, PDDT = ADT),
+    by = c("STUDYID", "USUBJID")
     ) %>%
     filter(ADT <= PDDT | is.na(PDDT)) %>%
     arrange(USUBJID, PARAMCD, ADT) %>%
     group_by(USUBJID, PARAMCD) %>%
     filter(row_number() == 1) %>%
     mutate(avalc = 1)
-  
+
   new_obs <- adsl %>%
     left_join(rsp, by = c("STUDYID", "USUBJID")) %>%
     mutate(
@@ -112,16 +112,20 @@ test_that("derive_param_response Test 2: No source_pd", {
       PARAMCD = "RSP", PARAM = "Response by investigator"
     ) %>%
     select(-avalc, -PDDT)
-  
+
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # source_pd = NULL, so the response on 2021-12-25 for subjid 3 is selected
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  expected_output_no_source_pd <- bind_rows(adrs1, 
-                                            new_obs) %>%
-    mutate(AVAL  = if_else(USUBJID == 3 & PARAMCD == "RSP", 1, AVAL),
-           ADT   = if_else(USUBJID == 3 & PARAMCD == "RSP", ymd("2021-12-25"), ADT),
-           AVALC = if_else(USUBJID == 3 & PARAMCD == "RSP", "Y", AVALC))
-  
+  expected_output_no_source_pd <- bind_rows(
+    adrs1,
+    new_obs
+  ) %>%
+    mutate(
+      AVAL = if_else(USUBJID == 3 & PARAMCD == "RSP", 1, AVAL),
+      ADT = if_else(USUBJID == 3 & PARAMCD == "RSP", ymd("2021-12-25"), ADT),
+      AVALC = if_else(USUBJID == 3 & PARAMCD == "RSP", "Y", AVALC)
+    )
+
   # Derive the response parameter
   actual_output_no_source_pd <- adrs1 %>%
     derive_param_response(
@@ -136,7 +140,7 @@ test_that("derive_param_response Test 2: No source_pd", {
       subject_keys = vars(STUDYID, USUBJID)
     ) %>%
     arrange(USUBJID, PARAMCD, ADT)
-  
+
   expect_dfs_equal(
     actual_output_no_source_pd,
     expected_output_no_source_pd,

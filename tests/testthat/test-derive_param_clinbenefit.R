@@ -77,7 +77,7 @@ test_that("Clinical benefit rate parameter is derived correctly", {
   input_cbr <- tribble(
     ~USUBJID, ~PARAMCD, ~AVALC, ~AVAL, ~ADT,
     "01",     "CBR",    "Y",    1,     "2021-03-07",
-    "02",     "CBR",    "N",    0,     NA,   # sgorm123: no longer AVALC = "Y" as SD is after PD
+    "02",     "CBR",    "N",    0,     NA, # sgorm123: no longer AVALC = "Y" as SD is after PD
     "03",     "CBR",    "N",    0,     NA,
     "04",     "CBR",    "N",    0,     NA,
     "05",     "CBR",    "N",    0,     NA,
@@ -115,7 +115,6 @@ test_that("Clinical benefit rate parameter is derived correctly", {
 
 # Clinical benefit rate parameter is derived correctly, Test 2 ----
 test_that("Clinical benefit rate parameter is derived correctly Test 2: No source_pd", {
-
   input_cbr <- tribble(
     ~USUBJID, ~PARAMCD, ~AVALC, ~AVAL, ~ADT,
     "01",     "CBR",    "Y",    1,     "2021-03-07",
@@ -132,9 +131,9 @@ test_that("Clinical benefit rate parameter is derived correctly Test 2: No sourc
     ) %>%
     left_join(adsl, by = c("STUDYID", "USUBJID")) %>%
     select(-EOSDT)
-  
+
   expected_output_no_source_pd <- bind_rows(adrs, input_cbr)
-  
+
   actual_output_no_source_pd <- derive_param_clinbenefit(
     dataset = adrs,
     dataset_adsl = adsl,
@@ -149,9 +148,9 @@ test_that("Clinical benefit rate parameter is derived correctly Test 2: No sourc
       ANL01FL = "Y"
     )
   )
-  
-  expect_dfs_equal(actual_output_no_source_pd, 
-                   expected_output_no_source_pd,
-                   keys = c("USUBJID", "PARAMCD", "ADT")
+
+  expect_dfs_equal(actual_output_no_source_pd,
+    expected_output_no_source_pd,
+    keys = c("USUBJID", "PARAMCD", "ADT")
   )
 })

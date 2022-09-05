@@ -354,7 +354,7 @@ derive_param_confirmed_bor <- function(dataset,
   # filter_pd and filter_source: Filter source dataset using filter_source----
   # argument and also filter data after progressive disease with filter_pd
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  
+
   if (!is.null(source_pd)) {
     # Restrict input dataset
     source_data <- dataset %>%
@@ -365,14 +365,14 @@ derive_param_confirmed_bor <- function(dataset,
         subject_keys = subject_keys
       )
   } else {
-    
+
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     # filter_source: Filter using filter_source argument ----
     # This would also be used to filter out records from dataset that are greater
     # than e.g. ADSL.TRTSDT
     # Not filtering data after progressive disease with filter_pd
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    
+
     source_data <- dataset %>%
       filter(!!enquo(filter_source))
   }

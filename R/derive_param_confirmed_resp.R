@@ -7,9 +7,6 @@
 #'   The `PARAMCD`, `ADT`, and `AVALC` variables and the variables specified by
 #'   `subject_keys` and `reference_date` are expected.
 #'
-#'   After applying `filter_source` and `source_pd` the variable `ADT` and the
-#'   variables specified by `subject_keys` must be a unique key of the dataset.
-#'
 #' @param dataset_adsl ADSL input dataset
 #'
 #'   The variables specified for `subject_keys` are expected. For each subject
@@ -72,6 +69,8 @@
 #'   The (first) argument of the function must expect a character vector and the
 #'   function must return a numeric vector.
 #'
+#'   *Default:* `yn_to_numeric` (see `admiral::yn_to_numeric()` for details)
+#'
 #' @param set_values_to Variables to set
 #'
 #'   A named list returned by `vars()` defining the variables to be set for the
@@ -133,9 +132,7 @@
 #'
 #' @return The input dataset with a new parameter for confirmed response
 #'
-#' @family der_prm_adrs
-#'
-#' @keywords der_prm_adrs
+#' @keywords derivation adrs
 #'
 #' @author Stefan Bundfuss
 #'
@@ -259,7 +256,7 @@ derive_param_confirmed_resp <- function(dataset,
                                         filter_source,
                                         source_pd = NULL,
                                         source_datasets = NULL,
-                                        ref_confirm, 
+                                        ref_confirm,
                                         max_nr_ne = 1,
                                         accept_sd = FALSE,
                                         aval_fun = yn_to_numeric,
@@ -281,29 +278,29 @@ derive_param_confirmed_resp <- function(dataset,
   if (!is.null(dataset)) {
     assert_param_does_not_exist(dataset, quo_get_expr(set_values_to$PARAMCD))
   }
+
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # filter_pd and filter_source: Filter source dataset using filter_source----
   # argument and also filter data after progressive disease with filter_pd
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  
+
   if (!is.null(source_pd)) {
     # Restrict input dataset
     source_data <- dataset %>%
       filter_pd(
         filter = !!filter_source,
         source_pd = source_pd,
-        source_datasets = source_datasets,
-        subject_keys = subject_keys
+        source_datasets = source_datasets
       )
   } else {
-    
+
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     # filter_source: Filter using filter_source argument ----
     # This would also be used to filter out records from dataset that are greater
     # than e.g. ADSL.TRTSDT
     # Not filtering data after progressive disease with filter_pd
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    
+
     source_data <- dataset %>%
       filter(!!enquo(filter_source))
   }
@@ -326,8 +323,7 @@ derive_param_confirmed_resp <- function(dataset,
   # Check for CR followed by PR (this should not occur in clean data)
   signal_crpr(
     source_data,
-    order = vars(ADT),
-    subject_keys = subject_keys
+    order = vars(ADT)
   )
 
   # Create observations for potential responses

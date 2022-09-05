@@ -216,7 +216,7 @@ test_that("derive_param_confirmed_resp Test 3: error if invalid response values"
 
 ## Test 4: No source_pd ----
 test_that("derive_param_confirmed_resp Test 4: No source_pd", {
-  
+
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # source_pd = NULL, so adding a PD to subject 1 on record 2 in adrs and
   # subsequent response to ensure it is in output.
@@ -230,9 +230,9 @@ test_that("derive_param_confirmed_resp Test 4: No source_pd", {
 
   adrs$AVALC[2] <- "PD"
   adrs$AVALC[3] <- "PR"
-  adrs$ADTC[4]  <- "2020-03-16"
-  adrs$ADT[4]   <- ymd("2020-03-16")
-  
+  adrs$ADTC[4] <- "2020-03-16"
+  adrs$ADT[4] <- ymd("2020-03-16")
+
   suppress_warning(
     actual_no_source_pd <-
       derive_param_confirmed_resp(
@@ -249,7 +249,7 @@ test_that("derive_param_confirmed_resp Test 4: No source_pd", {
       ),
     "Dataset contains CR records followed by PR"
   )
-  
+
   expected_no_source_pd <- bind_rows(
     adrs,
     tribble(
@@ -271,11 +271,10 @@ test_that("derive_param_confirmed_resp Test 4: No source_pd", {
         PARAM = "Confirmed Response by Investigator"
       )
   )
-  
+
   expect_dfs_equal(
     base = expected_no_source_pd,
     compare = actual_no_source_pd,
     keys = c("USUBJID", "PARAMCD", "ADT")
   )
-
 })

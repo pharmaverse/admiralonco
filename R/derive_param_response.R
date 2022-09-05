@@ -178,12 +178,12 @@ derive_param_response <- function(dataset,
   if (!is.null(set_values_to$PARAMCD) & !is.null(dataset)) {
     assert_param_does_not_exist(dataset, quo_get_expr(set_values_to$PARAMCD))
   }
-  
+
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # filter_pd and filter_source: Filter source dataset using filter_source----
   # argument and also filter data after progressive disease with filter_pd
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  
+
   if (!is.null(source_pd)) {
     #----  Only records from `dataset` where `filter_source` before PD ----
     resp_before_pd <- dataset %>%
@@ -196,14 +196,14 @@ derive_param_response <- function(dataset,
         subject_keys = vars(!!!subject_keys)
       )
   } else {
-    
+
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     # filter_source: Filter using filter_source argument ----
     # This would also be used to filter out records from dataset that are greater
     # than e.g. ADSL.TRTSDT
     # Not filtering data after progressive disease with filter_pd
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    
+
     resp_before_pd <- dataset %>%
       filter(!!enquo(filter_s))
   }
