@@ -18,7 +18,10 @@ derive_param_response(
 \arguments{
 \item{dataset}{Input dataset
 
-The variables specified by the \code{subject_keys}and \code{ADT} are expected.}
+The variables specified by the \code{subject_keys}and \code{ADT} are expected.
+
+After applying \code{filter_source} and \code{source_pd} the variable \code{ADT} and the
+variables specified by \code{subject_keys} must be a unique key of the dataset.}
 
 \item{dataset_adsl}{Input dataset
 \itemize{
@@ -49,21 +52,16 @@ date when the response occurred.
 \code{ADT} to \code{NA}.
 }}
 
-\item{source_datasets}{Source dataset(s)
+\item{source_datasets}{Source dataset
 
-A named list of datasets with 1 or 2 elements is expected (e.g. \code{list(adrs = adrs, pdds=pdds)}).
+A named list of datasets with one element is expected
+(e.g. \code{list(adrs= adrs)}).
 
-At least \code{dataset} must be defined as a named list.
-\itemize{
-\item If 1 element is defined, it implies that the response data and the data
-used in \code{pd_source} are in the same dataset \code{dataset}.
-\item If 2 elements are defined, then 1 dataset contains the response data
-(\code{dataset}) and the other the data used in \code{pd_source} (e.g.
-\code{pd_source$dataset_name})
-}
+The name must match the \code{dataset_name} field of the
+\code{admiral::date_source()} object specified for \code{source_pd}.
 
-The variables specified by the \code{subject_keys} and \code{ADT} are expected in
-the input \code{dataset}.}
+The variables specified by the \code{subject_keys} argument and the \code{date}
+field of the \code{admiral::date_source()} object are expected in the dataset.}
 
 \item{set_values_to}{Variables to set
 
@@ -173,9 +171,16 @@ derive_param_response(
 ) \%>\%
   arrange(USUBJID, PARAMCD, ADT)
 }
+\seealso{
+ADRS Functions for adding Parameters: 
+\code{\link{derive_param_bor}()},
+\code{\link{derive_param_clinbenefit}()},
+\code{\link{derive_param_confirmed_bor}()},
+\code{\link{derive_param_confirmed_resp}()},
+\code{\link{derive_param_lasta}()}
+}
 \author{
 Samia Kabi
 }
-\keyword{adrs}
-\keyword{bds}
-\keyword{derivation}
+\concept{der_prm_adrs}
+\keyword{der_prm_adrs}

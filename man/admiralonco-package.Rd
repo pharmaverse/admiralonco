@@ -21,6 +21,7 @@ Authors:
   \item Teckla Akinyi
   \item Samia Kabi
   \item Stephen Gormley
+  \item Hinal Patel
 }
 
 Other contributors:
@@ -28,10 +29,16 @@ Other contributors:
   \item Karl Kennedy [contributor]
   \item Matt Marino [contributor]
   \item Gopi Vegesna [contributor]
+  \item Thomas Neitmann [contributor]
+  \item Annie Yang [contributor]
+  \item Konstantina Koukourikou [contributor]
+  \item Pavan Kumar [contributor]
+  \item Liming Jin [contributor]
   \item F. Hoffmann-La Roche AG [copyright holder, funder]
   \item GlaxoSmithKline LLC [copyright holder, funder]
   \item Amgen Inc. [copyright holder, funder]
 }
 
 }
+\concept{internal}
 \keyword{internal}
