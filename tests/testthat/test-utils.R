@@ -38,10 +38,6 @@ test_that("call_aval_fun Test 2: Test error for invalid aval_fun", {
       data,
       aval_fun = tibble
     ),
-    regexp = paste(
-      "Assigning new AVAL records with aval_fun \\(`AVAL = aval_fun\\(AVALC\\)`\\) has failed.",
-      "Error message:",
-      sep = "\n"
-    )
+    regexp = "Assigning new AVAL records with aval_fun"
   )
 })
