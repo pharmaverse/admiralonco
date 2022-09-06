@@ -39,11 +39,9 @@ test_that("call_aval_fun Test 2: Test error for invalid aval_fun", {
       aval_fun = tibble
     ),
     regexp = paste(
-      "Assigning new AVAL records with aval_fun (`AVAL = aval_fun(AVALC)`) has failed.",
+      "Assigning new AVAL records with aval_fun \\(`AVAL = aval_fun\\(AVALC\\)`\\) has failed.",
       "Error message:",
-      "  Error: Column `AVAL` is of unsupported class data.frame",
       sep = "\n"
-    ),
-    fixed = TRUE
+    )
   )
 })
