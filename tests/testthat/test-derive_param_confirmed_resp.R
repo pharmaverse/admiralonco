@@ -218,8 +218,9 @@ test_that("derive_param_confirmed_resp Test 3: error if invalid response values"
 test_that("derive_param_confirmed_resp Test 4: No source_pd", {
 
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # source_pd = NULL, so tibble with two subjects, one will be a response
-  # the ther will not as the responses straddle a PD.
+  # source_pd = NULL, so tibble with two subjects:
+  #    - USUBJID == 1 will be a response as responsed after PD.
+  #    - USUBJID == 2 will not be a responses as it straddles a PD.
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   adrs <- tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
@@ -238,19 +239,19 @@ test_that("derive_param_confirmed_resp Test 4: No source_pd", {
       STUDYID = "XX1234"
     )
 
-    actual_no_source_pd <-
-      derive_param_confirmed_resp(
-        adrs,
-        dataset_adsl = adsl,
-        filter_source = PARAMCD == "OVR",
-        source_pd = NULL,
-        source_datasets = NULL,
-        ref_confirm = 28,
-        set_values_to = vars(
-          PARAMCD = "CRSP",
-          PARAM = "Confirmed Response by Investigator"
-        )
+  actual_no_source_pd <-
+    derive_param_confirmed_resp(
+      adrs,
+      dataset_adsl = adsl,
+      filter_source = PARAMCD == "OVR",
+      source_pd = NULL,
+      source_datasets = NULL,
+      ref_confirm = 28,
+      set_values_to = vars(
+        PARAMCD = "CRSP",
+        PARAM = "Confirmed Response by Investigator"
       )
+    )
 
   expected_no_source_pd <- bind_rows(
     adrs,
