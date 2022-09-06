@@ -101,10 +101,10 @@ test_that("Test 2: Test that response is derived accurately, with No source_pd",
   expected_output_no_source_pd <- bind_rows(
     adrs,
     tribble(
-      ~USUBJID, ~ADTC,        ~AVALC, ~AVAL, ~TRTSDTC,      ~CHECKKEPTCOL,
+      ~USUBJID, ~ADTC,        ~AVALC, ~AVAL, ~TRTSDTC,     ~CHECKKEPTCOL,
       "1",      "2020-01-02", "Y",    1,     "2020-01-01", "001",
       "2",      "",           "N",    0,     "2019-12-12", "002",
-      "3",      "2021-12-25", "Y",    1,     "2021-12-25", "002",
+      "3",      "2021-12-25", "Y",    0,     "2019-11-11", "003",
       "4",      "",           "N",    0,     "2019-12-30", "004",
     ) %>%
       mutate(
