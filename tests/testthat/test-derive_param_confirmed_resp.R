@@ -218,22 +218,26 @@ test_that("derive_param_confirmed_resp Test 3: error if invalid response values"
 test_that("derive_param_confirmed_resp Test 4: No source_pd", {
 
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # source_pd = NULL, so adding a PD to subject 1 on record 2 in adrs and
-  # subsequent response to ensure it is in output.
-  # "1",      "2020-01-01", "PR",
-  # "1",      "2020-02-01", "PD",  <- changed to PD, which would be filtered
-  #                                   if source_pd not null
-  # "1",      "2020-02-16", "PR",  <- change to PR, so ADT will be 2020-02-16
-  # "1",      "2020-03-16", "CR",  <- change ADT to 2020-03-16
-  # "1",      "2020-04-01", "SD",
+  # source_pd = NULL, so tibble with two subjects, one will be a response
+  # the ther will not as the responses straddle a PD.
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  adrs <- tribble(
+    ~USUBJID, ~ADTC,        ~AVALC,
+    "1",      "2020-01-01", "SD",
+    "1",      "2020-02-01", "PD",
+    "1",      "2020-02-16", "PR",
+    "1",      "2020-03-21", "CR",
+    "2",      "2020-01-01", "SD",
+    "2",      "2020-02-01", "CR",
+    "2",      "2020-02-16", "PD",
+    "2",      "2020-03-21", "CR",
+  ) %>%
+    mutate(
+      PARAMCD = "OVR",
+      ADT = ymd(ADTC),
+      STUDYID = "XX1234"
+    )
 
-  adrs$AVALC[2] <- "PD"
-  adrs$AVALC[3] <- "PR"
-  adrs$ADTC[4] <- "2020-03-16"
-  adrs$ADT[4] <- ymd("2020-03-16")
-
-  suppress_warning(
     actual_no_source_pd <-
       derive_param_confirmed_resp(
         adrs,
@@ -246,9 +250,7 @@ test_that("derive_param_confirmed_resp Test 4: No source_pd", {
           PARAMCD = "CRSP",
           PARAM = "Confirmed Response by Investigator"
         )
-      ),
-    "Dataset contains CR records followed by PR"
-  )
+      )
 
   expected_no_source_pd <- bind_rows(
     adrs,
