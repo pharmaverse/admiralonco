@@ -234,21 +234,21 @@ test_that("filter_pd Test 5: error if invalid source_datasets", {
 
   expect_error(
     filter_pd(
-    dataset = adrs,
-    filter = PARAMCD == "OVR",
-    source_pd = date_source(
-      dataset_name = "adrs",
-      date = ADT,
-      filter = PARAMCD == "OVR" & AVALC == "PD",
+      dataset = adrs,
+      filter = PARAMCD == "OVR",
+      source_pd = date_source(
+        dataset_name = "adrs",
+        date = ADT,
+        filter = PARAMCD == "OVR" & AVALC == "PD",
+      ),
+      source_datasets = list(ars = adrs)
     ),
-    source_datasets = list(ars = adrs)
-  ),
-  regexp = paste(
-    "The dataset name specified for `source_pd` must be included in the list",
-    " specified for the `source_datasets` parameter.",
-    "Following names were provided by `source_datasets`:",
-    "'ars'",
-    sep = "\n"
-  )
+    regexp = paste(
+      "The dataset name specified for `source_pd` must be included in the list",
+      " specified for the `source_datasets` parameter.",
+      "Following names were provided by `source_datasets`:",
+      "'ars'",
+      sep = "\n"
+    )
   )
 })

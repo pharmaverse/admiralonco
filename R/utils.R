@@ -50,7 +50,6 @@
 #'   data,
 #'   yn_map
 #' )
-
 call_aval_fun <- function(dataset,
                           aval_fun) {
   assert_data_frame(dataset, required_vars = vars(AVALC))
@@ -58,9 +57,9 @@ call_aval_fun <- function(dataset,
 
   tryCatch(
     mutate(
-        dataset,
-        AVAL = aval_fun(AVALC)
-      ),
+      dataset,
+      AVAL = aval_fun(AVALC)
+    ),
     error = function(cnd) {
       abort(
         paste0(
