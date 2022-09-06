@@ -33,10 +33,14 @@ test_that("call_aval_fun Test 1: AVAL is created", {
 
 ## Test 2: Test error for invalid aval_fun ----
 test_that("call_aval_fun Test 2: Test error for invalid aval_fun", {
+  bad_fun <- function(x) {
+    abort("Function bad_fun failed!")
+  }
+
   expect_error(
     call_aval_fun(
       data,
-      aval_fun = tibble
+      aval_fun = bad_fun
     ),
     regexp = "Assigning new AVAL records with aval_fun"
   )
