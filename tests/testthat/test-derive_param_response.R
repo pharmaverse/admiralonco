@@ -30,20 +30,20 @@ adsl <- tribble(
   )
 
 adrs <- tribble(
-  ~USUBJID, ~ADTC, ~PARAMCD, ~AVALC,
-  "1", "2020-01-02", "OVR", "PR",
-  "1", "2020-02-01", "OVR", "CR",
-  "1", "2020-03-01", "OVR", "CR",
-  "1", "2020-04-01", "OVR", "SD",
-  "1", NA_character_, "PD", "N",
-  "2", "2021-06-15", "OVR", "SD",
-  "2", "2021-07-16", "OVR", "PD",
-  "2", "2021-09-14", "OVR", "PD",
-  "2", "2021-09-14", "PD", "Y",
-  "3", "2021-09-14", "OVR", "SD",
-  "3", "2021-10-30", "OVR", "PD",
-  "3", "2021-12-25", "OVR", "CR",
-  "3", "2021-10-30", "PD", "Y"
+  ~USUBJID, ~ADTC, ~PARAMCD, ~AVALC, ~CHECKKEPTCOL,
+  "1", "2020-01-02", "OVR", "PR", "001",
+  "1", "2020-02-01", "OVR", "CR", "001",
+  "1", "2020-03-01", "OVR", "CR", "001",
+  "1", "2020-04-01", "OVR", "SD", "001",
+  "1", NA_character_, "PD", "N", "001",
+  "2", "2021-06-15", "OVR", "SD", "002",
+  "2", "2021-07-16", "OVR", "PD", "002",
+  "2", "2021-09-14", "OVR", "PD", "002",
+  "2", "2021-09-14", "PD", "Y", "002",
+  "3", "2021-09-14", "OVR", "SD", "003",
+  "3", "2021-10-30", "OVR", "PD", "003",
+  "3", "2021-12-25", "OVR", "CR", "003",
+  "3", "2021-10-30", "PD", "Y", "003"
 ) %>%
   mutate(
     STUDYID = "XX1234",
@@ -56,26 +56,20 @@ test_that("Test 1: Test that response is derived accurately, with source_pd", {
   expected_output <- bind_rows(
     adrs,
     tribble(
-      ~USUBJID, ~ADTC,        ~AVALC, ~AVAL, ~TRTSDTC,     ~CHECKKEPTCOL,
-      "1",      "2020-01-02", "Y",    1,     "2020-01-01", "001",
-      "2",      "",           "N",    0,     "2019-12-12", "002",
-      "3",      "",           "N",    0,     "2019-11-11", "003",
-      "4",      "",           "N",    0,     "2019-12-30", "004",
+      ~USUBJID, ~ADTC,        ~AVALC, ~AVAL, ~CHECKKEPTCOL,
+      "1",      "2020-01-02", "Y",    1,     "001",
+      "2",      "",           "N",    0,     "002",
+      "3",      "",           "N",    0,     "003",
+      "4",      "",           "N",    0,     "004",
     ) %>%
       mutate(
         ADT = ymd(ADTC),
-        TRTSDT = ymd(TRTSDTC),
         STUDYID = "XX1234",
         PARAMCD = "RSP",
         PARAM = "Response by investigator"
       ) %>%
-      select(-ADTC, -TRTSDTC)
+      select(-ADTC)
   )
-
-  # Dropping TRTSDT and CHECKKEPTCOL, but I believe the should be in the output dataframe
-  # TBC: sgorm123
-  expected_output <- expected_output %>%
-    dplyr::select(-c(TRTSDT, CHECKKEPTCOL))
 
   # Define the end of the assessment period for responses as the first PD date.
   pd <- date_source(
@@ -115,26 +109,20 @@ test_that("Test 2: Test that response is derived accurately, with No source_pd",
   expected_output_no_source_pd <- bind_rows(
     adrs,
     tribble(
-      ~USUBJID, ~ADTC,        ~AVALC, ~AVAL, ~TRTSDTC,     ~CHECKKEPTCOL,
-      "1",      "2020-01-02", "Y",    1,     "2020-01-01", "001",
-      "2",      "",           "N",    0,     "2019-12-12", "002",
-      "3",      "2021-12-25", "Y",    1,     "2019-11-11", "003",
-      "4",      "",           "N",    0,     "2019-12-30", "004",
+      ~USUBJID, ~ADTC,        ~AVALC, ~AVAL, ~CHECKKEPTCOL,
+      "1",      "2020-01-02", "Y",    1,     "001",
+      "2",      "",           "N",    0,     "002",
+      "3",      "2021-12-25", "Y",    1,     "003",
+      "4",      "",           "N",    0,     "004",
     ) %>%
       mutate(
         ADT = ymd(ADTC),
-        TRTSDT = ymd(TRTSDTC),
         STUDYID = "XX1234",
         PARAMCD = "RSP",
         PARAM = "Response by investigator"
       ) %>%
-      select(-ADTC, -TRTSDTC)
+      select(-ADTC)
   )
-
-  # Dropping TRTSDT and CHECKKEPTCOL, but I believe the should be in the output dataframe
-  # TBC: sgorm123
-  expected_output_no_source_pd <- expected_output_no_source_pd %>%
-    dplyr::select(-c(TRTSDT, CHECKKEPTCOL))
 
   # Derive the response parameter
   actual_output_no_source_pd <- adrs %>%
@@ -149,7 +137,7 @@ test_that("Test 2: Test that response is derived accurately, with No source_pd",
       ),
       subject_keys = vars(STUDYID, USUBJID)
     )
-  
+
   expect_dfs_equal(
     actual_output_no_source_pd,
     expected_output_no_source_pd,
