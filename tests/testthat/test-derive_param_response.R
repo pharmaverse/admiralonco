@@ -84,6 +84,20 @@ test_that("Test 1: Test that response is derived accurately, with source_pd", {
     filter = PARAMCD == "PD" & AVALC == "Y"
   )
 
+  # Derive the response parameter
+  actual_output <- adrs %>%
+    derive_param_response(
+      dataset_adsl = adsl,
+      filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR"),
+      source_pd = pd,
+      source_datasets = list(adrs = adrs),
+      set_values_to = vars(
+        PARAMCD = "RSP",
+        PARAM = "Response by investigator"
+      ),
+      subject_keys = vars(STUDYID, USUBJID)
+    )
+
   expect_dfs_equal(
     actual_output,
     expected_output,
@@ -104,7 +118,7 @@ test_that("Test 2: Test that response is derived accurately, with No source_pd",
       ~USUBJID, ~ADTC,        ~AVALC, ~AVAL, ~TRTSDTC,     ~CHECKKEPTCOL,
       "1",      "2020-01-02", "Y",    1,     "2020-01-01", "001",
       "2",      "",           "N",    0,     "2019-12-12", "002",
-      "3",      "2021-12-25", "Y",    0,     "2019-11-11", "003",
+      "3",      "2021-12-25", "Y",    1,     "2019-11-11", "003",
       "4",      "",           "N",    0,     "2019-12-30", "004",
     ) %>%
       mutate(
@@ -135,7 +149,7 @@ test_that("Test 2: Test that response is derived accurately, with No source_pd",
       ),
       subject_keys = vars(STUDYID, USUBJID)
     )
-
+  
   expect_dfs_equal(
     actual_output_no_source_pd,
     expected_output_no_source_pd,
