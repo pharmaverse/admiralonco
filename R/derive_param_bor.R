@@ -475,29 +475,9 @@ derive_param_bor <- function(dataset,
   # aval_fun(AVALC): Execute aval_fun ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  tryCatch(
-
-    param_bor_aval_fun <- param_bor_values_set %>%
-      mutate(
-        AVAL = aval_fun(AVALC)
-      ),
-    error = function(cnd) {
-      abort(
-        paste0(
-          "Assigning new AVAL records with aval_fun has failed:\n",
-          "aval_fun = (\n",
-          paste(
-            " ",
-            names(aval_fun),
-            "=",
-            lapply(aval_fun, quo_get_expr),
-            collapse = "\n"
-          ),
-          "\n)\nError message:\n  ",
-          cnd
-        )
-      )
-    }
+  param_bor_aval_fun <- call_aval_fun(
+    param_bor_values_set,
+    aval_fun
   )
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

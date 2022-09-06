@@ -41,6 +41,10 @@ reference:
  - contents:
    - has_keyword('utils_fil')
 
+ - subtitle: Utilities for Catching Errors
+ - contents:
+   - has_keyword('utils_catch')
+
  - title: Example Datasets
    desc: You can run `admiral::use_ad_template()` to produce additional datasets
  - contents:

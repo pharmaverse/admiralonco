@@ -390,9 +390,12 @@ derive_param_confirmed_resp <- function(dataset,
       mode = "first"
     ) %>%
     mutate(
-      AVAL = aval_fun(AVALC),
       !!!set_values_to
+    ) %>%
+    call_aval_fun(
+      aval_fun
     )
+
 
   # Add to input dataset
   bind_rows(dataset, rsp)

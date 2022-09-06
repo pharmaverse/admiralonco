@@ -500,9 +500,12 @@ derive_param_confirmed_bor <- function(dataset,
     ) %>%
     select(-tmp_order) %>%
     mutate(
-      AVAL = aval_fun(AVALC),
       !!!set_values_to
+    ) %>%
+    call_aval_fun(
+      aval_fun
     )
+
 
   # Add to input dataset
   bind_rows(dataset, bor)

@@ -270,9 +270,11 @@ derive_param_clinbenefit <- function(dataset,
     ) %>%
     mutate(
       AVALC = if_else(!is.na(ADT), "Y", "N"),
-      AVAL = aval_fun(AVALC),
       !!!set_values_to
-    )
+    ) %>%
+  call_aval_fun(
+    aval_fun
+  )
 
   bind_rows(dataset, new_param)
 }
