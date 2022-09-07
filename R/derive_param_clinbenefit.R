@@ -105,8 +105,6 @@
 #' @param clinben_vals A vector of response values to be considered when determining
 #' clinical benefit.
 #'
-#' *Default:* `CR`,`PR`, `SD`, and `NON-CR/NON-PD`
-#'
 #' @param set_values_to A named list returned by `vars()` containing new variables
 #' and their static value to be populated for the clinical benefit rate parameter
 #' records, e.g. `vars(PARAMCD = "CBR", PARAM = "Clinical Benefit Rate")`.
