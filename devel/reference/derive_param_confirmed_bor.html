@@ -34,12 +34,6 @@
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/devel">devel</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -72,7 +66,7 @@
   <span class="va">dataset_adsl</span>,
   <span class="va">filter_source</span>,
   source_pd <span class="op">=</span> <span class="cn">NULL</span>,
-  <span class="va">source_datasets</span>,
+  source_datasets <span class="op">=</span> <span class="cn">NULL</span>,
   <span class="va">reference_date</span>,
   <span class="va">ref_start_window</span>,
   <span class="va">ref_confirm</span>,
@@ -91,7 +85,7 @@
 <dd><p>Input dataset</p>
 <p>The <code>PARAMCD</code>, <code>ADT</code>, and <code>AVALC</code> variables and the variables specified by
 <code>subject_keys</code> and <code>reference_date</code> are expected.</p>
-<p>After applying <code>filter_source</code> and <code>source_pd</code> the variable <code>ADT</code> and the
+<p>After applying <code>filter_source</code> and/or <code>source_pd</code> the variable <code>ADT</code> and the
 variables specified by <code>subject_keys</code> must be a unique key of the dataset.</p></dd>
 <dt>dataset_adsl</dt>
 <dd><p>ADSL input dataset</p>
@@ -108,8 +102,7 @@ deriving the new parameter are restricted to observations up to the
 specified date. Observations at the specified date are included. For
 subjects without first PD date all observations are take into account.</p>
 <p><em>Permitted Values:</em> a <code>date_source</code> object (see <code><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">admiral::date_source()</a></code>
-for details)</p>
-<p><em>Default:</em> <code>NULL</code>,</p></dd>
+for details)</p></dd>
 <dt>source_datasets</dt>
 <dd><p>Source dataset for the first PD date</p>
 <p>A named list of datasets is expected. It links the <code>dataset_name</code> from
@@ -141,28 +134,24 @@ to be at least the specified number of days apart.</p></dd>
 <dt>max_nr_ne</dt>
 <dd><p>The specified number of <code>"NE"</code> assessments between the assessment and the
 confirmatory assessment for <code>"CR"</code> and <code>"PR"</code> response is accepted.</p>
-<p><em>Permitted Values:</em> a non-negative numeric scalar</p>
-<p><em>Default:</em> <code>1</code></p></dd>
+<p><em>Permitted Values:</em> a non-negative numeric scalar</p></dd>
 <dt>accept_sd</dt>
 <dd><p>Accept <code>"SD"</code> for <code>"PR"</code>?</p>
 <p>If the argument is set to <code>TRUE</code>, one <code>"SD"</code> assessment between the
 assessment and the confirmatory assessment for <code>"PR"</code> response is accepted.
 Otherwise, no <code>"SD"</code> assessment must occur between the two assessments.</p>
-<p><em>Permitted Values:</em> a logical scalar</p>
-<p><em>Default:</em> <code>FALSE</code></p></dd>
+<p><em>Permitted Values:</em> a logical scalar</p></dd>
 <dt>missing_as_ne</dt>
 <dd><p>Consider no assessments as <code>"NE"</code>?</p>
 <p>If the argument is set to <code>TRUE</code>, the response is set to <code>"NE"</code> for
 subjects without an assessment in the input dataset. Otherwise, the
 response is set to <code>"MISSING"</code> for these subjects.</p>
-<p><em>Permitted Values:</em> a logical scalar</p>
-<p><em>Default:</em> <code>FALSE</code></p></dd>
+<p><em>Permitted Values:</em> a logical scalar</p></dd>
 <dt>aval_fun</dt>
 <dd><p>Function to map character analysis value (<code>AVALC</code>) to numeric
 analysis value (<code>AVAL</code>)</p>
 <p>The (first) argument of the function must expect a character vector and the
-function must return a numeric vector.</p>
-<p><em>Default:</em> <code>aval_resp</code> (see <code><a href="aval_resp.html">aval_resp()</a></code> for details)</p></dd>
+function must return a numeric vector.</p></dd>
 <dt>set_values_to</dt>
 <dd><p>Variables to set</p>
 <p>A named list returned by <code><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars()</a></code> defining the variables to be set for the

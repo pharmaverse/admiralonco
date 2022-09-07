@@ -36,12 +36,6 @@ first progressive disease"><meta property="og:image" content="https://pharmavers
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/devel">devel</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -80,8 +74,8 @@ first progressive disease</p>
   <span class="va">ref_start_window</span>,
   missing_as_ne <span class="op">=</span> <span class="cn">FALSE</span>,
   aval_fun <span class="op">=</span> <span class="va">aval_resp</span>,
-  subject_keys <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">STUDYID</span>, <span class="va">USUBJID</span><span class="op">)</span>,
-  <span class="va">set_values_to</span>
+  <span class="va">set_values_to</span>,
+  subject_keys <span class="op">=</span> <span class="fu">vars</span><span class="op">(</span><span class="va">STUDYID</span>, <span class="va">USUBJID</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
     </div>
 
@@ -92,19 +86,19 @@ first progressive disease</p>
 be derived from and added to.</p>
 <p>The columns <code>PARAMCD</code>, <code>ADT</code>, and <code>AVALC</code>and the columns specified in
 <code>subject_keys</code> and <code>reference_date</code> are expected.</p>
-<p>After applying <code>filter_source</code> and <code>source_pd</code> the variable <code>ADT</code> and the
-variables specified by <code>subject_keys</code> must be a unique key of the dataset.</p>
-<p><em>Permitted Values:</em> a <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame()</a></code> object</p>
-<p><em>Required or Optional:</em> Required</p></dd>
+<p>After applying <code>filter_source</code> and/or <code>source_pd</code> the column <code>ADT</code> and the
+columns specified by <code>subject_keys</code> must be a unique key of the dataframe.</p>
+<p><em>Permitted Values:</em> a <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame()</a></code> object</p></dd>
 <dt>dataset_adsl</dt>
-<dd><p>The ADSL input dataframe</p>
-<p>The columns specified in <code>subject_keys</code> are expected.</p>
-<p><em>Permitted Values:</em> a <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame()</a></code> object</p>
-<p><em>Required or Optional:</em> Required</p></dd>
+<dd><p>ADSL input dataset.</p>
+<p>The columns specified in the subject_keys argument are expected. For each subject in
+the passed <code>dataset</code> a new row is added to the input <code>dataset</code>. Columns
+in <code>dataset_adsl</code> that also appear in <code>dataset</code> will be populated with the
+appropriate subject-specific value for these new rows.</p>
+<p><em>Permitted Values:</em> a <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame()</a></code> object</p></dd>
 <dt>filter_source</dt>
 <dd><p>Filter to be applied to <code>dataset</code> to derive the
-Best Overall Response</p>
-<p><em>Required or Optional:</em> Required</p></dd>
+Best Overall Response</p></dd>
 <dt>source_pd</dt>
 <dd><p>Date of first progressive disease (PD)</p>
 <p>If the parameter is specified, the observations of the input <code>dataset</code> for
@@ -112,9 +106,7 @@ deriving the new parameter are restricted to observations up to the
 specified date. Observations at the specified date are included. For
 subjects without first PD date all observations are take into account.</p>
 <p><em>Permitted Values:</em> a <code>date_source</code> object (see <code><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">date_source()</a></code>
-for details)</p>
-<p><em>Default:</em> <code>NULL</code></p>
-<p><em>Required or Optional:</em> Optional</p></dd>
+for details)</p></dd>
 <dt>source_datasets</dt>
 <dd><p>Source dataframe to be used to calculate the
 first PD date</p>
@@ -126,52 +118,42 @@ needed. It links the <code>dataset_name</code> from <code>source_pd</code> with 
   date <span class="op">=</span> <span class="va">ADT</span>,
   filter <span class="op">=</span> <span class="va">PARAMCD</span> <span class="op">==</span> <span class="va">PD</span>
 <span class="op">)</span></code></pre><p></p></div>
-<p>and the actual response dataframe in the script is <code>myadrs</code>, <code>source_datasets = list(adrs = myadrs)</code> should be specified.</p>
-<p><em>Required or Optional:</em> Optional</p></dd>
+<p>and the actual response dataframe in the script is <code>myadrs</code>, <code>source_datasets = list(adrs = myadrs)</code> should be specified.</p></dd>
 <dt>reference_date</dt>
 <dd><p>Reference date</p>
 <p>The reference date is used along with <code>ref_start_window</code> to determine those
 records that occur before and after <code>ADT</code> (see Details section for further
 information). Usually it is treatment start date (<code>TRTSDT</code>) or
 randomization date (<code>RANDDT</code>).</p>
-<p><em>Permitted Values:</em> a numeric date column</p>
-<p><em>Required or Optional:</em> Required</p></dd>
+<p><em>Permitted Values:</em> a numeric date column</p></dd>
 <dt>ref_start_window</dt>
 <dd><p>Stable disease time window</p>
 <p>The ref_start_window is used along with <code>reference_date</code> to determine those
 records that occur before and after <code>ADT</code> (i.e. for a record determine
 whether <code>ADT</code> &gt;= <code>reference_date</code> + <code>ref_start_window</code>),
 see Details section for further information.</p>
-<p><em>Permitted Values:</em> a non-negative numeric scalar</p>
-<p><em>Required or Optional:</em> Required</p></dd>
+<p><em>Permitted Values:</em> a non-negative numeric scalar</p></dd>
 <dt>missing_as_ne</dt>
 <dd><p>Consider no assessments as <code>"NE"</code>?</p>
 <p>If the argument is set to <code>TRUE</code>, the response is set to <code>"NE"</code> for
 subjects in <code>dataset_adsl</code> without an assessment in the <code>dataset</code> after the
 filter has been applied. Otherwise, the response is set to <code>"MISSING"</code>
 for these subjects.</p>
-<p><em>Permitted Values:</em> a logical scalar</p>
-<p><em>Default:</em> <code>FALSE</code></p>
-<p><em>Required or Optional:</em> Required</p></dd>
+<p><em>Permitted Values:</em> a logical scalar</p></dd>
 <dt>aval_fun</dt>
 <dd><p>Function to map character analysis value (<code>AVALC</code>) to numeric
 analysis value (<code>AVAL</code>)</p>
 <p>The (first) argument of the function must expect a character vector and the
-function must return a numeric vector.</p>
-<p><em>Default:</em> <code>aval_resp</code> (see <code><a href="aval_resp.html">aval_resp()</a></code>)</p>
-<p><em>Required or Optional:</em> Required</p></dd>
-<dt>subject_keys</dt>
-<dd><p>Columns to uniquely identify a subject</p>
-<p>A list of symbols created using <code><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars()</a></code>.</p>
-<p><em>Permitted Values:</em> an <code>vars</code> object</p>
-<p><em>Default:</em> <code>vars(STUDYID, USUBJID)</code></p>
-<p><em>Required or Optional:</em> Required</p></dd>
+function must return a numeric vector.</p></dd>
 <dt>set_values_to</dt>
 <dd><p>New columns to set</p>
 <p>A named list returned by <code><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars()</a></code> defining the columns to be set for the
 new parameter, e.g. <code>vars(PARAMCD = "BOR", PARAM = "Best Overall Response")</code> is expected. The values must be symbols, character strings,
-numeric values, or <code>NA</code>.</p>
-<p><em>Required or Optional:</em> Required</p></dd>
+numeric values, or <code>NA</code>.</p></dd>
+<dt>subject_keys</dt>
+<dd><p>Columns to uniquely identify a subject</p>
+<p>A list of symbols created using <code><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars()</a></code>.</p>
+<p><em>Permitted Values:</em> an <code>vars</code> object</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -193,7 +175,10 @@ order of preference: CR, PR, SD, NON-CR/NON-PD, PD, NE, MISSING</p></li>
 <li><p>The <code>AVAL</code> column is added and set using the <code>aval_fun(AVALC)</code> function</p></li>
 <li><p>The columns specified by the <code>set_values_to</code> parameter and records
 are added to the dataframe passed into the <code>dataset</code> argument</p></li>
-</ol><p>Also Note: All columns from the input dataset are kept. For subjects with no records in
+</ol><p>Note: Any responses of SD or NON-CR/NON-PD that occur before <code>reference_date</code> +
+<code>ref_start_window</code> are ignored in the calculation of BOR. All other responses are included
+in the calculation of BOR, irrespective of the number of days from the reference date.</p>
+<p>Also Note: All columns from the input dataset are kept. For subjects with no records in
 the input dataset (after the filter is applied) all columns are kept from ADSL which are
 also in the input dataset.  Columns which are not to be populated for the new parameter
 or populated differently (e.g. <code>RSSTRESC</code>, <code>VISIT</code>, <code>PARCATy</code>, <code>ANLzzFL</code>, ...) should be

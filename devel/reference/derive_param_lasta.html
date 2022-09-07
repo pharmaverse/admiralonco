@@ -36,12 +36,6 @@ disease"><meta property="og:image" content="https://pharmaverse.github.io/admira
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/devel">devel</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -88,22 +82,18 @@ disease</p>
 be derived from and added to.</p>
 <p>The column <code>PARAMCD</code> and the columns specified in <code>subject_keys</code> and
 <code>order</code> are expected.</p>
-<p>After applying <code>filter_source</code> and <code>source_pd</code> the variables specified by
-<code>subject_keys</code> and <code>order</code> must be a unique key of the dataset.</p>
-<p><em>Permitted Values:</em> a <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame()</a></code> object</p>
-<p><em>Required or Optional:</em> Required</p></dd>
+<p>After applying <code>filter_source</code> and/or <code>source_pd</code> the columns specified by
+<code>subject_keys</code> and <code>order</code> must be a unique key of the dataframe</p>
+<p><em>Permitted Values:</em> a <code><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame()</a></code> object</p></dd>
 <dt>filter_source</dt>
 <dd><p>Filter to be applied to <code>dataset</code> to derive the
-Last Disease Assessment</p>
-<p><em>Required or Optional:</em> Required</p></dd>
+Last Disease Assessment</p></dd>
 <dt>order</dt>
 <dd><p>Sort order, after which the last record shall be taken by
 the <code>subject_keys</code> to determine Last Disease Assessment. Created
 using <code><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars()</a></code>.</p>
 <p><em>Permitted Values:</em> list of variables or <code>desc(&lt;variable&gt;)</code> function calls
-created by <code><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars()</a></code>, e.g., <code>vars(ADT, desc(AVAL))</code></p>
-<p><em>Default:</em> <code>vars(ADT)</code></p>
-<p><em>Required or Optional:</em> Required</p></dd>
+created by <code><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars()</a></code>, e.g., <code>vars(ADT, desc(AVAL))</code></p></dd>
 <dt>source_pd</dt>
 <dd><p>Date of first progressive disease (PD)</p>
 <p>If the parameter is specified, the observations of the input <code>dataset</code> for
@@ -111,9 +101,7 @@ deriving the new parameter are restricted to observations up to the
 specified date. Observations at the specified date are included. For
 subjects without first PD date all observations are take into account.</p>
 <p><em>Permitted Values:</em> a <code>date_source</code> object (see <code><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">date_source()</a></code>
-for details)</p>
-<p><em>Default:</em> <code>NULL</code></p>
-<p><em>Required or Optional:</em> Optional</p></dd>
+for details)</p></dd>
 <dt>source_datasets</dt>
 <dd><p>Source dataframe to be used to calculate the
 first PD date</p>
@@ -125,19 +113,15 @@ needed. It links the <code>dataset_name</code> from <code>source_pd</code> with 
   date <span class="op">=</span> <span class="va">ADT</span>,
   filter <span class="op">=</span> <span class="va">PARAMCD</span> <span class="op">==</span> <span class="va">PD</span>
 <span class="op">)</span></code></pre><p></p></div>
-<p>and the actual response dataframe in the script is <code>myadrs</code>, <code>source_datasets = list(adrs = myadrs)</code> should be specified.</p>
-<p><em>Required or Optional:</em> Optional</p></dd>
+<p>and the actual response dataframe in the script is <code>myadrs</code>, <code>source_datasets = list(adrs = myadrs)</code> should be specified.</p></dd>
 <dt>subject_keys</dt>
 <dd><p>Columns to uniquely identify a subject</p>
-<p>A list of symbols created using <code><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars()</a></code>.</p>
-<p><em>Default:</em> <code>vars(STUDYID, USUBJID)</code></p>
-<p><em>Required or Optional:</em> Required</p></dd>
+<p>A list of symbols created using <code><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars()</a></code>.</p></dd>
 <dt>set_values_to</dt>
 <dd><p>Columns to set</p>
 <p>A named list returned by <code><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars()</a></code> defining the columns to be set for the
 new parameter, e.g. <code>vars(PARAMCD = "LSTAC", PARAM = "Last Disease Assessment Censored at First PD by Investigator")</code> is expected. The values
-must be symbols, character strings, numeric values, or <code>NA</code>.</p>
-<p><em>Required or Optional:</em> Required</p></dd>
+must be symbols, character strings, numeric values, or <code>NA</code>.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
