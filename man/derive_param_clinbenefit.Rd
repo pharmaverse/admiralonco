@@ -62,9 +62,7 @@ clinical benefit.}
 analysis value (\code{AVAL})
 
 The (first) argument of the function must expect a character vector and the
-function must return a numeric vector.
-
-\emph{Default:} \code{yn_to_numeric} (see \code{admiral::yn_to_numeric()} for details)}
+function must return a numeric vector.}
 
 \item{clinben_vals}{A vector of response values to be considered when determining
 clinical benefit.}
