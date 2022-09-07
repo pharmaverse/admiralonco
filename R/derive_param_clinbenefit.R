@@ -291,4 +291,3 @@ derive_param_clinbenefit <- function(dataset,
 
   bind_rows(dataset, new_param)
 }
-
