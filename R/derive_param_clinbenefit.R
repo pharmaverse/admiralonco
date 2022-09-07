@@ -221,6 +221,7 @@ derive_param_clinbenefit <- function(dataset,
   assert_s3_class(source_resp, "date_source")
   assert_s3_class(source_pd, "date_source")
   assert_list_of(source_datasets, "data.frame")
+  assert_character_vector(clinben_vals)
 
   source_names <- names(source_datasets)
   if (!all(c(source_pd$dataset_name, source_resp$dataset_name) %in% source_names)) {
