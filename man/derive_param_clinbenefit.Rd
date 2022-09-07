@@ -67,9 +67,7 @@ function must return a numeric vector.
 \emph{Default:} \code{yn_to_numeric} (see \code{admiral::yn_to_numeric()} for details)}
 
 \item{clinben_vals}{A vector of response values to be considered when determining
-clinical benefit.
-
-\emph{Default:} \code{CR},\code{PR}, \code{SD}, and \code{NON-CR/NON-PD}}
+clinical benefit.}
 
 \item{set_values_to}{A named list returned by \code{vars()} containing new variables
 and their static value to be populated for the clinical benefit rate parameter
