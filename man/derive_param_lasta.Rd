@@ -21,28 +21,20 @@ be derived from and added to.
 The column \code{PARAMCD} and the columns specified in \code{subject_keys} and
 \code{order} are expected.
 
-After applying \code{filter_source} and \code{source_pd} the variables specified by
-\code{subject_keys} and \code{order} must be a unique key of the dataset.
+After applying \code{filter_source} and/or \code{source_pd} the columns specified by
+\code{subject_keys} and \code{order} must be a unique key of the dataframe
 
-\emph{Permitted Values:} a \code{data.frame()} object
-
-\emph{Required or Optional:} Required}
+\emph{Permitted Values:} a \code{data.frame()} object}
 
 \item{filter_source}{Filter to be applied to \code{dataset} to derive the
-Last Disease Assessment
-
-\emph{Required or Optional:} Required}
+Last Disease Assessment}
 
 \item{order}{Sort order, after which the last record shall be taken by
 the \code{subject_keys} to determine Last Disease Assessment. Created
 using \code{vars()}.
 
 \emph{Permitted Values:} list of variables or \verb{desc(<variable>)} function calls
-created by \code{vars()}, e.g., \code{vars(ADT, desc(AVAL))}
-
-\emph{Default:} \code{vars(ADT)}
-
-\emph{Required or Optional:} Required}
+created by \code{vars()}, e.g., \code{vars(ADT, desc(AVAL))}}
 
 \item{source_pd}{Date of first progressive disease (PD)
 
@@ -52,11 +44,7 @@ specified date. Observations at the specified date are included. For
 subjects without first PD date all observations are take into account.
 
 \emph{Permitted Values:} a \code{date_source} object (see \code{date_source()}
-for details)
-
-\emph{Default:} \code{NULL}
-
-\emph{Required or Optional:} Optional}
+for details)}
 
 \item{source_datasets}{Source dataframe to be used to calculate the
 first PD date
@@ -73,25 +61,17 @@ For example if \code{source_pd = pd_date} with
 )
 }\if{html}{\out{</div>}}
 
-and the actual response dataframe in the script is \code{myadrs}, \code{source_datasets = list(adrs = myadrs)} should be specified.
-
-\emph{Required or Optional:} Optional}
+and the actual response dataframe in the script is \code{myadrs}, \code{source_datasets = list(adrs = myadrs)} should be specified.}
 
 \item{subject_keys}{Columns to uniquely identify a subject
 
-A list of symbols created using \code{vars()}.
-
-\emph{Default:} \code{vars(STUDYID, USUBJID)}
-
-\emph{Required or Optional:} Required}
+A list of symbols created using \code{vars()}.}
 
 \item{set_values_to}{Columns to set
 
 A named list returned by \code{vars()} defining the columns to be set for the
 new parameter, e.g. \code{vars(PARAMCD = "LSTAC", PARAM = "Last Disease Assessment Censored at First PD by Investigator")} is expected. The values
-must be symbols, character strings, numeric values, or \code{NA}.
-
-\emph{Required or Optional:} Required}
+must be symbols, character strings, numeric values, or \code{NA}.}
 }
 \value{
 The dataframe passed in the \code{dataset} argument with additional

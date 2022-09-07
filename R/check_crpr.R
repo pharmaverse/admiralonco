@@ -13,8 +13,6 @@
 #'
 #' @param check_type Type of message to issue when detecting PR after CR.
 #'
-#'   *Default*: `"warning"`
-#'
 #'   *Permitted Values*: `"message"`, `"warning"` or `"error"`
 #'
 #' @return No return value, called for side effects
