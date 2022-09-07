@@ -246,3 +246,58 @@ test_that("derive_param_confirmed_bor Test 3: error if invalid response values",
     regexp = "The following invalid values were found:\n`iCR`"
   )
 })
+
+## Test 4: derive_param_confirmed_bor, No source_pd ----
+test_that("derive_param_confirmed_bor Test 4: No source_pd", {
+  suppress_warning(
+    actual_no_source_pd <-
+      derive_param_confirmed_bor(
+        adrs,
+        dataset_adsl = adsl,
+        filter_source = PARAMCD == "OVR",
+        source_pd = NULL,
+        source_datasets = NULL,
+        reference_date = TRTSDT,
+        ref_start_window = 28,
+        ref_confirm = 28,
+        set_values_to = vars(
+          PARAMCD = "CBOR",
+          PARAM = "Best Confirmed Overall Response by Investigator"
+        )
+      ),
+    "Dataset contains CR records followed by PR"
+  )
+
+  expected_no_source_pd <- bind_rows(
+    adrs,
+    tribble(
+      ~USUBJID, ~ADTC,         ~AVALC,          ~AVAL,
+      "1",      "2020-02-01",  "CR",            1,
+      "2",      "2020-02-01",  "SD",            3,
+      "3",      "2020-01-01",  "SD",            3,
+      "4",      "2020-03-01",  "SD",            3,
+      "5",      "2020-05-15",  "NON-CR/NON-PD", 4,
+      "6",      "2020-03-30",  "SD",            3,
+      "7",      "2020-02-06",  "NE",            6,
+      "8",      NA_character_, "MISSING",       7,
+      "9",      "2020-03-06",  "SD",            3 # expected is now SD
+    ) %>%
+      mutate(
+        ADT = ymd(ADTC),
+        STUDYID = "XX1234",
+        PARAMCD = "CBOR",
+        PARAM = "Best Confirmed Overall Response by Investigator"
+      ) %>%
+      derive_vars_merged(
+        dataset_add = adsl,
+        by_vars = vars(STUDYID, USUBJID),
+        new_vars = vars(TRTSDT)
+      )
+  )
+
+  expect_dfs_equal(
+    base = expected_no_source_pd,
+    compare = actual_no_source_pd,
+    keys = c("USUBJID", "PARAMCD", "ADT")
+  )
+})

@@ -14,8 +14,8 @@ derive_param_bor(
   ref_start_window,
   missing_as_ne = FALSE,
   aval_fun = aval_resp,
-  subject_keys = vars(STUDYID, USUBJID),
-  set_values_to
+  set_values_to,
+  subject_keys = vars(STUDYID, USUBJID)
 )
 }
 \arguments{
@@ -25,25 +25,22 @@ be derived from and added to.
 The columns \code{PARAMCD}, \code{ADT}, and \code{AVALC}and the columns specified in
 \code{subject_keys} and \code{reference_date} are expected.
 
-After applying \code{filter_source} and \code{source_pd} the variable \code{ADT} and the
-variables specified by \code{subject_keys} must be a unique key of the dataset.
+After applying \code{filter_source} and/or \code{source_pd} the column \code{ADT} and the
+columns specified by \code{subject_keys} must be a unique key of the dataframe.
 
-\emph{Permitted Values:} a \code{data.frame()} object
+\emph{Permitted Values:} a \code{data.frame()} object}
 
-\emph{Required or Optional:} Required}
+\item{dataset_adsl}{ADSL input dataset.
 
-\item{dataset_adsl}{The ADSL input dataframe
+The columns specified in the subject_keys argument are expected. For each subject in
+the passed \code{dataset} a new row is added to the input \code{dataset}. Columns
+in \code{dataset_adsl} that also appear in \code{dataset} will be populated with the
+appropriate subject-specific value for these new rows.
 
-The columns specified in \code{subject_keys} are expected.
-
-\emph{Permitted Values:} a \code{data.frame()} object
-
-\emph{Required or Optional:} Required}
+\emph{Permitted Values:} a \code{data.frame()} object}
 
 \item{filter_source}{Filter to be applied to \code{dataset} to derive the
-Best Overall Response
-
-\emph{Required or Optional:} Required}
+Best Overall Response}
 
 \item{source_pd}{Date of first progressive disease (PD)
 
@@ -53,11 +50,7 @@ specified date. Observations at the specified date are included. For
 subjects without first PD date all observations are take into account.
 
 \emph{Permitted Values:} a \code{date_source} object (see \code{date_source()}
-for details)
-
-\emph{Default:} \code{NULL}
-
-\emph{Required or Optional:} Optional}
+for details)}
 
 \item{source_datasets}{Source dataframe to be used to calculate the
 first PD date
@@ -74,9 +67,7 @@ For example if \code{source_pd = pd_date} with
 )
 }\if{html}{\out{</div>}}
 
-and the actual response dataframe in the script is \code{myadrs}, \code{source_datasets = list(adrs = myadrs)} should be specified.
-
-\emph{Required or Optional:} Optional}
+and the actual response dataframe in the script is \code{myadrs}, \code{source_datasets = list(adrs = myadrs)} should be specified.}
 
 \item{reference_date}{Reference date
 
@@ -85,9 +76,7 @@ records that occur before and after \code{ADT} (see Details section for further
 information). Usually it is treatment start date (\code{TRTSDT}) or
 randomization date (\code{RANDDT}).
 
-\emph{Permitted Values:} a numeric date column
-
-\emph{Required or Optional:} Required}
+\emph{Permitted Values:} a numeric date column}
 
 \item{ref_start_window}{Stable disease time window
 
@@ -96,9 +85,7 @@ records that occur before and after \code{ADT} (i.e. for a record determine
 whether \code{ADT} >= \code{reference_date} + \code{ref_start_window}),
 see Details section for further information.
 
-\emph{Permitted Values:} a non-negative numeric scalar
-
-\emph{Required or Optional:} Required}
+\emph{Permitted Values:} a non-negative numeric scalar}
 
 \item{missing_as_ne}{Consider no assessments as \code{"NE"}?
 
@@ -107,39 +94,25 @@ subjects in \code{dataset_adsl} without an assessment in the \code{dataset} afte
 filter has been applied. Otherwise, the response is set to \code{"MISSING"}
 for these subjects.
 
-\emph{Permitted Values:} a logical scalar
-
-\emph{Default:} \code{FALSE}
-
-\emph{Required or Optional:} Required}
+\emph{Permitted Values:} a logical scalar}
 
 \item{aval_fun}{Function to map character analysis value (\code{AVALC}) to numeric
 analysis value (\code{AVAL})
 
 The (first) argument of the function must expect a character vector and the
-function must return a numeric vector.
-
-\emph{Default:} \code{aval_resp} (see \code{aval_resp()})
-
-\emph{Required or Optional:} Required}
-
-\item{subject_keys}{Columns to uniquely identify a subject
-
-A list of symbols created using \code{vars()}.
-
-\emph{Permitted Values:} an \code{vars} object
-
-\emph{Default:} \code{vars(STUDYID, USUBJID)}
-
-\emph{Required or Optional:} Required}
+function must return a numeric vector.}
 
 \item{set_values_to}{New columns to set
 
 A named list returned by \code{vars()} defining the columns to be set for the
 new parameter, e.g. \code{vars(PARAMCD = "BOR", PARAM = "Best Overall Response")} is expected. The values must be symbols, character strings,
-numeric values, or \code{NA}.
+numeric values, or \code{NA}.}
 
-\emph{Required or Optional:} Required}
+\item{subject_keys}{Columns to uniquely identify a subject
+
+A list of symbols created using \code{vars()}.
+
+\emph{Permitted Values:} an \code{vars} object}
 }
 \value{
 The dataframe passed in the \code{dataset} argument with additional columns and/or
@@ -168,6 +141,10 @@ order of preference: CR, PR, SD, NON-CR/NON-PD, PD, NE, MISSING
 \item The columns specified by the \code{set_values_to} parameter and records
 are added to the dataframe passed into the \code{dataset} argument
 }
+
+Note: Any responses of SD or NON-CR/NON-PD that occur before \code{reference_date} +
+\code{ref_start_window} are ignored in the calculation of BOR. All other responses are included
+in the calculation of BOR, irrespective of the number of days from the reference date.
 
 Also Note: All columns from the input dataset are kept. For subjects with no records in
 the input dataset (after the filter is applied) all columns are kept from ADSL which are
