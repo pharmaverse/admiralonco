@@ -26,8 +26,6 @@
 #'
 #'   A list of symbols created using `vars()` is expected.
 #'
-#'   *Default:* `vars(STUDYID, USUBJID)`
-#'
 #' @return A subset of the input dataset
 #'
 #' @details

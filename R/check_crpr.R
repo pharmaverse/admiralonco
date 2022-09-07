@@ -1,5 +1,3 @@
-.datasets <- new.env(parent = emptyenv())
-
 #' Signal CR Records Followed by PR
 #'
 #' @param dataset A data frame
@@ -14,8 +12,6 @@
 #'   A list of symbols created using `vars()` is expected.
 #'
 #' @param check_type Type of message to issue when detecting PR after CR.
-#'
-#'   *Default*: `"warning"`
 #'
 #'   *Permitted Values*: `"message"`, `"warning"` or `"error"`
 #'
@@ -84,7 +80,7 @@ signal_crpr <- function(dataset,
     crpr_data <- bind_rows(crpr_data, pr_data) %>%
       arrange(!!!subject_keys, !!!order)
 
-    .datasets$crpr <- crpr_data
+    set_dataset(crpr_data, "crpr")
     full_msg <- paste0(
       msg,
       "\nRun `get_crpr_dataset()` to access the CR records records followed by PR"
@@ -144,5 +140,5 @@ signal_crpr <- function(dataset,
 #'
 #' get_crpr_dataset()
 get_crpr_dataset <- function() {
-  .datasets$crpr
+  get_dataset("crpr")
 }
