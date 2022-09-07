@@ -204,7 +204,6 @@ derive_param_clinbenefit <- function(dataset,
     enquo(filter_source),
     optional = FALSE
   )
-  assert_function(aval_fun)
   assert_s3_class(source_resp, "date_source", optional = FALSE)
   assert_s3_class(source_pd, "date_source", optional = TRUE)
   assert_list_of(source_datasets, "data.frame", optional = FALSE)
@@ -300,8 +299,10 @@ derive_param_clinbenefit <- function(dataset,
     ) %>%
     mutate(
       AVALC = if_else(!is.na(ADT), "Y", "N"),
-      AVAL = aval_fun(AVALC),
       !!!set_values_to
+    ) %>%
+    call_aval_fun(
+      aval_fun
     )
 
   bind_rows(dataset, new_param)

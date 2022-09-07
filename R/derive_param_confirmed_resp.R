@@ -272,7 +272,6 @@ derive_param_confirmed_resp <- function(dataset,
   assert_integer_scalar(ref_confirm, subset = "non-negative")
   assert_integer_scalar(max_nr_ne, subset = "non-negative")
   assert_logical_scalar(accept_sd)
-  assert_function(aval_fun)
   assert_varval_list(set_values_to, required_elements = "PARAMCD")
   assert_vars(subject_keys)
   assert_data_frame(
@@ -399,9 +398,12 @@ derive_param_confirmed_resp <- function(dataset,
       mode = "first"
     ) %>%
     mutate(
-      AVAL = aval_fun(AVALC),
       !!!set_values_to
+    ) %>%
+    call_aval_fun(
+      aval_fun
     )
+
 
   # Add to input dataset
   bind_rows(dataset, rsp)
