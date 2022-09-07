@@ -62,6 +62,14 @@
 #'
 #'   The values must be symbols, character strings, numeric values or `NA`.
 #'
+#' @param aval_fun Function to map character analysis value (`AVALC`) to numeric
+#'   analysis value (`AVAL`)
+#'
+#'   The (first) argument of the function must expect a character vector and the
+#'   function must return a numeric vector.
+#'
+#'   *Default:* `yn_to_numeric` (see `admiral::yn_to_numeric()` for details)
+#'
 #' @param subject_keys Variables to uniquely identify a subject
 #'
 #'   A list of symbols created using `vars()` is expected.
@@ -167,6 +175,7 @@ derive_param_response <- function(dataset,
                                   source_pd = NULL,
                                   source_datasets = NULL,
                                   set_values_to,
+                                  aval_fun = yn_to_numeric,
                                   subject_keys = vars(STUDYID, USUBJID)) {
 
   # ---- checking and quoting ----
@@ -210,7 +219,7 @@ derive_param_response <- function(dataset,
 
   # ---- Select the 1st response and add a new PARAMCD to the input dataset ----
   dataset %>%
-    derive_param_first_event(
+    derive_param_first_eventl(
       dataset_adsl = dataset_adsl,
       dataset_source = resp_before_pd,
       # Need to specify a filter otherwise:
@@ -218,5 +227,8 @@ derive_param_response <- function(dataset,
       filter_source = !!filter_s,
       date_var = ADT,
       set_values_to = set_values_to
+    ) %>%
+    call_aval_fun(
+      aval_fun = aval_fun
     )
 }
