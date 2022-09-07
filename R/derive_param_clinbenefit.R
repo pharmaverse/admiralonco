@@ -100,9 +100,6 @@
 #' The (first) argument of the function must expect a character vector and the
 #' function must return a numeric vector.
 #'
-
-#' *Default:* `yn_to_numeric` (see `admiral::yn_to_numeric()` for details)
-#'
 #' @param clinben_vals A vector of response values to be considered when determining
 #' clinical benefit.
 #'
@@ -296,7 +293,7 @@ derive_param_clinbenefit <- function(dataset,
 
   ovr_data <- ovr_data %>%
     filter(
-      AVALC %in% clinben_vals & !is.na(AVALC) &
+      AVALC %in% clinben_vals &
         ADT >= !!reference_date + days(ref_start_window)
     ) %>%
     filter_extreme(
