@@ -260,7 +260,7 @@ derive_param_clinbenefit <- function(dataset,
 
   ovr_data <- ovr_data %>%
     filter(
-      clinben_subset & !is.na(AVALC) &
+      AVALC %in% clinben_vals & !is.na(AVALC) &
         ADT >= !!reference_date + days(ref_start_window)
     ) %>%
     filter_extreme(
