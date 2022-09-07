@@ -95,6 +95,7 @@ test_that("Clinical benefit rate parameter is derived correctly", {
     source_datasets = list(adrs = adrs),
     reference_date = TRTSDT,
     ref_start_window = 28,
+    clinben_vals = c("CR", "PR", "SD"),
     set_values_to = vars(
       PARAMCD = "CBR",
       ANL01FL = "Y"
