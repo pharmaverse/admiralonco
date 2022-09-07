@@ -6,27 +6,25 @@
 #' Clinical benefit/disease control is first identified by looking for subjects
 #' having response status, and then derived for subjects that have at least one
 #' evaluable non-PD response assessment prior to first PD (Progressive Disease)
-#' (i.e., responses exclusive of `NA`, `NE`, `ND`, and `PD`) and after a specified
+#' (i.e., responses inclusive of `CR`, `PR`, `SD`, and `NON-CR/NON-PD`) and after a specified
 #' amount of time from a reference date (`ref_start_window`).
 #'
-#' Note: the user can exclude any additional response values using the `filter_source`
-#' argument.
+#' Note: The user input values they wish to include when determining
+#' clinical benefit using the argument `clinben_vals`. The default values for this are
+#' `CR`, `PR`, `SD`, and `NON-CR/NON-PD`, as listed above. In the below example,
+#' eligible values be limited to `CR` and `PR`.
 #'
-#' Example: filter_source = PARAMCD == "OVR" & AVALC != "NON-CR/NON-PD"
-#'
-#' Response is considered as a Confirmed Best Response based on arguments fed into
-#' `source_resp`, which in most cases will be `CR` or `PR`. However, this can
-#' vary based on the the date variable used and any additional filter conditions specified
-#' in `source_resp`.
+#' Example: `clinben_vals <- c("CR", "PR")`
 #'
 #' \enumerate{
 #'   \item The input dataset (`dataset`) is restricted to the observations matching
 #'   `filter_source` and to observations before or at the date specified by `source_pd`.
 #'
-#'   \item This dataset is further restricted to exclude response assessments of `NA`,
-#'   `NE`, `ND`, and `PD`, missing response assessments, and those less than
-#'   `ref_start_window` after `reference_date`. The earliest assessment by `ADT`
-#'   is then selected.
+#'   \item This dataset is further restricted to include user-generated response
+#'   assessments from `clinben_vals` or include response assessments of `CR`,
+#'   `PR`, `SD`, and `NON-CR/NON-PD`, exclude missing response assessments, and
+#'   exclude those less than `ref_start_window` after `reference_date`. The earliest
+#'   assessment by `ADT` is then selected.
 #'
 #'   \item The dataset identified by `dataset` in `source_resp` is restricted
 #'   according to its `filter` argument. The variable corresponding to the `date`
@@ -103,6 +101,11 @@
 #' function must return a numeric vector.
 #'
 #' *Default:* `yn_to_numeric` (see `admiral::yn_to_numeric()` for details)
+#'
+#' @param clinben_vals A vector of response values to be considered when determining
+#' clinical benefit.
+#'
+#' *Default:* `CR`,`PR`, `SD`, and `NON-CR/NON-PD`
 #'
 #' @param set_values_to A named list returned by `vars()` containing new variables
 #' and their static value to be populated for the clinical benefit rate parameter
