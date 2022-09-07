@@ -14,6 +14,7 @@ derive_param_clinbenefit(
   reference_date,
   ref_start_window,
   aval_fun = yn_to_numeric,
+  clinben_vals = c("CR", "PR", "SD", "NON-CR/NON-PD"),
   set_values_to,
   subject_keys = vars(STUDYID, USUBJID)
 )
@@ -65,6 +66,11 @@ function must return a numeric vector.
 
 \emph{Default:} \code{yn_to_numeric} (see \code{admiral::yn_to_numeric()} for details)}
 
+\item{clinben_vals}{A vector of response values to be considered when determining
+clinical benefit.
+
+\emph{Default:} \code{CR},\code{PR}, \code{SD}, and \code{NON-CR/NON-PD}}
+
 \item{set_values_to}{A named list returned by \code{vars()} containing new variables
 and their static value to be populated for the clinical benefit rate parameter
 records, e.g. \code{vars(PARAMCD = "CBR", PARAM = "Clinical Benefit Rate")}.}
@@ -82,27 +88,25 @@ Adds a parameter for clinical benefit/disease control
 Clinical benefit/disease control is first identified by looking for subjects
 having response status, and then derived for subjects that have at least one
 evaluable non-PD response assessment prior to first PD (Progressive Disease)
-(i.e., responses exclusive of \code{NA}, \code{NE}, \code{ND}, and \code{PD}) and after a specified
+(i.e., responses inclusive of \code{CR}, \code{PR}, \code{SD}, and \code{NON-CR/NON-PD}) and after a specified
 amount of time from a reference date (\code{ref_start_window}).
 
-Note: the user can exclude any additional response values using the \code{filter_source}
-argument.
+Note: The user input values they wish to include when determining
+clinical benefit using the argument \code{clinben_vals}. The default values for this are
+\code{CR}, \code{PR}, \code{SD}, and \code{NON-CR/NON-PD}, as listed above. In the below example,
+eligible values be limited to \code{CR} and \code{PR}.
 
-Example: filter_source = PARAMCD == "OVR" & AVALC != "NON-CR/NON-PD"
-
-Response is considered as a Confirmed Best Response based on arguments fed into
-\code{source_resp}, which in most cases will be \code{CR} or \code{PR}. However, this can
-vary based on the the date variable used and any additional filter conditions specified
-in \code{source_resp}.
+Example: \code{clinben_vals <- c("CR", "PR")}
 
 \enumerate{
 \item The input dataset (\code{dataset}) is restricted to the observations matching
 \code{filter_source} and to observations before or at the date specified by \code{source_pd}.
 
-\item This dataset is further restricted to exclude response assessments of \code{NA},
-\code{NE}, \code{ND}, and \code{PD}, missing response assessments, and those less than
-\code{ref_start_window} after \code{reference_date}. The earliest assessment by \code{ADT}
-is then selected.
+\item This dataset is further restricted to include user-generated response
+assessments from \code{clinben_vals} or include response assessments of \code{CR},
+\code{PR}, \code{SD}, and \code{NON-CR/NON-PD}, exclude missing response assessments, and
+exclude those less than \code{ref_start_window} after \code{reference_date}. The earliest
+assessment by \code{ADT} is then selected.
 
 \item The dataset identified by \code{dataset} in \code{source_resp} is restricted
 according to its \code{filter} argument. The variable corresponding to the \code{date}
