@@ -197,6 +197,7 @@ derive_param_clinbenefit <- function(dataset,
                                      reference_date,
                                      ref_start_window,
                                      aval_fun = yn_to_numeric,
+                                     clinben_vals = c("CR", "PR", "SD", "NON-CR/NON-PD"),
                                      set_values_to,
                                      subject_keys = vars(STUDYID, USUBJID)) {
 
@@ -259,7 +260,7 @@ derive_param_clinbenefit <- function(dataset,
 
   ovr_data <- ovr_data %>%
     filter(
-      !(AVALC %in% c("NA", "NE", "ND", "PD")) & !is.na(AVALC) &
+      clinben_subset & !is.na(AVALC) &
         ADT >= !!reference_date + days(ref_start_window)
     ) %>%
     filter_extreme(
@@ -286,3 +287,4 @@ derive_param_clinbenefit <- function(dataset,
 
   bind_rows(dataset, new_param)
 }
+
