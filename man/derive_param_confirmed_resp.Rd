@@ -9,7 +9,7 @@ derive_param_confirmed_resp(
   dataset_adsl,
   filter_source,
   source_pd = NULL,
-  source_datasets,
+  source_datasets = NULL,
   ref_confirm,
   max_nr_ne = 1,
   accept_sd = FALSE,
@@ -24,7 +24,7 @@ derive_param_confirmed_resp(
 The \code{PARAMCD}, \code{ADT}, and \code{AVALC} variables and the variables specified by
 \code{subject_keys} and \code{reference_date} are expected.
 
-After applying \code{filter_source} and \code{source_pd} the variable \code{ADT} and the
+After applying \code{filter_source} and/or \code{source_pd} the variable \code{ADT} and the
 variables specified by \code{subject_keys} must be a unique key of the dataset.}
 
 \item{dataset_adsl}{ADSL input dataset
@@ -45,9 +45,7 @@ specified date. Observations at the specified date are included. For
 subjects without first PD date all observations are take into account.
 
 \emph{Permitted Values:} a \code{date_source} object (see \code{admiral::date_source()}
-for details)
-
-\emph{Default:} \code{NULL},}
+for details)}
 
 \item{source_datasets}{Source dataset for the first PD date
 
@@ -73,9 +71,7 @@ to be at least the specified number of days apart.}
 \item{max_nr_ne}{The specified number of \code{"NE"} assessments between the assessment and the
 confirmatory assessment for \code{"CR"} and \code{"PR"} response is accepted.
 
-\emph{Permitted Values:} a non-negative numeric scalar
-
-\emph{Default:} \code{1}}
+\emph{Permitted Values:} a non-negative numeric scalar}
 
 \item{accept_sd}{Accept \code{"SD"} for \code{"PR"}?
 
@@ -83,9 +79,7 @@ If the argument is set to \code{TRUE}, one \code{"SD"} assessment between the
 assessment and the confirmatory assessment for \code{"PR"} response is accepted.
 Otherwise, no \code{"SD"} assessment must occur between the two assessments.
 
-\emph{Permitted Values:} a logical scalar
-
-\emph{Default:} \code{FALSE}}
+\emph{Permitted Values:} a logical scalar}
 
 \item{aval_fun}{Function to map character analysis value (\code{AVALC}) to numeric
 analysis value (\code{AVAL})
@@ -104,9 +98,7 @@ or \code{NA}.}
 
 \item{subject_keys}{Variables to uniquely identify a subject
 
-A list of symbols created using \code{vars()} is expected.
-
-\emph{Default:} \code{vars(STUDYID, USUBJID)}}
+A list of symbols created using \code{vars()} is expected.}
 }
 \value{
 The input dataset with a new parameter for confirmed response

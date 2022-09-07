@@ -54,7 +54,7 @@
 #'   The variables `PARAMCD`, `AVALC`, `ADT`, and those specified by the `subject_keys`
 #'   parameter and the `reference_date` parameter are expected.
 #'
-#'   After applying `filter_source` and `source_pd` the variable `ADT` and the
+#'   After applying `filter_source` and/or `source_pd` the variable `ADT` and the
 #'   variables specified by `subject_keys` must be a unique key of the dataset.
 #'
 #' @param dataset_adsl ADSL input dataset.
@@ -91,8 +91,6 @@
 #'
 #' The (first) argument of the function must expect a character vector and the
 #' function must return a numeric vector.
-#'
-#' *Default:* `yn_to_numeric` (see `admiral::yn_to_numeric()` for details)
 #'
 #' @param set_values_to A named list returned by `vars()` containing new variables
 #' and their static value to be populated for the clinical benefit rate parameter
@@ -182,7 +180,7 @@ derive_param_clinbenefit <- function(dataset,
                                      dataset_adsl,
                                      filter_source,
                                      source_resp,
-                                     source_pd,
+                                     source_pd = NULL,
                                      source_datasets,
                                      reference_date,
                                      ref_start_window,
@@ -207,20 +205,34 @@ derive_param_clinbenefit <- function(dataset,
     optional = FALSE
   )
   assert_function(aval_fun)
-  assert_s3_class(source_resp, "date_source")
-  assert_s3_class(source_pd, "date_source")
-  assert_list_of(source_datasets, "data.frame")
+  assert_s3_class(source_resp, "date_source", optional = FALSE)
+  assert_s3_class(source_pd, "date_source", optional = TRUE)
+  assert_list_of(source_datasets, "data.frame", optional = FALSE)
 
   source_names <- names(source_datasets)
-  if (!all(c(source_pd$dataset_name, source_resp$dataset_name) %in% source_names)) {
-    abort(
-      paste0(
-        "The dataset names specified for `source_pd` and `source_resp` must be \n",
-        "included in the list specified for the `source_datasets` parameter.\n",
-        "Following names were provided by `source_datasets`:\n",
-        enumerate(source_names, quote_fun = squote)
+
+  if (!is.null(source_pd)) {
+    if (!all(c(source_pd$dataset_name, source_resp$dataset_name) %in% source_names)) {
+      abort(
+        paste0(
+          "The dataset names specified for `source_pd` and `source_resp` must be \n",
+          "included in the list specified for the `source_datasets` parameter.\n",
+          "Following names were provided by `source_datasets`:\n",
+          enumerate(source_names, quote_fun = squote)
+        )
       )
-    )
+    }
+  } else {
+    if (!all(source_resp$dataset_name %in% source_names)) {
+      abort(
+        paste0(
+          "The dataset names specified for `source_resp` must be \n",
+          "included in the list specified for the `source_datasets` parameter.\n",
+          "Following names were provided by `source_datasets`:\n",
+          enumerate(source_names, quote_fun = squote)
+        )
+      )
+    }
   }
 
   ref_start_window <- assert_integer_scalar(ref_start_window, subset = "non-negative")
@@ -238,14 +250,32 @@ derive_param_clinbenefit <- function(dataset,
     filter_if(source_resp$filter) %>%
     rename(ADT = !!source_resp$date)
 
-  # Look for valid non-PD measurements after window from reference date
-  ovr_data <- filter_pd(
-    dataset = dataset,
-    filter = !!filter_source,
-    source_pd = source_pd,
-    source_datasets = source_datasets,
-    subject_keys = subject_keys
-  )
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  # filter_pd and filter_source: Filter source dataset using filter_source----
+  # argument and also filter data after progressive disease with filter_pd
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+  if (!is.null(source_pd)) {
+    # Look for valid non-PD measurements after window from reference date
+    ovr_data <- filter_pd(
+      dataset = dataset,
+      filter = !!filter_source,
+      source_pd = source_pd,
+      source_datasets = source_datasets,
+      subject_keys = subject_keys
+    )
+  } else {
+
+    #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    # filter_source: Filter using filter_source argument ----
+    # This would also be used to filter out records from dataset that are greater
+    # than e.g. ADSL.TRTSDT
+    # Not filtering data after progressive disease with filter_pd
+    #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    ovr_data <- dataset %>%
+      filter(!!filter_source)
+  }
 
   ovr_data <- ovr_data %>%
     filter(

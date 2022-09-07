@@ -9,7 +9,7 @@ derive_param_confirmed_bor(
   dataset_adsl,
   filter_source,
   source_pd = NULL,
-  source_datasets,
+  source_datasets = NULL,
   reference_date,
   ref_start_window,
   ref_confirm,
@@ -27,7 +27,7 @@ derive_param_confirmed_bor(
 The \code{PARAMCD}, \code{ADT}, and \code{AVALC} variables and the variables specified by
 \code{subject_keys} and \code{reference_date} are expected.
 
-After applying \code{filter_source} and \code{source_pd} the variable \code{ADT} and the
+After applying \code{filter_source} and/or \code{source_pd} the variable \code{ADT} and the
 variables specified by \code{subject_keys} must be a unique key of the dataset.}
 
 \item{dataset_adsl}{ADSL input dataset
@@ -48,9 +48,7 @@ specified date. Observations at the specified date are included. For
 subjects without first PD date all observations are take into account.
 
 \emph{Permitted Values:} a \code{date_source} object (see \code{admiral::date_source()}
-for details)
-
-\emph{Default:} \code{NULL},}
+for details)}
 
 \item{source_datasets}{Source dataset for the first PD date
 
@@ -93,9 +91,7 @@ to be at least the specified number of days apart.}
 \item{max_nr_ne}{The specified number of \code{"NE"} assessments between the assessment and the
 confirmatory assessment for \code{"CR"} and \code{"PR"} response is accepted.
 
-\emph{Permitted Values:} a non-negative numeric scalar
-
-\emph{Default:} \code{1}}
+\emph{Permitted Values:} a non-negative numeric scalar}
 
 \item{accept_sd}{Accept \code{"SD"} for \code{"PR"}?
 
@@ -103,9 +99,7 @@ If the argument is set to \code{TRUE}, one \code{"SD"} assessment between the
 assessment and the confirmatory assessment for \code{"PR"} response is accepted.
 Otherwise, no \code{"SD"} assessment must occur between the two assessments.
 
-\emph{Permitted Values:} a logical scalar
-
-\emph{Default:} \code{FALSE}}
+\emph{Permitted Values:} a logical scalar}
 
 \item{missing_as_ne}{Consider no assessments as \code{"NE"}?
 
@@ -113,17 +107,13 @@ If the argument is set to \code{TRUE}, the response is set to \code{"NE"} for
 subjects without an assessment in the input dataset. Otherwise, the
 response is set to \code{"MISSING"} for these subjects.
 
-\emph{Permitted Values:} a logical scalar
-
-\emph{Default:} \code{FALSE}}
+\emph{Permitted Values:} a logical scalar}
 
 \item{aval_fun}{Function to map character analysis value (\code{AVALC}) to numeric
 analysis value (\code{AVAL})
 
 The (first) argument of the function must expect a character vector and the
-function must return a numeric vector.
-
-\emph{Default:} \code{aval_resp} (see \code{aval_resp()} for details)}
+function must return a numeric vector.}
 
 \item{set_values_to}{Variables to set
 

@@ -41,7 +41,8 @@ adrs <- tribble(
   "04",     "OVR",    "NA",   "2021-06-30",
   "04",     "OVR",    "NE",   "2021-07-24",
   "04",     "OVR",    "ND",   "2021-09-30",
-  "06",     "OVR",    "PD",   "2021-08-20"
+  "06",     "OVR",    "PD",   "2021-08-20",
+  "06",     "OVR",    "SD",   "2021-09-22",
 ) %>%
   mutate(
     STUDYID = "AB42",
@@ -102,6 +103,48 @@ test_that("Clinical benefit rate parameter is derived correctly", {
   )
 
   expect_dfs_equal(actual_output, expected_output,
+    keys = c("USUBJID", "PARAMCD", "ADT")
+  )
+})
+
+# Clinical benefit rate parameter is derived correctly, Test 2 ----
+test_that("Clinical benefit rate parameter is derived correctly Test 2: No source_pd", {
+  input_cbr <- tribble(
+    ~USUBJID, ~PARAMCD, ~AVALC, ~AVAL, ~ADT,
+    "01",     "CBR",    "Y",    1,     "2021-03-07",
+    "02",     "CBR",    "Y",    1,     "2021-03-07",
+    "03",     "CBR",    "N",    0,     NA,
+    "04",     "CBR",    "N",    0,     NA,
+    "05",     "CBR",    "N",    0,     NA,
+    "06",     "CBR",    "Y",    1,     "2021-09-22",
+  ) %>%
+    mutate(
+      STUDYID = "AB42",
+      ADT = as_date(ADT),
+      ANL01FL = "Y"
+    ) %>%
+    left_join(adsl, by = c("STUDYID", "USUBJID")) %>%
+    select(-EOSDT)
+
+  expected_output_no_source_pd <- bind_rows(adrs, input_cbr)
+
+  actual_output_no_source_pd <- derive_param_clinbenefit(
+    dataset = adrs,
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR",
+    source_resp = resp,
+    source_pd = NULL,
+    source_datasets = list(adrs = adrs),
+    reference_date = TRTSDT,
+    ref_start_window = 28,
+    set_values_to = vars(
+      PARAMCD = "CBR",
+      ANL01FL = "Y"
+    )
+  )
+
+  expect_dfs_equal(actual_output_no_source_pd,
+    expected_output_no_source_pd,
     keys = c("USUBJID", "PARAMCD", "ADT")
   )
 })

@@ -9,7 +9,7 @@ derive_param_clinbenefit(
   dataset_adsl,
   filter_source,
   source_resp,
-  source_pd,
+  source_pd = NULL,
   source_datasets,
   reference_date,
   ref_start_window,
@@ -25,7 +25,7 @@ benefit rate parameter will be added.
 The variables \code{PARAMCD}, \code{AVALC}, \code{ADT}, and those specified by the \code{subject_keys}
 parameter and the \code{reference_date} parameter are expected.
 
-After applying \code{filter_source} and \code{source_pd} the variable \code{ADT} and the
+After applying \code{filter_source} and/or \code{source_pd} the variable \code{ADT} and the
 variables specified by \code{subject_keys} must be a unique key of the dataset.}
 
 \item{dataset_adsl}{ADSL input dataset.
@@ -61,9 +61,7 @@ clinical benefit.}
 analysis value (\code{AVAL})
 
 The (first) argument of the function must expect a character vector and the
-function must return a numeric vector.
-
-\emph{Default:} \code{yn_to_numeric} (see \code{admiral::yn_to_numeric()} for details)}
+function must return a numeric vector.}
 
 \item{set_values_to}{A named list returned by \code{vars()} containing new variables
 and their static value to be populated for the clinical benefit rate parameter

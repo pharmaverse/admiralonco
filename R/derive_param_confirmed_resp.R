@@ -7,7 +7,7 @@
 #'   The `PARAMCD`, `ADT`, and `AVALC` variables and the variables specified by
 #'   `subject_keys` and `reference_date` are expected.
 #'
-#'   After applying `filter_source` and `source_pd` the variable `ADT` and the
+#'   After applying `filter_source` and/or `source_pd` the variable `ADT` and the
 #'   variables specified by `subject_keys` must be a unique key of the dataset.
 #'
 #' @param dataset_adsl ADSL input dataset
@@ -29,8 +29,6 @@
 #'
 #'   *Permitted Values:* a `date_source` object (see `admiral::date_source()`
 #'   for details)
-#'
-#'   *Default:* `NULL`,
 #'
 #' @param source_datasets Source dataset for the first PD date
 #'
@@ -60,8 +58,6 @@
 #'
 #'   *Permitted Values:* a non-negative numeric scalar
 #'
-#'   *Default:* `1`
-#'
 #' @param accept_sd Accept `"SD"` for `"PR"`?
 #'
 #'   If the argument is set to `TRUE`, one `"SD"` assessment between the
@@ -69,8 +65,6 @@
 #'   Otherwise, no `"SD"` assessment must occur between the two assessments.
 #'
 #'   *Permitted Values:* a logical scalar
-#'
-#'   *Default:* `FALSE`
 #'
 #' @param aval_fun Function to map character analysis value (`AVALC`) to numeric
 #'   analysis value (`AVAL`)
@@ -90,8 +84,6 @@
 #' @param subject_keys Variables to uniquely identify a subject
 #'
 #'   A list of symbols created using `vars()` is expected.
-#'
-#'   *Default:* `vars(STUDYID, USUBJID)`
 #'
 #' @details
 #'
@@ -268,7 +260,7 @@ derive_param_confirmed_resp <- function(dataset,
                                         dataset_adsl,
                                         filter_source,
                                         source_pd = NULL,
-                                        source_datasets,
+                                        source_datasets = NULL,
                                         ref_confirm,
                                         max_nr_ne = 1,
                                         accept_sd = FALSE,
@@ -277,8 +269,6 @@ derive_param_confirmed_resp <- function(dataset,
                                         subject_keys = vars(STUDYID, USUBJID)) {
   # Check input parameters
   filter_source <- assert_filter_cond(enquo(filter_source))
-  assert_s3_class(source_pd, "date_source", optional = TRUE)
-  assert_list_of(source_datasets, "data.frame")
   assert_integer_scalar(ref_confirm, subset = "non-negative")
   assert_integer_scalar(max_nr_ne, subset = "non-negative")
   assert_logical_scalar(accept_sd)
@@ -294,13 +284,32 @@ derive_param_confirmed_resp <- function(dataset,
     assert_param_does_not_exist(dataset, quo_get_expr(set_values_to$PARAMCD))
   }
 
-  # Restrict input dataset
-  source_data <- dataset %>%
-    filter_pd(
-      filter = !!filter_source,
-      source_pd = source_pd,
-      source_datasets = source_datasets
-    )
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+  # filter_pd and filter_source: Filter source dataset using filter_source----
+  # argument and also filter data after progressive disease with filter_pd
+  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+  if (!is.null(source_pd)) {
+    # Restrict input dataset
+    source_data <- dataset %>%
+      filter_pd(
+        filter = !!filter_source,
+        source_pd = source_pd,
+        source_datasets = source_datasets,
+        subject_keys = subject_keys
+      )
+  } else {
+
+    #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    # filter_source: Filter using filter_source argument ----
+    # This would also be used to filter out records from dataset that are greater
+    # than e.g. ADSL.TRTSDT
+    # Not filtering data after progressive disease with filter_pd
+    #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+    source_data <- dataset %>%
+      filter(!!filter_source)
+  }
 
   # Check for invalid AVALC values
   resp_vals <- source_data$AVALC
