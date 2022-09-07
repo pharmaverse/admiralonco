@@ -302,8 +302,6 @@ derive_param_bor <- function(dataset,
 
   assert_logical_scalar(arg = missing_as_ne)
 
-  assert_function(arg = aval_fun)
-
   assert_varval_list(
     arg               = set_values_to,
     required_elements = c("PARAMCD")

@@ -204,7 +204,6 @@ derive_param_clinbenefit <- function(dataset,
     enquo(filter_source),
     optional = FALSE
   )
-  assert_function(aval_fun)
   assert_s3_class(source_resp, "date_source", optional = FALSE)
   assert_s3_class(source_pd, "date_source", optional = TRUE)
   assert_list_of(source_datasets, "data.frame", optional = FALSE)

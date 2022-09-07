@@ -341,7 +341,6 @@ derive_param_confirmed_bor <- function(dataset,
   assert_integer_scalar(max_nr_ne, subset = "non-negative")
   assert_logical_scalar(accept_sd)
   assert_logical_scalar(missing_as_ne)
-  assert_function(aval_fun)
   assert_varval_list(set_values_to, required_elements = "PARAMCD")
   assert_vars(subject_keys)
   assert_data_frame(dataset,

@@ -25,7 +25,7 @@ The input dataset with \code{AVAL} added
 }
 \description{
 Create \code{AVAL} from \code{AVALC} by calling a function provided by the user. If
-calling the function fails, the error is catched and a helpful error message
+calling the function fails, the error is caught and a helpful error message
 provided.
 }
 \details{
