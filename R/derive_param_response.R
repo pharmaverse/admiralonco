@@ -231,7 +231,12 @@ derive_param_response <- function(dataset,
       date_var = ADT,
       set_values_to = set_values_to
     ) %>%
-    call_aval_fun(
-      aval_fun = aval_fun
+    restrict_derivation(
+      derivation = call_aval_fun,
+      args = params(
+        aval_fun = aval_fun
+      ),
+      filter = PARAMCD == set_values_to$PARAMCD
     )
+
 }
