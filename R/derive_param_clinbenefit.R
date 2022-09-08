@@ -218,9 +218,9 @@ derive_param_clinbenefit <- function(dataset,
   )
 
   assert_function(aval_fun)
-  assert_s3_class(source_resp, "date_source")
+  assert_s3_class(source_resp, "date_source", optional = FALSE)
   assert_s3_class(source_pd, "date_source")
-  assert_list_of(source_datasets, "data.frame")
+  assert_list_of(source_datasets, "data.frame", optional = FALSE)
   assert_character_vector(clinben_vals)
 
   source_names <- names(source_datasets)
