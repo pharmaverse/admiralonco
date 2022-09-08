@@ -34,12 +34,6 @@
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/devel">devel</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -77,6 +71,7 @@
   <span class="va">reference_date</span>,
   <span class="va">ref_start_window</span>,
   aval_fun <span class="op">=</span> <span class="va">yn_to_numeric</span>,
+  clinben_vals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CR"</span>, <span class="st">"PR"</span>, <span class="st">"SD"</span>, <span class="st">"NON-CR/NON-PD"</span><span class="op">)</span>,
   <span class="va">set_values_to</span>,
   subject_keys <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">STUDYID</span>, <span class="va">USUBJID</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
@@ -123,6 +118,9 @@ clinical benefit.</p></dd>
 analysis value (<code>AVAL</code>)</p>
 <p>The (first) argument of the function must expect a character vector and the
 function must return a numeric vector.</p></dd>
+<dt>clinben_vals</dt>
+<dd><p>A vector of response values to be considered when determining
+clinical benefit.</p></dd>
 <dt>set_values_to</dt>
 <dd><p>A named list returned by <code><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars()</a></code> containing new variables
 and their static value to be populated for the clinical benefit rate parameter
@@ -137,17 +135,23 @@ used to uniquely identify subjects.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Clinical benefit/disease control is first identified for looking for subjects
+    <p>Clinical benefit/disease control is first identified by looking for subjects
 having response status, and then derived for subjects that have at least one
 evaluable non-PD response assessment prior to first PD (Progressive Disease)
-(i.e., responses exclusive of <code>NA</code>, <code>NE</code>, <code>ND</code>, and <code>PD</code>) and after a specified
+(i.e., responses inclusive of <code>CR</code>, <code>PR</code>, <code>SD</code>, and <code>NON-CR/NON-PD</code>) and after a specified
 amount of time from a reference date (<code>ref_start_window</code>).</p>
+<p>Note: The user input values they wish to include when determining
+clinical benefit using the argument <code>clinben_vals</code>. The default values for this are
+<code>CR</code>, <code>PR</code>, <code>SD</code>, and <code>NON-CR/NON-PD</code>, as listed above. In the below example,
+eligible values be limited to <code>CR</code> and <code>PR</code>.</p>
+<p>Example: <code>clinben_vals &lt;- c("CR", "PR")</code></p>
 <ol><li><p>The input dataset (<code>dataset</code>) is restricted to the observations matching
 <code>filter_source</code> and to observations before or at the date specified by <code>source_pd</code>.</p></li>
-<li><p>This dataset is further restricted to exclude response assessments of <code>NA</code>,
-<code>NE</code>, <code>ND</code>, and <code>PD</code>, missing response assessments, and those less than
-<code>ref_start_window</code> after <code>reference_date</code>. The earliest assessment by <code>ADT</code>
-is then selected.</p></li>
+<li><p>This dataset is further restricted to include user-generated response
+assessments from <code>clinben_vals</code> or include response assessments of <code>CR</code>,
+<code>PR</code>, <code>SD</code>, and <code>NON-CR/NON-PD</code>, exclude missing response assessments, and
+exclude those less than <code>ref_start_window</code> after <code>reference_date</code>. The earliest
+assessment by <code>ADT</code> is then selected.</p></li>
 <li><p>The dataset identified by <code>dataset</code> in <code>source_resp</code> is restricted
 according to its <code>filter</code> argument. The variable corresponding to the <code>date</code>
 parameter of <code>source_resp</code> is considered together with <code>ADT</code> from the
