@@ -12,6 +12,7 @@ derive_param_response(
   source_pd = NULL,
   source_datasets = NULL,
   set_values_to,
+  aval_fun = yn_to_numeric,
   subject_keys = vars(STUDYID, USUBJID)
 )
 }
@@ -69,6 +70,12 @@ A named list returned by \code{vars()} defining the variables to be set for the
 new parameter, e.g. \code{vars(PARAMCD = "RSP", PARAM = "Response by investigator")} is expected.
 
 The values must be symbols, character strings, numeric values or \code{NA}.}
+
+\item{aval_fun}{Function to map character analysis value (\code{AVALC}) to numeric
+analysis value (\code{AVAL})
+
+The (first) argument of the function must expect a character vector and the
+function must return a numeric vector.}
 
 \item{subject_keys}{Variables to uniquely identify a subject
 

@@ -62,6 +62,13 @@
 #'
 #'   The values must be symbols, character strings, numeric values or `NA`.
 #'
+#' @param aval_fun Function to map character analysis value (`AVALC`) to numeric
+#'   analysis value (`AVAL`)
+#'
+#'   The (first) argument of the function must expect a character vector and the
+#'   function must return a numeric vector.
+#'
+#'
 #' @param subject_keys Variables to uniquely identify a subject
 #'
 #'   A list of symbols created using `vars()` is expected.
@@ -167,10 +174,15 @@ derive_param_response <- function(dataset,
                                   source_pd = NULL,
                                   source_datasets = NULL,
                                   set_values_to,
+                                  aval_fun = yn_to_numeric,
                                   subject_keys = vars(STUDYID, USUBJID)) {
 
   # ---- checking and quoting ----
-  assert_data_frame(dataset)
+  assert_vars(subject_keys)
+  assert_data_frame(
+    dataset,
+    required_vars = quo_c(subject_keys, vars(PARAMCD, ADT, AVALC))
+  )
   assert_data_frame(dataset_adsl)
   filter_s <- assert_filter_cond(enquo(filter_source), optional = TRUE)
 
@@ -218,5 +230,12 @@ derive_param_response <- function(dataset,
       filter_source = !!filter_s,
       date_var = ADT,
       set_values_to = set_values_to
+    ) %>%
+    restrict_derivation(
+      derivation = call_aval_fun,
+      args = params(
+        aval_fun = aval_fun
+      ),
+      filter = PARAMCD == quo_get_expr(set_values_to$PARAMCD)
     )
 }
