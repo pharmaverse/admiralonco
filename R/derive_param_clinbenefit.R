@@ -3,20 +3,28 @@
 #' Adds a parameter for clinical benefit/disease control
 #'
 #' @details
-#' Clinical benefit/disease control is first identified for looking for subjects
+#' Clinical benefit/disease control is first identified by looking for subjects
 #' having response status, and then derived for subjects that have at least one
 #' evaluable non-PD response assessment prior to first PD (Progressive Disease)
-#' (i.e., responses exclusive of `NA`, `NE`, `ND`, and `PD`) and after a specified
+#' (i.e., responses inclusive of `CR`, `PR`, `SD`, and `NON-CR/NON-PD`) and after a specified
 #' amount of time from a reference date (`ref_start_window`).
+#'
+#' Note: The user input values they wish to include when determining
+#' clinical benefit using the argument `clinben_vals`. The default values for this are
+#' `CR`, `PR`, `SD`, and `NON-CR/NON-PD`, as listed above. In the below example,
+#' eligible values be limited to `CR` and `PR`.
+#'
+#' Example: `clinben_vals <- c("CR", "PR")`
 #'
 #' \enumerate{
 #'   \item The input dataset (`dataset`) is restricted to the observations matching
 #'   `filter_source` and to observations before or at the date specified by `source_pd`.
 #'
-#'   \item This dataset is further restricted to exclude response assessments of `NA`,
-#'   `NE`, `ND`, and `PD`, missing response assessments, and those less than
-#'   `ref_start_window` after `reference_date`. The earliest assessment by `ADT`
-#'   is then selected.
+#'   \item This dataset is further restricted to include user-generated response
+#'   assessments from `clinben_vals` or include response assessments of `CR`,
+#'   `PR`, `SD`, and `NON-CR/NON-PD`, exclude missing response assessments, and
+#'   exclude those less than `ref_start_window` after `reference_date`. The earliest
+#'   assessment by `ADT` is then selected.
 #'
 #'   \item The dataset identified by `dataset` in `source_resp` is restricted
 #'   according to its `filter` argument. The variable corresponding to the `date`
@@ -91,6 +99,9 @@
 #'
 #' The (first) argument of the function must expect a character vector and the
 #' function must return a numeric vector.
+#'
+#' @param clinben_vals A vector of response values to be considered when determining
+#' clinical benefit.
 #'
 #' @param set_values_to A named list returned by `vars()` containing new variables
 #' and their static value to be populated for the clinical benefit rate parameter
@@ -185,6 +196,7 @@ derive_param_clinbenefit <- function(dataset,
                                      reference_date,
                                      ref_start_window,
                                      aval_fun = yn_to_numeric,
+                                     clinben_vals = c("CR", "PR", "SD", "NON-CR/NON-PD"),
                                      set_values_to,
                                      subject_keys = vars(STUDYID, USUBJID)) {
 
@@ -204,9 +216,12 @@ derive_param_clinbenefit <- function(dataset,
     enquo(filter_source),
     optional = FALSE
   )
+
+  assert_function(aval_fun)
   assert_s3_class(source_resp, "date_source", optional = FALSE)
-  assert_s3_class(source_pd, "date_source", optional = TRUE)
+  assert_s3_class(source_pd, "date_source")
   assert_list_of(source_datasets, "data.frame", optional = FALSE)
+  assert_character_vector(clinben_vals)
 
   source_names <- names(source_datasets)
 
@@ -278,7 +293,7 @@ derive_param_clinbenefit <- function(dataset,
 
   ovr_data <- ovr_data %>%
     filter(
-      !(AVALC %in% c("NA", "NE", "ND", "PD")) & !is.na(AVALC) &
+      AVALC %in% clinben_vals &
         ADT >= !!reference_date + days(ref_start_window)
     ) %>%
     filter_extreme(

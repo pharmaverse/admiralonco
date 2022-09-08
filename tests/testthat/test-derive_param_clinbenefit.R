@@ -11,7 +11,8 @@ adsl <- tribble(
   "03",     "2021-01-09", "2021-02-24",
   "04",     "2021-04-21", "2021-09-15",
   "05",     "2021-06-10", "2021-10-31",
-  "06",     "2021-07-04", "2021-09-01"
+  "06",     "2021-07-04", "2021-09-01",
+  "07",     "2021-07-01", "2022-09-02"
 ) %>%
   mutate(
     STUDYID = "AB42",
@@ -20,29 +21,32 @@ adsl <- tribble(
   )
 
 adrs <- tribble(
-  ~USUBJID, ~PARAMCD, ~AVALC, ~ADT,
-  "01",     "RSP",    "Y",    "2021-04-08",
-  "02",     "RSP",    "N",    "2021-05-07",
-  "03",     "RSP",    "N",    NA,
-  "04",     "RSP",    "N",    NA,
-  "06",     "RSP",    "N",    NA,
-  "01",     "PD",     "N",    NA,
-  "02",     "PD",     "Y",    "2021-05-07",
-  "03",     "PD",     "N",    NA,
-  "04",     "PD",     "N",    NA,
-  "06",     "PD",     "Y",    "2021-08-20",
-  "01",     "OVR",    "SD",   "2021-03-07",
-  "01",     "OVR",    "PR",   "2021-04-08",
-  "02",     "OVR",    "SD",   "2021-03-07",
-  "02",     "OVR",    NA,     "2021-04-07",
-  "02",     "OVR",    "PD",   "2021-05-07",
-  "03",     "OVR",    "SD",   "2021-01-30",
-  "04",     "OVR",    "NE",   "2021-05-21",
-  "04",     "OVR",    "NA",   "2021-06-30",
-  "04",     "OVR",    "NE",   "2021-07-24",
-  "04",     "OVR",    "ND",   "2021-09-30",
-  "06",     "OVR",    "PD",   "2021-08-20",
-  "06",     "OVR",    "SD",   "2021-09-22",
+  ~USUBJID, ~PARAMCD, ~AVALC,          ~ADT,
+  "01",     "RSP",    "Y",             "2021-04-08",
+  "02",     "RSP",    "N",             "2021-05-07",
+  "03",     "RSP",    "N",             NA,
+  "04",     "RSP",    "N",             NA,
+  "06",     "RSP",    "N",             NA,
+  "07",     "RSP",    "N",             NA,
+  "01",     "PD",     "N",             NA,
+  "02",     "PD",     "Y",             "2021-05-07",
+  "03",     "PD",     "N",             NA,
+  "04",     "PD",     "N",             NA,
+  "06",     "PD",     "Y",             "2021-08-20",
+  "07",     "PD",     "N",             NA,
+  "01",     "OVR",    "SD",            "2021-03-07",
+  "01",     "OVR",    "PR",            "2021-04-08",
+  "02",     "OVR",    "SD",            "2021-03-07",
+  "02",     "OVR",    NA,              "2021-04-07",
+  "02",     "OVR",    "PD",            "2021-05-07",
+  "03",     "OVR",    "SD",            "2021-01-30",
+  "04",     "OVR",    "NE",            "2021-05-21",
+  "04",     "OVR",    "NA",            "2021-06-30",
+  "04",     "OVR",    "NE",            "2021-07-24",
+  "04",     "OVR",    "ND",            "2021-09-30",
+  "06",     "OVR",    "PD",            "2021-08-20",
+  "06",     "OVR",    "SD",            "2021-09-22",
+  "07",     "OVR",    "NON-CR/NON-PD", "2021-12-05"
 ) %>%
   mutate(
     STUDYID = "AB42",
@@ -67,7 +71,8 @@ resp <- date_source(
   filter = PARAMCD == "RSP" & AVALC == "Y" & ANL01FL == "Y"
 )
 
-test_that("Clinical benefit rate parameter is derived correctly", {
+# Clinical benefit rate parameter is derived correctly, Test 1 ----
+test_that("Clinical benefit rate parameter is derived correctly Test 1: ignore NON-CR/NON-PD", {
   input_cbr <- tribble(
     ~USUBJID, ~PARAMCD, ~AVALC, ~AVAL, ~ADT,
     "01",     "CBR",    "Y",    1,     "2021-03-07",
@@ -75,7 +80,8 @@ test_that("Clinical benefit rate parameter is derived correctly", {
     "03",     "CBR",    "N",    0,     NA,
     "04",     "CBR",    "N",    0,     NA,
     "05",     "CBR",    "N",    0,     NA,
-    "06",     "CBR",    "N",    0,     NA
+    "06",     "CBR",    "N",    0,     NA,
+    "07",     "CBR",    "N",    0,     NA
   ) %>%
     mutate(
       STUDYID = "AB42",
@@ -96,6 +102,7 @@ test_that("Clinical benefit rate parameter is derived correctly", {
     source_datasets = list(adrs = adrs),
     reference_date = TRTSDT,
     ref_start_window = 28,
+    clinben_vals = c("CR", "PR", "SD"),
     set_values_to = vars(
       PARAMCD = "CBR",
       ANL01FL = "Y"
@@ -117,6 +124,7 @@ test_that("Clinical benefit rate parameter is derived correctly Test 2: No sourc
     "04",     "CBR",    "N",    0,     NA,
     "05",     "CBR",    "N",    0,     NA,
     "06",     "CBR",    "Y",    1,     "2021-09-22",
+    "07",     "CBR",    "Y",    1,     "2021-12-05"
   ) %>%
     mutate(
       STUDYID = "AB42",
