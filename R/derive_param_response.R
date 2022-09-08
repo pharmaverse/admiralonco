@@ -68,7 +68,6 @@
 #'   The (first) argument of the function must expect a character vector and the
 #'   function must return a numeric vector.
 #'
-#'   *Default:* `yn_to_numeric` (see `admiral::yn_to_numeric()` for details)
 #'
 #' @param subject_keys Variables to uniquely identify a subject
 #'
@@ -179,7 +178,10 @@ derive_param_response <- function(dataset,
                                   subject_keys = vars(STUDYID, USUBJID)) {
 
   # ---- checking and quoting ----
-  assert_data_frame(dataset)
+  assert_vars(subject_keys)
+  assert_data_frame(dataset,
+                    required_vars = quo_c(subject_keys, vars(PARAMCD, ADT, AVALC))
+                    )
   assert_data_frame(dataset_adsl)
   filter_s <- assert_filter_cond(enquo(filter_source), optional = TRUE)
 
@@ -219,7 +221,7 @@ derive_param_response <- function(dataset,
 
   # ---- Select the 1st response and add a new PARAMCD to the input dataset ----
   dataset %>%
-    derive_param_first_eventl(
+    derive_param_first_event(
       dataset_adsl = dataset_adsl,
       dataset_source = resp_before_pd,
       # Need to specify a filter otherwise:
