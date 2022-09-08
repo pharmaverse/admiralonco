@@ -179,9 +179,10 @@ derive_param_response <- function(dataset,
 
   # ---- checking and quoting ----
   assert_vars(subject_keys)
-  assert_data_frame(dataset,
-                    required_vars = quo_c(subject_keys, vars(PARAMCD, ADT, AVALC))
-                    )
+  assert_data_frame(
+    dataset,
+    required_vars = quo_c(subject_keys, vars(PARAMCD, ADT, AVALC))
+  )
   assert_data_frame(dataset_adsl)
   filter_s <- assert_filter_cond(enquo(filter_source), optional = TRUE)
 
