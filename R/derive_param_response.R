@@ -238,5 +238,4 @@ derive_param_response <- function(dataset,
       ),
       filter = PARAMCD == quo_get_expr(set_values_to$PARAMCD)
     )
-
 }
