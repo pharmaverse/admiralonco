@@ -236,7 +236,7 @@ derive_param_response <- function(dataset,
       args = params(
         aval_fun = aval_fun
       ),
-      filter = PARAMCD == set_values_to$PARAMCD
+      filter = PARAMCD == quo_get_expr(set_values_to$PARAMCD)
     )
 
 }
