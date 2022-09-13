@@ -5,12 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="description" content='A toolbox for programming oncology specific Clinical Data Standards Interchange Consortium
+<meta name="description" content='Programming oncology specific Clinical Data Interchange Standards Consortium
     (CDISC) compliant Analysis Data Model (ADaM) datasets in R. ADaM datasets are a
     mandatory part of any New Drug or Biologics License Application submitted to the
     United States Food and Drug Administration (FDA). Analysis derivations are
     implemented in accordance with the "Analysis Data Model Implementation Guide"
-    (CDISC Analysis Data Model Team, 2021, &lt;https://www.cdisc.org/standards/foundational/adam/adamig-v1-3-release-package&gt;).
+    (CDISC Analysis Data Model Team (2021), &lt;https://www.cdisc.org/standards/foundational/adam/adamig-v1-3-release-package&gt;).
     The package is an extension package of the admiral package.'>
 <title>Oncology Extension Package for ADaM in R Asset Library • admiralonco</title>
 <!-- favicons --><link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
@@ -24,12 +24,12 @@
 <script src="deps/bootstrap-5.1.0/bootstrap.bundle.min.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- bootstrap-toc --><script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- search --><script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/6.4.6/fuse.js" integrity="sha512-zv6Ywkjyktsohkbp9bb45V6tEMoWhzFzXis+LrMehmJZZSys19Yxf1dopHx7WzIKxr5tK2dVcYmaCk2uqdjF4A==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/autocomplete.js/0.38.0/autocomplete.jquery.min.js" integrity="sha512-GU9ayf+66Xx2TmpxqJpliWbT5PiGYxpaG8rfnBEk1LL8l1KGkRShhngwdXK1UgqhAzWpZHSiYPc09/NwDQIGyg==" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/mark.min.js" integrity="sha512-5CYOlHXGh6QpOFA/TeTylKLWfB3ftPsde7AnmhuitiTX4K5SqCLBeKro6sPS8ilsz1Q4NRx3v8Ko2IBiszzdww==" crossorigin="anonymous"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Oncology Extension Package for ADaM in R Asset Library">
-<meta property="og:description" content='A toolbox for programming oncology specific Clinical Data Standards Interchange Consortium
+<meta property="og:description" content='Programming oncology specific Clinical Data Interchange Standards Consortium
     (CDISC) compliant Analysis Data Model (ADaM) datasets in R. ADaM datasets are a
     mandatory part of any New Drug or Biologics License Application submitted to the
     United States Food and Drug Administration (FDA). Analysis derivations are
     implemented in accordance with the "Analysis Data Model Implementation Guide"
-    (CDISC Analysis Data Model Team, 2021, &lt;https://www.cdisc.org/standards/foundational/adam/adamig-v1-3-release-package&gt;).
+    (CDISC Analysis Data Model Team (2021), &lt;https://www.cdisc.org/standards/foundational/adam/adamig-v1-3-release-package&gt;).
     The package is an extension package of the admiral package.'>
 <meta property="og:image" content="https://pharmaverse.github.io/admiralonco/devel/logo.png">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
@@ -70,14 +70,6 @@
 <li class="nav-item">
   <a class="nav-link" href="news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/pre-release">pre-release</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/devel">devel</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/main">main</a> </div></li>
-<!-- end dropdown for versions -->
       </ul>
 <form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="search.json" id="search-input" placeholder="Search for" autocomplete="off">
@@ -103,11 +95,23 @@
 </h1>
 </div>
 <!-- badges: start -->
-<p>Oncology extension package for ADaM in R Asset Library <a href="https://pharmaverse.github.io/admiral" class="external-link">admiral</a></p>
+<p>Oncology extension package for ADaM in R Asset Library <a href="https://pharmaverse.github.io/admiral/" class="external-link">admiral</a></p>
 <div class="section level2">
 <h2 id="purpose">Purpose<a class="anchor" aria-label="anchor" href="#purpose"></a>
 </h2>
-<p>To provide a complementary (to <a href="https://pharmaverse.github.io/admiral" class="external-link">admiral</a>) toolbox that enables to develop oncology disease area specifics.</p>
+<p>To provide a complementary (to <a href="https://pharmaverse.github.io/admiral/" class="external-link">admiral</a>) toolbox that enables users to develop oncology disease area specifics.</p>
+</div>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>The package is available from CRAN and can be installed by running <code>install.packages("admiralonco")</code>.</p>
+<p>To install the latest development version of the package directly from GitHub use the following code:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"remotes"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span>
+  <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span>
+<span class="op">}</span>
+
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"pharmaverse/admiralonco"</span>, ref <span class="op">=</span> <span class="st">"devel"</span><span class="op">)</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="scope">Scope<a class="anchor" aria-label="anchor" href="#scope"></a>
@@ -121,7 +125,7 @@
 <div class="section level2">
 <h2 id="expectations">Expectations<a class="anchor" aria-label="anchor" href="#expectations"></a>
 </h2>
-<p><code>{admiralonco}</code> is expected to complement <a href="https://pharmaverse.github.io/admiral" class="external-link">admiral</a> and provide functions to help with the creation of the efficacy endpoints required for oncology ADaMs.</p>
+<p><code>{admiralonco}</code> is expected to complement <a href="https://pharmaverse.github.io/admiral/" class="external-link">admiral</a> and provide functions to help with the creation of the efficacy endpoints required for oncology ADaMs.</p>
 </div>
 <div class="section level2">
 <h2 id="references-and-documentation">References and Documentation<a class="anchor" aria-label="anchor" href="#references-and-documentation"></a>
@@ -134,8 +138,8 @@
 </h2>
 <p>Here’s a summary of our strategy for this package related to R versions:</p>
 <ul>
-<li>R versions for developers and users will follow the same as <a href="https://pharmaverse.github.io/admiral" class="external-link">admiral</a> core package.</li>
-<li>For development the <code>devel</code> branch of <a href="https://pharmaverse.github.io/admiral" class="external-link">admiral</a> core is used as a dependency. For releasing a new <code>{admiralonco}</code> version it must run using the latest released <a href="https://pharmaverse.github.io/admiral" class="external-link">admiral</a> core version, i.e., <code>main</code> branch of <a href="https://pharmaverse.github.io/admiral" class="external-link">admiral</a> core.</li>
+<li>R versions for developers and users will follow the same as <a href="https://pharmaverse.github.io/admiral/" class="external-link">admiral</a> core package.</li>
+<li>For development the <code>devel</code> branch of <a href="https://pharmaverse.github.io/admiral/" class="external-link">admiral</a> core is used as a dependency. For releasing a new <code>{admiralonco}</code> version it must run using the latest released <a href="https://pharmaverse.github.io/admiral/" class="external-link">admiral</a> core version, i.e., <code>main</code> branch of <a href="https://pharmaverse.github.io/admiral/" class="external-link">admiral</a> core.</li>
 </ul>
 </div>
 <div class="section level2">
@@ -153,6 +157,7 @@
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
+<li><a href="https://cloud.r-project.org/package=admiralonco" class="external-link">View on CRAN</a></li>
 <li><a href="https://github.com/pharmaverse/admiralonco" class="external-link">Browse source code</a></li>
 </ul>
 </div>
@@ -196,8 +201,7 @@
 <ul class="list-unstyled">
 <li><a href="https://pharmaverse.org" class="external-link"><img src="http://pharmaverse.org/shields/admiral.svg"></a></li>
 <li><a href="https://CRAN.R-project.org/package=admiralonco" class="external-link"><img src="https://www.r-pkg.org/badges/version/admiralonco" alt="CRAN status"></a></li>
-<li><a href="https://github.com/pharmaverse/admiralonco/actions/workflows/R-CMD-check.yml" class="external-link"><img src="https://github.com/pharmaverse/admiralonco/actions/workflows/R-CMD-check.yml/badge.svg" alt="R-CMD-check"></a></li>
-<li><a href="https://github.com/pharmaverse/admiralonco/actions/workflows/code-coverage.yml" class="external-link"><img src="https://raw.githubusercontent.com/pharmaverse/admiralonco/badges/devel/test-coverage.svg" alt="Test Coverage"></a></li>
+<li><a href="https://github.com/pharmaverse/admiralonco/actions/workflows/code-coverage.yml" class="external-link"><img src="https://raw.githubusercontent.com/pharmaverse/admiralonco/badges/main/test-coverage.svg" alt="Test Coverage"></a></li>
 </ul>
 </div>
 
