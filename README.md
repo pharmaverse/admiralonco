@@ -10,7 +10,21 @@ Oncology extension package for ADaM in R Asset Library `{admiral}`
 
 ## Purpose
 
-To provide a complementary (to `{admiral}`) toolbox that enables to develop oncology disease area specifics.
+To provide a complementary (to `{admiral}`) toolbox that enables users to develop oncology disease area specifics.
+
+## Installation
+
+The package is available from CRAN and can be installed by running `install.packages("admiralonco")`.
+
+To install the latest development version of the package directly from GitHub use the following code:
+
+```r
+if (!requireNamespace("remotes", quietly = TRUE)) {
+  install.packages("remotes")
+}
+
+remotes::install_github("pharmaverse/admiralonco", ref = "devel")
+```
 
 ## Scope
 
