@@ -719,4 +719,4 @@ dataset_vignette(
 
 ADaM | Sample Code
 ---- | --------------
-ADRS | [ad_adrs.R](https://github.com/pharmaverse/admiralonco/blob/test/inst/templates/ad_adrs.R){target="_blank"}
+ADRS | [ad_adrs.R](https://github.com/pharmaverse/admiralonco/blob/main/inst/templates/ad_adrs.R){target="_blank"}
