@@ -3,8 +3,7 @@
 <!-- badges: start -->
 [<img src="http://pharmaverse.org/shields/admiral.svg">](https://pharmaverse.org)
 [![CRAN status](https://www.r-pkg.org/badges/version/admiralonco)](https://CRAN.R-project.org/package=admiralonco)
-[![R-CMD-check](https://github.com/pharmaverse/admiralonco/actions/workflows/R-CMD-check.yml/badge.svg)](https://github.com/pharmaverse/admiralonco/actions/workflows/R-CMD-check.yml)
-[![Test Coverage](https://raw.githubusercontent.com/pharmaverse/admiralonco/badges/devel/test-coverage.svg)](https://github.com/pharmaverse/admiralonco/actions/workflows/code-coverage.yml)
+[![Test Coverage](https://raw.githubusercontent.com/pharmaverse/admiralonco/badges/main/test-coverage.svg)](https://github.com/pharmaverse/admiralonco/actions/workflows/code-coverage.yml)
 <!-- badges: end -->
 
 Oncology extension package for ADaM in R Asset Library `{admiral}`
