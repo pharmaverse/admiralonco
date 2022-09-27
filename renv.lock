@@ -65,6 +65,18 @@
       "Repository": "CRAN",
       "Hash": "f3ca785924863b0e4c8cb23b6a5c75a1"
     },
+    "admiral.test": {
+      "Package": "admiral.test",
+      "Version": "0.2.0",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteRepo": "admiral.test",
+      "RemoteUsername": "pharmaverse",
+      "RemoteRef": "devel",
+      "RemoteSha": "4f3bdd59a5a01bd0314a42e1d3ef32ca4d1745fe",
+      "Hash": "8378c5762f6be5a61854e880d6a8a223"
+    },
     "askpass": {
       "Package": "askpass",
       "Version": "1.1",
@@ -669,10 +681,10 @@
     },
     "spelling": {
       "Package": "spelling",
-      "Version": "2.2",
+      "Version": "2.1",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "b8c899a5c83f0d897286550481c91798"
+      "Hash": "b3a5ecc3351f41eb30ef87f65cbff390"
     },
     "stringi": {
       "Package": "stringi",
@@ -844,3 +856,4 @@
     }
   }
 }
+
