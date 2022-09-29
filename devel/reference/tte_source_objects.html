@@ -34,14 +34,6 @@
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/pre-release">pre-release</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/devel">devel</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/main">main</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -114,7 +106,7 @@ and appropriate values for <code>EVNTDESC</code>, <code>CNSDTDSC</code>, <code>S
 <span class="r-in">  <span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"\n"</span><span class="op">)</span></span>
 <span class="r-in"><span class="op">}</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> lasta_censor </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;tte_source&gt; object</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;censor_source&gt; object</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dataset_name: "adrs"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> filter: PARAMCD == "LSTA" &amp; ANL01FL == "Y"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> date: ADT</span>
@@ -127,7 +119,7 @@ and appropriate values for <code>EVNTDESC</code>, <code>CNSDTDSC</code>, <code>S
 <span class="r-out co"><span class="r-pr">#&gt;</span>   SRCSEQ: ASEQ</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> trts_censor </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;tte_source&gt; object</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;censor_source&gt; object</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dataset_name: "adsl"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> filter: NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> date: TRTSDT</span>
@@ -139,7 +131,7 @@ and appropriate values for <code>EVNTDESC</code>, <code>CNSDTDSC</code>, <code>S
 <span class="r-out co"><span class="r-pr">#&gt;</span>   SRCVAR: "TRTSDT"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> rand_censor </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;tte_source&gt; object</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;censor_source&gt; object</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dataset_name: "adsl"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> filter: NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> date: RANDDT</span>
@@ -151,7 +143,7 @@ and appropriate values for <code>EVNTDESC</code>, <code>CNSDTDSC</code>, <code>S
 <span class="r-out co"><span class="r-pr">#&gt;</span>   SRCVAR: "RANDDT"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> lastalive_censor </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;tte_source&gt; object</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;censor_source&gt; object</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dataset_name: "adsl"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> filter: NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> date: LSTALVDT</span>
@@ -162,7 +154,7 @@ and appropriate values for <code>EVNTDESC</code>, <code>CNSDTDSC</code>, <code>S
 <span class="r-out co"><span class="r-pr">#&gt;</span>   SRCVAR: "LSTALVDT"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> death_event </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;tte_source&gt; object</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;event_source&gt; object</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dataset_name: "adsl"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> filter: DTHFL == "Y"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> date: DTHDT</span>
@@ -173,7 +165,7 @@ and appropriate values for <code>EVNTDESC</code>, <code>CNSDTDSC</code>, <code>S
 <span class="r-out co"><span class="r-pr">#&gt;</span>   SRCVAR: "DTHDT"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> pd_event </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;tte_source&gt; object</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> &lt;event_source&gt; object</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> dataset_name: "adrs"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> filter: PARAMCD == "PD" &amp; AVALC == "Y" &amp; ANL01FL == "Y"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> date: ADT</span>
