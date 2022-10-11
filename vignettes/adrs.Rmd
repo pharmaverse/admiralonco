@@ -235,7 +235,23 @@ the `{admiralonco}` parameter derivation functions in the below steps, via `sour
 However, if you prefer not to rely on `source_pd` arguments, then the user is free to filter out records after
 first `PD` at this stage in a similar way via a `ANLzzFL` flag, and then you could leave `source_pd` as null in
 all downstream parameter derivation function calls.
-So, for eg the user can create ANL02FL flag to subset the post baseline response data up to first reported progressive disease. The user can also add in anl02fl derivation to exclude any response data after start of any new anti-cancer therapy.This will be an alternative and transparent method to the use of source_pd argument approach to create ADRS parameters below.
+So, for example the user could create `ANL02FL` flag to subset the post-baseline response data up to and including first reported progressive disease. This would be an alternative and transparent method to the use of `source_pd` argument approach to create ADRS parameters below. Using `{admiral}` function `admiral::derive_var_relative_flag()` we could create `ANL02FL` as below.
+
+### Derive `ANL02FL` {#anl02fl}- Alternative approach to `source_pd` argument
+
+```{r, eval=FLASE}
+adrs <- adrs %>%
+        derive_var_relative_flag(
+          by_vars = vars(USUBJID),
+          order = vars(ADT,AVISITN),
+          new_var = ANL02FL,
+          condition = AVALC == "PD",
+          mode = "first",
+          selection = "before",
+          inclusive = TRUE
+        )
+```
+
 
 ## Derive Progressive Disease Parameter {#pd}
 
