@@ -268,7 +268,7 @@ we could create `ANL02FL` as below.
 
 ### Derive `ANL02FL` {#anl02fl}
 
-```{r, eval=FLASE}
+```{r, eval=FALSE}
 adrs <- adrs %>%
   derive_var_relative_flag(
     by_vars = vars(USUBJID),
