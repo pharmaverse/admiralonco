@@ -270,15 +270,15 @@ we could create `ANL02FL` as below.
 
 ```{r, eval=FLASE}
 adrs <- adrs %>%
-        derive_var_relative_flag(
-          by_vars = vars(USUBJID),
-          order = vars(ADT,AVISITN),
-          new_var = ANL02FL,
-          condition = AVALC == "PD",
-          mode = "first",
-          selection = "before",
-          inclusive = TRUE
-        )
+  derive_var_relative_flag(
+    by_vars = vars(USUBJID),
+    order = vars(ADT, AVISITN),
+    new_var = ANL02FL,
+    condition = AVALC == "PD",
+    mode = "first",
+    selection = "before",
+    inclusive = TRUE
+  )
 ```
 
 ## Derive Progressive Disease Parameter {#pd}
