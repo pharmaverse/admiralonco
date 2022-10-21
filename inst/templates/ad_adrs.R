@@ -338,4 +338,4 @@ adrs <- adrs %>%
 # ---- Save output ----
 
 dir <- tempdir() # Change to whichever directory you want to save the dataset in
-save(adrs, file = file.path(dir, "adrs.rda"), compress = "bzip2")
+saveRDS(adrs, file = file.path(dir, "adrs.rds"), compress = "bzip2")
