@@ -1,6 +1,4 @@
-
 local({
-
   # the requested version of renv
   version <- "0.13.0"
 
@@ -25,7 +23,6 @@ local({
 
   # check to see if renv has already been loaded
   if ("renv" %in% loadedNamespaces()) {
-
     # if renv has already been loaded, and it's the requested version of renv,
     # nothing to do
     spec <- .getNamespaceInfo(.getNamespace("renv"), "spec")
@@ -39,7 +36,6 @@ local({
 
   # load bootstrap tools
   bootstrap <- function(version, library) {
-
     # attempt to download renv
     tarball <- tryCatch(renv_bootstrap_download(version), error = identity)
     if (inherits(tarball, "error")) {
@@ -58,7 +54,6 @@ local({
   }
 
   renv_bootstrap_repos <- function() {
-
     # check for repos override
     repos <- Sys.getenv("RENV_CONFIG_REPOS_OVERRIDE", unset = NA)
     if (!is.na(repos)) {
@@ -87,7 +82,6 @@ local({
   }
 
   renv_bootstrap_download <- function(version) {
-
     # if the renv version number has 4 components, assume it must
     # be retrieved via github
     nv <- numeric_version(version)
@@ -273,7 +267,6 @@ local({
   }
 
   renv_bootstrap_install <- function(version, tarball, library) {
-
     # attempt to install it into project library
     message("* Installing renv ", version, " ... ", appendLF = FALSE)
     dir.create(library, showWarnings = FALSE, recursive = TRUE)
@@ -299,7 +292,6 @@ local({
   }
 
   renv_bootstrap_platform_prefix <- function() {
-
     # construct version prefix
     version <- paste(R.version$major, R.version$minor, sep = ".")
     prefix <- paste("R", numeric_version(version)[1, 1:2], sep = "-")
@@ -328,7 +320,6 @@ local({
   }
 
   renv_bootstrap_platform_prefix_impl <- function() {
-
     # if an explicit prefix has been supplied, use it
     prefix <- Sys.getenv("RENV_PATHS_PREFIX", unset = NA)
     if (!is.na(prefix)) {
@@ -387,7 +378,6 @@ local({
   }
 
   renv_bootstrap_platform_os_via_os_release <- function(file, sysinfo) {
-
     # read /etc/os-release
     release <- utils::read.table(
       file             = file,
@@ -427,7 +417,6 @@ local({
   }
 
   renv_bootstrap_platform_os_via_redhat_release <- function() {
-
     # read /etc/redhat-release
     contents <- readLines("/etc/redhat-release", warn = FALSE)
 
@@ -458,7 +447,6 @@ local({
   }
 
   renv_bootstrap_library_root_name <- function(project) {
-
     # use project name as-is if requested
     asis <- Sys.getenv("RENV_PATHS_LIBRARY_ROOT_ASIS", unset = "FALSE")
     if (asis) {
@@ -523,7 +511,6 @@ local({
   }
 
   renv_bootstrap_load <- function(project, libpath, version) {
-
     # try to load renv from the project library
     if (!requireNamespace("renv", lib.loc = libpath, quietly = TRUE)) {
       return(FALSE)
@@ -539,7 +526,6 @@ local({
   }
 
   renv_bootstrap_profile_load <- function(project) {
-
     # if RENV_PROFILE is already set, just use that
     profile <- Sys.getenv("RENV_PROFILE", unset = NA)
     if (!is.na(profile) && nzchar(profile)) {
