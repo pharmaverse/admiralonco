@@ -23,7 +23,7 @@ Authors@R: c(
     person("F. Hoffmann-La Roche AG", role = c("cph", "fnd")),
     person("GlaxoSmithKline LLC", role = c("cph", "fnd")),
     person("Amgen Inc.", role = c("cph", "fnd")),
-    person("Bristol Myers Squibb", role = c("cph", "fnd")
+    person("Bristol Myers Squibb", role = c("cph", "fnd"))
     )
 Description: Programming oncology specific Clinical Data Interchange Standards Consortium
     (CDISC) compliant Analysis Data Model (ADaM) datasets in 'R'. ADaM datasets are a
