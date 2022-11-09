@@ -34,9 +34,11 @@ Other contributors:
   \item Konstantina Koukourikou [contributor]
   \item Pavan Kumar [contributor]
   \item Liming Jin [contributor]
+  \item Yirong Cao [contributor]
   \item F. Hoffmann-La Roche AG [copyright holder, funder]
   \item GlaxoSmithKline LLC [copyright holder, funder]
   \item Amgen Inc. [copyright holder, funder]
+  \item Bristol Myers Squibb [copyright holder, funder]
 }
 
 }
