@@ -332,7 +332,7 @@ derive_param_confirmed_bor <- function(dataset,
                                        missing_as_ne = FALSE,
                                        aval_fun = aval_resp,
                                        set_values_to,
-                                       subject_keys = vars(STUDYID, USUBJID)) {
+                                       subject_keys = get_admiral_option("subject_keys")) {
   # Check input parameters
   filter_source <- assert_filter_cond(enquo(filter_source))
   reference_date <- assert_symbol(enquo(reference_date))

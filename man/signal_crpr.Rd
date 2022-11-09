@@ -8,7 +8,7 @@ signal_crpr(
   dataset,
   order,
   msg = "Dataset contains CR records followed by PR.",
-  subject_keys = vars(STUDYID, USUBJID),
+  subject_keys = get_admiral_option("subject_keys"),
   check_type = "warning"
 )
 }

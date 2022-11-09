@@ -3,7 +3,7 @@
 #' @importFrom admiral censor_source count_vals derive_param_first_event
 #'   derive_var_obs_number derive_vars_merged event_source filter_confirmation
 #'   filter_extreme filter_relative list_tte_source_objects max_cond min_cond
-#'   params restrict_derivation yn_to_numeric
+#'   params restrict_derivation yn_to_numeric get_admiral_option set_admiral_options
 #' @importFrom admiraldev assert_character_scalar assert_character_vector
 #'   assert_data_frame assert_filter_cond assert_list_of assert_function
 #'   assert_integer_scalar assert_list_of assert_logical_scalar

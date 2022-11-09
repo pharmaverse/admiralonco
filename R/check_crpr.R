@@ -52,7 +52,7 @@
 signal_crpr <- function(dataset,
                         order,
                         msg = "Dataset contains CR records followed by PR.",
-                        subject_keys = vars(STUDYID, USUBJID),
+                        subject_keys = get_admiral_option("subject_keys"),
                         check_type = "warning") {
   assert_character_scalar(msg)
   assert_vars(subject_keys)

@@ -154,7 +154,7 @@ derive_param_lasta <- function(dataset,
                                order = vars(ADT),
                                source_pd = NULL,
                                source_datasets = NULL,
-                               subject_keys = vars(STUDYID, USUBJID),
+                               subject_keys = get_admiral_option("subject_keys"),
                                set_values_to) {
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

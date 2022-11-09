@@ -89,7 +89,7 @@ test_that("Test 1: Test that response is derived accurately, with source_pd", {
         PARAMCD = "RSP",
         PARAM = "Response by investigator"
       ),
-      subject_keys = vars(STUDYID, USUBJID)
+      subject_keys =  get_admiral_option("subject_keys")
     )
 
   expect_dfs_equal(
@@ -135,7 +135,7 @@ test_that("Test 2: Test that response is derived accurately, with No source_pd",
         PARAMCD = "RSP",
         PARAM = "Response by investigator"
       ),
-      subject_keys = vars(STUDYID, USUBJID)
+      subject_keys =  get_admiral_option("subject_keys")
     )
 
   expect_dfs_equal(

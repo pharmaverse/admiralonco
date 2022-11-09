@@ -266,7 +266,7 @@ derive_param_confirmed_resp <- function(dataset,
                                         accept_sd = FALSE,
                                         aval_fun = yn_to_numeric,
                                         set_values_to,
-                                        subject_keys = vars(STUDYID, USUBJID)) {
+                                        subject_keys = get_admiral_option("subject_keys")) {
   # Check input parameters
   filter_source <- assert_filter_cond(enquo(filter_source))
   assert_integer_scalar(ref_confirm, subset = "non-negative")
