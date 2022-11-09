@@ -29,10 +29,6 @@ on:
   release:
     types: [published]
 
-env:
-  # R version to use for the workflows
-  R_VERSION: "3.6"
-
 # Docs on concurrency:
 # https://docs.github.com/en/actions/using-jobs/using-concurrency
 concurrency:
