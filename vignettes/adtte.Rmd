@@ -137,7 +137,7 @@ response: If using `ADRS` / `ADEVENT` parameters as input for any response dates
 to add the response date as a temporary variable (e.g. `TEMP_RESPDT`) to be able to feed
 into `admiral::derive_param_tte()` as the start date. You would also need to use this
 to filter the input datasets so as to only derive the records for responders.
-This could also be repeated as needed for IRF and confirmed responses.
+This could also be repeated as needed for IRF/BICR and confirmed responses.
 
 Here is an example of the code needed.
 

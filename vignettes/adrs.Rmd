@@ -40,7 +40,7 @@ otherwise specified.*
 * [Derive Best Overall Response Parameter](#bor)
 * [Derive Best Overall Response of CR/PR Parameter](#bcp)
 * [Derive Response Parameters requiring Confirmation](#confirm)
-* [Derive Parameters using Independent Review Facility (IRF) responses](#irf)
+* [Derive Parameters using Independent Review Facility (IRF)/Blinded Independent Central Review (BICR) responses](#irf)
 * [Derive Death Parameter](#death)
 * [Derive Last Disease Assessment Parameters](#lsta)
 * [Derive Measurable Disease at Baseline Parameter](#mdis)
@@ -105,7 +105,7 @@ dataset_vignette(
 ## Pre-processing of Input Records {#input}
 
 The first step involves company-specific pre-processing of records for the required input to the downstream parameter functions.
-Note that this could be needed multiple times (e.g. once for investigator and once for Independent Review Facility (IRF) records).
+Note that this could be needed multiple times (e.g. once for investigator and once for Independent Review Facility (IRF)/Blinded Independent Central Review (BICR) records).
 It could even involve merging input data from other sources besides `RS`, such as `ADTR`.
 
 This step would include any required selection/derivation of `ADT` or applying any necessary partial date imputations,
@@ -549,7 +549,7 @@ dataset_vignette(
 )
 ```
 
-## Derive Parameters using Independent Review Facility (IRF) responses {#irf}
+## Derive Parameters using Independent Review Facility (IRF)/Blinded Independent Central Review (BICR) responses {#irf}
 
 All of the above steps can be repeated for different sets of records, such as now using assessments from the Independent
 Review Facility instead of investigator. For this you would just need to replace the first steps with selecting the required
