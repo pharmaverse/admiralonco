@@ -32,6 +32,7 @@ dyn_link <- function(text,
     url <- paste(
       base_url,
       Sys.getenv("BRANCH_NAME", multiversion_default_ref),
+      relative_url,
       sep = "/"
     )
   }
