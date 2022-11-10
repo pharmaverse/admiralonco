@@ -382,4 +382,4 @@ dataset_vignette(
 
 ADaM | Sample Code
 ---- | --------------
-ADTTE | `r dyn_link(ad_adtte.R, "https://github.com/pharmaverse/admiralonco/blob", "inst/templates/ad_adtte.R")`
+ADTTE | `r dyn_link("ad_adtte.R", "https://github.com/pharmaverse/admiralonco/blob", "inst/templates/ad_adtte.R", is_multiversion = TRUE)`
