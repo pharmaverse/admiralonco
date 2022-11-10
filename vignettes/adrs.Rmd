@@ -745,4 +745,4 @@ dataset_vignette(
 
 ADaM | Sample Code
 ---- | --------------
-ADRS | [ad_adrs.R](https://github.com/pharmaverse/admiralonco/blob/main/inst/templates/ad_adrs.R){target="_blank"}
+ADRS | `r dyn_link(ad_adrs.R, "https://github.com/pharmaverse/admiralonco/blob", "inst/templates/ad_adrs.R")`
