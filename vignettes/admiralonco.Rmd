@@ -12,12 +12,39 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+link <- function(text, url) {
+  return(
+    paste0(
+      "[", text, "]",
+      "(", url, ")"
+    )
+  )
+}
+dyn_link <- function(text,
+                     base_url,
+                     relative_url = "",
+                     # Change to TRUE when admiral adopts multiversion docs
+                     is_multiversion = FALSE,
+                     multiversion_default_ref = "main") {
+  url <- paste(base_url, relative_url, sep = "/")
+  if (is_multiversion) {
+    url <- paste(
+      base_url,
+      Sys.getenv("BRANCH_NAME", multiversion_default_ref),
+      relative_url,
+      sep = "/"
+    )
+  }
+  return(link(text, url))
+}
+# Other variables
+admiral_homepage <- "https://pharmaverse.github.io/admiral"
 ```
 
 # Introduction
 
 As this is a package extension, if you are new to `{admiral}` then the best place to first start
-reading would be this [Get Started](https://pharmaverse.github.io/admiral/articles/admiral.html)
+reading would be this `r dyn_link("Get Started", admiral_homepage, "articles/admiral.html")`
 guide. This extension package follows the same main idea and conventions, and re-uses many
 functions from `{admiral}`, so it is important to thoroughly understand these to be able to
 use `{admiralonco}`.
