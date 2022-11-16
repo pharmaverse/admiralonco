@@ -254,7 +254,11 @@ adrs <- adrs %>%
 Note here that we don't filter out records after first `PD` at this
 stage, as that is specifically catered for in the `{admiralonco}`
 parameter derivation functions in the below steps, via `source_pd`
-arguments. However, if you prefer not to rely on `source_pd` arguments,
+arguments. 
+
+### Derive `ANL02FL` {#anl02fl}
+
+However, if you prefer not to rely on `source_pd` arguments,
 then the user is free to filter out records after first `PD` at this
 stage in a similar way via a `ANLzzFL` flag, and then you could leave
 `source_pd` as null in all downstream parameter derivation function
@@ -264,8 +268,6 @@ progressive disease. This would be an alternative and transparent method
 to the use of `source_pd` argument approach to create ADRS parameters
 below. Using `{admiral}` function `admiral::derive_var_relative_flag()`
 we could create `ANL02FL` as below.
-
-### Derive `ANL02FL` {#anl02fl}
 
 ```{r, eval=FALSE}
 adrs <- adrs %>%
