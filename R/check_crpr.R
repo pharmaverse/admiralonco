@@ -80,7 +80,7 @@ signal_crpr <- function(dataset,
     crpr_data <- bind_rows(crpr_data, pr_data) %>%
       arrange(!!!subject_keys, !!!order)
 
-    admiralonco_environment$crpr = crpr_data
+    admiralonco_environment$crpr <- crpr_data
     full_msg <- paste0(
       msg,
       "\nRun `get_crpr_dataset()` to access the CR records records followed by PR"
