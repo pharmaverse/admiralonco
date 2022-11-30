@@ -364,7 +364,6 @@ derive_param_confirmed_bor <- function(dataset,
         subject_keys = subject_keys
       )
   } else {
-
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     # filter_source: Filter using filter_source argument ----
     # This would also be used to filter out records from dataset that are greater

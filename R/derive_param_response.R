@@ -165,7 +165,7 @@
 #'     PARAMCD = "RSP",
 #'     PARAM = "Response by investigator"
 #'   ),
-#'   subject_keys =  get_admiral_option("subject_keys")
+#'   subject_keys = get_admiral_option("subject_keys")
 #' ) %>%
 #'   arrange(USUBJID, PARAMCD, ADT)
 derive_param_response <- function(dataset,
@@ -176,7 +176,6 @@ derive_param_response <- function(dataset,
                                   set_values_to,
                                   aval_fun = yn_to_numeric,
                                   subject_keys = get_admiral_option("subject_keys")) {
-
   # ---- checking and quoting ----
   assert_vars(subject_keys)
   assert_data_frame(
@@ -208,7 +207,6 @@ derive_param_response <- function(dataset,
         subject_keys = vars(!!!subject_keys)
       )
   } else {
-
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     # filter_source: Filter using filter_source argument ----
     # This would also be used to filter out records from dataset that are greater

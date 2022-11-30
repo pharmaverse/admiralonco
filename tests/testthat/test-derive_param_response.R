@@ -89,7 +89,7 @@ test_that("Test 1: Test that response is derived accurately, with source_pd", {
         PARAMCD = "RSP",
         PARAM = "Response by investigator"
       ),
-      subject_keys =  get_admiral_option("subject_keys")
+      subject_keys = get_admiral_option("subject_keys")
     )
 
   expect_dfs_equal(
@@ -101,7 +101,6 @@ test_that("Test 1: Test that response is derived accurately, with source_pd", {
 
 # derive_param_response, Test 2 ----
 test_that("Test 2: Test that response is derived accurately, with No source_pd", {
-
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # source_pd = NULL, so the response on 2021-12-25 for subjid 3 is selected
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -135,7 +134,7 @@ test_that("Test 2: Test that response is derived accurately, with No source_pd",
         PARAMCD = "RSP",
         PARAM = "Response by investigator"
       ),
-      subject_keys =  get_admiral_option("subject_keys")
+      subject_keys = get_admiral_option("subject_keys")
     )
 
   expect_dfs_equal(
