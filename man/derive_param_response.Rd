@@ -174,7 +174,7 @@ derive_param_response(
     PARAMCD = "RSP",
     PARAM = "Response by investigator"
   ),
-  subject_keys =  get_admiral_option("subject_keys")
+  subject_keys = get_admiral_option("subject_keys")
 ) \%>\%
   arrange(USUBJID, PARAMCD, ADT)
 }
