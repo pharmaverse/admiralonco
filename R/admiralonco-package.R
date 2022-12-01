@@ -9,7 +9,7 @@
 #'   assert_integer_scalar assert_list_of assert_logical_scalar
 #'   assert_order_vars assert_param_does_not_exist assert_s3_class assert_symbol
 #'   assert_vars assert_varval_list enumerate expect_dfs_equal extract_vars
-#'   filter_if get_dataset quo_c squote set_dataset suppress_warning vars2chr
+#'   filter_if quo_c squote suppress_warning vars2chr
 #' @importFrom dplyr arrange bind_rows case_when filter group_by if_else
 #'   left_join mutate rename right_join select slice vars ungroup
 #' @importFrom lubridate days
