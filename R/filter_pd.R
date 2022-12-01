@@ -183,7 +183,7 @@ filter_pd <- function(dataset,
                       filter,
                       source_pd,
                       source_datasets,
-                      subject_keys = vars(STUDYID, USUBJID)) {
+                      subject_keys = get_admiral_option("subject_keys")) {
   # Check input arguments
   assert_vars(subject_keys)
   assert_data_frame(dataset,

@@ -154,9 +154,8 @@ derive_param_lasta <- function(dataset,
                                order = vars(ADT),
                                source_pd = NULL,
                                source_datasets = NULL,
-                               subject_keys = vars(STUDYID, USUBJID),
+                               subject_keys = get_admiral_option("subject_keys"),
                                set_values_to) {
-
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Assert statements (checked in order of signature) ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -205,7 +204,6 @@ derive_param_lasta <- function(dataset,
         subject_keys    = subject_keys
       )
   } else {
-
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     # filter_source: Filter using filter_source argument ----
     # This would also be used to filter out records from dataset that are greater
@@ -245,7 +243,6 @@ derive_param_lasta <- function(dataset,
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   tryCatch(
-
     param_lasta_values_set <- param_lasta %>%
       mutate(!!!set_values_to),
     error = function(cnd) {
