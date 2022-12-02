@@ -52,7 +52,7 @@
 signal_crpr <- function(dataset,
                         order,
                         msg = "Dataset contains CR records followed by PR.",
-                        subject_keys = vars(STUDYID, USUBJID),
+                        subject_keys = get_admiral_option("subject_keys"),
                         check_type = "warning") {
   assert_character_scalar(msg)
   assert_vars(subject_keys)
@@ -80,7 +80,7 @@ signal_crpr <- function(dataset,
     crpr_data <- bind_rows(crpr_data, pr_data) %>%
       arrange(!!!subject_keys, !!!order)
 
-    set_dataset(crpr_data, "crpr")
+    admiralonco_environment$crpr <- crpr_data
     full_msg <- paste0(
       msg,
       "\nRun `get_crpr_dataset()` to access the CR records records followed by PR"
@@ -140,5 +140,5 @@ signal_crpr <- function(dataset,
 #'
 #' get_crpr_dataset()
 get_crpr_dataset <- function() {
-  get_dataset("crpr")
+  admiralonco_environment$crpr
 }
