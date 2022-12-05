@@ -10,7 +10,7 @@
 
 ## Documentation
 
-- Showed alternative approach in `ADRS` vignette for filtering out assessments after progressive disease compared to `source_pd` argument (#168)
+- Showed an alternative approach in `ADRS` vignette for filtering out assessments after progressive disease compared to `source_pd` argument (#168)
 - Extra terminology added for Independent Review Facility (IRF) as Blinded Independent Central Review (BICR) to make vignettes more accessible (#187)
 
 ## Various
