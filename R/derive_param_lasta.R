@@ -96,11 +96,6 @@ derive_param_lasta <- function(dataset,
                                source_datasets = NULL,
                                subject_keys = get_admiral_option("subject_keys"),
                                set_values_to) {
-
   ### DEPRECATION
-  deprecate_warn("0.2.0",
-                 "derive_param_lasta()",
-                 details = "Please use `admiral::derive_param_extreme_event()` instead"
-  )
-
+  deprecate_stop("0.2.0", "derive_param_lasta()", "admiral::derive_param_extreme_event()")
 }
