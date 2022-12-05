@@ -20,6 +20,7 @@ Authors@R: c(
     person("Pavan", "Kumar", role = "ctb"),
     person("Liming", "Jin", role = "ctb"),
     person("Yirong", "Cao", role = "ctb"),
+    person("Zhang", "Kangjie", role = "ctb"),
     person("F. Hoffmann-La Roche AG", role = c("cph", "fnd")),
     person("GlaxoSmithKline LLC", role = c("cph", "fnd")),
     person("Amgen Inc.", role = c("cph", "fnd")),
@@ -40,7 +41,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 Depends: R (>= 3.5)
 Imports:
-    admiral (>= 0.8.0),
+    admiral (>= 0.9.0),
     admiraldev,
     dplyr (>= 0.8.4),
     lubridate (>= 1.7.4),
