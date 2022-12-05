@@ -272,7 +272,6 @@ ADRS Functions for adding Parameters:
 \code{\link{derive_param_bor}()},
 \code{\link{derive_param_clinbenefit}()},
 \code{\link{derive_param_confirmed_bor}()},
-\code{\link{derive_param_lasta}()},
 \code{\link{derive_param_response}()}
 }
 \author{
