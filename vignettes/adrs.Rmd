@@ -722,15 +722,16 @@ dataset_vignette(
 
 ## Derive Last Disease Assessment Parameters {#lsta}
 
-The function `derive_param_lasta()` can be used to create a parameter
-for last disease assessment. There is flexibility to use `source_pd`
-argument to only look up to first `PD` assessment, but in the below
-example all assessments are included.
+The function `admiral::derive_param_extreme_event()` can be used to create a parameter
+for last disease assessment.
 
 ```{r}
 adrs <- adrs %>%
-  derive_param_lasta(
+  derive_param_extreme_event(
+    dataset_adsl = adsl,
+    dataset_source = adrs,
     filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+    order = vars(ADT, RSSEQ),
     set_values_to = vars(
       PARAMCD = "LSTA",
       PARAM = "Last Disease Assessment by Investigator",

@@ -288,8 +288,11 @@ adrs <- adrs %>%
 
 # Last disease assessment
 adrs <- adrs %>%
-  derive_param_lasta(
+  derive_param_extreme_event(
+    dataset_adsl = adsl,
+    dataset_source = adrs,
     filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+    order = vars(ADT, RSSEQ),
     set_values_to = vars(
       PARAMCD = "LSTA",
       PARAM = "Last Disease Assessment by Investigator",
