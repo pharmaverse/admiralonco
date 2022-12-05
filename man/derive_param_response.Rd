@@ -13,7 +13,7 @@ derive_param_response(
   source_datasets = NULL,
   set_values_to,
   aval_fun = yn_to_numeric,
-  subject_keys = vars(STUDYID, USUBJID)
+  subject_keys = get_admiral_option("subject_keys")
 )
 }
 \arguments{
@@ -174,7 +174,7 @@ derive_param_response(
     PARAMCD = "RSP",
     PARAM = "Response by investigator"
   ),
-  subject_keys = vars(STUDYID, USUBJID)
+  subject_keys = get_admiral_option("subject_keys")
 ) \%>\%
   arrange(USUBJID, PARAMCD, ADT)
 }

@@ -269,8 +269,7 @@ derive_param_bor <- function(dataset,
                              missing_as_ne = FALSE,
                              aval_fun = aval_resp,
                              set_values_to,
-                             subject_keys = vars(STUDYID, USUBJID)) {
-
+                             subject_keys = get_admiral_option("subject_keys")) {
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Assert statements (checked in order of signature) ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -326,7 +325,6 @@ derive_param_bor <- function(dataset,
         subject_keys    = subject_keys
       )
   } else {
-
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     # filter_source: Filter using filter_source argument ----
     # This would also be used to filter out records from dataset that are greater
@@ -422,7 +420,6 @@ derive_param_bor <- function(dataset,
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   tryCatch(
-
     param_bor_values_set <- param_bor %>%
       mutate(
         !!!set_values_to
