@@ -142,8 +142,9 @@ dataset_vignette(
 The first step involves company-specific pre-processing of records for
 the required input to the downstream parameter functions. Note that this
 could be needed multiple times (e.g. once for investigator and once for
-Independent Review Facility (IRF) records). It could even involve
-merging input data from other sources besides `RS`, such as `ADTR`.
+Independent Review Facility (IRF)/Blinded Independent Central Review
+(BICR) records). It could even involve merging input data from other
+sources besides `RS`, such as `ADTR`.
 
 This step would include any required selection/derivation of `ADT` or
 applying any necessary partial date imputations, updating `AVAL` (e.g.
