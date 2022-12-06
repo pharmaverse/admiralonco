@@ -280,7 +280,8 @@ adrs <- adrs %>%
       PARAMCD = "DEATH",
       PARAM = "Death",
       PARCAT1 = "Reference Event",
-      ANL01FL = "Y"
+      ANL01FL = "Y",
+      ADT = DTHDT
     )
   ) %>%
   select(-DTHDT)
