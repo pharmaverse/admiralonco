@@ -72,6 +72,7 @@ library(admiral)
 library(dplyr)
 library(admiral.test)
 library(lubridate)
+library(stringr)
 library(admiralonco)
 ```
 
@@ -109,34 +110,60 @@ tu <- admiral_tu
 tr  <- admiral_tr
 rs <- admiral_rs
 
-tu <-convert_blanks_to_na(tu)
-tr <-convert_blanks_to_na(tr) 
+tu <-convert_blanks_to_na(tu) %>% 
+  filter(TUEVAL == "INVESTIGATOR")
+tr <-convert_blanks_to_na(tr) %>% 
+  filter(TREVAL == "INVESTIGATOR" & TRGRPID == "TARGET" & TRTESTCD == "DIAMETER")
 rs <-convert_blanks_to_na(rs)
 ```
 
-At this step, it may be useful to join `ADSL` to your `TR` domain.  Only the `ADSL` variables used for derivations are selected at this step.  The rest of the relevant `ADSL` would be added later.
+```{r echo=FALSE}
+# work-around for https://github.com/pharmaverse/admiral.test/issues/98
+# should be removed once the bug is fixed
+tr <- ungroup(tr)
+```
+
+```{r echo=FALSE}
+tr <- filter(tr, USUBJID %in% c("01-701-1015", "01-701-1023", "01-701-1028"))
+```
+
+At this step, it may be useful to join `ADSL` to your `TR` domain.  Only the
+`ADSL` variables used for derivations are selected at this step.  The rest of
+the relevant `ADSL` variables would be added later.
 
 ```{r eval=TRUE}
 adsl_vars <- vars (RANDDT)
 adtr <- derive_vars_merged(
-  ungroup(tr),
+  tr,
   dataset_add = adsl,
   new_vars = adsl_vars,
   by_vars = vars (STUDYID, USUBJID)
 )
 ```
+
 ## Merge TR with TU and derive new variables {#merge}
 
 Depending on your company specifications you may want to merge `TU` with `TR`.  As an example, here we are keeping the tumor location, and deriving a new variable for the tumor group site. You may want to process other variables like `ADT`.
 
-tu_vars <- vars (TULOC)
-
-adtr <- derive_vars_merged (
-tr,
-dataset_add = tu,
-new_vars = tul_vars,
-By_vars = vars (STUDYID, USUBID,xxLNKID)
+```{r}
+tr <- derive_vars_merged (
+  tr,
+  dataset_add = rename(tu, TRLNKID = TULNKID),
+  new_vars = vars(TULOC),
+  by_vars = vars (STUDYID, USUBJID, TRLNKID)
+) %>% mutate(
+  TULOCGR1 = if_else(
+    TULOC == "LYMPH NODE",
+    "NODAL",
+    "NON-NODAL"
+  )
 )
+```
+
+```{r, echo=FALSE}
+dataset_vignette(tr, display_vars = vars(USUBJID, TRLNKID, TULOC, TULOCGR1))
+```  
+
 
 In addition, you could create any additional new variables that are required downstream when deriving the required parameters. For example, here we include lesion ID expected and lesion ID assessed. (any other examples?)
 
@@ -150,52 +177,95 @@ The next step involves company-specific pre-processing of records for the requir
 
 If your data collection allows for partial dates, you could apply a company-specific imputation rule at this stage when deriving `ADT`. For this example, here we impute missing day to earliest possible date
 
-<template code>
+```{r}
+tr <- derive_vars_dt(
+  tr,
+  dtc = TRDTC,
+  new_vars_prefix = "A",
+  highest_imputation = "D",
+  date_imputation = "first"
+)
+```
+
+
+```{r, echo=FALSE}
+dataset_vignette(tr, display_vars = vars(USUBJID, TRLNKID, TRDTC, ADT, ADTF))
+```  
 
 ### Re-labelling unscheduled visits
 
 If you have data collected at unscheduled visits, which are not identified as unique in your SDTM or you have company specific rules.  Below is an example of how it could be re-labelled. <add more information once I see the template code>
 
-<template code> 
-
+```{r}
+tr <- mutate(
+  tr,
+  AVISIT = VISIT,
+  AVISITN = VISITNUM
+)
+```
 
 ## Derive Parameters TLDn and TLPn {#parameters}
 
 As mentioned earlier, depending on your company specifications you may either create parameters for TLDn and TLPn in ADTR or similar dataset. 
 
-<add template code>
+Set the `AVALx/ANL01FL` variables.
+```{r}
+adtr <- tr %>%
+    mutate(
+      tmp_lesion_nr = str_sub(TRLNKID, 3),
+      PARAMCD = paste0("DIAM", tmp_lesion_nr),
+      PARAM = paste("Target Lesion", tmp_lesion_nr, "Analysis Diameter by Investigator"),
+      PARCAT1 = "Target Lesion(s)",
+      PARCAT2 = "Investigator",
+      PARCAT3 = "Recist 1.1",
+      AVAL = TRSTRESN,
+      ANL01FL = if_else(!is.na(AVAL), "Y", NA_character_)
+    ) %>%
+  select(-tmp_lesion_nr)
+```
 
-Set the `AVALx/ANL01FL variables 
-.
-n=5 max
-
-PARAMCD = "TLDn"
-PARAM= "Target Lesion <n> Longest Diameter by Investigator"
-PARCAT1="Set to 'Target Lesion(s)"
-PARCAT2="Set to 'Investigator"
-PARCAT3="Set to 'Recist 1.1"
-
-PARAMCD = "TLPn"
-PARAM= "Target Lesion <n> Longest Perpendicular by Investigator"
-PARCAT1="Set to 'Target Lesion(s)"
-PARCAT2="Set to 'Investigator"
-PARCAT3="Set to 'Recist 1.1"
-
+```{r, echo=FALSE}
+dataset_vignette(
+  arrange(adtr, USUBJID, TRLNKID, AVISIT),
+  display_vars = vars(USUBJID, TRLNKID, AVISIT, PARAMCD, PARAM, AVAL, ANL01FL))
+```
 
 ## Derive Parameters (TSD) and Analysis Flag ANL01FL {#tsd}
 
-Target Lesions Sum of Diameters is the sum of the diameters for lymph and non-lymph nodes (sum of analysis values `AVAL` from source observations TLDn & TLPn).  The analysis flag ANL01FL flags where the number of lesions assessed at baseline and at post-baseline match.  To assess whether the number of lesions expected and assessed match, you could compare lesion identifiers (TR.TRLNKID) /use the previous variables set up earlier to compare lesion expected vs lesion accessed  or check for target lesion response (from `RS`) =NE.
+Target Lesions Sum of Diameters is the sum of the diameters for lymph and
+non-lymph nodes (sum of analysis values `AVAL` from source observations TLDn &
+TLPn).  The analysis flag ANL01FL flags where the number of lesions assessed at
+baseline and at post-baseline match.  To assess whether the number of lesions
+expected and assessed match, you could compare lesion identifiers (TR.TRLNKID)
+/use the previous variables set up earlier to compare lesion expected vs lesion
+accessed  or check for target lesion response (from `RS`) =NE.
 
-<template code to be added> 
+```{r}
+adtr <- derive_summary_records(
+  adtr,
+  by_vars = vars(STUDYID, USUBJID, AVISIT, AVISITN),
+  analysis_var = AVAL,
+  summary_fun = function(x) sum(x, na.rm = TRUE),
+  set_values_to = vars(
+    PARAMCD = "TSD",
+    PARAM = "Target Lesions Sum of Diameters by Investigator",
+    PARCAT1 = "Target Lesion(s)",
+    PARCAT2 = "Investigator",
+    PARCAT3 = "Recist 1.1"
+  )
+)
+```
 
-PARAMCD = "TSD"
-PARAM= "Target Lesions Sum of Diameters by Investigator"
-PARCAT1="Set to 'Target Lesion(s)"
-PARCAT2="Set to 'Investigator"
-PARCAT3="Set to 'Recist 1.1"
+```{r, echo=FALSE}
+dataset_vignette(
+  arrange(adtr, USUBJID, desc(PARAMCD), TRLNKID, AVISIT),
+  display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, AVAL))
+```  
 
-
-In the below example, the analysis flag, ANL01FL= Y identifies the largest target lesion sum of diameter on a particular date for reporting if there were multiple observations on the same date and where lesion assessed at post-baseline match baseline.
+In the below example, the analysis flag, ANL01FL= Y identifies the largest
+target lesion sum of diameter on a particular date for reporting if there were
+multiple observations on the same date and where lesion assessed at
+post-baseline match baseline.
 
 <template code>
 
@@ -262,7 +332,7 @@ The `{admiral}` function `admiral::derive_var_obs_number()` can be used to deriv
 adtr <- adtr %>%
   derive_var_obs_number(
     by_vars = vars(STUDYID, USUBJID),
-    order = vars(TRSEQ),
+    order = vars(PARAMCD, AVISITN, TRSEQ),
     check_type = "error"
   )
 ```
