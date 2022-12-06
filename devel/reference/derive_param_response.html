@@ -22,7 +22,7 @@ ADT is set NA.'><meta property="og:image" content="https://pharmaverse.github.io
     
     <a class="navbar-brand me-2" href="../index.html">admiralonco</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,14 +46,6 @@ ADT is set NA.'><meta property="og:image" content="https://pharmaverse.github.io
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/devel">devel</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/pre-release">pre-release</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -199,8 +191,7 @@ the new observations.</p></li>
 <code><a href="derive_param_bor.html">derive_param_bor</a>()</code>,
 <code><a href="derive_param_clinbenefit.html">derive_param_clinbenefit</a>()</code>,
 <code><a href="derive_param_confirmed_bor.html">derive_param_confirmed_bor</a>()</code>,
-<code><a href="derive_param_confirmed_resp.html">derive_param_confirmed_resp</a>()</code>,
-<code><a href="derive_param_lasta.html">derive_param_lasta</a>()</code></p></div>
+<code><a href="derive_param_confirmed_resp.html">derive_param_confirmed_resp</a>()</code></p></div>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
@@ -272,11 +263,6 @@ the new observations.</p></li>
 <span class="r-in"><span>  subject_keys <span class="op">=</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/get_admiral_option.html" class="external-link">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">USUBJID</span>, <span class="va">PARAMCD</span>, <span class="va">ADT</span><span class="op">)</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`derive_param_first_event()` was deprecated in admiral 0.9.0.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span><span> Please use `derive_param_extreme_event()` instead with the `order` argument</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>   instead of the `date_var` argument</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span><span> The deprecated feature was likely used in the </span><span style="color: #0000BB;">admiralonco</span><span> package.</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span>   Please report the issue to the authors.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 17 x 8</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    USUBJID PARAMCD AVALC ANL01FL STUDYID ADT        PARAM                   AVAL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>   </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>   </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span> </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>   </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>   </span><span style="color: #949494;font-style: italic;">&lt;date&gt;</span><span>     </span><span style="color: #949494;font-style: italic;">&lt;chr&gt;</span><span>                  </span><span style="color: #949494;font-style: italic;">&lt;dbl&gt;</span></span>
