@@ -91,11 +91,11 @@ adrs <- adrs %>%
 
 # Progressive disease
 adrs <- adrs %>%
-  derive_param_first_event(
+  derive_param_extreme_event(
     dataset_adsl = adsl,
     dataset_source = adrs,
     filter_source = PARAMCD == "OVR" & AVALC == "PD" & ANL01FL == "Y",
-    date_var = ADT,
+    order = vars(ADT, RSSEQ),
     set_values_to = vars(
       PARAMCD = "PD",
       PARAM = "Disease Progression by Investigator",
@@ -178,11 +178,11 @@ adrs <- adrs %>%
 
 # Best overall response of CR/PR
 adrs <- adrs %>%
-  derive_param_first_event(
+  derive_param_extreme_event(
     dataset_adsl = adsl,
     dataset_source = adrs,
     filter_source = PARAMCD == "BOR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
-    date_var = ADT,
+    order = vars(ADT, RSSEQ),
     set_values_to = vars(
       PARAMCD = "BCP",
       PARAM = "Best Overall Response of CR/PR by Investigator (confirmation not required)",
@@ -252,11 +252,11 @@ adrs <- adrs %>%
       ANL01FL = "Y"
     )
   ) %>%
-  derive_param_first_event(
+  derive_param_extreme_event(
     dataset_adsl = adsl,
     dataset_source = adrs,
     filter_source = PARAMCD == "CBOR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
-    date_var = ADT,
+    order = vars(ADT, RSSEQ),
     set_values_to = vars(
       PARAMCD = "CBCP",
       PARAM = "Best Confirmed Overall Response of CR/PR by Investigator",
@@ -272,11 +272,10 @@ adsldth <- adsl %>%
   select(STUDYID, USUBJID, DTHDT, !!!adsl_vars)
 
 adrs <- adrs %>%
-  derive_param_first_event(
+  derive_param_extreme_event(
     dataset_adsl = adsldth,
     dataset_source = adsldth,
     filter_source = !is.na(DTHDT),
-    date_var = DTHDT,
     set_values_to = vars(
       PARAMCD = "DEATH",
       PARAM = "Death",
@@ -293,6 +292,9 @@ adrs <- adrs %>%
     dataset_source = adrs,
     filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
     order = vars(ADT, RSSEQ),
+    mode = "last",
+    # Use this approach to ensure AVALC is not overwritten with a Y
+    new_var = dummy,
     set_values_to = vars(
       PARAMCD = "LSTA",
       PARAM = "Last Disease Assessment by Investigator",
@@ -301,7 +303,8 @@ adrs <- adrs %>%
       PARCAT3 = "Recist 1.1",
       ANL01FL = "Y"
     )
-  )
+  ) %>%
+  select(-dummy)
 
 # Measurable disease at baseline
 adslmdis <- adsl %>%
