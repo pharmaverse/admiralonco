@@ -76,6 +76,7 @@ unless otherwise specified.*
 -   [Derive Death Parameter](#death)
 -   [Derive Last Disease Assessment Parameters](#lsta)
 -   [Derive Measurable Disease at Baseline Parameter](#mdis)
+-   [Derive `AVAL` for New Parameters](#aval)
 -   [Assign `ASEQ`](#aseq)
 -   [Add ADSL variables](#adsl_vars)
 
@@ -709,14 +710,7 @@ adrs <- adrs %>%
       ADT = DTHDT
     )
   ) %>%
-  select(-DTHDT) %>%
-  mutate(
-    AVAL = case_when(
-      PARAMCD == "DEATH" & AVALC == "Y" ~ 1,
-      PARAMCD == "DEATH" & AVALC == "N" ~ 0,
-      TRUE ~ AVAL
-    )
-  )
+  select(-DTHDT)
 ```
 
 ```{r, echo=FALSE}
@@ -797,6 +791,30 @@ dataset_vignette(
   adrs,
   display_vars = vars(USUBJID, AVISIT, PARAMCD, PARAM, AVALC, ADT, ANL01FL),
   filter = PARAMCD == "MDIS"
+)
+```
+
+## Derive `AVAL` for New Parameters {#aval}
+
+For cases where `AVALC` has been derived for new parameters above as `"Y"` or `"N"`,
+we need to set `AVAL` to numeric versions such as `1`/`0`.
+
+```{r eval=TRUE}
+adrs <- adrs %>%
+  mutate(
+    AVAL = case_when(
+      AVALC == "Y" ~ 1,
+      AVALC == "N" ~ 0,
+      TRUE ~ AVAL
+    )
+  )
+```
+
+```{r, eval=TRUE, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = vars(USUBJID, PARAMCD, AVALC, AVAL),
+  filter = USUBJID == "01-701-1015" & AVALC %in% c("Y", "N")
 )
 ```
 

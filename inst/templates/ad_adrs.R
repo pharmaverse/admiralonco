@@ -284,14 +284,7 @@ adrs <- adrs %>%
       ADT = DTHDT
     )
   ) %>%
-  select(-DTHDT) %>%
-  mutate(
-    AVAL = case_when(
-      PARAMCD == "DEATH" & AVALC == "Y" ~ 1,
-      PARAMCD == "DEATH" & AVALC == "N" ~ 0,
-      TRUE ~ AVAL
-    )
-  )
+  select(-DTHDT)
 
 # Last disease assessment
 adrs <- adrs %>%
@@ -331,6 +324,16 @@ adrs <- adrs %>%
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
       ANL01FL = "Y"
+    )
+  )
+
+# Derive numeric analysis value for cases where AVALC has been derived for new parameters
+adrs <- adrs %>%
+  mutate(
+    AVAL = case_when(
+      AVALC == "Y" ~ 1,
+      AVALC == "N" ~ 0,
+      TRUE ~ AVAL
     )
   )
 
