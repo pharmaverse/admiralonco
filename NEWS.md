@@ -1,3 +1,15 @@
+# admiralonco 0.3.0
+
+## Updates of Existing Functions
+
+
+## Breaking Changes
+
+
+## Documentation
+
+- New vignette "Create `ADTR`" (#16)
+
 # admiralonco 0.2.0
 
 ## Updates of Existing Functions
