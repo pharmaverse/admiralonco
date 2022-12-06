@@ -1,6 +1,6 @@
 #' @keywords internal
 #' @family internal
-#' @importFrom admiral censor_source count_vals derive_param_first_event
+#' @importFrom admiral censor_source count_vals derive_param_extreme_event
 #'   derive_var_obs_number derive_vars_merged event_source filter_confirmation
 #'   filter_extreme filter_relative get_admiral_option list_tte_source_objects
 #'   max_cond min_cond params restrict_derivation set_admiral_options yn_to_numeric
@@ -12,6 +12,7 @@
 #'   filter_if quo_c squote suppress_warning vars2chr
 #' @importFrom dplyr arrange bind_rows case_when filter group_by if_else
 #'   left_join mutate rename right_join select slice vars ungroup
+#' @importFrom lifecycle deprecate_warn deprecated deprecate_stop
 #' @importFrom lubridate days
 #' @importFrom magrittr `%>%`
 #' @importFrom rlang abort enquo inform quo_get_expr quo_is_null warn
