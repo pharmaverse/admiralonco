@@ -284,7 +284,14 @@ adrs <- adrs %>%
       ADT = DTHDT
     )
   ) %>%
-  select(-DTHDT)
+  select(-DTHDT) %>%
+  mutate(
+    AVAL = case_when(
+      PARAMCD == "DEATH" & AVALC == "Y" ~ 1,
+      PARAMCD == "DEATH" & AVALC == "N" ~ 0,
+      TRUE ~ AVAL
+    )
+  )
 
 # Last disease assessment
 adrs <- adrs %>%
