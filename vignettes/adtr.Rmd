@@ -265,13 +265,13 @@ dataset_vignette(
 )
 ```
 
-## Derive Parameters (TSD) and Analysis Flag ANL01FL {#tsd}
+## Derive Parameters (TSD) and Analysis Flag `ANL01FL` {#tsd}
 
 Target Lesions Sum of Diameters is the sum of the diameters for lymph and
 non-lymph nodes (sum of analysis values `AVAL` from source observations TLDn &
-TLPn).  The analysis flag ANL01FL flags where the number of lesions assessed at
-baseline and at post-baseline match.  To assess whether the number of lesions
-expected and assessed match, you could compare lesion identifiers (TR.TRLNKID)
+TLPn).  The analysis flag `ANL01FL` flags where the number of lesions assessed
+at baseline and at post-baseline match.  To assess whether the number of lesions
+expected and assessed match, you could compare lesion identifiers (`TR.TRLNKID`)
 /use the previous variables set up earlier to compare lesion expected vs lesion
 accessed  or check for target lesion response (from `RS`) =NE.
 
@@ -336,6 +336,9 @@ adtr_sum <- adtr_sum %>%
     new_var = ADT,
     analysis_var = ADT,
     summary_fun = function(x) min(x, na.rm = TRUE)
+  ) %>%
+  mutate(
+    ANL01FL = if_else(LSEXP == LSASS, "Y", NA_character_)
   )
 ```
 
@@ -346,7 +349,7 @@ dataset_vignette(
 )
 ```  
 
-## Derive Baseline (BASETYPE, ABLFL, BASE) {#base}
+## Derive Baseline (`BASETYPE`, `ABLFL`, `BASE`) {#base}
 
 These functions are available in `admiral`, below examples show its usage for `ADTR` 
 
@@ -367,9 +370,12 @@ adtr_sum <- adtr_sum %>%
   )
 ```
 
-## Derive NADIR {#nadir}
+## Derive `NADIR` {#nadir}
 
-Once we have a TSD parameter, the NADIR is set to the lowest sum of diameters in Analysis Value before the current observation, where Analysis Flag 01 =Y.  The first observations after baseline (depending on how you have defined baseline earlier) is set to analysis value where baseline record flag = Y
+Once we have a TSD parameter, the NADIR is set to the lowest sum of diameters in
+Analysis Value before the current observation, where Analysis Flag 01 =Y.  The
+first observations after baseline (depending on how you have defined baseline
+earlier) is set to analysis value where baseline record flag = Y
 
 ```{r}
 adtr_sum <- adtr_sum %>%
@@ -379,7 +385,7 @@ adtr_sum <- adtr_sum %>%
     order = vars(AVAL),
     new_vars = vars(NADIR = AVAL),
     join_vars = vars(ADY),
-    filter_add = ADY > 0 & LSEXP == LSASS,
+    filter_add = ADY > 0 & ANL01FL == "Y",
     filter_join = ADY.join < ADY,
     mode = "first",
     check_type = "none"
@@ -393,7 +399,7 @@ dataset_vignette(
 )
 ```  
 
-## Derive Change from Baseline (CHG, PCHG) {#chg}
+## Derive Change from Baseline (`CHG`, `PCHG`) {#chg}
 
 These functions are available in admiral, below examples show its usage for
 `ADTR`.  We calculate the change from baseline and percentage change from
@@ -429,7 +435,7 @@ In this example, `CRFL` flags where the patient has had Complete Response, and
 
 ```{r}
 adtr_sum <- adtr_sum %>% mutate(
-  CRFL = if_else(AVAL == 0 & LSEXP == LSASS, "Y", NA_character_),
+  CRFL = if_else(AVAL == 0 & ANL01FL == "Y", "Y", NA_character_),
   CRNFL = if_else(NADIR == 0, "Y", NA_character_)
 )
 ```
@@ -453,7 +459,7 @@ See below example.
 ```{r}
 adtr_sum <- adtr_sum %>%
   mutate(
-    PDFL = if_else(PCHGNAD >= 20 & CHGNAD >= 5, "Y", NA_character_)
+    PDFL = if_else(PCHGNAD >= 20 & CHGNAD >= 5 | is.na(CRFL) & CRNFL == "Y", "Y", NA_character_)
   )
 ```
 
@@ -482,7 +488,7 @@ adtr_sum <- adtr_sum %>%
       order = vars(AVAL),
       mode = "first"
     ),
-    filter = LSEXP == LSASS
+    filter = ANL01FL == "Y"
   )
 ```
 
@@ -496,14 +502,47 @@ dataset_vignette(
 Analysis 03 flag includes ANL01FL=Y and the target lesion sum of diameter until
 patient has had PD. Use the PDFL variable.
 
-<template code>
+```{r}
+adtr_sum <- adtr_sum %>%
+  restrict_derivation(
+    derivation = derive_var_relative_flag,
+    args = params(
+      by_vars = vars(USUBJID),
+      new_var = ANL03FL,
+      condition = PDFL == "Y",
+      order = vars(ADY),
+      mode = "first",
+      selection = "before",
+      inclusive = TRUE
+    ),
+    filter = ANL01FL == "Y"
+  )
+```
+
+```{r, echo=FALSE}
+dataset_vignette(
+  arrange(adtr_sum, USUBJID, AVISITN),
+  display_vars = vars(USUBJID, AVISIT, AVAL, NADIR, PDFL, ANL03FL)
+)
+```  
 
 Analysis 04 flag includes all sum of diameters even where lesion identifiers
-match and unmatch if the patient has had PD. Use CRFL, CRNFL, PDFL variables.
+match and unmatch if the patient has had PD. Use `CRFL`, `CRNFL`, `PDFL` variables.
 
-<template code>
+```{r}
+adtr_sum <- adtr_sum %>%
+  mutate(
+    ANL04FL = if_else(ANL01FL == "Y" | PDFL == "Y", "Y", NA_character_)
+  )
+```
 
-<final dataset show with analysis flags>
+```{r, echo=FALSE}
+dataset_vignette(
+  arrange(adtr_sum, USUBJID, AVISITN),
+  display_vars = vars(USUBJID, AVISIT, AVAL, NADIR, PDFL, ANL01FL, ANL04FL)
+)
+```  
+
 
 ```{r}
 adtr <- bind_rows(adtr, adtr_sum)
@@ -511,7 +550,8 @@ adtr <- bind_rows(adtr, adtr_sum)
 
 ## Derive Analysis Sequence Number (`ASEQ`) {#aseq}
 
-The `{admiral}` function `admiral::derive_var_obs_number()` can be used to derive `ASEQ`:
+The `{admiral}` function `admiral::derive_var_obs_number()` can be used to
+derive `ASEQ`:
 
 ```{r eval=TRUE}
 adtr <- adtr %>%
