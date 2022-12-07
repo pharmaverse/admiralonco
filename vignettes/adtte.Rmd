@@ -13,6 +13,33 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+link <- function(text, url) {
+  return(
+    paste0(
+      "[", text, "]",
+      "(", url, ")"
+    )
+  )
+}
+dyn_link <- function(text,
+                     base_url,
+                     relative_url = "",
+                     # Change to TRUE when admiral adopts multiversion docs
+                     is_multiversion = FALSE,
+                     multiversion_default_ref = "main") {
+  url <- paste(base_url, relative_url, sep = "/")
+  if (is_multiversion) {
+    url <- paste(
+      base_url,
+      Sys.getenv("BRANCH_NAME", multiversion_default_ref),
+      relative_url,
+      sep = "/"
+    )
+  }
+  return(link(text, url))
+}
+# Other variables
+admiral_homepage <- "https://pharmaverse.github.io/admiral"
 
 library(admiraldev)
 ```
@@ -137,7 +164,7 @@ response: If using `ADRS` / `ADEVENT` parameters as input for any response dates
 to add the response date as a temporary variable (e.g. `TEMP_RESPDT`) to be able to feed
 into `admiral::derive_param_tte()` as the start date. You would also need to use this
 to filter the input datasets so as to only derive the records for responders.
-This could also be repeated as needed for IRF and confirmed responses.
+This could also be repeated as needed for IRF/BICR and confirmed responses.
 
 Here is an example of the code needed.
 
@@ -200,7 +227,7 @@ dataset_vignette(
 ### Creating Your Own Time-to-Event Source Objects
 
 We advise you consult the `{admiral}`
-["Creating a BDS Time-to-Event ADaM" vignette](https://pharmaverse.github.io/admiral/articles/bds_tte.html)
+`r dyn_link("Creating a BDS Time-to-Event ADaM vignette", admiral_homepage, "articles/bds_tte.html")`
 for further guidance on the different options available and more examples.
 
 One extra common oncology case we include here is around PFS when censoring
@@ -356,4 +383,4 @@ dataset_vignette(
 
 ADaM | Sample Code
 ---- | --------------
-ADTTE | [ad_adtte.R](https://github.com/pharmaverse/admiralonco/blob/main/inst/templates/ad_adtte.R){target="_blank"}
+ADTTE | `r dyn_link("ad_adtte.R", "https://github.com/pharmaverse/admiralonco/blob", "inst/templates/ad_adtte.R", is_multiversion = TRUE)`

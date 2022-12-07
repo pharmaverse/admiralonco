@@ -93,4 +93,4 @@ adtte <- adtte %>%
 # ---- Save output ----
 
 dir <- tempdir() # Change to whichever directory you want to save the dataset in
-save(adtte, file = file.path(dir, "adtte.rda"), compress = "bzip2")
+saveRDS(adtte, file = file.path(dir, "adtte.rds"), compress = "bzip2")
