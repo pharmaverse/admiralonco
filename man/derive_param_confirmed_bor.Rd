@@ -18,7 +18,7 @@ derive_param_confirmed_bor(
   missing_as_ne = FALSE,
   aval_fun = aval_resp,
   set_values_to,
-  subject_keys = vars(STUDYID, USUBJID)
+  subject_keys = get_admiral_option("subject_keys")
 )
 }
 \arguments{
@@ -336,7 +336,6 @@ ADRS Functions for adding Parameters:
 \code{\link{derive_param_bor}()},
 \code{\link{derive_param_clinbenefit}()},
 \code{\link{derive_param_confirmed_resp}()},
-\code{\link{derive_param_lasta}()},
 \code{\link{derive_param_response}()}
 }
 \author{

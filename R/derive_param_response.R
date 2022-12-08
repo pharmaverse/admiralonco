@@ -165,7 +165,7 @@
 #'     PARAMCD = "RSP",
 #'     PARAM = "Response by investigator"
 #'   ),
-#'   subject_keys = vars(STUDYID, USUBJID)
+#'   subject_keys = get_admiral_option("subject_keys")
 #' ) %>%
 #'   arrange(USUBJID, PARAMCD, ADT)
 derive_param_response <- function(dataset,
@@ -175,8 +175,7 @@ derive_param_response <- function(dataset,
                                   source_datasets = NULL,
                                   set_values_to,
                                   aval_fun = yn_to_numeric,
-                                  subject_keys = vars(STUDYID, USUBJID)) {
-
+                                  subject_keys = get_admiral_option("subject_keys")) {
   # ---- checking and quoting ----
   assert_vars(subject_keys)
   assert_data_frame(
@@ -208,7 +207,6 @@ derive_param_response <- function(dataset,
         subject_keys = vars(!!!subject_keys)
       )
   } else {
-
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     # filter_source: Filter using filter_source argument ----
     # This would also be used to filter out records from dataset that are greater
@@ -222,13 +220,13 @@ derive_param_response <- function(dataset,
 
   # ---- Select the 1st response and add a new PARAMCD to the input dataset ----
   dataset %>%
-    derive_param_first_event(
+    derive_param_extreme_event(
       dataset_adsl = dataset_adsl,
       dataset_source = resp_before_pd,
       # Need to specify a filter otherwise:
       # ERROR ! Argument `filter_source` is missing, with no default
       filter_source = !!filter_s,
-      date_var = ADT,
+      order = vars(ADT),
       set_values_to = set_values_to
     ) %>%
     restrict_derivation(

@@ -9,11 +9,11 @@ search:
 repo:
   url:
     home: https://github.com/pharmaverse/admiralonco
-    source: https://github.com/pharmaverse/admiralonco/blob/test/
+    source: https://github.com/pharmaverse/admiralonco/blob/main/
     issue: https://github.com/pharmaverse/admiralonco/issues/
     user: https://github.com/
-  news:
-    cran_dates: false
+news:
+    cran_dates: true
 reference:
 
  - title: Derivations for Adding Parameters

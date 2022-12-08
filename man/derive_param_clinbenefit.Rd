@@ -16,7 +16,7 @@ derive_param_clinbenefit(
   aval_fun = yn_to_numeric,
   clinben_vals = c("CR", "PR", "SD", "NON-CR/NON-PD"),
   set_values_to,
-  subject_keys = vars(STUDYID, USUBJID)
+  subject_keys = get_admiral_option("subject_keys")
 )
 }
 \arguments{
@@ -208,7 +208,6 @@ ADRS Functions for adding Parameters:
 \code{\link{derive_param_bor}()},
 \code{\link{derive_param_confirmed_bor}()},
 \code{\link{derive_param_confirmed_resp}()},
-\code{\link{derive_param_lasta}()},
 \code{\link{derive_param_response}()}
 }
 \author{

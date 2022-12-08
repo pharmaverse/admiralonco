@@ -1,3 +1,44 @@
+---
+title: "Oncology extension package for ADaM in R Asset Library"
+output: md_document
+date: '2022-10-04'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+link <- function(text, url) {
+  return(
+    paste0(
+      "[", text, "]",
+      "(", url, ")"
+    )
+  )
+}
+dyn_link <- function(text,
+                     base_url,
+                     relative_url = "",
+                     # Change to TRUE when admiral adopts multiversion docs
+                     is_multiversion = FALSE,
+                     multiversion_default_ref = "main") {
+  url <- paste(base_url, relative_url, sep = "/")
+  if (is_multiversion) {
+    url <- paste(
+      base_url,
+      Sys.getenv("BRANCH_NAME", multiversion_default_ref),
+      relative_url,
+      sep = "/"
+    )
+  }
+  return(link(text, url))
+}
+# Other variables
+admiral_homepage <- "https://pharmaverse.github.io/admiral"
+```
+
+<!-- Please do not edit the README.md file as it is auto-generated after PR merges. Only edit the README.Rmd file -->
+<!-- The purpose of this is to enable dynamic links using dyn_link function above to access devel/main admiral homepage respectively -->
+<!-- To test this in your feature branch use code: rmarkdown::render("README.Rmd", output_format ="md_document") -->
+
 # admiralonco <img src="man/figures/logo.png" align="right" width="200" style="margin-left:50px;"/>
 
 <!-- badges: start -->
@@ -40,7 +81,7 @@ sensitivity analyses and questionnaires.
 
 ## References and Documentation
 
-* Please refer to the [`{admiral}` References and Documentation](https://pharmaverse.github.io/admiral/index.html#references-and-documentation)
+* Please refer to the `r dyn_link("{admiral} References and Documentation", admiral_homepage, "index.html#references-and-documentation")`
 
 ## R Versions
 
