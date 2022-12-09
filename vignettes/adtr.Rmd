@@ -411,7 +411,7 @@ adtr_sum <- adtr_sum %>%
   derive_var_pchg() %>%
   mutate(
     CHGNAD = AVAL - NADIR,
-    PCHGNAD = 100 * (CHGNAD) / NADIR
+    PCHGNAD = 100 * CHGNAD / NADIR
   )
 ```
 
@@ -440,7 +440,7 @@ adtr_sum <- adtr_sum %>% mutate(
 )
 ```
 
-### Derive PDFL
+### Derive `PDFL`
 
 In this example, we want to flag when a patient has had PD.  This could be done
 in a number of ways:
@@ -470,7 +470,7 @@ dataset_vignette(
 )
 ```  
 
-## Derive Analysis Flags ANL02FL, ANL03FL, ANL04FL {#analflag}
+## Derive Analysis Flags `ANL02FL`, `ANL03FL`, `ANL04FL` {#analflag}
 
 Based on your analysis, additional analysis flags could be set up in `ADTR`.
 Below are some examples
@@ -499,8 +499,8 @@ dataset_vignette(
 )
 ```  
 
-Analysis 03 flag includes ANL01FL=Y and the target lesion sum of diameter until
-patient has had PD. Use the PDFL variable.
+Analysis 03 flag includes `ANL01FL="Y"` and the target lesion sum of diameter
+until patient has had PD. Use the `PDFL` variable.
 
 ```{r}
 adtr_sum <- adtr_sum %>%
@@ -572,7 +572,7 @@ dataset_vignette(
 
 ## Add ADSL Variables {#adslvars}
   
-If needed, the other `ADSL` variables can now be added. List of ADSL
+If needed, the other `ADSL` variables can now be added. List of `ADSL`
 variables already merged held in vector `adsl_vars`.
 
 ```{r eval=TRUE}
