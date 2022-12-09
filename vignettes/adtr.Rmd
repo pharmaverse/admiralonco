@@ -411,7 +411,7 @@ adtr_sum <- adtr_sum %>%
   derive_var_pchg() %>%
   mutate(
     CHGNAD = AVAL - NADIR,
-    PCHGNAD = 100 * (AVAL - NADIR) / AVAL
+    PCHGNAD = 100 * (CHGNAD) / NADIR
   )
 ```
 
