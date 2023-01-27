@@ -22,35 +22,37 @@ adrs <- tribble(
 # signal_crpr ----
 ## Test 1: warning is issued ----
 test_that("signal_crpr Test 1: warning is issued", {
-  expect_warning(signal_crpr(
-    adrs,
-    order = exprs(ADT)
-  ),
-  paste(
-    "Dataset contains CR records followed by PR.",
-    "Run `get_crpr_dataset()` to access the CR records records followed by PR",
-    sep = "\n"
-  ),
-  fixed = TRUE
+  expect_warning(
+    signal_crpr(
+      adrs,
+      order = exprs(ADT)
+    ),
+    paste(
+      "Dataset contains CR records followed by PR.",
+      "Run `get_crpr_dataset()` to access the CR records records followed by PR",
+      sep = "\n"
+    ),
+    fixed = TRUE
   )
 })
 
 ## Test 2: error with custom message ----
 test_that("signal_crpr Test 2: error with custom message", {
-  expect_error(signal_crpr(
-    mutate(adrs, SUBJID = USUBJID) %>%
-      select(-USUBJID, -STUDYID),
-    order = exprs(ADT),
-    subject_keys = exprs(SUBJID),
-    check_type = "error",
-    msg = "The modified dataset contains CR records followed by PR."
-  ),
-  paste(
-    "The modified dataset contains CR records followed by PR.",
-    "Run `get_crpr_dataset()` to access the CR records records followed by PR",
-    sep = "\n"
-  ),
-  fixed = TRUE
+  expect_error(
+    signal_crpr(
+      mutate(adrs, SUBJID = USUBJID) %>%
+        select(-USUBJID, -STUDYID),
+      order = exprs(ADT),
+      subject_keys = exprs(SUBJID),
+      check_type = "error",
+      msg = "The modified dataset contains CR records followed by PR."
+    ),
+    paste(
+      "The modified dataset contains CR records followed by PR.",
+      "Run `get_crpr_dataset()` to access the CR records records followed by PR",
+      sep = "\n"
+    ),
+    fixed = TRUE
   )
 })
 

@@ -121,7 +121,6 @@ expected_01 <- bind_rows(
 
 # derive_param_bor, Test 1 ----
 test_that("derive_param_bor Test 1: No source_pd", {
-
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # default  BOR, All Subjects have a record after reference date ----
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

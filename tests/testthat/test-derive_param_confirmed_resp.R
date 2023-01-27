@@ -216,7 +216,6 @@ test_that("derive_param_confirmed_resp Test 3: error if invalid response values"
 
 ## Test 4: No source_pd ----
 test_that("derive_param_confirmed_resp Test 4: No source_pd", {
-
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # source_pd = NULL, so tibble with two subjects:
   #    - USUBJID == 1 will be a response as responsed after PD.
