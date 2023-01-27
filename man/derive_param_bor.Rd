@@ -104,13 +104,13 @@ function must return a numeric vector.}
 
 \item{set_values_to}{New columns to set
 
-A named list returned by \code{vars()} defining the columns to be set for the
-new parameter, e.g. \code{vars(PARAMCD = "BOR", PARAM = "Best Overall Response")} is expected. The values must be symbols, character strings,
+A named list returned by \code{exprs()} defining the columns to be set for the
+new parameter, e.g. \code{exprs(PARAMCD = "BOR", PARAM = "Best Overall Response")} is expected. The values must be symbols, character strings,
 numeric values, or \code{NA}.}
 
 \item{subject_keys}{Columns to uniquely identify a subject
 
-A list of symbols created using \code{vars()}.
+A list of symbols created using \code{exprs()}.
 
 \emph{Permitted Values:} an \code{vars} object}
 }
@@ -229,8 +229,8 @@ adrs <- bind_rows(ovr_obs, pd_obs) \%>\%
   select(-ADTC) \%>\%
   derive_vars_merged(
     dataset_add = adsl,
-    by_vars     = vars(STUDYID, USUBJID),
-    new_vars    = vars(TRTSDT)
+    by_vars     = exprs(STUDYID, USUBJID),
+    new_vars    = exprs(TRTSDT)
   )
 
 pd_date <- date_source(
@@ -262,7 +262,7 @@ derive_param_bor(
   aval_fun = aval_fun_pass,
   reference_date = TRTSDT,
   ref_start_window = 28,
-  set_values_to = vars(
+  set_values_to = exprs(
     PARAMCD = "BOR",
     PARAM = "Best Overall Response"
   )

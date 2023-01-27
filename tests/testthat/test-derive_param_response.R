@@ -85,7 +85,7 @@ test_that("Test 1: Test that response is derived accurately, with source_pd", {
       filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR"),
       source_pd = pd,
       source_datasets = list(adrs = adrs),
-      set_values_to = vars(
+      set_values_to = exprs(
         PARAMCD = "RSP",
         PARAM = "Response by investigator"
       ),
@@ -130,7 +130,7 @@ test_that("Test 2: Test that response is derived accurately, with No source_pd",
       filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR"),
       source_pd = NULL,
       source_datasets = NULL,
-      set_values_to = vars(
+      set_values_to = exprs(
         PARAMCD = "RSP",
         PARAM = "Response by investigator"
       ),

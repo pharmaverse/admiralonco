@@ -34,7 +34,7 @@ death_event <- event_source(
   dataset_name = "adrs",
   filter = PARAMCD == "DEATH" & AVALC == "Y" & ANL01FL == "Y",
   date = ADT,
-  set_values_to = vars(
+  set_values_to = exprs(
     EVNTDESC = "Death",
     SRCDOM = "ADRS",
     SRCVAR = "ADT",
@@ -48,7 +48,7 @@ death_event <- event_source(
 lastalive_censor <- censor_source(
   dataset_name = "adsl",
   date = LSTALVDT,
-  set_values_to = vars(
+  set_values_to = exprs(
     EVNTDESC = "Alive",
     CNSDTDSC = "Alive During Study",
     SRCDOM = "ADSL",
@@ -63,7 +63,7 @@ pd_event <- event_source(
   dataset_name = "adrs",
   filter = PARAMCD == "PD" & AVALC == "Y" & ANL01FL == "Y",
   date = ADT,
-  set_values_to = vars(
+  set_values_to = exprs(
     EVNTDESC = "Disease Progression",
     SRCDOM = "ADRS",
     SRCVAR = "ADT",
@@ -78,7 +78,7 @@ lasta_censor <- censor_source(
   dataset_name = "adrs",
   filter = PARAMCD == "LSTA" & ANL01FL == "Y",
   date = ADT,
-  set_values_to = vars(
+  set_values_to = exprs(
     EVNTDESC = "Last Tumor Assessment",
     CNSDTDSC = "Last Tumor Assessment",
     SRCDOM = "ADRS",
@@ -93,7 +93,7 @@ lasta_censor <- censor_source(
 rand_censor <- censor_source(
   dataset_name = "adsl",
   date = RANDDT,
-  set_values_to = vars(
+  set_values_to = exprs(
     EVNTDESC = "Randomization",
     CNSDTDSC = "Randomization",
     SRCDOM = "ADSL",
@@ -107,7 +107,7 @@ rand_censor <- censor_source(
 trts_censor <- censor_source(
   dataset_name = "adsl",
   date = TRTSDT,
-  set_values_to = vars(
+  set_values_to = exprs(
     EVNTDESC = "Treatment Start",
     CNSDTDSC = "Treatment Start",
     SRCDOM = "ADSL",

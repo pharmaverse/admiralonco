@@ -24,7 +24,7 @@ adrs <- tribble(
 test_that("signal_crpr Test 1: warning is issued", {
   expect_warning(signal_crpr(
     adrs,
-    order = vars(ADT)
+    order = exprs(ADT)
   ),
   paste(
     "Dataset contains CR records followed by PR.",
@@ -40,8 +40,8 @@ test_that("signal_crpr Test 2: error with custom message", {
   expect_error(signal_crpr(
     mutate(adrs, SUBJID = USUBJID) %>%
       select(-USUBJID, -STUDYID),
-    order = vars(ADT),
-    subject_keys = vars(SUBJID),
+    order = exprs(ADT),
+    subject_keys = exprs(SUBJID),
     check_type = "error",
     msg = "The modified dataset contains CR records followed by PR."
   ),
@@ -59,7 +59,7 @@ test_that("signal_crpr Test 2: error with custom message", {
 test_that("get_crpr_dataset() Test 2: dataset if returned", {
   suppress_warning(
     signal_crpr(adrs,
-      order = vars(ADT)
+      order = exprs(ADT)
     ),
     "Dataset contains CR records followed by PR"
   )

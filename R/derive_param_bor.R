@@ -121,14 +121,14 @@
 #'
 #' @param set_values_to New columns to set
 #'
-#'   A named list returned by `vars()` defining the columns to be set for the
-#'   new parameter, e.g. `vars(PARAMCD = "BOR", PARAM = "Best Overall
+#'   A named list returned by `exprs()` defining the columns to be set for the
+#'   new parameter, e.g. `exprs(PARAMCD = "BOR", PARAM = "Best Overall
 #'   Response")` is expected. The values must be symbols, character strings,
 #'   numeric values, or `NA`.
 #'
 #' @param subject_keys Columns to uniquely identify a subject
 #'
-#'   A list of symbols created using `vars()`.
+#'   A list of symbols created using `exprs()`.
 #'
 #'   *Permitted Values:* an `vars` object
 #'
@@ -209,8 +209,8 @@
 #'   select(-ADTC) %>%
 #'   derive_vars_merged(
 #'     dataset_add = adsl,
-#'     by_vars     = vars(STUDYID, USUBJID),
-#'     new_vars    = vars(TRTSDT)
+#'     by_vars     = exprs(STUDYID, USUBJID),
+#'     new_vars    = exprs(TRTSDT)
 #'   )
 #'
 #' pd_date <- date_source(
@@ -242,7 +242,7 @@
 #'   aval_fun = aval_fun_pass,
 #'   reference_date = TRTSDT,
 #'   ref_start_window = 28,
-#'   set_values_to = vars(
+#'   set_values_to = exprs(
 #'     PARAMCD = "BOR",
 #'     PARAM = "Best Overall Response"
 #'   )
@@ -274,25 +274,25 @@ derive_param_bor <- function(dataset,
   # Assert statements (checked in order of signature) ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-  reference_date <- assert_symbol(arg = enquo(reference_date))
+  reference_date <- assert_symbol(arg = enexpr(reference_date))
 
   assert_vars(arg = subject_keys)
 
   assert_data_frame(
     arg = dataset,
-    required_vars = quo_c(
+    required_vars = expr_c(
       subject_keys,
       reference_date,
-      vars(PARAMCD, ADT, AVALC)
+      exprs(PARAMCD, ADT, AVALC)
     )
   )
 
   assert_data_frame(
     arg           = dataset_adsl,
-    required_vars = quo_c(subject_keys)
+    required_vars = expr_c(subject_keys)
   )
 
-  filter_source <- assert_filter_cond(arg = enquo(filter_source))
+  filter_source <- assert_filter_cond(arg = enexpr(filter_source))
 
   assert_integer_scalar(
     arg      = ref_start_window,
@@ -308,7 +308,7 @@ derive_param_bor <- function(dataset,
 
   assert_param_does_not_exist(
     dataset = dataset,
-    param   = quo_get_expr(set_values_to$PARAMCD)
+    param   = set_values_to$PARAMCD
   )
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -341,7 +341,7 @@ derive_param_bor <- function(dataset,
     err_msg <- sprintf(
       "dataframe passed into %s argument with the filter %s has 0 records",
       "dataset",
-      deparse(quo_get_expr(filter_source))
+      deparse(filter_source)
     )
 
     abort(err_msg)
@@ -410,7 +410,7 @@ derive_param_bor <- function(dataset,
   ) %>%
     filter_extreme(
       by_vars = subject_keys,
-      order = vars(tmp_order, ADT),
+      order = exprs(tmp_order, ADT),
       mode = "first"
     ) %>%
     select(-tmp_order)
@@ -433,7 +433,7 @@ derive_param_bor <- function(dataset,
             " ",
             names(set_values_to),
             "=",
-            lapply(set_values_to, quo_get_expr),
+            set_values_to,
             collapse = "\n"
           ),
           "\n)\nError message:\n  ",
