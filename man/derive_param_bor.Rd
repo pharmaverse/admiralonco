@@ -110,9 +110,7 @@ numeric values, or \code{NA}.}
 
 \item{subject_keys}{Columns to uniquely identify a subject
 
-A list of symbols created using \code{exprs()}.
-
-\emph{Permitted Values:} an \code{vars} object}
+\emph{Permitted Values:} A list of symbols created using \code{exprs()}.}
 }
 \value{
 The dataframe passed in the \code{dataset} argument with additional columns and/or

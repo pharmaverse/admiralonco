@@ -128,9 +128,7 @@
 #'
 #' @param subject_keys Columns to uniquely identify a subject
 #'
-#'   A list of symbols created using `exprs()`.
-#'
-#'   *Permitted Values:* an `vars` object
+#'   *Permitted Values:* A list of symbols created using `exprs()`.
 #'
 #' @examples
 #'
