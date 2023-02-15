@@ -206,7 +206,7 @@ before any new parameters are derived.
 
 In order to calculate the sum of diameter of lesions, we need to 
 ensure that lesions are grouped correctly,  how this is done will be based on your company spefications but 
-individual lesions sizes could be grouped either by using the analysis date 'ADT' or by visit 'AVISIT'.  
+individual lesions sizes could be grouped either by using the analysis date 'ADT' or visit 'AVISIT'.  
 This is to ensure that each lesion size is only counted once in the calculation.  
 
 Below are some considerations depending on your analysis.
@@ -217,7 +217,7 @@ If your data collection allows for partial dates, you could apply a
 company-specific imputation rule when deriving the analysis date `ADT` (you could also add further 
 code to handle missing 'ADT', if this is a consideration).  
 
-In the example below, we impute the missing day to the earliest possible date and derive the analysis date 'ADT', and then 
+In the example below, we impute the missing day to the earliest possible date to derive the analysis date 'ADT', and then 
 re-derive the analysis day 'ADY'.  
 
 ```{r}
@@ -290,7 +290,7 @@ non-lymph nodes (sum of analysis values `AVAL` from source observations 'LDIAMn'
 
 In this vignette, the sum of the diameters is counted across all available lesion measurements, the ANL01FL
 describes the additional derivations required as per RECIST 1.1, and subsequently we build on this analysis 
-flag (ANLxxFL) to demonstrate additional analysis flags as example purposes only. The analysis flags therefore 
+flag (ANLxxFL (#analflag) to demonstrate additional analysis flags as example purposes only. The analysis flags therefore 
 should be setup according to your company specifications.
 
 In the example below, the lesion size are counted and grouped according to the 
@@ -328,14 +328,14 @@ assessed ('LSASS') or check for target lesion response (from `RS`) = 'NE'.   A t
 response of 'NE' means all lesions from baseline are not measured at that post-baseline visit.   
 
 Lesions can split or merge, if this is a consideration then this needs to be taken care 
-of when deciding on algorithms to use to check if all lesions are measured at post-baseline.
+of when deciding on the algorithm to use to check all lesions are measured at post-baseline.
 
 In the below example, the analysis flag, ANL01FL= Y identifies the largest
 target lesion sum of diameter on a particular date for reporting if there were
 multiple observations on the same date and where lesion assessed at
 post-baseline match baseline.
 
-NEED TO ADD MORE COMMENTS FOR THIS BLOCK OF CODE - TO COME BACK TO THIS.
+NEED TO COME BACK TO THIS BLOCK OF CODE FOR FURTHER COMMENTS - ONCE CLARIFIED WITH STEFAN
 
 ```{r}
 adtr_sum <- adtr_sum %>%
@@ -386,8 +386,9 @@ dataset_vignette(
 
 ## Derive Baseline (`ABLFL`, `BASE`) {#base}
 
-These functions are available in `admiral`, below examples show its usage for `ADTR`. Here
-we defined baseline as the last value.
+These functions are available in `admiral`, below examples show its usage for `ADTR`. 
+Here we create baseline flag 'ABLFL' by selecting all records prior to analysis day 1, and 
+then populate baseline value.
 
 ```{r}
 adtr_sum <- adtr_sum %>%
