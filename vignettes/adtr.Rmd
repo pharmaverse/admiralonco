@@ -106,12 +106,10 @@ library(stringr)
 
 To start, all data frames needed for the creation of the tumor results dataset
 should be read into the environment. This will be a company specific process.
-Some of the data frames needed may be `ADSL`, `ADRS` ,`RS`, `TU`, `TR`, 'SUPPTU' 
-and 'SUPPTR'.
+Some of the data frames needed may be `ADSL`, `ADRS` ,`RS`, `TU`, `TR`, 'SUPPTU' and 'SUPPTR'.
 
 For example purposes, the SDTM and ADaM datasets (based on CDISC Pilot test
-data)---which are included in `{admiral.test}`---are used.  Also, see [Handling of Missing Values] 
-explains why we need to use the [convert_blanks_to_na] function.
+data)---which are included in `{admiral.test}`---are used.  Also, see [Handling of Missing Values] explains why we need to use the [convert_blanks_to_na] function.
 
 ```{r}
 data("admiral_adsl")
@@ -142,9 +140,7 @@ tr <- ungroup(tr)
 tr <- filter(tr, USUBJID %in% c("01-701-1015", "01-701-1023", "01-701-1028"))
 ```
 
-At this step, it may be useful to join `ADSL` to your `TR` domain.  For efficiency, only the
-`ADSL` variables (in this example, Randomization date 'RANDDT') used for derivations are selected at this step.  
-The rest of the relevant `ADSL` variables would be added later.
+At this step, it may be useful to join `ADSL` to your `TR` domain.  For efficiency, only the `ADSL` variables (in this example, Randomization date 'RANDDT') used for derivations are selected at this step.  The rest of the relevant `ADSL` variables would be added later.
 
 ```{r eval=TRUE}
 adsl_vars <- vars(RANDDT)
@@ -158,10 +154,7 @@ tr <- derive_vars_merged(
 
 ## Merge TR with TU and derive new variables {#merge}
 
-Depending on your company specifications you may want to merge `TU` with `TR`. At this point 
-if you require any new variables these could be added in this step. As an example, here we 
-are keeping the tumor location ('TULOC'), and deriving a new variable for the tumor group site 
-('TULOCGR1'). 
+Depending on your company specifications you may want to merge `TU` with `TR`. At this point if you require any new variables these could be added in this step. As an example, here we are keeping the tumor location ('TULOC'), and deriving a new variable for the tumor group site ('TULOCGR1'). 
 
 ```{r}
 tr <- derive_vars_merged(
@@ -200,25 +193,20 @@ dataset_vignette(tr, display_vars = vars(USUBJID, TRLNKID, LSEXP, LSASS))
 
 ## Pre-processing of input records {#input}
 
-The next step involves company-specific pre-processing of records required downstream 
-prior to the parameter derivations to ensure that all the associated variable processing is done once,  
-before any new parameters are derived. 
+The next step involves company-specific pre-processing of records required downstream prior to the parameter derivations, to ensure that all the associated variable processing is done once before any new parameters are derived. 
 
 In order to calculate the sum of diameter of lesions, we need to 
-ensure that lesions are grouped correctly,  how this is done will be based on your company spefications but 
-individual lesions sizes could be grouped either by using the analysis date 'ADT' or visit 'AVISIT'.  
-This is to ensure that each lesion size is only counted once in the calculation.  
+ensure that lesions are grouped correctly,  how this is done will be based on your company specfications but individual lesions sizes could be grouped either by using the analysis date 'ADT' or visit 'AVISIT'. This is to ensure that each lesion size is only counted once.  
 
 Below are some considerations depending on your analysis.
+
 
 ### Partial Date Imputation and Deriving `ADT`, `ADTF`, `AVISIT` etc
 
 If your data collection allows for partial dates, you could apply a
-company-specific imputation rule when deriving the analysis date `ADT` (you could also add further 
-code to handle missing 'ADT', if this is a consideration).  
+company-specific imputation rule when deriving the analysis date `ADT` (you could also add further code to handle missing 'ADT', if this is a consideration).  
 
-In the example below, we impute the missing day to the earliest possible date to derive the analysis date 'ADT', and then 
-re-derive the analysis day 'ADY'.  
+In the example below, we impute the missing day to the earliest possible date to derive the analysis date 'ADT', and then re-derive the analysis day 'ADY'.  
 
 ```{r}
 tr <- derive_vars_dt(
@@ -241,9 +229,7 @@ dataset_vignette(tr, display_vars = vars(USUBJID, RANDDT, TRLNKID, TRDTC, ADT, A
 ### Unscheduled visits
 
 If you have data collected at unscheduled visits, these could be identified as
-uniquely in your SDTM.  However, if this is not the case and your grouping lesions by 
-visit then you will need to amend the below code to apply company specific algorithm to 
-re-label unscheduled visits as per your specifications.
+uniquely in your SDTM.  However, if this is not the case and your grouping lesions by visit then you will need to amend the below code to apply company specific algorithm to re-label unscheduled visits as per your specifications.
 
 ```{r}
 tr <- mutate(
@@ -255,10 +241,9 @@ tr <- mutate(
 
 ## Derive Parameters for Lesion Diameters ('LDIAMn' and'NLDIAMn'){#parameters}
 
-Depending on your company specifications you may either create parameters for Target Lesion diameter 
-for lymph nodes ('LDIAMn') and non-lymph nodes ('NLDIAMn') in ADTR or similar dataset.
+Depending on your company specifications you may either create parameters for Target Lesion diameter for lymph nodes ('LDIAMn') and non-lymph nodes ('NLDIAMn') in ADTR or similar dataset.
 
-Set up the Parameter details and `AVAL/ANL01FL` variables.
+The below examples show the set up of the parameter details and the `AVAL/ANL01FL` variables.
       
 ```{r}
 adtr <- tr %>%
@@ -285,17 +270,11 @@ dataset_vignette(
 ## Derive Parameter for Sum of Diameter and Analysis Flag `ANL01FL` {#SDIAM}
 
 Sum of Target Lesions Diameters is the sum of the diameters of both lymph and
-non-lymph nodes (sum of analysis values `AVAL` from source observations 'LDIAMn' &
-'LNDIAMn').   
+non-lymph nodes (sum of analysis values `AVAL` from source observations'LDIAMn' & 'LNDIAMn').   
 
-In this vignette, the sum of the diameters is counted across all available lesion measurements, the ANL01FL
-describes the additional derivations required as per RECIST 1.1, and subsequently we build on this analysis 
-flag (ANLxxFL (#analflag) to demonstrate additional analysis flags as example purposes only. The analysis flags therefore 
-should be setup according to your company specifications.
+In this vignette, the sum of the diameters is counted across all available lesion measurements, the ANL01FL selects the records that should be used as part of the analysis based on RECIST 1.1.  Subsequently we build on this analysis flag (see ANLxxFL (#analflag)) to demonstrate additional analysis flags as example purposes only. The analysis flags therefore should be setup according to your company specifications.
 
-In the example below, the lesion size are counted and grouped according to the 
-by variables specified, in this case we group according to the visit ('AVISIT' and 'AVISIT') to 
-ensure that the correct lesion measurements are summed together. 
+In the example below, the lesion sizes are counted and grouped according to the by variables specified, in this case we group by the visit ('AVISIT' and 'AVISIT') to ensure that the correct lesion measurements are summed together. 
 
 ```{r}
 adtr_sum <- get_summary_records(
@@ -316,23 +295,16 @@ adtr_sum <- get_summary_records(
 ```{r, echo=FALSE}
 dataset_vignette(
   arrange(adtr_sum, USUBJID, AVISITN),
-  d]isplay_vars = vars(USUBJID, PARAMCD, PARAM, AVISIT, AVAL)
+  display_vars = vars(USUBJID, PARAMCD, PARAM, AVISIT, AVAL)
 )
 ```  
 
-The analysis flag `ANL01FL` flags the sum of diameters where the number of lesions assessed
-at baseline and at post-baseline match.  To assess whether the number of lesions
-expected and assessed match, you could compare lesion identifiers (`TR.TRLNKID`)
-or use the previous variables set up earlier to compare lesion expected ('LSEXP') vs lesion
-assessed ('LSASS') or check for target lesion response (from `RS`) = 'NE'.   A target lesion 
-response of 'NE' means all lesions from baseline are not measured at that post-baseline visit.   
-
-Lesions can split or merge, if this is a consideration then this needs to be taken care 
-of when deciding on the algorithm to use to check all lesions are measured at post-baseline.
+The analysis flag `ANL01FL` flags the sum of diameters where the number of lesions assessed at baseline and at post-baseline match.  To assess whether the number of lesions expected and assessed match, you could compare lesion identifiers (`TR.TRLNKID`) or use the previous variables set up earlier to compare lesion expected ('LSEXP') vs lesion assessed ('LSASS') or check for target lesion response (from `RS`) = 'NE'.   A target lesion response of 'NE' means all lesions from baseline are not measured at that post-baseline visit.   
+Lesions can split or merge, if this is a consideration then this needs to be taken care of when deciding on the algorithm to use to check that all lesions are measured at post-baseline.
 
 In the below example, the analysis flag, ANL01FL= Y identifies the largest
 target lesion sum of diameter on a particular date for reporting if there were
-multiple observations on the same date and where lesion assessed at
+multiple observations on the same date and where lesions assessed at
 post-baseline match baseline.
 
 NEED TO COME BACK TO THIS BLOCK OF CODE FOR FURTHER COMMENTS - ONCE CLARIFIED WITH STEFAN
@@ -386,9 +358,7 @@ dataset_vignette(
 
 ## Derive Baseline (`ABLFL`, `BASE`) {#base}
 
-These functions are available in `admiral`, below examples show its usage for `ADTR`. 
-Here we create baseline flag 'ABLFL' by selecting all records prior to analysis day 1, and 
-then populate baseline value.
+These functions are available in `admiral`, below examples show its usage for `ADTR`. Here we create baseline record flag 'ABLFL' by selecting all records prior to analysis day 1, and then derive the baseline value 'BASE'.
 
 ```{r}
 adtr_sum <- adtr_sum %>%
@@ -409,8 +379,7 @@ adtr_sum <- adtr_sum %>%
 
 ## Derive `NADIR` {#nadir}
 
-Once we have Sum of Target Diameters parameter ('SDIAM'), the 'NADIR' is set to the lowest sum of diameters in
-Analysis Value ('AVAL') before the current observation, where all lesions were assessed (i.e ANL01FL=Y).  The
+Once we have Sum of Target Diameters parameter ('SDIAM'), the 'NADIR' is set to the lowest sum of diameters in Analysis Value ('AVAL') before the current observation, where all lesions were assessed (i.e ANL01FL=Y).  The
 first observations after baseline (depending on how you have defined baseline
 earlier) is set to the baseline value.
 
@@ -439,8 +408,7 @@ dataset_vignette(
 ## Derive Change from Baseline (`CHG`, `PCHG`) {#chg}
 
 These functions are available in 'admiral', below examples show its usage for
-`ADTR`.  We calculate the change from baseline and percentage change from
-baseline for the parameter 'SDIAM' and the variable `NADIR`.
+`ADTR`.  We calculate the change from baseline ('CHG', 'CHGNAD') and percentage change from baseline ('PCHG' , 'PCHGNAD') for the parameter 'SDIAM' and the variable `NADIR`.
 
 ```{r}
 adtr_sum <- adtr_sum %>%
@@ -455,7 +423,7 @@ adtr_sum <- adtr_sum %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   arrange(adtr_sum, USUBJID, AVISITN),
-  display_vars = vars(USUBJID, AVISIT, AVAL, NADIR, ,BASE, CHG, PCHG, CHGNAD, PCHGNAD)
+  display_vars = vars(USUBJID, AVISIT, AVAL, NADIR ,BASE, CHG, PCHG, CHGNAD, PCHGNAD)
 )
 ```  
 
@@ -467,22 +435,32 @@ variables defined as per your company specifications.
 
 ### Derive `PDFL`
 
-In this example, we want to flag when a patient has had PD.  This could be done
-in a number of ways:
+In this example, we want to flag when a patient has had PD.  This could be done in a number of ways:
 
-1. take the date of PD from `ADRS`
+1. Take the date of PD from `ADRS`
 
-2. take the first date when the overall response is PD from `RS` or
+2. Take the first date when the overall response is PD from `RS` or
 
-3. Calculate from source data, the derivation for PD for target lesions is based
-on the calculated sum of diameters of the assessed lesions results in a
+3. Target lesion response of no 'CR' at the current observation visit and but a 'CR' response at the nadir observation
+
+4. Calculate from source data, the derivation for PD for target lesions is based on the calculated sum of diameters of the assessed lesions results in a
 calculated Percent Change from NADIR >=20% and a calculated Change from NADIR
->=5mm depending on your company specifications.
+>=5mm.
 
-4. Target lesion response of no 'CR' at the current observation visit and but a 'CR' response 
-at the nadir observation
-  
+
 See below example.
+
+
+In this example, `CRFL` flags where the patient has had Complete Response, and
+`CRNFL`, flags where Complete response contributed to the NADIR calculation.
+    
+
+```{r}
+adtr_sum <- adtr_sum %>% mutate(
+  CRFL = if_else(AVAL == 0 & ANL01FL == "Y", "Y", NA_character_),
+  CRNFL = if_else(NADIR == 0, "Y", NA_character_)
+)
+```    
 
 ```{r}
 adtr_sum <- adtr_sum %>%
@@ -498,24 +476,12 @@ dataset_vignette(
 )
 ```
   
-In this example, `CRFL` flags where the patient has had Complete Response, and
-`CRNFL`, flags where Complete response contributed to the NADIR calculation.
-    
-
-```{r}
-adtr_sum <- adtr_sum %>% mutate(
-  CRFL = if_else(AVAL == 0 & ANL01FL == "Y", "Y", NA_character_),
-  CRNFL = if_else(NADIR == 0, "Y", NA_character_)
-)
-```    
 
 ## Derive Analysis Flags `ANLxxFL` {#analflag}
 
-Based on your analysis, additional analysis flags could be set up in `ADTR`.
-Below are some examples
+Based on your specifications, additional analysis flags ('ANLxxFL') could be set up in `ADTR`. Below are some examples which use the ANL01FL flag derived earlier for the sum of diameter parameter ('SDIAM') as a basis.
 
-Analysis 02 Flag only includes the visit with the lowest NADIR (lowest sum of
-diameter) compared across all visits.  Using the lowest percentage change from baseline ('PCHG').
+Analysis 02 Flag ('ANL02FL') only includes visits (where analysis date is e.g after randomization date ('RANDDT')) with the lowest NADIR (lowest sum of diameter) so maximum tumor shriekage by using the first non-missing lowest percentage change from baseline ('PCHG').
 
 ```{r}
 adtr_sum <- adtr_sum %>%
@@ -534,12 +500,11 @@ adtr_sum <- adtr_sum %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   arrange(adtr_sum, USUBJID, AVISITN),
-  display_vars = vars(USUBJID, AVISIT, AVAL, NADIR, ANL02FL)
+  display_vars = vars(USUBJID, AVISIT, AVAL, NADIR, PCHG, ANL01FL, ANL02FL)
 )
 ```  
 
-Analysis 03 flag includes `ANL01FL="Y"` and the sum of diameters
-until patient has had PD. Use the `PDFL` variable.
+Analysis 03 flag ('ANL03FL') includes all sum of diameters where all lesions were assessed (where 'ANL01FL=Y') until the patient has had PD, indicated by using the 'PDFL' variable.
 
 ```{r}
 adtr_sum <- adtr_sum %>%
@@ -561,12 +526,11 @@ adtr_sum <- adtr_sum %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   arrange(adtr_sum, USUBJID, AVISITN),
-  display_vars = vars(USUBJID, AVISIT, AVAL, NADIR, PDFL, ANL03FL)
+  display_vars = vars(USUBJID, AVISIT, AVAL, NADIR, PDFL, ANL01FL, ANL03FL)
 )
 ```  
 
-Analysis 04 flag includes all sum of diameters where all lesions were assessed and additionally those indicating PD. 
-Use 'PDFL' variable.
+Analysis 04 flag ('ANL04FL') includes all sum of diameters where all lesions were assessed (where 'ANL01FL=Y') and additionally those indicating PD using the 'PDFL' variable.
   
 ```{r}
 adtr_sum <- adtr_sum %>%
@@ -638,4 +602,4 @@ ADTR | [ad_adtr.R](https://github.com/pharmaverse/admiralonco/blob/main/inst/tem
 
 
 
-
+pkgdown::build_site()
