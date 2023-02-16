@@ -46,14 +46,6 @@ ADT is set NA.'><meta property="og:image" content="https://pharmaverse.github.io
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/devel">devel</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/pre-release">pre-release</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -148,8 +140,8 @@ field of the <code><a href="https://pharmaverse.github.io/admiral/reference/date
 
 <dt>set_values_to</dt>
 <dd><p>Variables to set</p>
-<p>A named list returned by <code><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars()</a></code> defining the variables to be set for the
-new parameter, e.g. <code>vars(PARAMCD = "RSP", PARAM = "Response by investigator")</code> is expected.</p>
+<p>A named list returned by <code><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs()</a></code> defining the variables to be set for the
+new parameter, e.g. <code>exprs(PARAMCD = "RSP", PARAM = "Response by investigator")</code> is expected.</p>
 <p>The values must be symbols, character strings, numeric values or <code>NA</code>.</p></dd>
 
 
@@ -162,7 +154,7 @@ function must return a numeric vector.</p></dd>
 
 <dt>subject_keys</dt>
 <dd><p>Variables to uniquely identify a subject</p>
-<p>A list of symbols created using <code><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars()</a></code> is expected.</p></dd>
+<p>A list of symbols created using <code><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs()</a></code> is expected.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -264,7 +256,7 @@ the new observations.</p></li>
 <span class="r-in"><span>  filter_source <span class="op">=</span> <span class="va">PARAMCD</span> <span class="op">==</span> <span class="st">"OVR"</span> <span class="op">&amp;</span> <span class="va">AVALC</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CR"</span>, <span class="st">"PR"</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">ANL01FL</span> <span class="op">==</span> <span class="st">"Y"</span>,</span></span>
 <span class="r-in"><span>  source_pd <span class="op">=</span> <span class="va">pd</span>,</span></span>
 <span class="r-in"><span>  source_datasets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>adrs <span class="op">=</span> <span class="va">adrs</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  set_values_to <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  set_values_to <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    PARAMCD <span class="op">=</span> <span class="st">"RSP"</span>,</span></span>
 <span class="r-in"><span>    PARAM <span class="op">=</span> <span class="st">"Response by investigator"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span>,</span></span>
