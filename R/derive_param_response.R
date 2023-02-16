@@ -56,8 +56,8 @@
 #'
 #' @param set_values_to Variables to set
 #'
-#'   A named list returned by `vars()` defining the variables to be set for the
-#'   new parameter, e.g. `vars(PARAMCD = "RSP", PARAM = "Response by
+#'   A named list returned by `exprs()` defining the variables to be set for the
+#'   new parameter, e.g. `exprs(PARAMCD = "RSP", PARAM = "Response by
 #'   investigator")` is expected.
 #'
 #'   The values must be symbols, character strings, numeric values or `NA`.
@@ -71,7 +71,7 @@
 #'
 #' @param subject_keys Variables to uniquely identify a subject
 #'
-#'   A list of symbols created using `vars()` is expected.
+#'   A list of symbols created using `exprs()` is expected.
 #'
 #' @details
 #'
@@ -161,7 +161,7 @@
 #'   filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
 #'   source_pd = pd,
 #'   source_datasets = list(adrs = adrs),
-#'   set_values_to = vars(
+#'   set_values_to = exprs(
 #'     PARAMCD = "RSP",
 #'     PARAM = "Response by investigator"
 #'   ),
@@ -180,14 +180,14 @@ derive_param_response <- function(dataset,
   assert_vars(subject_keys)
   assert_data_frame(
     dataset,
-    required_vars = quo_c(subject_keys, vars(PARAMCD, ADT, AVALC))
+    required_vars = expr_c(subject_keys, exprs(PARAMCD, ADT, AVALC))
   )
   assert_data_frame(dataset_adsl)
-  filter_s <- assert_filter_cond(enquo(filter_source), optional = TRUE)
+  filter_s <- assert_filter_cond(enexpr(filter_source), optional = TRUE)
 
   assert_varval_list(set_values_to, accept_expr = TRUE, optional = TRUE)
   if (!is.null(set_values_to$PARAMCD) & !is.null(dataset)) {
-    assert_param_does_not_exist(dataset, quo_get_expr(set_values_to$PARAMCD))
+    assert_param_does_not_exist(dataset, set_values_to$PARAMCD)
   }
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -204,7 +204,7 @@ derive_param_response <- function(dataset,
         filter = !!filter_s,
         source_pd = source_pd,
         source_datasets = source_datasets,
-        subject_keys = vars(!!!subject_keys)
+        subject_keys = exprs(!!!subject_keys)
       )
   } else {
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -226,7 +226,7 @@ derive_param_response <- function(dataset,
       # Need to specify a filter otherwise:
       # ERROR ! Argument `filter_source` is missing, with no default
       filter_source = !!filter_s,
-      order = vars(ADT),
+      order = exprs(ADT),
       set_values_to = set_values_to
     ) %>%
     restrict_derivation(
@@ -234,6 +234,6 @@ derive_param_response <- function(dataset,
       args = params(
         aval_fun = aval_fun
       ),
-      filter = PARAMCD == quo_get_expr(set_values_to$PARAMCD)
+      filter = PARAMCD == !!set_values_to$PARAMCD
     )
 }
