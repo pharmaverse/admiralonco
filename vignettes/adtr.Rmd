@@ -115,7 +115,7 @@ rs <- admiral_rs
 tu <- convert_blanks_to_na(tu) %>%
   filter(TUEVAL == "INVESTIGATOR")
 tr <- convert_blanks_to_na(tr) %>%
-  filter(TREVAL == "INVESTIGATOR" & TRGRPID == "TARGET" & TRTESTCD == "DIAMETER")
+  filter(TREVAL == "INVESTIGATOR" & TRGRPID == "TARGET" & TRTESTCD %in% c("LDIAM", "LPERP"))
 rs <- convert_blanks_to_na(rs)
 ```
 
@@ -231,16 +231,28 @@ tr <- mutate(
 
 ## Derive Parameters for Lesion Diameters (`LDIAMn` & `NLDIAMn`){#parameters}
 
-Depending on your company specifications you may either create parameters for Target Lesion diameter for lymph nodes ('LDIAMn') and non-lymph nodes ('NLDIAMn') in ADTR or similar dataset.
+Depending on your company specifications you may either create parameters for Target Lesion diameter for lymph nodes (`LDIAMn`) and non-lymph nodes (`NLDIAMn`) in ADTR or similar dataset.
 
 The below examples show the set up of the parameter details and the analysis value & flag (`AVAL/ANL01FL`) variables.
       
 ```{r}
-adtr <- tr %>%
+adtr <- bind_rows(
+  tr %>%
+    filter(TRTESTCD == "LDIAM") %>%
+    mutate(
+      tmp_lesion_nr = str_sub(TRLNKID, 3),
+      PARAMCD = paste0("LDIAM", tmp_lesion_nr),
+      PARAM = paste("Target Lesion", tmp_lesion_nr, "Analysis Diameter")
+    ),
+  tr %>%
+    filter(TRTESTCD == "LPERP") %>%
+    mutate(
+      tmp_lesion_nr = str_sub(TRLNKID, 3),
+      PARAMCD = paste0("NLDIAM", tmp_lesion_nr),
+      PARAM = paste("Target Lesion", tmp_lesion_nr, "Analysis Perpendicular")
+    )
+) %>%
   mutate(
-    tmp_lesion_nr = str_sub(TRLNKID, 3),
-    PARAMCD = paste0("DIAM", tmp_lesion_nr),
-    PARAM = paste("Target Lesion", tmp_lesion_nr, "Analysis Diameter"),
     PARCAT1 = "Target Lesion(s)",
     PARCAT2 = "Investigator",
     PARCAT3 = "Recist 1.1",
@@ -271,6 +283,8 @@ In the example below, the lesion sizes are counted and grouped according to the 
 adtr_sum <- get_summary_records(
   adtr,
   by_vars = exprs(STUDYID, USUBJID, !!!adsl_vars, AVISIT, AVISITN),
+  filter = (str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
+    (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL"),
   analysis_var = AVAL,
   summary_fun = function(x) sum(x, na.rm = TRUE),
   set_values_to = exprs(
@@ -304,7 +318,8 @@ adtr_sum <- adtr_sum %>%
   derive_var_merged_summary(
     dataset_add = adtr,
     by_vars = exprs(USUBJID),
-    filter_add = AVISIT == "BASELINE" & str_detect(PARAMCD, "DIAM[12345]"),
+    filter_add = AVISIT == "BASELINE" & ((str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
+    (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")),
     new_var = LSEXP,
     analysis_var = TRLNKID,
     summary_fun = function(x) paste(sort(x), collapse = ", ")
@@ -312,7 +327,8 @@ adtr_sum <- adtr_sum %>%
   derive_var_merged_summary(
     dataset_add = adtr,
     by_vars = exprs(USUBJID, AVISIT),
-    filter_add = str_detect(PARAMCD, "DIAM[12345]") & ANL01FL == "Y",
+    filter_add = ((str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
+    (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")) & ANL01FL == "Y",
     new_var = LSASS,
     analysis_var = TRLNKID,
     summary_fun = function(x) paste(sort(x), collapse = ", ")
@@ -320,7 +336,8 @@ adtr_sum <- adtr_sum %>%
   derive_var_merged_summary(
     dataset_add = adtr,
     by_vars = exprs(USUBJID, AVISIT),
-    filter_add = str_detect(PARAMCD, "DIAM[12345]"),
+    filter_add = (str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
+    (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL"),
     new_var = ADY,
     analysis_var = ADY,
     summary_fun = function(x) min(x, na.rm = TRUE)
@@ -328,7 +345,8 @@ adtr_sum <- adtr_sum %>%
   derive_var_merged_summary(
     dataset_add = adtr,
     by_vars = exprs(USUBJID, AVISIT),
-    filter_add = str_detect(PARAMCD, "DIAM[12345]"),
+    filter_add = (str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
+    (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL"),
     new_var = ADT,
     analysis_var = ADT,
     summary_fun = function(x) min(x, na.rm = TRUE)
@@ -479,7 +497,7 @@ adtr_sum <- adtr_sum %>%
     args = params(
       by_vars = exprs(USUBJID),
       new_var = ANL02FL,
-      order = exprs(AVAL),
+      order = exprs(PCHG),
       mode = "first"
     ),
     filter = ANL01FL == "Y"
