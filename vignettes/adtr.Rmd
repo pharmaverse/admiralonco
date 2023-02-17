@@ -132,12 +132,12 @@ tr <- filter(tr, USUBJID %in% c("01-701-1015", "01-701-1023", "01-701-1028"))
 At this step, it may be useful to join `ADSL` to your `TR` domain.  For efficiency, only the `ADSL` variables (in this example, Randomization date (`RANDDT`) used for derivations are selected at this step.  The rest of the relevant `ADSL` variables would be added later.
 
 ```{r eval=TRUE}
-adsl_vars <- vars(RANDDT)
+adsl_vars <- exprs(RANDDT)
 tr <- derive_vars_merged(
   tr,
   dataset_add = adsl,
   new_vars = adsl_vars,
-  by_vars = vars(STUDYID, USUBJID)
+  by_vars = exprs(STUDYID, USUBJID)
 )
 ```
 
@@ -149,8 +149,8 @@ Depending on your company specifications you may want to merge `TU` with `TR`. A
 tr <- derive_vars_merged(
   tr,
   dataset_add = rename(tu, TRLNKID = TULNKID),
-  new_vars = vars(TULOC),
-  by_vars = vars(STUDYID, USUBJID, TRLNKID)
+  new_vars = exprs(TULOC),
+  by_vars = exprs(STUDYID, USUBJID, TRLNKID)
 ) %>% mutate(
   TULOCGR1 = if_else(
     TULOC == "LYMPH NODE",
@@ -161,7 +161,7 @@ tr <- derive_vars_merged(
 ```
 
 ```{r, echo=FALSE}
-dataset_vignette(tr, display_vars = vars(USUBJID, VISIT, TRLNKID, TULOC, TULOCGR1))
+dataset_vignette(tr, display_vars = exprs(USUBJID, VISIT, TRLNKID, TULOC, TULOCGR1))
 ```  
 
 Furthermore, you could create additional new variables that are required
@@ -177,7 +177,7 @@ tr <- mutate(
 ```
 
 ```{r, echo=FALSE}
-dataset_vignette(tr, display_vars = vars(USUBJID, TRLNKID, VISIT, LSEXP, LSASS))
+dataset_vignette(tr, display_vars = exprs(USUBJID, TRLNKID, VISIT, LSEXP, LSASS))
 ```  
 
 ## Pre-processing of input records {#input}
@@ -207,12 +207,12 @@ tr <- derive_vars_dt(
 ) %>%
   derive_vars_dy(
     reference_date = RANDDT,
-    source_vars = vars(ADT)
+    source_vars = exprs(ADT)
   )
 ```
 
 ```{r, echo=FALSE}
-dataset_vignette(tr, display_vars = vars(USUBJID, RANDDT, TRLNKID, TRDTC, ADT, ADTF, ADY))
+dataset_vignette(tr, display_vars = exprs(USUBJID, RANDDT, TRLNKID, TRDTC, ADT, ADTF, ADY))
 ```  
 
 ### Unscheduled visits
@@ -253,7 +253,7 @@ adtr <- tr %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   arrange(adtr, USUBJID, TRLNKID, AVISITN),
-  display_vars = vars(USUBJID, TRLNKID, AVISIT, PARAMCD, PARAM, AVAL, ANL01FL)
+  display_vars = exprs(USUBJID, TRLNKID, AVISIT, PARAMCD, PARAM, AVAL, ANL01FL)
 )
 ```
 
@@ -270,10 +270,10 @@ In the example below, the lesion sizes are counted and grouped according to the 
 ```{r}
 adtr_sum <- get_summary_records(
   adtr,
-  by_vars = vars(STUDYID, USUBJID, !!!adsl_vars, AVISIT, AVISITN),
+  by_vars = exprs(STUDYID, USUBJID, !!!adsl_vars, AVISIT, AVISITN),
   analysis_var = AVAL,
   summary_fun = function(x) sum(x, na.rm = TRUE),
-  set_values_to = vars(
+  set_values_to = exprs(
     PARAMCD = "SDIAM",
     PARAM = "Target Lesions Sum of Diameters by Investigator",
     PARCAT1 = "Target Lesion(s)",
@@ -286,7 +286,7 @@ adtr_sum <- get_summary_records(
 ```{r, echo=FALSE}
 dataset_vignette(
   arrange(adtr_sum, USUBJID, AVISITN),
-  display_vars = vars(USUBJID, PARAMCD, PARAM, AVISIT, AVAL)
+  display_vars = exprs(USUBJID, PARAMCD, PARAM, AVISIT, AVAL)
 )
 ```  
 
@@ -303,7 +303,7 @@ In the first step we concatenate lesions IDS measured `LSEXP` at baseline, and m
 adtr_sum <- adtr_sum %>%
   derive_var_merged_summary(
     dataset_add = adtr,
-    by_vars = vars(USUBJID),
+    by_vars = exprs(USUBJID),
     filter_add = AVISIT == "BASELINE" & str_detect(PARAMCD, "DIAM[12345]"),
     new_var = LSEXP,
     analysis_var = TRLNKID,
@@ -311,7 +311,7 @@ adtr_sum <- adtr_sum %>%
   ) %>%
   derive_var_merged_summary(
     dataset_add = adtr,
-    by_vars = vars(USUBJID, AVISIT),
+    by_vars = exprs(USUBJID, AVISIT),
     filter_add = str_detect(PARAMCD, "DIAM[12345]") & ANL01FL == "Y",
     new_var = LSASS,
     analysis_var = TRLNKID,
@@ -319,7 +319,7 @@ adtr_sum <- adtr_sum %>%
   ) %>%
   derive_var_merged_summary(
     dataset_add = adtr,
-    by_vars = vars(USUBJID, AVISIT),
+    by_vars = exprs(USUBJID, AVISIT),
     filter_add = str_detect(PARAMCD, "DIAM[12345]"),
     new_var = ADY,
     analysis_var = ADY,
@@ -327,7 +327,7 @@ adtr_sum <- adtr_sum %>%
   ) %>%
   derive_var_merged_summary(
     dataset_add = adtr,
-    by_vars = vars(USUBJID, AVISIT),
+    by_vars = exprs(USUBJID, AVISIT),
     filter_add = str_detect(PARAMCD, "DIAM[12345]"),
     new_var = ADT,
     analysis_var = ADT,
@@ -341,7 +341,7 @@ adtr_sum <- adtr_sum %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   arrange(adtr_sum, USUBJID, AVISITN),
-  display_vars = vars(USUBJID, PARAMCD, AVISIT, LSEXP, LSASS, ADT, ADY)
+  display_vars = exprs(USUBJID, PARAMCD, AVISIT, LSEXP, LSASS, ADT, ADY)
 )
 ```  
 
@@ -355,15 +355,15 @@ adtr_sum <- adtr_sum %>%
   restrict_derivation(
     derivation = derive_var_extreme_flag,
     args = params(
-      by_vars = vars(USUBJID),
-      order = vars(ADY),
+      by_vars = exprs(USUBJID),
+      order = exprs(ADY),
       new_var = ABLFL,
       mode = "last"
     ),
     filter = ADY <= 1
   ) %>%
   derive_var_base(
-    by_vars = vars(USUBJID)
+    by_vars = exprs(USUBJID)
   )
 ```
 
@@ -377,10 +377,10 @@ earlier) is set to the baseline value.
 adtr_sum <- adtr_sum %>%
   derive_vars_joined(
     dataset_add = adtr_sum,
-    by_vars = vars(USUBJID),
-    order = vars(AVAL),
-    new_vars = vars(NADIR = AVAL),
-    join_vars = vars(ADY),
+    by_vars = exprs(USUBJID),
+    order = exprs(AVAL),
+    new_vars = exprs(NADIR = AVAL),
+    join_vars = exprs(ADY),
     filter_add = ADY > 0 & ANL01FL == "Y",
     filter_join = ADY.join < ADY,
     mode = "first",
@@ -391,7 +391,7 @@ adtr_sum <- adtr_sum %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   arrange(adtr_sum, USUBJID, AVISITN),
-  display_vars = vars(USUBJID, PARAMCD, AVISIT, AVAL, NADIR)
+  display_vars = exprs(USUBJID, PARAMCD, AVISIT, AVAL, NADIR)
 )
 ```  
 
@@ -413,7 +413,7 @@ adtr_sum <- adtr_sum %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   arrange(adtr_sum, USUBJID, AVISITN),
-  display_vars = vars(USUBJID, AVISIT, AVAL, NADIR ,BASE, CHG, PCHG, CHGNAD, PCHGNAD)
+  display_vars = exprs(USUBJID, AVISIT, AVAL, NADIR ,BASE, CHG, PCHG, CHGNAD, PCHGNAD)
 )
 ```  
 
@@ -461,7 +461,7 @@ adtr_sum <- adtr_sum %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   arrange(adtr_sum, USUBJID, AVISITN),
-  display_vars = vars(USUBJID, AVISIT, AVAL, NADIR, CHGNAD, PCHGNAD, PDFL)
+  display_vars = exprs(USUBJID, AVISIT, AVAL, NADIR, CHGNAD, PCHGNAD, PDFL)
 )
 ```
   
@@ -477,9 +477,9 @@ adtr_sum <- adtr_sum %>%
   restrict_derivation(
     derivation = derive_var_extreme_flag,
     args = params(
-      by_vars = vars(USUBJID),
+      by_vars = exprs(USUBJID),
       new_var = ANL02FL,
-      order = vars(AVAL),
+      order = exprs(AVAL),
       mode = "first"
     ),
     filter = ANL01FL == "Y"
@@ -489,7 +489,7 @@ adtr_sum <- adtr_sum %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   arrange(adtr_sum, USUBJID, AVISITN),
-  display_vars = vars(USUBJID, AVISIT, AVAL, NADIR, PCHG, ANL01FL, ANL02FL)
+  display_vars = exprs(USUBJID, AVISIT, AVAL, NADIR, PCHG, ANL01FL, ANL02FL)
 )
 ```  
 
@@ -500,10 +500,10 @@ adtr_sum <- adtr_sum %>%
   restrict_derivation(
     derivation = derive_var_relative_flag,
     args = params(
-      by_vars = vars(USUBJID),
+      by_vars = exprs(USUBJID),
       new_var = ANL03FL,
       condition = PDFL == "Y",
-      order = vars(ADY),
+      order = exprs(ADY),
       mode = "first",
       selection = "before",
       inclusive = TRUE
@@ -515,7 +515,7 @@ adtr_sum <- adtr_sum %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   arrange(adtr_sum, USUBJID, AVISITN),
-  display_vars = vars(USUBJID, AVISIT, AVAL, NADIR, PDFL, ANL01FL, ANL03FL)
+  display_vars = exprs(USUBJID, AVISIT, AVAL, NADIR, PDFL, ANL01FL, ANL03FL)
 )
 ```  
 
@@ -531,7 +531,7 @@ adtr_sum <- adtr_sum %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   arrange(adtr_sum, USUBJID, AVISITN),
-  display_vars = vars(USUBJID, AVISIT, AVAL, NADIR, PDFL, ANL01FL, ANL04FL)
+  display_vars = exprs(USUBJID, AVISIT, AVAL, NADIR, PDFL, ANL01FL, ANL04FL)
 )
 ```  
 
@@ -548,8 +548,8 @@ derive `ASEQ`:
 ```{r eval=TRUE}
 adtr <- adtr %>%
   derive_var_obs_number(
-    by_vars = vars(STUDYID, USUBJID),
-    order = vars(PARAMCD, AVISITN, TRSEQ),
+    by_vars = exprs(STUDYID, USUBJID),
+    order = exprs(PARAMCD, AVISITN, TRSEQ),
     check_type = "error"
   )
 ```
@@ -557,7 +557,7 @@ adtr <- adtr %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   arrange(adtr, USUBJID, ASEQ),
-  display_vars = vars(USUBJID, PARAMCD, AVISIT, ASEQ, AVAL)
+  display_vars = exprs(USUBJID, PARAMCD, AVISIT, ASEQ, AVAL)
 )
 ```  
 
@@ -571,14 +571,14 @@ variables already merged held in vector `adsl_vars`.
 adtr <- adtr %>%
   derive_vars_merged(
     dataset_add = select(adsl, !!!negate_vars(adsl_vars)),
-    by_vars = vars(STUDYID, USUBJID)
+    by_vars = exprs(STUDYID, USUBJID)
   )
 ```
 
 ```{r, eval=TRUE, echo=FALSE}
 dataset_vignette(
   adtr,
-  display_vars = vars(USUBJID, RFSTDTC, RFENDTC, DTHDTC, DTHFL, AGE, AGEU)
+  display_vars = exprs(USUBJID, RFSTDTC, RFENDTC, DTHDTC, DTHFL, AGE, AGEU)
 )
 ```
 
