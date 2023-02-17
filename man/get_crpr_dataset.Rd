@@ -28,6 +28,7 @@ library(tibble)
 library(dplyr)
 library(lubridate)
 library(admiralonco)
+library(rlang)
 
 adrs <- tribble(
   ~USUBJID, ~ADTC,        ~AVALC,
@@ -44,7 +45,7 @@ adrs <- tribble(
     STUDYID = "XX1234"
   )
 
-signal_crpr(adrs, order = vars(ADT))
+signal_crpr(adrs, order = exprs(ADT))
 
 get_crpr_dataset()
 }

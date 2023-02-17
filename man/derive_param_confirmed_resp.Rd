@@ -91,14 +91,14 @@ function must return a numeric vector.
 
 \item{set_values_to}{Variables to set
 
-A named list returned by \code{vars()} defining the variables to be set for the
-new parameter, e.g. \code{vars(PARAMCD = "CRSP", PARAM = "Confirmed Response")}
+A named list returned by \code{exprs()} defining the variables to be set for the
+new parameter, e.g. \code{exprs(PARAMCD = "CRSP", PARAM = "Confirmed Response")}
 is expected. The values must be symbols, character strings, numeric values,
 or \code{NA}.}
 
 \item{subject_keys}{Variables to uniquely identify a subject
 
-A list of symbols created using \code{vars()} is expected.}
+A list of symbols created using \code{exprs()} is expected.}
 }
 \value{
 The input dataset with a new parameter for confirmed response
@@ -243,7 +243,7 @@ derive_param_confirmed_resp(
   source_pd = pd_date,
   source_datasets = list(adrs = adrs),
   ref_confirm = 28,
-  set_values_to = vars(
+  set_values_to = exprs(
     PARAMCD = "CRSP",
     PARAM = "Confirmed Response by Investigator"
   )
@@ -260,7 +260,7 @@ derive_param_confirmed_resp(
   ref_confirm = 28,
   max_nr_ne = 2,
   accept_sd = TRUE,
-  set_values_to = vars(
+  set_values_to = exprs(
     PARAMCD = "CRSP",
     PARAM = "Confirmed Response by Investigator"
   )

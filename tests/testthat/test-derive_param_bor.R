@@ -77,8 +77,8 @@ adrs <- tribble(
   select(-ADTC) %>%
   derive_vars_merged(
     dataset_add = adsl,
-    by_vars = vars(STUDYID, USUBJID),
-    new_vars = vars(TRTSDT)
+    by_vars = exprs(STUDYID, USUBJID),
+    new_vars = exprs(TRTSDT)
   )
 
 # Function to create numeric AVAL from AVALC, overwrites ADMIRAL defauly.
@@ -121,7 +121,6 @@ expected_01 <- bind_rows(
 
 # derive_param_bor, Test 1 ----
 test_that("derive_param_bor Test 1: No source_pd", {
-
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # default  BOR, All Subjects have a record after reference date ----
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -135,7 +134,7 @@ test_that("derive_param_bor Test 1: No source_pd", {
     reference_date = TRTSDT,
     ref_start_window = 28,
     aval_fun = aval_fun_pass,
-    set_values_to = vars(
+    set_values_to = exprs(
       PARAMCD = "BOR",
       PARAM = "Best Overall Response"
     )
@@ -160,7 +159,7 @@ test_that("derive_param_bor Test 1: No source_pd", {
     source_datasets = NULL,
     reference_date = TRTSDT,
     ref_start_window = 28,
-    set_values_to = vars(
+    set_values_to = exprs(
       PARAMCD = "BOR",
       PARAM = "Best Overall Response"
     )
@@ -198,7 +197,7 @@ test_that("derive_param_bor Test 1: No source_pd", {
     reference_date = TRTSDT,
     ref_start_window = 28,
     aval_fun = aval_fun_pass,
-    set_values_to = vars(
+    set_values_to = exprs(
       PARAMCD = "BOR",
       PARAM = "Best Overall Response"
     )
@@ -237,7 +236,7 @@ test_that("derive_param_bor Test 1: No source_pd", {
     reference_date = TRTSDT,
     ref_start_window = 28,
     aval_fun = aval_fun_pass,
-    set_values_to = vars(
+    set_values_to = exprs(
       PARAMCD = "BOR",
       PARAM = "Best Overall Response"
     )
@@ -295,7 +294,7 @@ test_that("derive_param_bor Test 2: With source_pd", {
     reference_date = TRTSDT,
     ref_start_window = 28,
     aval_fun = aval_fun_pass,
-    set_values_to = vars(
+    set_values_to = exprs(
       PARAMCD = "BOR",
       PARAM = "Best Overall Response"
     )
@@ -341,7 +340,7 @@ test_that("derive_param_bor Test 3: Test Error Mising Records For filter_source"
       reference_date = TRTSDT,
       ref_start_window = 28,
       aval_fun = aval_fun_pass,
-      set_values_to = vars(
+      set_values_to = exprs(
         PARAMCD = "BOR",
         PARAM = "Best Overall Response"
       )

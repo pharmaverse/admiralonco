@@ -52,7 +52,7 @@
 #' )
 call_aval_fun <- function(dataset,
                           aval_fun) {
-  assert_data_frame(dataset, required_vars = vars(AVALC))
+  assert_data_frame(dataset, required_vars = exprs(AVALC))
   assert_function(aval_fun)
 
   tryCatch(
