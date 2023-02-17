@@ -1,10 +1,11 @@
 # admiralonco 0.3.0
 
-## Updates of Existing Functions
-
-
 ## Breaking Changes
 
+- All function arguments which expected a list of quosures created by `vars()`
+are now expecting a list of expressions created by `exprs()`. For example,
+instead of `by_vars = vars(STUDYID, USUBJID)` `by_vars = exprs(STUDYID,
+USUBJID)` must be used now. (#197)
 
 ## Documentation
 

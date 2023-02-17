@@ -66,8 +66,8 @@ field of the \code{admiral::date_source()} object are expected in the dataset.}
 
 \item{set_values_to}{Variables to set
 
-A named list returned by \code{vars()} defining the variables to be set for the
-new parameter, e.g. \code{vars(PARAMCD = "RSP", PARAM = "Response by investigator")} is expected.
+A named list returned by \code{exprs()} defining the variables to be set for the
+new parameter, e.g. \code{exprs(PARAMCD = "RSP", PARAM = "Response by investigator")} is expected.
 
 The values must be symbols, character strings, numeric values or \code{NA}.}
 
@@ -79,7 +79,7 @@ function must return a numeric vector.}
 
 \item{subject_keys}{Variables to uniquely identify a subject
 
-A list of symbols created using \code{vars()} is expected.}
+A list of symbols created using \code{exprs()} is expected.}
 }
 \value{
 The input dataset with a new parameter indicating if and when a
@@ -170,7 +170,7 @@ derive_param_response(
   filter_source = PARAMCD == "OVR" & AVALC \%in\% c("CR", "PR") & ANL01FL == "Y",
   source_pd = pd,
   source_datasets = list(adrs = adrs),
-  set_values_to = vars(
+  set_values_to = exprs(
     PARAMCD = "RSP",
     PARAM = "Response by investigator"
   ),
