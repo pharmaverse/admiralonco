@@ -80,17 +80,17 @@ library(admiralonco)
 # Programming Workflow
 
 * [Read in Data](#readdata)
-* [Merge TR with TU and derive new variables](#merge)
-* [Pre-processing of input records](#input)
-* [Derive Parameters for Lesion Diameters (LDIAMn, NLDIAMn)](#parameters)
-* [Derive Parameter for Sum of Diameters (SDIAM) and ANL01FL](#sdiam)
-* [Derive Baseline (ABLFL, BASE)](#base)
+* [Merge `TR` with `TU` and Derive New Variables](#merge)
+* [Pre-processing of Input Records](#input)
+* [Derive Parameters for Lesion Diameters (`LDIAMn`, `NLDIAMn`)](#parameters)
+* [Derive Parameter for Sum of Diameters (`SDIAM`) and `ANL01FL`](#sdiam)
+* [Derive Baseline (`ABLFL`, `BASE`)](#base)
 * [Derive NADIR](#nadir)
-* [Derive Change from Baseline (CHG, PCHG)](#chg)
-* [Derive Additional Flag Variables (e.g. CRFL, CRNFL, PDFL, PDFL](#addflag)
-* [Derive Additional Analysis Flags (e.g. ANLxxFL](#analflag)
+* [Derive Change from Baseline (`CHG`, `PCHG`)](#chg)
+* [Derive Additional Flag Variables (e.g. `CRFL`, `CRNFL`, `PDFL`, `PDFL`](#addflag)
+* [Derive Additional Analysis Flags (e.g. `ANLxxFL`](#analflag)
 * [Derive Analysis Sequence Number (`ASEQ`)](#aseq)
-* [Add ADSL Variables](#adslvars)
+* [Add `ADSL` Variables](#adslvars)
 
 ## Read in Data {#readdata}
 
@@ -141,7 +141,7 @@ tr <- derive_vars_merged(
 )
 ```
 
-## Merge TR with TU and derive new variables {#merge}
+## Merge `TR` with `TU` and Derive New Variables {#merge}
 
 Depending on your company specifications you may want to merge `TU` with `TR`. At this point if you require any new variables these could be added in this step. As an example, here we are keeping the tumor location (`TULOC`), and deriving a new variable for the tumor group site (`TULOCGR1`). 
 
@@ -180,7 +180,7 @@ tr <- mutate(
 dataset_vignette(tr, display_vars = exprs(USUBJID, TRLNKID, VISIT, LSEXP, LSASS))
 ```  
 
-## Pre-processing of input records {#input}
+## Pre-processing of Input Records {#input}
 
 The next step involves company-specific pre-processing of records required downstream prior to the parameter derivations, to ensure that all the associated variable processing is done once before any new parameters are derived. 
 
@@ -229,7 +229,7 @@ tr <- mutate(
 ```
 
 
-## Derive Parameters for Lesion Diameters ('LDIAMn' & 'NLDIAMn'){#parameters}
+## Derive Parameters for Lesion Diameters (`LDIAMn` & `NLDIAMn`){#parameters}
 
 Depending on your company specifications you may either create parameters for Target Lesion diameter for lymph nodes ('LDIAMn') and non-lymph nodes ('NLDIAMn') in ADTR or similar dataset.
 
@@ -257,7 +257,7 @@ dataset_vignette(
 )
 ```
 
-## Derive Parameter for Sum of Diameter and Analysis Flag `ANL01FL` {#SDIAM}
+## Derive Parameter for Sum of Diameter and Analysis Flag `ANL01FL` {#sdiam}
 
 Sum of Target Lesions Diameters is the sum of the diameters of both lymph and
 non-lymph nodes (sum of analysis values `AVAL` from source observations `LDIAMn` & `LNDIAMn`).   
@@ -562,7 +562,7 @@ dataset_vignette(
 ```  
 
 
-## Add ADSL Variables {#adslvars}
+## Add `ADSL` Variables {#adslvars}
   
 If needed, the other `ADSL` variables can now be added. List of `ADSL`
 variables already merged held in vector `adsl_vars`.
