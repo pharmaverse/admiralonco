@@ -413,7 +413,7 @@ adtr_sum <- adtr_sum %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   arrange(adtr_sum, USUBJID, AVISITN),
-  display_vars = exprs(USUBJID, AVISIT, AVAL, NADIR ,BASE, CHG, PCHG, CHGNAD, PCHGNAD)
+  display_vars = exprs(USUBJID, AVISIT, AVAL, NADIR, BASE, CHG, PCHG, CHGNAD, PCHGNAD)
 )
 ```  
 
