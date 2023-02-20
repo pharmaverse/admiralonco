@@ -115,18 +115,14 @@ rs <- admiral_rs
 tu <- convert_blanks_to_na(tu) %>%
   filter(TUEVAL == "INVESTIGATOR")
 tr <- convert_blanks_to_na(tr) %>%
-  filter(TREVAL == "INVESTIGATOR" & TRGRPID == "TARGET" & TRTESTCD %in% c("LDIAM", "LPERP"))
+  filter(
+    TREVAL == "INVESTIGATOR" & TRGRPID == "TARGET" & TRTESTCD %in% c("LDIAM", "LPERP")
+  )
 rs <- convert_blanks_to_na(rs)
 ```
 
 ```{r echo=FALSE}
-# work-around for https://github.com/pharmaverse/admiral.test/issues/98
-# should be removed once the bug is fixed
-tr <- ungroup(tr)
-```
-
-```{r echo=FALSE}
-tr <- filter(tr, USUBJID %in% c("01-701-1015", "01-701-1023", "01-701-1028"))
+tr <- filter(tr, USUBJID %in% c("01-701-1015", "01-701-1023", "01-701-1440"))
 ```
 
 At this step, it may be useful to join `ADSL` to your `TR` domain.  For efficiency, only the `ADSL` variables (in this example, Randomization date (`RANDDT`) used for derivations are selected at this step.  The rest of the relevant `ADSL` variables would be added later.
@@ -307,7 +303,9 @@ dataset_vignette(
 The analysis flag `ANL01FL` flags the sum of diameters where the number of lesions assessed at baseline and at post-baseline match.  To assess whether the number of lesions expected and assessed match, you could compare lesion identifiers (`TR.TRLNKID`) or use the previous variables set up earlier to compare lesion expected (`LSEXP`) vs lesion assessed (`LSASS`) or check for target lesion response (from `RS`) = `NE`.   A target lesion response of `NE` means all lesions from baseline are not measured at that post-baseline visit.   
 Lesions can split or merge, if this is a consideration then this needs to be taken care of when deciding on which algorithm to use to check that all lesions are measured at post-baseline.
 
-In the below example, we use {'derive_var_merged_summary'} function multiple times in order to process additional variables for sum of diameter parameter, and calculate the analysis flag (`ANL01FL= Y`).  
+In the below example, we use `derive_var_merged_summary()` function multiple
+times in order to process additional variables for sum of diameter parameter,
+and calculate the analysis flag (`ANL01FL= Y`).
 
 In the first step we concatenate lesions IDS measured `LSEXP` at baseline, and merge in with the second step where we concatenate the lesions IDS assessed `LSASS` at that visit record.  You can then compare `LSEXP` vs `LSASS` at each visit,  the analysis flag is set `ANL01FL= Y` where lesions assessed at post- baseline match baseline.  If there were multiple observations on the same date, the largest sum of diameter is flagged.
 
@@ -319,7 +317,7 @@ adtr_sum <- adtr_sum %>%
     dataset_add = adtr,
     by_vars = exprs(USUBJID),
     filter_add = AVISIT == "BASELINE" & ((str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
-    (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")),
+      (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")),
     new_var = LSEXP,
     analysis_var = TRLNKID,
     summary_fun = function(x) paste(sort(x), collapse = ", ")
@@ -328,7 +326,7 @@ adtr_sum <- adtr_sum %>%
     dataset_add = adtr,
     by_vars = exprs(USUBJID, AVISIT),
     filter_add = ((str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
-    (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")) & ANL01FL == "Y",
+      (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")) & ANL01FL == "Y",
     new_var = LSASS,
     analysis_var = TRLNKID,
     summary_fun = function(x) paste(sort(x), collapse = ", ")
@@ -337,7 +335,7 @@ adtr_sum <- adtr_sum %>%
     dataset_add = adtr,
     by_vars = exprs(USUBJID, AVISIT),
     filter_add = (str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
-    (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL"),
+      (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL"),
     new_var = ADY,
     analysis_var = ADY,
     summary_fun = function(x) min(x, na.rm = TRUE)
@@ -346,7 +344,7 @@ adtr_sum <- adtr_sum %>%
     dataset_add = adtr,
     by_vars = exprs(USUBJID, AVISIT),
     filter_add = (str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
-    (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL"),
+      (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL"),
     new_var = ADT,
     analysis_var = ADT,
     summary_fun = function(x) min(x, na.rm = TRUE)
@@ -424,7 +422,7 @@ adtr_sum <- adtr_sum %>%
   derive_var_pchg() %>%
   mutate(
     CHGNAD = AVAL - NADIR,
-    PCHGNAD = 100 * CHGNAD / NADIR
+    PCHGNAD = if_else(NADIR == 0, NA_real_, 100 * CHGNAD / NADIR)
   )
 ```
 
@@ -447,41 +445,105 @@ In this example, we want to flag when a patient has had `PD`.  This could be don
 
 1. Take the date of PD from `ADRS`
 
-2. Take the first date when the overall response is `PD` from `RS` 
-
-3. Target lesion response of no `CR` at the current observation visit and but a `CR` response at the `NADIR` observation
-
-4. Calculate from source data, the derivation for `PD` for target lesions is based on the calculated sum of diameters of the assessed lesions results in a
-calculated Percent Change from NADIR >=20% (`PCHGNAD`) and a calculated Change from NADIR >=5mm (`CHGNAD`).
-
-
-See below example.
-
-
-In this example, `CRFL` flags where the patient has had Complete Response, and
-`CRNFL`, flags where Complete response contributed to the `NADIR` calculation.
-    
-
-```{r}
-adtr_sum <- adtr_sum %>% mutate(
-  CRFL = if_else(AVAL == 0 & ANL01FL == "Y", "Y", NA_character_),
-  CRNFL = if_else(NADIR == 0, "Y", NA_character_)
-)
-```    
-
-```{r}
+    ```{r eval=TRUE}
 adtr_sum <- adtr_sum %>%
-  mutate(
-    PDFL = if_else(PCHGNAD >= 20 & CHGNAD >= 5 | is.na(CRFL) & CRNFL == "Y", "Y", NA_character_)
+  derive_var_merged_exist_flag(
+    dataset_add = adrs,
+    filter_add = PARAMCD == "PD",
+    by_vars = exprs(USUBJID, ADT),
+    new_var = PDFL,
+    condition = AVALC == "Y"
   )
-```
+    ```
 
-```{r, echo=FALSE}
+    ```{r, echo=FALSE}
 dataset_vignette(
   arrange(adtr_sum, USUBJID, AVISITN),
   display_vars = exprs(USUBJID, AVISIT, AVAL, NADIR, CHGNAD, PCHGNAD, PDFL)
 )
-```
+
+adtr_sum <- select(adtr_sum, -PDFL)
+    ```
+
+2. Take the first date when the overall response is `PD` from `RS` 
+
+    ```{r eval=TRUE}
+adtr_sum <- adtr_sum %>%
+  derive_var_merged_exist_flag(
+    dataset_add = derive_vars_dt(
+      rs,
+      dtc = RSDTC,
+      new_vars_prefix = "A",
+      highest_imputation = "D",
+      flag_imputation = "none"
+    ),
+    filter_add = RSTESTCD == "OVRLRESP",
+    by_vars = exprs(USUBJID, ADT),
+    new_var = PDFL,
+    condition = RSSTRESC == "PD"
+  )
+    ```
+
+    ```{r, echo=FALSE}
+dataset_vignette(
+  arrange(adtr_sum, USUBJID, AVISITN),
+  display_vars = exprs(USUBJID, AVISIT, AVAL, NADIR, CHGNAD, PCHGNAD, PDFL)
+)
+
+adtr_sum <- select(adtr_sum, -PDFL)
+    ```
+
+3. Target lesion response of no `CR` at the current observation visit and but a `CR` response at the `NADIR` observation
+
+    ```{r}
+adtr_sum <- adtr_sum %>% mutate(
+  CRFL = if_else(AVAL == 0 & ANL01FL == "Y", "Y", NA_character_),
+  CRNFL = if_else(NADIR == 0, "Y", NA_character_),
+  PDFL = if_else(is.na(CRFL) & CRNFL == "Y", "Y", NA_character_)
+)
+    ```
+
+    ```{r, echo=FALSE}
+dataset_vignette(
+  arrange(adtr_sum, USUBJID, AVISITN),
+  display_vars = exprs(USUBJID, AVISIT, AVAL, NADIR, CHGNAD, PCHGNAD, PDFL)
+)
+
+adtr_sum <- select(adtr_sum, -PDFL, -CRFL, -CRNFL)
+    ```
+
+
+4. Calculate from source data, the derivation for `PD` for target lesions is based on the calculated sum of diameters of the assessed lesions results in a
+calculated Percent Change from NADIR >=20% (`PCHGNAD`) and a calculated Change from NADIR >=5mm (`CHGNAD`).
+
+    In this example, `CRFL` flags where the patient has had Complete Response,
+    and `CRNFL`, flags where Complete response contributed to the `NADIR`
+    calculation.
+    
+    ```{r}
+adtr_sum <- adtr_sum %>% mutate(
+  CRFL = if_else(AVAL == 0 & ANL01FL == "Y", "Y", NA_character_),
+  CRNFL = if_else(NADIR == 0, "Y", NA_character_)
+)
+    ```    
+
+    ```{r}
+adtr_sum <- adtr_sum %>%
+  mutate(
+    PDFL = if_else(
+      PCHGNAD >= 20 & CHGNAD >= 5 | is.na(CRFL) & CRNFL == "Y",
+      "Y",
+      NA_character_
+    )
+  )
+    ```
+
+    ```{r, echo=FALSE}
+dataset_vignette(
+  arrange(adtr_sum, USUBJID, AVISITN),
+  display_vars = exprs(USUBJID, AVISIT, AVAL, NADIR, CHGNAD, PCHGNAD, PDFL)
+)
+    ```
   
 
 ## Derive Analysis Flags `ANLxxFL` {#analflag}
@@ -492,16 +554,28 @@ Analysis 02 Flag (`ANL02FL`) only includes visits (where analysis date is e.g af
 
 ```{r}
 adtr_sum <- adtr_sum %>%
+  derive_var_relative_flag(
+    by_vars = exprs(USUBJID),
+    order = exprs(ADT),
+    new_var = POSTRNDFL,
+    condition = ADT > RANDDT,
+    mode = "first",
+    selection = "after",
+    inclusive = TRUE,
+    flag_no_ref_groups = FALSE
+  ) %>%
   restrict_derivation(
     derivation = derive_var_extreme_flag,
     args = params(
       by_vars = exprs(USUBJID),
       new_var = ANL02FL,
       order = exprs(PCHG),
-      mode = "first"
+      mode = "first",
+      check_type = "none"
     ),
-    filter = ANL01FL == "Y"
-  )
+    filter = ANL01FL == "Y" & POSTRNDFL == "Y"
+  ) %>%
+  select(-POSTRNDFL)
 ```
 
 ```{r, echo=FALSE}
@@ -524,9 +598,9 @@ adtr_sum <- adtr_sum %>%
       order = exprs(ADY),
       mode = "first",
       selection = "before",
-      inclusive = TRUE
+      inclusive = FALSE
     ),
-    filter = ANL01FL == "Y"
+    filter = ANL01FL == "Y" | PDFL == "Y"
   )
 ```
 
