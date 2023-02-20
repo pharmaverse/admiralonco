@@ -186,7 +186,7 @@ derive_param_response <- function(dataset,
   filter_s <- assert_filter_cond(enquo(filter_source), optional = TRUE)
 
   assert_varval_list(set_values_to, accept_expr = TRUE, optional = TRUE)
-  if (!is.null(set_values_to$PARAMCD) & !is.null(dataset)) {
+  if (!is.null(set_values_to$PARAMCD) && !is.null(dataset)) {
     assert_param_does_not_exist(dataset, quo_get_expr(set_values_to$PARAMCD))
   }
 
