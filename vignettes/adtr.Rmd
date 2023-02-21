@@ -98,7 +98,10 @@ To start, all data frames needed for the creation of 'ADTR' should be read into 
 Some of the data frames needed may be `ADSL`, `ADRS` ,`RS`, `TU`, `TR`, `SUPPTU` `SUPPTR`.
 
 For example purposes, the SDTM and ADaM datasets (based on CDISC Pilot test
-data)---which are included in `{admiral.test}`---are used.  Also, see [Handling of Missing Values](#miss) explains why we need to use the [convert_blanks_to_na](#na) function.
+data)---which are included in `{admiral.test}`---are used.  Also, see [Handling
+of Missing
+Values](https://pharmaverse.github.io/admiral/cran-release/articles/admiral.html#handling-of-missing-values)
+explains why we need to use the `convert_blanks_to_na()` function.
 
 ```{r}
 data("admiral_adsl")
@@ -270,7 +273,12 @@ dataset_vignette(
 Sum of Target Lesions Diameters is the sum of the diameters of both lymph and
 non-lymph nodes (sum of analysis values `AVAL` from source observations `LDIAMn` & `LNDIAMn`).   
 
-In this vignette, the sum of the diameters is calculated across all the available lesion measurements, and we use the analysis flag `ANL01FL` to select the records that should be used as part of the analysis based on RECIST 1.1.  Subsequently we then build on this analysis flag (see [ANLxxFL] {#analflag} to demonstrate additional analysis flags for example purposes only. The analysis flags therefore should be setup according to your company specifications.
+In this vignette, the sum of the diameters is calculated across all the
+available lesion measurements, and we use the analysis flag `ANL01FL` to select
+the records that should be used as part of the analysis based on RECIST 1.1.
+Subsequently we then build on this analysis flag (see [`ANLxxFL`](#analflag) to
+demonstrate additional analysis flags for example purposes only. The analysis
+flags therefore should be setup according to your company specifications.
 
 
 In the example below, the lesion sizes are counted and grouped according to the by variables specified, in this case we group by the visit (`AVISIT` and `AVISIT`) to ensure that the correct lesion measurements are summed together. 
