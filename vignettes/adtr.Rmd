@@ -125,7 +125,12 @@ rs <- convert_blanks_to_na(rs)
 ```
 
 ```{r echo=FALSE}
-tr <- filter(tr, USUBJID %in% c("01-701-1015", "01-701-1023", "01-701-1440"))
+subjects <- c("01-701-1015", "01-701-1023", "01-701-1440")
+tr <- filter(tr, USUBJID %in% subjects)
+tu <- filter(tu, USUBJID %in% subjects)
+rs <- filter(rs, USUBJID %in% subjects)
+adsl <- filter(adsl, USUBJID %in% subjects)
+adrs <- filter(adrs, USUBJID %in% subjects)
 ```
 
 At this step, it may be useful to join `ADSL` to your `TR` domain.  For efficiency, only the `ADSL` variables (in this example, Randomization date (`RANDDT`) used for derivations are selected at this step.  The rest of the relevant `ADSL` variables would be added later.
@@ -303,7 +308,9 @@ adtr_sum <- get_summary_records(
 
 ```{r, echo=FALSE}
 dataset_vignette(
-  arrange(adtr_sum, USUBJID, AVISITN),
+  adtr_sum %>%
+    arrange(USUBJID, AVISITN) %>%
+    select(USUBJID, PARAMCD, PARAM, AVISIT, AVAL, everything()),
   display_vars = exprs(USUBJID, PARAMCD, PARAM, AVISIT, AVAL)
 )
 ```  
@@ -314,21 +321,21 @@ Lesions can split or merge, if this is a consideration then this needs to be tak
 
 In the below example, we use `derive_var_merged_summary()` function multiple
 times in order to process additional variables for sum of diameter parameter,
-and calculate the analysis flag (`ANL01FL= Y`).
+and calculate the analysis flag (`ANL01FL`).
 
 In the first step we concatenate lesions IDS measured `LSEXP` at baseline, and merge in with the second step where we concatenate the lesions IDS assessed `LSASS` at that visit record.  You can then compare `LSEXP` vs `LSASS` at each visit.
 
-In the third and fourth step we include the analysis day and date (`ADY`/`ADT`) variables to the sum of diameter parameter dataset.  If there are different analysis day/dates associated with a particular visit, we take the minimum day/date.  In the final step, the analysis flag is set `ANL01FL= Y` where lesions assessed at post-baseline match baseline.  
-
-
+In the final step, the analysis flag is set `ANL01FL = "Y"` where lesions
+assessed at post-baseline match baseline.
 
 ```{r}
 adtr_sum <- adtr_sum %>%
   derive_var_merged_summary(
     dataset_add = adtr,
     by_vars = exprs(USUBJID),
-    filter_add = AVISIT == "BASELINE" & ((str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
-      (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")),
+    filter_add = AVISIT == "BASELINE" &
+      ((str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
+        (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")),
     new_var = LSEXP,
     analysis_var = TRLNKID,
     summary_fun = function(x) paste(sort(x), collapse = ", ")
@@ -342,6 +349,17 @@ adtr_sum <- adtr_sum %>%
     analysis_var = TRLNKID,
     summary_fun = function(x) paste(sort(x), collapse = ", ")
   ) %>%
+  mutate(
+    ANL01FL = if_else(LSEXP == LSASS, "Y", NA_character_)
+  )
+```
+
+In the next step we include the analysis day and date (`ADY`/`ADT`) variables to
+the sum of diameter parameter dataset.  If there are different analysis
+day/dates associated with a particular visit, we take the minimum day/date.
+
+```{r}
+adtr_sum <- adtr_sum %>%
   derive_var_merged_summary(
     dataset_add = adtr,
     by_vars = exprs(USUBJID, AVISIT),
@@ -359,16 +377,13 @@ adtr_sum <- adtr_sum %>%
     new_var = ADT,
     analysis_var = ADT,
     summary_fun = function(x) min(x, na.rm = TRUE)
-  ) %>%
-  mutate(
-    ANL01FL = if_else(LSEXP == LSASS, "Y", NA_character_)
   )
 ```
 
 ```{r, echo=FALSE}
 dataset_vignette(
   arrange(adtr_sum, USUBJID, AVISITN),
-  display_vars = exprs(USUBJID, PARAMCD, AVISIT, LSEXP, LSASS, ADT, ADY)
+  display_vars = exprs(USUBJID, PARAMCD, AVISIT, LSEXP, LSASS, ANL01FL, ADT, ADY)
 )
 ```  
 
@@ -408,7 +423,7 @@ adtr_sum <- adtr_sum %>%
     order = exprs(AVAL),
     new_vars = exprs(NADIR = AVAL),
     join_vars = exprs(ADY),
-    filter_add = ADY > 0 & ANL01FL == "Y",
+    filter_add = ANL01FL == "Y",
     filter_join = ADY.join < ADY,
     mode = "first",
     check_type = "none"
@@ -417,8 +432,10 @@ adtr_sum <- adtr_sum %>%
 
 ```{r, echo=FALSE}
 dataset_vignette(
-  arrange(adtr_sum, USUBJID, AVISITN),
-  display_vars = exprs(USUBJID, PARAMCD, AVISIT, AVAL, NADIR)
+  adtr_sum %>%
+    arrange(USUBJID, AVISITN) %>%
+    select(USUBJID, PARAMCD, AVISIT, ADY, AVAL, NADIR, everything()),
+  display_vars = exprs(USUBJID, PARAMCD, AVISIT, ADY, AVAL, NADIR)
 )
 ```  
 
@@ -454,7 +471,7 @@ variables defined as per your company specifications.
 
 In this example, we want to flag when a patient has had `PD`.  This could be done in a number of ways:
 
-1. Take the date of PD from `ADRS`
+1. Take the date of `PD` from `ADRS`
 
     ```{r eval=TRUE}
 adtr_sum <- adtr_sum %>%
@@ -488,7 +505,7 @@ adtr_sum <- adtr_sum %>%
       highest_imputation = "D",
       flag_imputation = "none"
     ),
-    filter_add = RSTESTCD == "OVRLRESP",
+    filter_add = RSTESTCD == "OVRLRESP" & RSEVAL == "INVESTIGATOR",
     by_vars = exprs(USUBJID, ADT),
     new_var = PDFL,
     condition = RSSTRESC == "PD"
@@ -591,7 +608,9 @@ adtr_sum <- adtr_sum %>%
 
 ```{r, echo=FALSE}
 dataset_vignette(
-  arrange(adtr_sum, USUBJID, AVISITN),
+  adtr_sum %>%
+    arrange(USUBJID, AVISITN) %>%
+    select(USUBJID, AVISIT, AVAL, NADIR, PCHG, ANL01FL, ANL02FL, everything()),
   display_vars = exprs(USUBJID, AVISIT, AVAL, NADIR, PCHG, ANL01FL, ANL02FL)
 )
 ```  
@@ -617,7 +636,9 @@ adtr_sum <- adtr_sum %>%
 
 ```{r, echo=FALSE}
 dataset_vignette(
-  arrange(adtr_sum, USUBJID, AVISITN),
+  adtr_sum %>%
+    arrange(USUBJID, AVISITN) %>%
+    select(USUBJID, AVISIT, AVAL, NADIR, PDFL, ANL01FL, ANL02FL, ANL03FL, everything()),
   display_vars = exprs(USUBJID, AVISIT, AVAL, NADIR, PDFL, ANL01FL, ANL03FL)
 )
 ```  
@@ -633,7 +654,9 @@ adtr_sum <- adtr_sum %>%
 
 ```{r, echo=FALSE}
 dataset_vignette(
-  arrange(adtr_sum, USUBJID, AVISITN),
+  adtr_sum %>%
+    arrange(USUBJID, AVISITN) %>%
+    select(USUBJID, AVISIT, AVAL, NADIR, PDFL, ANL01FL, ANL02FL, ANL03FL, ANL04FL, everything()),
   display_vars = exprs(USUBJID, AVISIT, AVAL, NADIR, PDFL, ANL01FL, ANL04FL)
 )
 ```  
