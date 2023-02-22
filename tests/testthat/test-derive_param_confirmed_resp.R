@@ -81,7 +81,7 @@ test_that("derive_param_confirmed_resp Test 1: default confirmed response", {
         source_pd = pd_date,
         source_datasets = list(adrs = adrs),
         ref_confirm = 28,
-        set_values_to = vars(
+        set_values_to = exprs(
           PARAMCD = "CRSP",
           PARAM = "Confirmed Response by Investigator"
         )
@@ -144,7 +144,7 @@ test_that("derive_param_confirmed_resp Test 2: accept SD", {
         ref_confirm = 14,
         max_nr_ne = 0,
         accept_sd = TRUE,
-        set_values_to = vars(
+        set_values_to = exprs(
           PARAMCD = "CRSP",
           PARAM = "Confirmed Response by Investigator"
         )
@@ -205,7 +205,7 @@ test_that("derive_param_confirmed_resp Test 3: error if invalid response values"
       source_pd = pd_date,
       source_datasets = list(adrs = adrs),
       ref_confirm = 28,
-      set_values_to = vars(
+      set_values_to = exprs(
         PARAMCD = "CRSP",
         PARAM = "Confirmed Response by Investigator"
       )
@@ -216,7 +216,6 @@ test_that("derive_param_confirmed_resp Test 3: error if invalid response values"
 
 ## Test 4: No source_pd ----
 test_that("derive_param_confirmed_resp Test 4: No source_pd", {
-
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # source_pd = NULL, so tibble with two subjects:
   #    - USUBJID == 1 will be a response as responsed after PD.
@@ -247,7 +246,7 @@ test_that("derive_param_confirmed_resp Test 4: No source_pd", {
       source_pd = NULL,
       source_datasets = NULL,
       ref_confirm = 28,
-      set_values_to = vars(
+      set_values_to = exprs(
         PARAMCD = "CRSP",
         PARAM = "Confirmed Response by Investigator"
       )

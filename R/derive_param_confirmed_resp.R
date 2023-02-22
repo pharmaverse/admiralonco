@@ -76,14 +76,14 @@
 #'
 #' @param set_values_to Variables to set
 #'
-#'   A named list returned by `vars()` defining the variables to be set for the
-#'   new parameter, e.g. `vars(PARAMCD = "CRSP", PARAM = "Confirmed Response")`
+#'   A named list returned by `exprs()` defining the variables to be set for the
+#'   new parameter, e.g. `exprs(PARAMCD = "CRSP", PARAM = "Confirmed Response")`
 #'   is expected. The values must be symbols, character strings, numeric values,
 #'   or `NA`.
 #'
 #' @param subject_keys Variables to uniquely identify a subject
 #'
-#'   A list of symbols created using `vars()` is expected.
+#'   A list of symbols created using `exprs()` is expected.
 #'
 #' @details
 #'
@@ -233,7 +233,7 @@
 #'   source_pd = pd_date,
 #'   source_datasets = list(adrs = adrs),
 #'   ref_confirm = 28,
-#'   set_values_to = vars(
+#'   set_values_to = exprs(
 #'     PARAMCD = "CRSP",
 #'     PARAM = "Confirmed Response by Investigator"
 #'   )
@@ -250,7 +250,7 @@
 #'   ref_confirm = 28,
 #'   max_nr_ne = 2,
 #'   accept_sd = TRUE,
-#'   set_values_to = vars(
+#'   set_values_to = exprs(
 #'     PARAMCD = "CRSP",
 #'     PARAM = "Confirmed Response by Investigator"
 #'   )
@@ -268,7 +268,7 @@ derive_param_confirmed_resp <- function(dataset,
                                         set_values_to,
                                         subject_keys = get_admiral_option("subject_keys")) {
   # Check input parameters
-  filter_source <- assert_filter_cond(enquo(filter_source))
+  filter_source <- assert_filter_cond(enexpr(filter_source))
   assert_integer_scalar(ref_confirm, subset = "non-negative")
   assert_integer_scalar(max_nr_ne, subset = "non-negative")
   assert_logical_scalar(accept_sd)
@@ -276,11 +276,11 @@ derive_param_confirmed_resp <- function(dataset,
   assert_vars(subject_keys)
   assert_data_frame(
     dataset,
-    required_vars = quo_c(subject_keys, vars(PARAMCD, ADT, AVALC))
+    required_vars = expr_c(subject_keys, exprs(PARAMCD, ADT, AVALC))
   )
   assert_data_frame(dataset_adsl, required_vars = subject_keys)
   if (!is.null(dataset)) {
-    assert_param_does_not_exist(dataset, quo_get_expr(set_values_to$PARAMCD))
+    assert_param_does_not_exist(dataset, set_values_to$PARAMCD)
   }
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -327,7 +327,7 @@ derive_param_confirmed_resp <- function(dataset,
   # Check for CR followed by PR (this should not occur in clean data)
   signal_crpr(
     source_data,
-    order = vars(ADT),
+    order = exprs(ADT),
     subject_keys = subject_keys
   )
 
@@ -335,14 +335,14 @@ derive_param_confirmed_resp <- function(dataset,
   cr_data <- filter_confirmation(
     source_data,
     by_vars = subject_keys,
-    join_vars = vars(AVALC, ADT),
+    join_vars = exprs(AVALC, ADT),
     join_type = "after",
-    order = vars(ADT),
+    order = exprs(ADT),
     first_cond = AVALC.join == "CR" &
-      ADT.join >= ADT + days(ref_confirm),
+      ADT.join >= ADT + days(!!ref_confirm),
     filter = AVALC == "CR" &
       all(AVALC.join %in% c("CR", "NE")) &
-      count_vals(var = AVALC.join, val = "NE") <= max_nr_ne
+      count_vals(var = AVALC.join, val = "NE") <= !!max_nr_ne
   ) %>%
     mutate(
       AVALC = "Y"
@@ -356,15 +356,15 @@ derive_param_confirmed_resp <- function(dataset,
   pr_data <- filter_confirmation(
     source_data,
     by_vars = subject_keys,
-    join_vars = vars(AVALC, ADT),
+    join_vars = exprs(AVALC, ADT),
     join_type = "after",
-    order = vars(ADT),
+    order = exprs(ADT),
     first_cond = AVALC.join %in% c("CR", "PR") &
-      ADT.join >= ADT + days(ref_confirm),
+      ADT.join >= ADT + days(!!ref_confirm),
     filter = AVALC == "PR" &
       all(AVALC.join %in% c("CR", "PR", "SD", "NE")) &
-      count_vals(var = AVALC.join, val = "NE") <= max_nr_ne &
-      count_vals(var = AVALC.join, val = "SD") <= max_nr_sd &
+      count_vals(var = AVALC.join, val = "NE") <= !!max_nr_ne &
+      count_vals(var = AVALC.join, val = "SD") <= !!max_nr_sd &
       (
         min_cond(
           var = ADT.join,
@@ -393,7 +393,7 @@ derive_param_confirmed_resp <- function(dataset,
   rsp <- bind_rows(cr_data, pr_data, missing_data) %>%
     filter_extreme(
       by_vars = subject_keys,
-      order = vars(ADT),
+      order = exprs(ADT),
       mode = "first"
     ) %>%
     mutate(

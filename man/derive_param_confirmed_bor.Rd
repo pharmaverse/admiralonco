@@ -117,13 +117,13 @@ function must return a numeric vector.}
 
 \item{set_values_to}{Variables to set
 
-A named list returned by \code{vars()} defining the variables to be set for the
-new parameter, e.g. \code{vars(PARAMCD = "CBOR", PARAM = "Confirmed Best Overall Response")} is expected. The values must be symbols, character strings,
+A named list returned by \code{exprs()} defining the variables to be set for the
+new parameter, e.g. \code{exprs(PARAMCD = "CBOR", PARAM = "Confirmed Best Overall Response")} is expected. The values must be symbols, character strings,
 numeric values, or \code{NA}.}
 
 \item{subject_keys}{Variables to uniquely identify a subject
 
-A list of symbols created using \code{vars()} is expected.}
+A list of symbols created using \code{exprs()} is expected.}
 }
 \value{
 The input dataset with a new parameter for confirmed best overall
@@ -283,8 +283,8 @@ adrs <- bind_rows(ovr_obs, pd_obs) \%>\%
   select(-ADTC) \%>\%
   derive_vars_merged(
     dataset_add = adsl,
-    by_vars = vars(STUDYID, USUBJID),
-    new_vars = vars(TRTSDT)
+    by_vars = exprs(STUDYID, USUBJID),
+    new_vars = exprs(TRTSDT)
   )
 
 pd_date <- date_source(
@@ -303,7 +303,7 @@ derive_param_confirmed_bor(
   reference_date = TRTSDT,
   ref_start_window = 28,
   ref_confirm = 28,
-  set_values_to = vars(
+  set_values_to = exprs(
     PARAMCD = "CBOR",
     PARAM = "Best Confirmed Overall Response by Investigator"
   )
@@ -324,7 +324,7 @@ derive_param_confirmed_bor(
   max_nr_ne = 2,
   accept_sd = TRUE,
   missing_as_ne = TRUE,
-  set_values_to = vars(
+  set_values_to = exprs(
     PARAMCD = "CBOR",
     PARAM = "Best Confirmed Overall Response by Investigator"
   )

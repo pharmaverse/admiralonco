@@ -65,8 +65,8 @@ adrs <- tribble(
   ) %>%
   derive_vars_merged(
     dataset_add = adsl,
-    by_vars = vars(STUDYID, USUBJID),
-    new_vars = vars(TRTSDT)
+    by_vars = exprs(STUDYID, USUBJID),
+    new_vars = exprs(TRTSDT)
   )
 
 pd_date <- date_source(
@@ -89,7 +89,7 @@ test_that("derive_param_confirmed_bor Test 1: default confirmed BOR", {
         reference_date = TRTSDT,
         ref_start_window = 28,
         ref_confirm = 28,
-        set_values_to = vars(
+        set_values_to = exprs(
           PARAMCD = "CBOR",
           PARAM = "Best Confirmed Overall Response by Investigator"
         )
@@ -119,8 +119,8 @@ test_that("derive_param_confirmed_bor Test 1: default confirmed BOR", {
       ) %>%
       derive_vars_merged(
         dataset_add = adsl,
-        by_vars = vars(STUDYID, USUBJID),
-        new_vars = vars(TRTSDT)
+        by_vars = exprs(STUDYID, USUBJID),
+        new_vars = exprs(TRTSDT)
       )
   )
 
@@ -146,8 +146,8 @@ test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as
       ) %>%
       derive_vars_merged(
         dataset_add = adsl,
-        by_vars = vars(STUDYID, USUBJID),
-        new_vars = vars(TRTSDT)
+        by_vars = exprs(STUDYID, USUBJID),
+        new_vars = exprs(TRTSDT)
       )
   )
 
@@ -165,7 +165,7 @@ test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as
         max_nr_ne = 0,
         accept_sd = TRUE,
         missing_as_ne = TRUE,
-        set_values_to = vars(
+        set_values_to = exprs(
           PARAMCD = "CBOR",
           PARAM = "Best Confirmed Overall Response by Investigator"
         )
@@ -195,8 +195,8 @@ test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as
       ) %>%
       derive_vars_merged(
         dataset_add = adsl,
-        by_vars = vars(STUDYID, USUBJID),
-        new_vars = vars(TRTSDT)
+        by_vars = exprs(STUDYID, USUBJID),
+        new_vars = exprs(TRTSDT)
       )
   )
 
@@ -224,8 +224,8 @@ test_that("derive_param_confirmed_bor Test 3: error if invalid response values",
     ) %>%
     derive_vars_merged(
       dataset_add = adsl,
-      by_vars = vars(STUDYID, USUBJID),
-      new_vars = vars(TRTSDT)
+      by_vars = exprs(STUDYID, USUBJID),
+      new_vars = exprs(TRTSDT)
     )
 
   expect_error(
@@ -238,7 +238,7 @@ test_that("derive_param_confirmed_bor Test 3: error if invalid response values",
       reference_date = TRTSDT,
       ref_start_window = 28,
       ref_confirm = 28,
-      set_values_to = vars(
+      set_values_to = exprs(
         PARAMCD = "CBOR",
         PARAM = "Best Confirmed Overall Response by Investigator"
       )
@@ -260,7 +260,7 @@ test_that("derive_param_confirmed_bor Test 4: No source_pd", {
         reference_date = TRTSDT,
         ref_start_window = 28,
         ref_confirm = 28,
-        set_values_to = vars(
+        set_values_to = exprs(
           PARAMCD = "CBOR",
           PARAM = "Best Confirmed Overall Response by Investigator"
         )
@@ -290,8 +290,8 @@ test_that("derive_param_confirmed_bor Test 4: No source_pd", {
       ) %>%
       derive_vars_merged(
         dataset_add = adsl,
-        by_vars = vars(STUDYID, USUBJID),
-        new_vars = vars(TRTSDT)
+        by_vars = exprs(STUDYID, USUBJID),
+        new_vars = exprs(TRTSDT)
       )
   )
 
