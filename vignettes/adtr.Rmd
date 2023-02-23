@@ -98,10 +98,14 @@ To start, all data frames needed for the creation of `ADTR` should be read into 
 Some of the data frames needed may be `ADSL`, `ADRS` ,`RS`, `TU`, `TR`, `SUPPTU` `SUPPTR`.
 
 For example purposes, the SDTM and ADaM datasets (based on CDISC Pilot test
-data)---which are included in `{admiral.test}`---are used.  Also, see [Handling
-of Missing
+data)---which are included in `{admiral.test}`---are used [^1]. Also, see
+[Handling of Missing
 Values](https://pharmaverse.github.io/admiral/cran-release/articles/admiral.html#handling-of-missing-values)
 explains why we need to use the `convert_blanks_to_na()` function.
+
+[^1]: In this vignette we use only data for subjects "01-701-1015",
+"01-701-1023", "01-701-1440".
+
 
 ```{r}
 data("admiral_adsl")
@@ -126,7 +130,7 @@ rs <- convert_blanks_to_na(rs)
 
 ```{r echo=FALSE}
 subjects <- c("01-701-1015", "01-701-1023", "01-701-1440")
-tr <- filter(tr, USUBJID %in% subjects)
+tr <- filter(tr, USUBJID %in% subjects & (USUBJID != "01-701-1440" | VISITNUM <= 7))
 tu <- filter(tu, USUBJID %in% subjects)
 rs <- filter(rs, USUBJID %in% subjects)
 adsl <- filter(adsl, USUBJID %in% subjects)
