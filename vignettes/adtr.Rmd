@@ -104,8 +104,8 @@ Values](https://pharmaverse.github.io/admiral/cran-release/articles/admiral.html
 explains why we need to use the `convert_blanks_to_na()` function.
 
 [^1]: In this vignette we use only data for subjects "01-701-1015",
-"01-701-1023", "01-701-1440".
-
+"01-701-1023", "01-701-1440". This avoids that the vignette takes a long time to
+load.
 
 ```{r}
 data("admiral_adsl")
@@ -291,7 +291,9 @@ demonstrate additional analysis flags for example purposes only. The analysis
 flags therefore should be setup according to your company specifications.
 
 
-In the example below, the lesion sizes are counted and grouped according to the by variables specified, in this case we group by the visit (`AVISIT` and `AVISIT`) to ensure that the correct lesion measurements are summed together. 
+In the example below, the lesion sizes are counted and grouped according to the
+by variables specified, in this case we group by the visit (`AVISIT` and
+`AVISITN`) to ensure that the correct lesion measurements are summed together.
 
 ```{r}
 adtr_sum <- get_summary_records(
@@ -328,7 +330,10 @@ In the below example, we use `derive_var_merged_summary()` function multiple
 times in order to process additional variables for sum of diameter parameter,
 and calculate the analysis flag (`ANL01FL`).
 
-In the first step we concatenate lesions IDS measured `LSEXP` at baseline, and merge in with the second step where we concatenate the lesions IDS assessed `LSASS` at that visit record.  You can then compare `LSEXP` vs `LSASS` at each visit.
+In the first step we concatenate lesions IDs measured `LSEXP` at baseline, and
+merge in with the second step where we concatenate the lesions IDS assessed
+`LSASS` at that visit record.  You can then compare `LSEXP` vs `LSASS` at each
+visit.
 
 In the final step, the analysis flag is set `ANL01FL = "Y"` where lesions
 assessed at post-baseline match baseline.
@@ -395,7 +400,11 @@ dataset_vignette(
 
 ## Derive Baseline (`ABLFL`, `BASE`) {#base}
 
-These functions are available in `admiral`, below examples show its usage for `ADTR`. Here we create baseline record flag `ABLFL` by selecting all records prior to analysis day 1, and then derive the baseline value `BASE`.
+These functions are available in `admiral`, below examples show its usage for
+`ADTR`. Here we create baseline record flag `ABLFL` by selecting the last record
+prior to analysis day 1, and then derive the baseline value `BASE`. If in a
+particular study/or subject, baseline is defined differently, so make sure to
+update appropriate arguments.
 
 ```{r}
 adtr_sum <- adtr_sum %>%
