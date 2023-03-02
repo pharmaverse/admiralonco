@@ -245,18 +245,17 @@ Depending on your company specifications you may either create parameters for Ta
 The below examples show the set up of the parameter details and the analysis value & flag (`AVAL/ANL01FL`) variables.
       
 ```{r}
+tr <- mutate(tr, tmp_lesion_nr = str_sub(TRLNKID, 3))
 adtr <- bind_rows(
   tr %>%
     filter(TRTESTCD == "LDIAM") %>%
     mutate(
-      tmp_lesion_nr = str_sub(TRLNKID, 3),
       PARAMCD = paste0("LDIAM", tmp_lesion_nr),
       PARAM = paste("Target Lesion", tmp_lesion_nr, "Analysis Diameter")
     ),
   tr %>%
     filter(TRTESTCD == "LPERP") %>%
     mutate(
-      tmp_lesion_nr = str_sub(TRLNKID, 3),
       PARAMCD = paste0("NLDIAM", tmp_lesion_nr),
       PARAM = paste("Target Lesion", tmp_lesion_nr, "Analysis Perpendicular")
     )
