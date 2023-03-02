@@ -52,9 +52,15 @@ oncology parameters based on RECIST v1.1.
 The main part in programming a tumor results dataset is the calculation of the
 sum of diameters of all target lesions (lymph nodes & non-lymph nodes), the
 calculation of nadir, change & percentage change from baseline, and the
-analysis flags that could be required for reporting.  The tumor results data could be set up for investigator and/or Independent review facility (IRF)/Blinded Independent Central Review (BICR) data.  The below sample code would need to be updated (for example, update the Evaluator `TR.TREVAL`, `TU.TUEVAL`, and the applicable parameter details `PARAM`, `PARAMCD`, `PARCATx`) in order to create the acquired data for Independent review facility (IRF)/Blinded Independent Central Review (BICR).
+analysis flags that could be required for reporting.  The tumor results data
+could be set up for investigator and/or Independent review facility
+(IRF)/Blinded Independent Central Review (BICR) data.  The below sample code
+would need to be updated (for example, update the Evaluator `TR.TREVAL`,
+`TU.TUEVAL`, and the applicable parameter details `PARAM`, `PARAMCD`, `PARCATy`)
+in order to create the acquired data for Independent review facility
+(IRF)/Blinded Independent Central Review (BICR).
 
-The source dataset used will depend on each company,  this could be solely the
+The source dataset used will depend on each company, this could be solely the
 `TR` domain or you may merge `TU` with `TR` (SDTM inputs) to get additional data variables or to ensure that you're processing the same lesions as collected.
 
 Individual lesion diameters for each target lesion is required to calculate the sum of diameters for all target lesions, this data could be taken directly from `TR` or additional parameters could be created in `ADTR` (or similar) depending on the additional processing required (e.g. imputation of dates, re-labeling of visits) and your company specifications.
