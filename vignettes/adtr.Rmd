@@ -1,5 +1,5 @@
 ---
-title: "Creating ADTR"
+title: "Creating `ADTR`"
 output: 
   rmarkdown::html_vignette
 vignette: >
@@ -194,7 +194,7 @@ dataset_vignette(tr, display_vars = exprs(USUBJID, TRLNKID, VISIT, LSEXP, LSASS)
 The next step involves company-specific pre-processing of records required downstream prior to the parameter derivations, to ensure that all the associated variable processing is done once before any new parameters are derived. 
 
 In order to calculate the sum of diameter of lesions, we need to 
-ensure that lesions are grouped correctly,  how this is done will be based on your company specfications but individual lesions sizes could be grouped either by using the analysis date `ADT` or visit `AVISIT`. This is to ensure that each lesion size is only counted once.  
+ensure that lesions are grouped correctly,  how this is done will be based on your company specifications but individual lesions sizes could be grouped either by using the analysis date `ADT` or visit `AVISIT`. This is to ensure that each lesion size is only counted once.  
 
 Below are some considerations depending on your analysis.
 
@@ -240,7 +240,9 @@ tr <- mutate(
 
 ## Derive Parameters for Lesion Diameters (`LDIAMn` & `NLDIAMn`){#parameters}
 
-Depending on your company specifications you may either create parameters for Target Lesion diameter for lymph nodes (`LDIAMn`) and non-lymph nodes (`NLDIAMn`) in ADTR or similar dataset.
+Depending on your company specifications you may either create parameters for
+Target Lesion diameter for lymph nodes (`LDIAMn`) and non-lymph nodes
+(`NLDIAMn`) in `ADTR` or similar dataset.
 
 The below examples show the set up of the parameter details and the analysis value & flag (`AVAL/ANL01FL`) variables.
       
@@ -285,7 +287,7 @@ non-lymph nodes (sum of analysis values `AVAL` from source observations `LDIAMn`
 In this vignette, the sum of the diameters is calculated across all the
 available lesion measurements, and we use the analysis flag `ANL01FL` to select
 the records that should be used as part of the analysis based on RECIST 1.1.
-Subsequently we then build on this analysis flag (see [`ANLxxFL`]) (#analflag) to
+Subsequently we then build on this analysis flag (see [`ANLxxFL`](#analflag)) to
 demonstrate additional analysis flags for example purposes only. The analysis
 flags therefore should be setup according to your company specifications.
 
@@ -484,9 +486,9 @@ variables defined as per your company specifications.
 
 In this example, we want to flag when a patient has had `PD`.  This could be done in a number of ways:
 
-1. Take the date of `PD` from `ADRS`
+#### 1. Take the date of `PD` from `ADRS`
 
-    ```{r eval=TRUE}
+```{r eval=TRUE}
 adtr_sum <- adtr_sum %>%
   derive_var_merged_exist_flag(
     dataset_add = adrs,
@@ -495,20 +497,20 @@ adtr_sum <- adtr_sum %>%
     new_var = PDFL,
     condition = AVALC == "Y"
   )
-    ```
+```
 
-    ```{r, echo=FALSE}
+```{r, echo=FALSE}
 dataset_vignette(
   arrange(adtr_sum, USUBJID, AVISITN),
   display_vars = exprs(USUBJID, AVISIT, AVAL, NADIR, CHGNAD, PCHGNAD, PDFL)
 )
 
 adtr_sum <- select(adtr_sum, -PDFL)
-    ```
+```
 
-2. Take the first date when the overall response is `PD` from `RS` 
+#### 2. Take the first date when the overall response is `PD` from `RS` 
 
-    ```{r eval=TRUE}
+```{r eval=TRUE}
 adtr_sum <- adtr_sum %>%
   derive_var_merged_exist_flag(
     dataset_add = derive_vars_dt(
@@ -523,52 +525,54 @@ adtr_sum <- adtr_sum %>%
     new_var = PDFL,
     condition = RSSTRESC == "PD"
   )
-    ```
+```
 
-    ```{r, echo=FALSE}
+```{r, echo=FALSE}
 dataset_vignette(
   arrange(adtr_sum, USUBJID, AVISITN),
   display_vars = exprs(USUBJID, AVISIT, AVAL, NADIR, CHGNAD, PCHGNAD, PDFL)
 )
 
 adtr_sum <- select(adtr_sum, -PDFL)
-    ```
+```
 
-3. Target lesion response of no `CR` at the current observation visit and but a `CR` response at the `NADIR` observation
+#### 3. Target lesion response of no `CR` at the current observation visit and but a `CR` response at the `NADIR` observation
 
-    ```{r}
+```{r}
 adtr_sum <- adtr_sum %>% mutate(
   CRFL = if_else(AVAL == 0 & ANL01FL == "Y", "Y", NA_character_),
   CRNFL = if_else(NADIR == 0, "Y", NA_character_),
   PDFL = if_else(is.na(CRFL) & CRNFL == "Y", "Y", NA_character_)
 )
-    ```
+```
 
-    ```{r, echo=FALSE}
+```{r, echo=FALSE}
 dataset_vignette(
   arrange(adtr_sum, USUBJID, AVISITN),
   display_vars = exprs(USUBJID, AVISIT, AVAL, NADIR, CHGNAD, PCHGNAD, PDFL)
 )
 
 adtr_sum <- select(adtr_sum, -PDFL, -CRFL, -CRNFL)
-    ```
+```
 
 
-4. Calculate from source data, the derivation for `PD` for target lesions is based on the calculated sum of diameters of the assessed lesions results in a
-calculated Percent Change from NADIR >=20% (`PCHGNAD`) and a calculated Change from NADIR >=5mm (`CHGNAD`).
+#### 4. Calculate from source data
 
-    In this example, `CRFL` flags where the patient has had Complete Response,
-    and `CRNFL`, flags where Complete response contributed to the `NADIR`
-    calculation.
+The derivation for `PD` for target lesions is based on the calculated sum of
+diameters of the assessed lesions results in a calculated Percent Change from
+NADIR >=20% (`PCHGNAD`) and a calculated Change from NADIR >=5mm (`CHGNAD`).
+
+In this example, `CRFL` flags where the patient has had Complete Response, and
+`CRNFL`, flags where Complete response contributed to the `NADIR` calculation.
     
-    ```{r}
+```{r}
 adtr_sum <- adtr_sum %>% mutate(
   CRFL = if_else(AVAL == 0 & ANL01FL == "Y", "Y", NA_character_),
   CRNFL = if_else(NADIR == 0, "Y", NA_character_)
 )
-    ```    
+```    
 
-    ```{r}
+```{r}
 adtr_sum <- adtr_sum %>%
   mutate(
     PDFL = if_else(
@@ -577,14 +581,14 @@ adtr_sum <- adtr_sum %>%
       NA_character_
     )
   )
-    ```
+```
 
-    ```{r, echo=FALSE}
+```{r, echo=FALSE}
 dataset_vignette(
   arrange(adtr_sum, USUBJID, AVISITN),
   display_vars = exprs(USUBJID, AVISIT, AVAL, NADIR, CHGNAD, PCHGNAD, PDFL)
 )
-    ```
+```
   
 
 ## Derive Analysis Flags `ANLxxFL` {#analflag}
@@ -726,7 +730,7 @@ dataset_vignette(
 
 ADaM | Sample Code
 ---- | --------------
-ADTR | [ad_adtr.R](https://github.com/pharmaverse/admiralonco/blob/main/inst/templates/ad_adtr.R){target="_blank"}
+`ADTR` | [`ad_adtr.R`](https://github.com/pharmaverse/admiralonco/blob/main/inst/templates/ad_adtr.R){target="_blank"}
 
 
 
