@@ -110,8 +110,9 @@ Values](https://pharmaverse.github.io/admiral/cran-release/articles/admiral.html
 explains why we need to use the `convert_blanks_to_na()` function.
 
 [^1]: In this vignette we use only data for subjects "01-701-1015",
-"01-701-1023", "01-701-1440". This avoids that the vignette takes a long time to
-load.
+"01-701-1023", "01-701-1440". This avoids that the vignette takes a long time to load. 
+
+On the `TR` domain we filter on where tumor asssessment short name `TRTESTCD` is `LDIAM' or 'LPERP`.  Depending on your data collection standards you may need to update the code to filter on ``TRTESTCD=`DIAMETER``. If this is the case then the template code where we derive parameters for lesions diameters should be updated accordingly.
 
 ```{r}
 data("admiral_adsl")
@@ -410,7 +411,7 @@ dataset_vignette(
 These functions are available in `admiral`, below examples show its usage for
 `ADTR`. Here we create baseline record flag `ABLFL` by selecting the last record
 prior to analysis day 1, and then derive the baseline value `BASE`. If in a
-particular study/or subject, baseline is defined differently, so make sure to
+particular study/or subject, baseline is defined differently, you need to make sure to
 update appropriate arguments.
 
 ```{r}
