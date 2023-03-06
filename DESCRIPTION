@@ -41,8 +41,8 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
 Depends: R (>= 3.5)
 Imports:
-    admiral (>= 0.9.0),
-    admiraldev,
+    admiral (>= 0.10.0),
+    admiraldev (>= 0.3.0),
     dplyr (>= 0.8.4),
     lifecycle (>= 0.1.0),
     lubridate (>= 1.7.4),
