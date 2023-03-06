@@ -1,5 +1,5 @@
 ---
-title: "Creating `ADTR`"
+title: "Creating ADTR"
 output: 
   rmarkdown::html_vignette
 vignette: >
@@ -94,7 +94,7 @@ library(admiralonco)
 * [Derive NADIR](#nadir)
 * [Derive Change from Baseline (`CHG`, `PCHG`)](#chg)
 * [Derive Additional Flag Variables (e.g. `CRFL`, `CRNFL`, `PDFL`, `PDFL`](#addflag)
-* [Derive Additional Analysis Flags (e.g. `ANLxxFL`](#analflag)
+* [Derive Additional Analysis Flags (e.g. `ANLzzFL`](#analflag)
 * [Derive Analysis Sequence Number (`ASEQ`)](#aseq)
 * [Add `ADSL` Variables](#adslvars)
 
@@ -112,7 +112,11 @@ explains why we need to use the `convert_blanks_to_na()` function.
 [^1]: In this vignette we use only data for subjects "01-701-1015",
 "01-701-1023", "01-701-1440". This avoids that the vignette takes a long time to load. 
 
-On the `TR` domain we filter on where tumor asssessment short name `TRTESTCD` is `LDIAM' or 'LPERP`.  Depending on your data collection standards you may need to update the code to filter on ``TRTESTCD=`DIAMETER``. If this is the case then the template code where we derive parameters for lesions diameters should be updated accordingly.
+On the `TR` domain we filter on where tumor assessment short name `TRTESTCD` is
+`"LDIAM"` or `"LPERP"`. Depending on your data collection standards you may need
+to update the code to filter on `TRTESTCD == "DIAMETER"`. If this is the case
+then the template code where we derive parameters for lesions diameters should
+be updated accordingly.
 
 ```{r}
 data("admiral_adsl")
@@ -164,9 +168,9 @@ Depending on your company specifications you may want to merge `TU` with `TR`. A
 ```{r}
 tr <- derive_vars_merged(
   tr,
-  dataset_add = rename(tu, TRLNKID = TULNKID),
+  dataset_add = tu,
   new_vars = exprs(TULOC),
-  by_vars = exprs(STUDYID, USUBJID, TRLNKID)
+  by_vars = exprs(STUDYID, USUBJID, TRLNKID = TULNKID)
 ) %>% mutate(
   TULOCGR1 = if_else(
     TULOC == "LYMPH NODE",
@@ -251,7 +255,8 @@ Depending on your company specifications you may either create parameters for
 Target Lesion diameter for lymph nodes (`LDIAMn`) and non-lymph nodes
 (`NLDIAMn`) in `ADTR` or similar dataset.
 
-The below examples show the set up of the parameter details and the analysis value & flag (`AVAL/ANL01FL`) variables.
+The below examples show the set up of the parameter details and the analysis
+value & flag (`AVAL`/`ANL01FL`) variables.
       
 ```{r}
 tr <- mutate(tr, tmp_lesion_nr = str_sub(TRLNKID, 3))
@@ -294,7 +299,7 @@ non-lymph nodes (sum of analysis values `AVAL` from source observations `LDIAMn`
 In this vignette, the sum of the diameters is calculated across all the
 available lesion measurements, and we use the analysis flag `ANL01FL` to select
 the records that should be used as part of the analysis based on RECIST 1.1.
-Subsequently we then build on this analysis flag (see [`ANLxxFL`](#analflag)) to
+Subsequently we then build on this analysis flag (see [`ANLzzFL`](#analflag)) to
 demonstrate additional analysis flags for example purposes only. The analysis
 flags therefore should be setup according to your company specifications.
 
@@ -433,9 +438,11 @@ adtr_sum <- adtr_sum %>%
 
 ## Derive `NADIR` {#nadir}
 
-Once we have Sum of Target Lesions Diameters parameter (`SDIAM`), the `NADIR` is set to the lowest sum of diameters in Analysis Value (`AVAL`) before the current observation, where all lesions were assessed (i.e `ANL01FL=Y`).  The
-first observations after baseline (depending on how you have defined baseline
-earlier) is set to the baseline value.
+Once we have Sum of Target Lesions Diameters parameter (`SDIAM`), the `NADIR` is
+set to the lowest sum of diameters in Analysis Value (`AVAL`) before the current
+observation, where all lesions were assessed (i.e. `ANL01F == "Y"`).  The first
+observations after baseline (depending on how you have defined baseline earlier)
+is set to the baseline value.
 
 ```{r}
 adtr_sum <- adtr_sum %>%
@@ -463,8 +470,10 @@ dataset_vignette(
 
 ## Derive Change from Baseline (`CHG`, `PCHG`) {#chg}
 
-These functions are available in 'admiral', below examples show its usage for
-`ADTR`.  We calculate the change from baseline (`CHG`, `CHGNAD`) and percentage change from baseline (`PCHG` , `PCHGNAD`) for the parameter `SDIAM` (using `AVAL` - `BASE`) the variable `NADIR` (using `AVAL` - `NADIR`).
+These functions are available in admiral, below examples show its usage for
+`ADTR`.  We calculate the change from baseline (`CHG`, `CHGNAD`) and percentage
+change from baseline (`PCHG` , `PCHGNAD`) for the parameter `SDIAM` (using `AVAL
+- BASE`) the variable `NADIR` (using `AVAL - NADIR`).
 
 ```{r}
 adtr_sum <- adtr_sum %>%
@@ -598,9 +607,9 @@ dataset_vignette(
 ```
   
 
-## Derive Analysis Flags `ANLxxFL` {#analflag}
+## Derive Analysis Flags `ANLzzFL` {#analflag}
 
-Based on your specifications, additional analysis flags (`ANLxxFL`) could be set up in `ADTR`. Below are some examples which use the `ANL01FL` flag derived earlier for the sum of diameter parameter (`SDIAM`) as a basis.
+Based on your specifications, additional analysis flags (`ANLzzFL`) could be set up in `ADTR`. Below are some examples which use the `ANL01FL` flag derived earlier for the sum of diameter parameter (`SDIAM`) as a basis.
 
 Analysis 02 Flag (`ANL02FL`) only includes visits (where analysis date is e.g after randomization date (`RANDDT`)) with the lowest `NADIR` (lowest sum of diameter) so maximum tumor shrinkage by using the first non-missing lowest percentage change from baseline (`PCHG`).
 
@@ -639,7 +648,9 @@ dataset_vignette(
 )
 ```  
 
-Analysis 03 flag (`ANL03FL`) includes all sum of diameters where all lesions were assessed (where `ANL01FL=Y`) until the patient has `PD`, indicated by using the `PDFL` variable.
+Analysis 03 flag (`ANL03FL`) includes all sum of diameters where all lesions
+were assessed (where `ANL01FL == "Y"`) until the patient has `PD`, indicated by
+using the `PDFL` variable.
 
 ```{r}
 adtr_sum <- adtr_sum %>%
@@ -667,7 +678,9 @@ dataset_vignette(
 )
 ```  
 
-Analysis 04 flag (`ANL04FL`) includes all sum of diameters where all lesions were assessed (where `ANL01FL=Y`) and additionally those indicating `PD` using the `PDFL` variable.
+Analysis 04 flag (`ANL04FL`) includes all sum of diameters where all lesions
+were assessed (where `ANL01FL == "Y"`) and additionally those indicating `PD`
+using the `PDFL` variable.
   
 ```{r}
 adtr_sum <- adtr_sum %>%
