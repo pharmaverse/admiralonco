@@ -750,7 +750,7 @@ dataset_vignette(
 
 ADaM | Sample Code
 ---- | --------------
-`ADTR` | [`ad_adtr.R`](https://github.com/pharmaverse/admiralonco/blob/main/inst/templates/ad_adtr.R){target="_blank"}
+`ADTR` | `r dyn_link("ad_adtr.R", "https://github.com/pharmaverse/admiralonco/blob", "inst/templates/ad_adtr.R", is_multiversion = TRUE)`
 
 
 
