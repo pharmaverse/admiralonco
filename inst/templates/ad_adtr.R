@@ -75,10 +75,11 @@ tr <- derive_vars_dt(
   derive_vars_dy(
     reference_date = RANDDT,
     source_vars = exprs(ADT)
-  ) %>% mutate(
-  AVISIT = VISIT,
-  AVISITN = VISITNUM
-)
+  ) %>%
+  mutate(
+    AVISIT = VISIT,
+    AVISITN = VISITNUM
+  )
 
 # Derive parameters for lesion diameters (LDIAMn & NLDIAMn) ----
 tr <- mutate(tr, tmp_lesion_nr = str_sub(TRLNKID, 3))
@@ -129,7 +130,7 @@ adtr_sum <- adtr_sum %>%
     by_vars = exprs(USUBJID),
     filter_add = AVISIT == "BASELINE" &
       ((str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
-         (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")),
+        (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")),
     new_var = LSEXP,
     analysis_var = TRLNKID,
     summary_fun = function(x) paste(sort(x), collapse = ", ")
@@ -138,7 +139,7 @@ adtr_sum <- adtr_sum %>%
     dataset_add = adtr,
     by_vars = exprs(USUBJID, AVISIT),
     filter_add = ((str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
-                    (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")) & ANL01FL == "Y",
+      (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")) & ANL01FL == "Y",
     new_var = LSASS,
     analysis_var = TRLNKID,
     summary_fun = function(x) paste(sort(x), collapse = ", ")
