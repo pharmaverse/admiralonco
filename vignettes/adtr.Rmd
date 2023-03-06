@@ -472,8 +472,8 @@ dataset_vignette(
 
 These functions are available in admiral, below examples show its usage for
 `ADTR`.  We calculate the change from baseline (`CHG`, `CHGNAD`) and percentage
-change from baseline (`PCHG` , `PCHGNAD`) for the parameter `SDIAM` (using `AVAL
-- BASE`) the variable `NADIR` (using `AVAL - NADIR`).
+change from baseline (`PCHG` , `PCHGNAD`) for the parameter `SDIAM` (using
+`AVAL - BASE`) the variable `NADIR` (using `AVAL - NADIR`).
 
 ```{r}
 adtr_sum <- adtr_sum %>%
