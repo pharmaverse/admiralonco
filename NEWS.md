@@ -11,6 +11,10 @@ USUBJID)` must be used now. (#197)
 
 - New vignette "Create `ADTR`" (#16)
 
+## Various
+
+- ADTTE template simplified for duration of response in line with `admiral::derive_param_tte()` enhancement (#203)
+
 # admiralonco 0.2.0
 
 ## Updates of Existing Functions

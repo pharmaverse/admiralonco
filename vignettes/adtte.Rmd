@@ -163,7 +163,7 @@ response: If using `ADRS` / `ADEVENT` parameters as input for any response dates
 (instead of a variable in `ADSL`) then you would need to use `admiral::derive_vars_merged()`
 to add the response date as a temporary variable (e.g. `TEMP_RESPDT`) to be able to feed
 into `admiral::derive_param_tte()` as the start date. You would also need to use this
-to filter the input datasets so as to only derive the records for responders.
+to filter the source `ADSL` dataset so as to only derive the records for responders.
 This could also be repeated as needed for IRF/BICR and confirmed responses.
 
 Here is an example of the code needed.
@@ -176,19 +176,12 @@ adsl <- adsl %>%
     by_vars = exprs(STUDYID, USUBJID),
     new_vars = exprs(TEMP_RESPDT = ADT)
   )
-
-adrs <- adrs %>%
-  derive_vars_merged(
-    dataset_add = adsl,
-    by_vars = exprs(STUDYID, USUBJID),
-    new_vars = exprs(TEMP_RESPDT)
-  )
 ```
 
 The pre-defined objects can be passed directly to `admiral::derive_param_tte()` to create
 a new time-to-event parameter. Below shows example calls for Overall Survival (OS), Progression
 Free Survival (PFS), and duration of response (as above, this is only derived for responder
-patients so we have to filter source datasets). Note that the reason for including a
+patients so we have to filter source `ADSL` dataset). Note that the reason for including a
 randomization date censor is to catch those patients that never have a tumor assessment.
 
 ```{r}
@@ -209,11 +202,11 @@ adtte <- derive_param_tte(
     set_values_to = exprs(PARAMCD = "PFS", PARAM = "Progression Free Survival")
   ) %>%
   derive_param_tte(
-    dataset_adsl = adsl,
+    dataset_adsl = filter(adsl, !is.na(TEMP_RESPDT)),
     start_date = TEMP_RESPDT,
     event_conditions = list(pd_event, death_event),
     censor_conditions = list(lasta_censor),
-    source_datasets = list(adsl = filter(adsl, !is.na(TEMP_RESPDT)), adrs = filter(adrs, !is.na(TEMP_RESPDT))),
+    source_datasets = list(adsl = adsl, adrs = adrs),
     set_values_to = exprs(PARAMCD = "RSD", PARAM = "Duration of Response")
   )
 ```
