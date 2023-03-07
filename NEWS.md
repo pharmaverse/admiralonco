@@ -7,6 +7,10 @@ are now expecting a list of expressions created by `exprs()`. For example,
 instead of `by_vars = vars(STUDYID, USUBJID)` `by_vars = exprs(STUDYID,
 USUBJID)` must be used now.
 
+## Various
+
+- ADTTE template simplified for duration of response in line with `admiral::derive_param_tte()` enhancement (#203)
+
 # admiralonco 0.2.0
 
 ## Updates of Existing Functions

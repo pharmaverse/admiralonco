@@ -23,20 +23,13 @@ adrs <- admiral_adrs
 
 # ---- Derivations ----
 
-# Add response date to ADSL / ADRS for duration of response calculation
+# Add response date to ADSL for duration of response calculation
 adsl <- adsl %>%
   derive_vars_merged(
     dataset_add = adrs,
     filter_add = PARAMCD == "RSP" & AVALC == "Y" & ANL01FL == "Y",
     by_vars = exprs(STUDYID, USUBJID),
     new_vars = exprs(TEMP_RESPDT = ADT)
-  )
-
-adrs <- adrs %>%
-  derive_vars_merged(
-    dataset_add = adsl,
-    by_vars = exprs(STUDYID, USUBJID),
-    new_vars = exprs(TEMP_RESPDT)
   )
 
 # Use pre-defined tte_source objects to derive Overall Survival, Progression
@@ -58,14 +51,11 @@ adtte <- derive_param_tte(
     set_values_to = exprs(PARAMCD = "PFS", PARAM = "Progression Free Survival")
   ) %>%
   derive_param_tte(
-    dataset_adsl = adsl,
+    dataset_adsl = filter(adsl, !is.na(TEMP_RESPDT)),
     start_date = TEMP_RESPDT,
     event_conditions = list(pd_event, death_event),
     censor_conditions = list(lasta_censor),
-    source_datasets = list(
-      adsl = filter(adsl, !is.na(TEMP_RESPDT)),
-      adrs = filter(adrs, !is.na(TEMP_RESPDT))
-    ),
+    source_datasets = list(adsl = adsl, adrs = adrs),
     set_values_to = exprs(PARAMCD = "RSD", PARAM = "Duration of Response")
   )
 
