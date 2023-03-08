@@ -344,7 +344,7 @@ times in order to process additional variables for sum of diameter parameter,
 and calculate the analysis flag (`ANL01FL`).
 
 In the first step we concatenate lesions IDs measured `LSEXP` at baseline, and
-merge in with the second step where we concatenate the lesions IDS assessed
+merge in with the second step where we concatenate the lesions IDs assessed
 `LSASS` at that visit record.  You can then compare `LSEXP` vs `LSASS` at each
 visit.
 
