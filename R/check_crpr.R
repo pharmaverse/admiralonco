@@ -59,7 +59,7 @@ signal_crpr <- function(dataset,
   assert_vars(subject_keys)
   assert_character_scalar(check_type, values = c("message", "warning", "error"))
 
-  crpr_data <- filter_confirmation(
+  crpr_data <- filter_joined(
     dataset,
     by_vars = subject_keys,
     order = order,
@@ -69,7 +69,7 @@ signal_crpr <- function(dataset,
   )
 
   if (nrow(crpr_data) > 0) {
-    pr_data <- filter_confirmation(
+    pr_data <- filter_joined(
       dataset,
       by_vars = subject_keys,
       order = order,

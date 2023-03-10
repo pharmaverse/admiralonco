@@ -1,7 +1,7 @@
 #' @keywords internal
 #' @family internal
 #' @importFrom admiral censor_source count_vals derive_param_extreme_event
-#'   derive_var_obs_number derive_vars_merged event_source filter_confirmation
+#'   derive_var_obs_number derive_vars_merged event_source filter_joined
 #'   filter_extreme filter_relative get_admiral_option list_tte_source_objects
 #'   max_cond min_cond params restrict_derivation set_admiral_options yn_to_numeric
 #' @importFrom admiraldev assert_character_scalar assert_character_vector

@@ -75,3 +75,5 @@ navbar:
         href: articles/adrs.html
       - text: Creating ADTTE
         href: articles/adtte.html
+      - text: Creating ADTR
+        href: articles/adtr.html
