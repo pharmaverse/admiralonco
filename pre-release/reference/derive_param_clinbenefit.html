@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">admiralonco</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -29,19 +29,12 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-user-guides">
     <a class="dropdown-item" href="../articles/adrs.html">Creating ADRS</a>
     <a class="dropdown-item" href="../articles/adtte.html">Creating ADTTE</a>
+    <a class="dropdown-item" href="../articles/adtr.html">Creating ADTR</a>
   </div>
 </li>
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/devel">devel</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/pre-release">pre-release</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -150,13 +143,13 @@ clinical benefit.</p></dd>
 
 
 <dt>set_values_to</dt>
-<dd><p>A named list returned by <code><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars()</a></code> containing new variables
+<dd><p>A named list returned by <code><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs()</a></code> containing new variables
 and their static value to be populated for the clinical benefit rate parameter
-records, e.g. <code>vars(PARAMCD = "CBR", PARAM = "Clinical Benefit Rate")</code>.</p></dd>
+records, e.g. <code>exprs(PARAMCD = "CBR", PARAM = "Clinical Benefit Rate")</code>.</p></dd>
 
 
 <dt>subject_keys</dt>
-<dd><p>A named list returned by <code><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars()</a></code> containing variables
+<dd><p>A named list returned by <code><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs()</a></code> containing variables
 used to uniquely identify subjects.</p></dd>
 
 </dl></div>
@@ -259,8 +252,8 @@ are populated with their values from <code>dataset_adsl</code>.</p></li>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>STUDYID <span class="op">=</span> <span class="st">"AB42"</span>, ANL01FL <span class="op">=</span> <span class="st">"Y"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_merged.html" class="external-link">derive_vars_merged</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    dataset_add <span class="op">=</span> <span class="va">adsl</span>,</span></span>
-<span class="r-in"><span>    by_vars <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">STUDYID</span>, <span class="va">USUBJID</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    new_vars <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span><span class="va">TRTSDT</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    by_vars <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">STUDYID</span>, <span class="va">USUBJID</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    new_vars <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">TRTSDT</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">pd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">date_source</a></span><span class="op">(</span></span></span>
@@ -284,7 +277,7 @@ are populated with their values from <code>dataset_adsl</code>.</p></li>
 <span class="r-in"><span>  source_datasets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>adrs <span class="op">=</span> <span class="va">adrs</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  reference_date <span class="op">=</span> <span class="va">TRTSDT</span>,</span></span>
 <span class="r-in"><span>  ref_start_window <span class="op">=</span> <span class="fl">28</span>,</span></span>
-<span class="r-in"><span>  set_values_to <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  set_values_to <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    PARAMCD <span class="op">=</span> <span class="st">"CBR"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
