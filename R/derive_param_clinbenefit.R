@@ -103,11 +103,11 @@
 #' @param clinben_vals A vector of response values to be considered when determining
 #' clinical benefit.
 #'
-#' @param set_values_to A named list returned by `vars()` containing new variables
+#' @param set_values_to A named list returned by `exprs()` containing new variables
 #' and their static value to be populated for the clinical benefit rate parameter
-#' records, e.g. `vars(PARAMCD = "CBR", PARAM = "Clinical Benefit Rate")`.
+#' records, e.g. `exprs(PARAMCD = "CBR", PARAM = "Clinical Benefit Rate")`.
 #'
-#' @param subject_keys A named list returned by `vars()` containing variables
+#' @param subject_keys A named list returned by `exprs()` containing variables
 #' used to uniquely identify subjects.
 #'
 #' @return The input dataset with a new parameter for clinical benefit
@@ -157,8 +157,8 @@
 #'   mutate(STUDYID = "AB42", ANL01FL = "Y") %>%
 #'   derive_vars_merged(
 #'     dataset_add = adsl,
-#'     by_vars = vars(STUDYID, USUBJID),
-#'     new_vars = vars(TRTSDT)
+#'     by_vars = exprs(STUDYID, USUBJID),
+#'     new_vars = exprs(TRTSDT)
 #'   )
 #'
 #' pd <- date_source(
@@ -182,7 +182,7 @@
 #'   source_datasets = list(adrs = adrs),
 #'   reference_date = TRTSDT,
 #'   ref_start_window = 28,
-#'   set_values_to = vars(
+#'   set_values_to = exprs(
 #'     PARAMCD = "CBR"
 #'   )
 #' ) %>%
@@ -200,7 +200,7 @@ derive_param_clinbenefit <- function(dataset,
                                      set_values_to,
                                      subject_keys = get_admiral_option("subject_keys")) {
   # Assertions and quotes
-  reference_date <- assert_symbol(enquo(reference_date))
+  reference_date <- assert_symbol(enexpr(reference_date))
   assert_vars(subject_keys)
   assert_data_frame(
     dataset_adsl,
@@ -208,18 +208,18 @@ derive_param_clinbenefit <- function(dataset,
   )
   assert_data_frame(
     dataset,
-    required_vars = quo_c(subject_keys, reference_date, vars(PARAMCD, AVALC, ADT))
+    required_vars = expr_c(subject_keys, reference_date, exprs(PARAMCD, AVALC, ADT))
   )
 
   filter_source <- assert_filter_cond(
-    enquo(filter_source),
+    enexpr(filter_source),
     optional = FALSE
   )
 
   assert_function(aval_fun)
-  assert_s3_class(source_resp, "date_source", optional = FALSE)
-  assert_s3_class(source_pd, "date_source")
-  assert_list_of(source_datasets, "data.frame", optional = FALSE)
+  assert_s3_class(source_resp, "date_source")
+  assert_s3_class(source_pd, "date_source", optional = TRUE)
+  assert_list_of(source_datasets, "data.frame")
   assert_character_vector(clinben_vals)
 
   source_names <- names(source_datasets)
@@ -250,7 +250,7 @@ derive_param_clinbenefit <- function(dataset,
 
   ref_start_window <- assert_integer_scalar(ref_start_window, subset = "non-negative")
   assert_varval_list(set_values_to, optional = TRUE)
-  assert_param_does_not_exist(dataset, quo_get_expr(set_values_to$PARAMCD))
+  assert_param_does_not_exist(dataset, set_values_to$PARAMCD)
 
   # ADSL variables
   adsl_vars <- intersect(colnames(dataset_adsl), colnames(dataset))
@@ -295,7 +295,7 @@ derive_param_clinbenefit <- function(dataset,
         ADT >= !!reference_date + days(ref_start_window)
     ) %>%
     filter_extreme(
-      order = vars(ADT),
+      order = exprs(ADT),
       by_vars = subject_keys,
       mode = "first",
       check_type = "none"
@@ -305,7 +305,7 @@ derive_param_clinbenefit <- function(dataset,
   # without records in ovr_data and rsp_data
   new_param <- bind_rows(ovr_data, rsp_data, adsl) %>%
     filter_extreme(
-      order = vars(ADT),
+      order = exprs(ADT),
       by_vars = subject_keys,
       mode = "first",
       check_type = "none"

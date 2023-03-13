@@ -99,14 +99,14 @@
 #'
 #' @param set_values_to Variables to set
 #'
-#'   A named list returned by `vars()` defining the variables to be set for the
-#'   new parameter, e.g. `vars(PARAMCD = "CBOR", PARAM = "Confirmed Best Overall
+#'   A named list returned by `exprs()` defining the variables to be set for the
+#'   new parameter, e.g. `exprs(PARAMCD = "CBOR", PARAM = "Confirmed Best Overall
 #'   Response")` is expected. The values must be symbols, character strings,
 #'   numeric values, or `NA`.
 #'
 #' @param subject_keys Variables to uniquely identify a subject
 #'
-#'   A list of symbols created using `vars()` is expected.
+#'   A list of symbols created using `exprs()` is expected.
 #'
 #' @details
 #'
@@ -272,8 +272,8 @@
 #'   select(-ADTC) %>%
 #'   derive_vars_merged(
 #'     dataset_add = adsl,
-#'     by_vars = vars(STUDYID, USUBJID),
-#'     new_vars = vars(TRTSDT)
+#'     by_vars = exprs(STUDYID, USUBJID),
+#'     new_vars = exprs(TRTSDT)
 #'   )
 #'
 #' pd_date <- date_source(
@@ -292,7 +292,7 @@
 #'   reference_date = TRTSDT,
 #'   ref_start_window = 28,
 #'   ref_confirm = 28,
-#'   set_values_to = vars(
+#'   set_values_to = exprs(
 #'     PARAMCD = "CBOR",
 #'     PARAM = "Best Confirmed Overall Response by Investigator"
 #'   )
@@ -313,7 +313,7 @@
 #'   max_nr_ne = 2,
 #'   accept_sd = TRUE,
 #'   missing_as_ne = TRUE,
-#'   set_values_to = vars(
+#'   set_values_to = exprs(
 #'     PARAMCD = "CBOR",
 #'     PARAM = "Best Confirmed Overall Response by Investigator"
 #'   )
@@ -334,8 +334,8 @@ derive_param_confirmed_bor <- function(dataset,
                                        set_values_to,
                                        subject_keys = get_admiral_option("subject_keys")) {
   # Check input parameters
-  filter_source <- assert_filter_cond(enquo(filter_source))
-  reference_date <- assert_symbol(enquo(reference_date))
+  filter_source <- assert_filter_cond(enexpr(filter_source))
+  reference_date <- assert_symbol(enexpr(reference_date))
   assert_integer_scalar(ref_start_window, subset = "non-negative")
   assert_integer_scalar(ref_confirm, subset = "non-negative")
   assert_integer_scalar(max_nr_ne, subset = "non-negative")
@@ -344,10 +344,10 @@ derive_param_confirmed_bor <- function(dataset,
   assert_varval_list(set_values_to, required_elements = "PARAMCD")
   assert_vars(subject_keys)
   assert_data_frame(dataset,
-    required_vars = quo_c(subject_keys, reference_date, vars(PARAMCD, ADT, AVALC))
+    required_vars = expr_c(subject_keys, reference_date, exprs(PARAMCD, ADT, AVALC))
   )
   assert_data_frame(dataset_adsl, required_vars = subject_keys)
-  assert_param_does_not_exist(dataset, quo_get_expr(set_values_to$PARAMCD))
+  assert_param_does_not_exist(dataset, set_values_to$PARAMCD)
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # filter_pd and filter_source: Filter source dataset using filter_source----
@@ -393,22 +393,22 @@ derive_param_confirmed_bor <- function(dataset,
   # Check for CR followed by PR (this should not occur in clean data)
   signal_crpr(
     source_data,
-    order = vars(ADT),
+    order = exprs(ADT),
     subject_keys = subject_keys
   )
 
   # Create observations for potential responses
-  cr_data <- filter_confirmation(
+  cr_data <- filter_joined(
     source_data,
     by_vars = subject_keys,
-    join_vars = vars(AVALC, ADT),
+    join_vars = exprs(AVALC, ADT),
     join_type = "after",
-    order = vars(ADT),
+    order = exprs(ADT),
     first_cond = AVALC.join == "CR" &
-      ADT.join >= ADT + days(ref_confirm),
+      ADT.join >= ADT + days(!!ref_confirm),
     filter = AVALC == "CR" &
       all(AVALC.join %in% c("CR", "NE")) &
-      count_vals(var = AVALC.join, val = "NE") <= max_nr_ne
+      count_vals(var = AVALC.join, val = "NE") <= !!max_nr_ne
   ) %>%
     mutate(tmp_order = 1)
 
@@ -417,18 +417,18 @@ derive_param_confirmed_bor <- function(dataset,
   } else {
     max_nr_sd <- 0
   }
-  pr_data <- filter_confirmation(
+  pr_data <- filter_joined(
     source_data,
     by_vars = subject_keys,
-    join_vars = vars(AVALC, ADT),
+    join_vars = exprs(AVALC, ADT),
     join_type = "after",
-    order = vars(ADT),
+    order = exprs(ADT),
     first_cond = AVALC.join %in% c("CR", "PR") &
-      ADT.join >= ADT + days(ref_confirm),
+      ADT.join >= ADT + days(!!ref_confirm),
     filter = AVALC == "PR" &
       all(AVALC.join %in% c("CR", "PR", "SD", "NE")) &
-      count_vals(var = AVALC.join, val = "NE") <= max_nr_ne &
-      count_vals(var = AVALC.join, val = "SD") <= max_nr_sd &
+      count_vals(var = AVALC.join, val = "NE") <= !!max_nr_ne &
+      count_vals(var = AVALC.join, val = "SD") <= !!max_nr_sd &
       (
         min_cond(
           var = ADT.join,
@@ -442,7 +442,7 @@ derive_param_confirmed_bor <- function(dataset,
 
   sd_data <- filter(
     source_data,
-    AVALC %in% c("CR", "PR", "SD") & ADT >= !!reference_date + days(ref_start_window)
+    AVALC %in% c("CR", "PR", "SD") & ADT >= !!reference_date + days(!!ref_start_window)
   ) %>%
     mutate(
       AVALC = "SD",
@@ -451,7 +451,7 @@ derive_param_confirmed_bor <- function(dataset,
 
   non_data <- filter(
     source_data,
-    AVALC == "NON-CR/NON-PD" & ADT >= !!reference_date + days(ref_start_window)
+    AVALC == "NON-CR/NON-PD" & ADT >= !!reference_date + days(!!ref_start_window)
   ) %>%
     mutate(
       tmp_order = 4
@@ -463,7 +463,7 @@ derive_param_confirmed_bor <- function(dataset,
   ne_data <- filter(
     source_data,
     AVALC == "NE" | AVALC %in% c("CR", "PR", "SD", "NON-CR/NON-PD") &
-      ADT < !!reference_date + days(ref_start_window)
+      ADT < !!reference_date + days(!!ref_start_window)
   ) %>%
     mutate(
       AVALC = "NE",
@@ -499,7 +499,7 @@ derive_param_confirmed_bor <- function(dataset,
   bor <- bind_rows(cr_data, pr_data, sd_data, pd_data, non_data, ne_data, nd_data, missing_data) %>%
     filter_extreme(
       by_vars = subject_keys,
-      order = vars(tmp_order, ADT),
+      order = exprs(tmp_order, ADT),
       mode = "first"
     ) %>%
     select(-tmp_order) %>%

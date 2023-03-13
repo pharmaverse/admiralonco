@@ -30,14 +30,14 @@ tu <- convert_blanks_to_na(tu)
 # ---- Derivations ----
 
 # Get list of ADSL vars required for derivations - here we assume randomized study
-adsl_vars <- vars(RANDDT)
+adsl_vars <- exprs(RANDDT)
 
 # Join ADSL vars to RS
 adrs <- rs %>%
   derive_vars_merged(
     dataset_add = adsl,
     new_vars = adsl_vars,
-    by_vars = vars(STUDYID, USUBJID)
+    by_vars = exprs(STUDYID, USUBJID)
   )
 
 # ---- Company-specific pre-processing ----
@@ -79,8 +79,8 @@ adrs <- adrs %>%
   restrict_derivation(
     derivation = derive_var_extreme_flag,
     args = params(
-      by_vars = vars(STUDYID, USUBJID, ADT),
-      order = vars(AVAL, RSSEQ),
+      by_vars = exprs(STUDYID, USUBJID, ADT),
+      order = exprs(AVAL, RSSEQ),
       new_var = ANL01FL,
       mode = "last"
     ),
@@ -95,8 +95,8 @@ adrs <- adrs %>%
     dataset_adsl = adsl,
     dataset_source = adrs,
     filter_source = PARAMCD == "OVR" & AVALC == "PD" & ANL01FL == "Y",
-    order = vars(ADT, RSSEQ),
-    set_values_to = vars(
+    order = exprs(ADT, RSSEQ),
+    set_values_to = exprs(
       PARAMCD = "PD",
       PARAM = "Disease Progression by Investigator",
       PARCAT1 = "Tumor Response",
@@ -120,7 +120,7 @@ adrs <- adrs %>%
     filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
     source_pd = pd,
     source_datasets = list(adrs = adrs),
-    set_values_to = vars(
+    set_values_to = exprs(
       PARAMCD = "RSP",
       PARAM = "Response by Investigator (confirmation not required)",
       PARCAT1 = "Tumor Response",
@@ -147,7 +147,7 @@ adrs <- adrs %>%
     source_datasets = list(adrs = adrs),
     reference_date = RANDDT,
     ref_start_window = 42,
-    set_values_to = vars(
+    set_values_to = exprs(
       PARAMCD = "CB",
       PARAM = "Clinical Benefit by Investigator (confirmation for response not required)",
       PARCAT1 = "Tumor Response",
@@ -166,7 +166,7 @@ adrs <- adrs %>%
     source_datasets = list(adrs = adrs),
     reference_date = RANDDT,
     ref_start_window = 42,
-    set_values_to = vars(
+    set_values_to = exprs(
       PARAMCD = "BOR",
       PARAM = "Best Overall Response by Investigator (confirmation not required)",
       PARCAT1 = "Tumor Response",
@@ -182,8 +182,8 @@ adrs <- adrs %>%
     dataset_adsl = adsl,
     dataset_source = adrs,
     filter_source = PARAMCD == "BOR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
-    order = vars(ADT, RSSEQ),
-    set_values_to = vars(
+    order = exprs(ADT, RSSEQ),
+    set_values_to = exprs(
       PARAMCD = "BCP",
       PARAM = "Best Overall Response of CR/PR by Investigator (confirmation not required)",
       PARCAT1 = "Tumor Response",
@@ -201,7 +201,7 @@ adrs <- adrs %>%
     source_pd = pd,
     source_datasets = list(adrs = adrs),
     ref_confirm = 28,
-    set_values_to = vars(
+    set_values_to = exprs(
       PARAMCD = "CRSP",
       PARAM = "Confirmed Response by Investigator",
       PARCAT1 = "Tumor Response",
@@ -226,7 +226,7 @@ adrs <- adrs %>%
     source_datasets = list(adrs = adrs),
     reference_date = RANDDT,
     ref_start_window = 42,
-    set_values_to = vars(
+    set_values_to = exprs(
       PARAMCD = "CCB",
       PARAM = "Confirmed Clinical Benefit by Investigator",
       PARCAT1 = "Tumor Response",
@@ -243,7 +243,7 @@ adrs <- adrs %>%
     reference_date = RANDDT,
     ref_start_window = 42,
     ref_confirm = 28,
-    set_values_to = vars(
+    set_values_to = exprs(
       PARAMCD = "CBOR",
       PARAM = "Best Confirmed Overall Response by Investigator",
       PARCAT1 = "Tumor Response",
@@ -256,8 +256,8 @@ adrs <- adrs %>%
     dataset_adsl = adsl,
     dataset_source = adrs,
     filter_source = PARAMCD == "CBOR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
-    order = vars(ADT, RSSEQ),
-    set_values_to = vars(
+    order = exprs(ADT, RSSEQ),
+    set_values_to = exprs(
       PARAMCD = "CBCP",
       PARAM = "Best Confirmed Overall Response of CR/PR by Investigator",
       PARCAT1 = "Tumor Response",
@@ -276,7 +276,7 @@ adrs <- adrs %>%
     dataset_adsl = adsldth,
     dataset_source = adsldth,
     filter_source = !is.na(DTHDT),
-    set_values_to = vars(
+    set_values_to = exprs(
       PARAMCD = "DEATH",
       PARAM = "Death",
       PARCAT1 = "Reference Event",
@@ -292,11 +292,11 @@ adrs <- adrs %>%
     dataset_adsl = adsl,
     dataset_source = adrs,
     filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
-    order = vars(ADT, RSSEQ),
+    order = exprs(ADT, RSSEQ),
     mode = "last",
     # Use this approach to ensure AVALC is not overwritten with a Y
     new_var = dummy,
-    set_values_to = vars(
+    set_values_to = exprs(
       PARAMCD = "LSTA",
       PARAM = "Last Disease Assessment by Investigator",
       PARCAT1 = "Tumor Response",
@@ -318,7 +318,7 @@ adrs <- adrs %>%
     condition = TUEVAL == "INVESTIGATOR" & TUSTRESC == "TARGET" & VISIT == "BASELINE",
     false_value = "N",
     missing_value = "N",
-    set_values_to = vars(
+    set_values_to = exprs(
       PARAMCD = "MDIS",
       PARAM = "Measurable Disease at Baseline by Investigator",
       PARCAT2 = "Investigator",
@@ -340,8 +340,8 @@ adrs <- adrs %>%
 # Derive analysis sequence
 adrs <- adrs %>%
   derive_var_obs_number(
-    by_vars = vars(STUDYID, USUBJID),
-    order = vars(PARAMCD, ADT, VISITNUM, RSSEQ),
+    by_vars = exprs(STUDYID, USUBJID),
+    order = exprs(PARAMCD, ADT, VISITNUM, RSSEQ),
     check_type = "error"
   )
 
@@ -349,7 +349,7 @@ adrs <- adrs %>%
 adrs <- adrs %>%
   derive_vars_merged(
     dataset_add = select(adsl, !!!negate_vars(adsl_vars)),
-    by_vars = vars(STUDYID, USUBJID)
+    by_vars = exprs(STUDYID, USUBJID)
   )
 
 # ---- Save output ----

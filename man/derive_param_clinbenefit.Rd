@@ -67,11 +67,11 @@ function must return a numeric vector.}
 \item{clinben_vals}{A vector of response values to be considered when determining
 clinical benefit.}
 
-\item{set_values_to}{A named list returned by \code{vars()} containing new variables
+\item{set_values_to}{A named list returned by \code{exprs()} containing new variables
 and their static value to be populated for the clinical benefit rate parameter
-records, e.g. \code{vars(PARAMCD = "CBR", PARAM = "Clinical Benefit Rate")}.}
+records, e.g. \code{exprs(PARAMCD = "CBR", PARAM = "Clinical Benefit Rate")}.}
 
-\item{subject_keys}{A named list returned by \code{vars()} containing variables
+\item{subject_keys}{A named list returned by \code{exprs()} containing variables
 used to uniquely identify subjects.}
 }
 \value{
@@ -172,8 +172,8 @@ adrs <- tibble::tribble(
   mutate(STUDYID = "AB42", ANL01FL = "Y") \%>\%
   derive_vars_merged(
     dataset_add = adsl,
-    by_vars = vars(STUDYID, USUBJID),
-    new_vars = vars(TRTSDT)
+    by_vars = exprs(STUDYID, USUBJID),
+    new_vars = exprs(TRTSDT)
   )
 
 pd <- date_source(
@@ -197,7 +197,7 @@ derive_param_clinbenefit(
   source_datasets = list(adrs = adrs),
   reference_date = TRTSDT,
   ref_start_window = 28,
-  set_values_to = vars(
+  set_values_to = exprs(
     PARAMCD = "CBR"
   )
 ) \%>\%
