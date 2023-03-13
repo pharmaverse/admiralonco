@@ -15,14 +15,14 @@ signal_crpr(
 \arguments{
 \item{dataset}{A data frame}
 
-\item{order}{A list of variables created using \code{vars()} determining the order
+\item{order}{A list of variables created using \code{exprs()} determining the order
 or the records}
 
 \item{msg}{The condition message}
 
 \item{subject_keys}{Variables to uniquely identify a subject
 
-A list of symbols created using \code{vars()} is expected.}
+A list of symbols created using \code{exprs()} is expected.}
 
 \item{check_type}{Type of message to issue when detecting PR after CR.
 
@@ -39,6 +39,7 @@ library(tibble)
 library(dplyr)
 library(lubridate)
 library(admiralonco)
+library(rlang)
 
 adrs <- tribble(
   ~USUBJID, ~ADTC,        ~AVALC,
@@ -55,7 +56,7 @@ adrs <- tribble(
     STUDYID = "XX1234"
   )
 
-signal_crpr(adrs, order = vars(ADT))
+signal_crpr(adrs, order = exprs(ADT))
 }
 \seealso{
 \code{\link[=get_crpr_dataset]{get_crpr_dataset()}}

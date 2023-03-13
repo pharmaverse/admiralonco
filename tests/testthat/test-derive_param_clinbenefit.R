@@ -55,8 +55,8 @@ adrs <- tribble(
   ) %>%
   derive_vars_merged(
     dataset_add = adsl,
-    by_vars = vars(STUDYID, USUBJID),
-    new_vars = vars(TRTSDT)
+    by_vars = exprs(STUDYID, USUBJID),
+    new_vars = exprs(TRTSDT)
   )
 
 pd <- date_source(
@@ -103,7 +103,7 @@ test_that("Clinical benefit rate parameter is derived correctly Test 1: ignore N
     reference_date = TRTSDT,
     ref_start_window = 28,
     clinben_vals = c("CR", "PR", "SD"),
-    set_values_to = vars(
+    set_values_to = exprs(
       PARAMCD = "CBR",
       ANL01FL = "Y"
     )
@@ -145,7 +145,7 @@ test_that("Clinical benefit rate parameter is derived correctly Test 2: No sourc
     source_datasets = list(adrs = adrs),
     reference_date = TRTSDT,
     ref_start_window = 28,
-    set_values_to = vars(
+    set_values_to = exprs(
       PARAMCD = "CBR",
       ANL01FL = "Y"
     )

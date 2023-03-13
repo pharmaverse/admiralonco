@@ -18,7 +18,7 @@ dyn_link <- function(text,
                      base_url,
                      relative_url = "",
                      # Change to TRUE when admiral adopts multiversion docs
-                     is_multiversion = FALSE,
+                     is_multiversion = TRUE,
                      multiversion_default_ref = "main") {
   url <- paste(base_url, relative_url, sep = "/")
   if (is_multiversion) {
@@ -32,7 +32,7 @@ dyn_link <- function(text,
   return(link(text, url))
 }
 # Other variables
-admiral_homepage <- "https://pharmaverse.github.io/admiral"
+admiral_homepage <- "https://pharmaverse.github.io/admiral/cran-release"
 ```
 
 <!-- Please do not edit the README.md file as it is auto-generated after PR merges. Only edit the README.Rmd file -->

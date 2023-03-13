@@ -7,7 +7,7 @@
 derive_param_lasta(
   dataset,
   filter_source,
-  order = vars(ADT),
+  order = exprs(ADT),
   source_pd = NULL,
   source_datasets = NULL,
   subject_keys = get_admiral_option("subject_keys"),
@@ -31,10 +31,10 @@ Last Disease Assessment}
 
 \item{order}{Sort order, after which the last record shall be taken by
 the \code{subject_keys} to determine Last Disease Assessment. Created
-using \code{vars()}.
+using \code{exprs()}.
 
 \emph{Permitted Values:} list of variables or \verb{desc(<variable>)} function calls
-created by \code{vars()}, e.g., \code{vars(ADT, desc(AVAL))}}
+created by \code{exprs()}, e.g., \code{exprs(ADT, desc(AVAL))}}
 
 \item{source_pd}{Date of first progressive disease (PD)
 
@@ -65,12 +65,12 @@ and the actual response dataframe in the script is \code{myadrs}, \code{source_d
 
 \item{subject_keys}{Columns to uniquely identify a subject
 
-A list of symbols created using \code{vars()}.}
+A list of symbols created using \code{exprs()}.}
 
 \item{set_values_to}{Columns to set
 
-A named list returned by \code{vars()} defining the columns to be set for the
-new parameter, e.g. \code{vars(PARAMCD = "LSTAC", PARAM = "Last Disease Assessment Censored at First PD by Investigator")} is expected. The values
+A named list returned by \code{exprs()} defining the columns to be set for the
+new parameter, e.g. \code{exprs(PARAMCD = "LSTAC", PARAM = "Last Disease Assessment Censored at First PD by Investigator")} is expected. The values
 must be symbols, character strings, numeric values, or \code{NA}.}
 }
 \value{

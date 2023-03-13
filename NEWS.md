@@ -1,3 +1,20 @@
+# admiralonco 0.3.0
+
+## Breaking Changes
+
+- All function arguments which expected a list of quosures created by `vars()`
+are now expecting a list of expressions created by `exprs()`. For example,
+instead of `by_vars = vars(STUDYID, USUBJID)` `by_vars = exprs(STUDYID,
+USUBJID)` must be used now. (#197)
+
+## Documentation
+
+- New vignette "Create `ADTR`" (#16)
+
+## Various
+
+- ADTTE template simplified for duration of response in line with `admiral::derive_param_tte()` enhancement (#203)
+
 # admiralonco 0.2.0
 
 ## Updates of Existing Functions

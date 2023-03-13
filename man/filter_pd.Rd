@@ -32,7 +32,7 @@ The name must match the name provided by the \code{dataset_name} field of the
 
 \item{subject_keys}{Variables to uniquely identify a subject
 
-A list of symbols created using \code{vars()} is expected.}
+A list of symbols created using \code{exprs()} is expected.}
 }
 \value{
 A subset of the input dataset

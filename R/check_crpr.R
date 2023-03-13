@@ -2,14 +2,14 @@
 #'
 #' @param dataset A data frame
 #'
-#' @param order A list of variables created using `vars()` determining the order
+#' @param order A list of variables created using `exprs()` determining the order
 #'   or the records
 #'
 #' @param msg The condition message
 #'
 #' @param subject_keys Variables to uniquely identify a subject
 #'
-#'   A list of symbols created using `vars()` is expected.
+#'   A list of symbols created using `exprs()` is expected.
 #'
 #' @param check_type Type of message to issue when detecting PR after CR.
 #'
@@ -32,6 +32,7 @@
 #' library(dplyr)
 #' library(lubridate)
 #' library(admiralonco)
+#' library(rlang)
 #'
 #' adrs <- tribble(
 #'   ~USUBJID, ~ADTC,        ~AVALC,
@@ -48,7 +49,7 @@
 #'     STUDYID = "XX1234"
 #'   )
 #'
-#' signal_crpr(adrs, order = vars(ADT))
+#' signal_crpr(adrs, order = exprs(ADT))
 signal_crpr <- function(dataset,
                         order,
                         msg = "Dataset contains CR records followed by PR.",
@@ -58,21 +59,21 @@ signal_crpr <- function(dataset,
   assert_vars(subject_keys)
   assert_character_scalar(check_type, values = c("message", "warning", "error"))
 
-  crpr_data <- filter_confirmation(
+  crpr_data <- filter_joined(
     dataset,
     by_vars = subject_keys,
     order = order,
-    join_vars = vars(AVALC),
+    join_vars = exprs(AVALC),
     join_type = "after",
     filter = AVALC == "CR" & AVALC.join == "PR"
   )
 
   if (nrow(crpr_data) > 0) {
-    pr_data <- filter_confirmation(
+    pr_data <- filter_joined(
       dataset,
       by_vars = subject_keys,
       order = order,
-      join_vars = vars(AVALC),
+      join_vars = exprs(AVALC),
       join_type = "before",
       filter = AVALC == "PR" & AVALC.join == "CR"
     )
@@ -120,6 +121,7 @@ signal_crpr <- function(dataset,
 #' library(dplyr)
 #' library(lubridate)
 #' library(admiralonco)
+#' library(rlang)
 #'
 #' adrs <- tribble(
 #'   ~USUBJID, ~ADTC,        ~AVALC,
@@ -136,7 +138,7 @@ signal_crpr <- function(dataset,
 #'     STUDYID = "XX1234"
 #'   )
 #'
-#' signal_crpr(adrs, order = vars(ADT))
+#' signal_crpr(adrs, order = exprs(ADT))
 #'
 #' get_crpr_dataset()
 get_crpr_dataset <- function() {

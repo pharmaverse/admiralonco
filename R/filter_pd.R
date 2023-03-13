@@ -24,7 +24,7 @@
 #'
 #' @param subject_keys Variables to uniquely identify a subject
 #'
-#'   A list of symbols created using `vars()` is expected.
+#'   A list of symbols created using `exprs()` is expected.
 #'
 #' @return A subset of the input dataset
 #'
@@ -187,11 +187,11 @@ filter_pd <- function(dataset,
   # Check input arguments
   assert_vars(subject_keys)
   assert_data_frame(dataset,
-    required_vars = vars(!!!subject_keys, ADT),
+    required_vars = exprs(!!!subject_keys, ADT),
     optional = FALSE
   )
   filter <- assert_filter_cond(
-    enquo(filter),
+    enexpr(filter),
     optional = FALSE
   )
   assert_s3_class(source_pd, "date_source")
@@ -215,8 +215,8 @@ filter_pd <- function(dataset,
       dataset_add = source_datasets[[source_pd$dataset_name]],
       filter_add = !!source_pd$filter,
       by_vars = subject_keys,
-      order = vars(!!source_pd$date),
-      new_vars = vars(temp_date = !!source_pd$date),
+      order = exprs(!!source_pd$date),
+      new_vars = exprs(temp_date = !!source_pd$date),
       mode = "first"
     ) %>%
     filter(is.na(temp_date) | ADT <= temp_date) %>%
