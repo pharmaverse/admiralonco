@@ -6,6 +6,7 @@ adrs
 ADRS
 adsl
 ADSL
+ADTR
 adtte
 ADTTE
 Akinyi
@@ -19,9 +20,15 @@ cb
 cdisc
 CDISC
 censorings
+chk
 CMD
 datetime
+der
+ds
+durations
 evaluable
+fil
+fmt
 funder
 GlaxoSmithKline
 Hoffmann
@@ -33,6 +40,7 @@ PFS
 pharmaverse
 pre
 Pre
+prm
 quosures
 radiological
 rda

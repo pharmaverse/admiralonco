@@ -332,7 +332,7 @@ derive_param_confirmed_resp <- function(dataset,
   )
 
   # Create observations for potential responses
-  cr_data <- filter_confirmation(
+  cr_data <- filter_joined(
     source_data,
     by_vars = subject_keys,
     join_vars = exprs(AVALC, ADT),
@@ -353,7 +353,7 @@ derive_param_confirmed_resp <- function(dataset,
   } else {
     max_nr_sd <- 0
   }
-  pr_data <- filter_confirmation(
+  pr_data <- filter_joined(
     source_data,
     by_vars = subject_keys,
     join_vars = exprs(AVALC, ADT),

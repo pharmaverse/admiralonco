@@ -227,6 +227,7 @@ derive_param_response <- function(dataset,
       # ERROR ! Argument `filter_source` is missing, with no default
       filter_source = !!filter_s,
       order = exprs(ADT),
+      new_var = AVALC,
       set_values_to = set_values_to
     ) %>%
     restrict_derivation(
