@@ -47,14 +47,6 @@ ADT is set NA.'><meta property="og:image" content="https://pharmaverse.github.io
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/devel">devel</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/pre-release">pre-release</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -96,7 +88,7 @@ If a response has not been observed, <code>AVALC</code> is set to "N", <code>AVA
 <span>  source_datasets <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">set_values_to</span>,</span>
 <span>  aval_fun <span class="op">=</span> <span class="va">yn_to_numeric</span>,</span>
-<span>  subject_keys <span class="op">=</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/get_admiral_option.html" class="external-link">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span></span>
+<span>  subject_keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/admiral/man/get_admiral_option.html" class="external-link">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -142,9 +134,9 @@ date when the response occurred.</p></li>
 <p>A named list of datasets with one element is expected
 (e.g. <code>list(adrs= adrs)</code>).</p>
 <p>The name must match the <code>dataset_name</code> field of the
-<code><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">admiral::date_source()</a></code> object specified for <code>source_pd</code>.</p>
+<code><a href="https://rdrr.io/pkg/admiral/man/date_source.html" class="external-link">admiral::date_source()</a></code> object specified for <code>source_pd</code>.</p>
 <p>The variables specified by the <code>subject_keys</code> argument and the <code>date</code>
-field of the <code><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">admiral::date_source()</a></code> object are expected in the dataset.</p></dd>
+field of the <code><a href="https://rdrr.io/pkg/admiral/man/date_source.html" class="external-link">admiral::date_source()</a></code> object are expected in the dataset.</p></dd>
 
 
 <dt>set_values_to</dt>
@@ -253,7 +245,7 @@ the new observations.</p></li>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Define the end of the assessment period for responses:</span></span></span>
 <span class="r-in"><span><span class="co"># all responses before or on the first PD will be used.</span></span></span>
-<span class="r-in"><span><span class="va">pd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">date_source</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="va">pd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/admiral/man/date_source.html" class="external-link">date_source</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  dataset_name <span class="op">=</span> <span class="st">"adrs"</span>,</span></span>
 <span class="r-in"><span>  date <span class="op">=</span> <span class="va">ADT</span>,</span></span>
 <span class="r-in"><span>  filter <span class="op">=</span> <span class="va">PARAMCD</span> <span class="op">==</span> <span class="st">"PD"</span> <span class="op">&amp;</span> <span class="va">AVALC</span> <span class="op">==</span> <span class="st">"Y"</span></span></span>
@@ -269,7 +261,7 @@ the new observations.</p></li>
 <span class="r-in"><span>    PARAMCD <span class="op">=</span> <span class="st">"RSP"</span>,</span></span>
 <span class="r-in"><span>    PARAM <span class="op">=</span> <span class="st">"Response by investigator"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  subject_keys <span class="op">=</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/get_admiral_option.html" class="external-link">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  subject_keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/admiral/man/get_admiral_option.html" class="external-link">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">USUBJID</span>, <span class="va">PARAMCD</span>, <span class="va">ADT</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 17 x 8</span></span>
