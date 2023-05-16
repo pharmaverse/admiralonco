@@ -1,6 +1,7 @@
 ---
 title: "Creating and Using New Anti-Cancer Start Date"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Creating and Using New Anti-Cancer Start Date}
   %\VignetteEngine{knitr::rmarkdown}
@@ -12,9 +13,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-
-library(admiral)
-
+library(admiralonco)
 link <- function(text, url) {
   return(
     paste0(
@@ -68,7 +67,7 @@ of the data frames needed may be `CM` and `PR`.
 
 For example purpose, `CM` and `PR` has been generated (based on CDISC Pilot test data), with oncology specific test data.
 
-```{r message=FALSE}
+```{r, warning=FALSE, message=FALSE}
 library(admiral)
 library(dplyr)
 library(admiral.test)
