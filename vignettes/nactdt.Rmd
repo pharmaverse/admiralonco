@@ -2,7 +2,7 @@
 title: "Creating and Using New Anti-Cancer Start Date"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{newctxdt}
+  %\VignetteIndexEntry{Creating and Using New Anti-Cancer Start Date}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
