@@ -72,30 +72,28 @@ For example purpose, `CM` and `PR` has been generated (based on CDISC Pilot test
 library(admiral)
 library(dplyr)
 library(admiral.test)
-library(admiralonco)
 
 adsl <- admiral_adsl
 
 cm <- tribble(
-  ~STUDYID,       ~USUBJID,      ~CMCAT,            ~CMSCAT,        ~CMTRT,        ~CMSTDTC,       
-  "CDISCPILOT01", "01-701-1015", "PRIOR TREATMENT", "CHEMOTHERAPY", "DEXRAZOXANE",	NA,            
-  "CDISCPILOT01", "01-701-1015", "ON TREATMENT",    "CHEMOTHERAPY",	"DEXROZOXANE",  "2014-07-02",
-  "CDISCPILOT01", "01-701-1015", "ON TREATMENT",    "CHEMOTHERAPY",	"DEXROZOXANE",  "2014-06-19",
-  "CDISCPILOT01", "01-701-1028", "PRIOR TREATMENT", "CHEMOTHERAPY", "METHOTREXATE", NA,             
-  "CDISCPILOT01", "01-701-1028", "ON TREATMENT",    "CHEMOTHERAPY", "METHOTREXATE", "2014-01-14",   
-  "CDISCPILOT01", "01-701-1034", "PRIOR TREATMENT", "CHEMOTHERAPY", "OLAPARIB",     NA,             
-  "CDISCPILOT01", "01-701-1034", "ON TREATMENT",    "CHEMOTHERAPY", "OLAPARIB",     "2014-12-30",   
-  "CDISCPILOT01", "01-701-1097", "PRIOR TREATMENT", "CHEMOTHERAPY", "TEMODAL",      NA,             
-  "CDISCPILOT01", "01-701-1097", "ON TREATMENT",    "CHEMOTHERAPY", "TEMODAL",      "2013-12-31",  
+  ~STUDYID, ~USUBJID, ~CMCAT, ~CMSCAT, ~CMTRT, ~CMSTDTC,
+  "CDISCPILOT01", "01-701-1015", "PRIOR TREATMENT", "CHEMOTHERAPY", "DEXRAZOXANE", NA,
+  "CDISCPILOT01", "01-701-1015", "ON TREATMENT", "CHEMOTHERAPY", "DEXROZOXANE", "2014-07-02",
+  "CDISCPILOT01", "01-701-1015", "ON TREATMENT", "CHEMOTHERAPY", "DEXROZOXANE", "2014-06-19",
+  "CDISCPILOT01", "01-701-1028", "PRIOR TREATMENT", "CHEMOTHERAPY", "METHOTREXATE", NA,
+  "CDISCPILOT01", "01-701-1028", "ON TREATMENT", "CHEMOTHERAPY", "METHOTREXATE", "2014-01-14",
+  "CDISCPILOT01", "01-701-1034", "PRIOR TREATMENT", "CHEMOTHERAPY", "OLAPARIB", NA,
+  "CDISCPILOT01", "01-701-1034", "ON TREATMENT", "CHEMOTHERAPY", "OLAPARIB", "2014-12-30",
+  "CDISCPILOT01", "01-701-1097", "PRIOR TREATMENT", "CHEMOTHERAPY", "TEMODAL", NA,
+  "CDISCPILOT01", "01-701-1097", "ON TREATMENT", "CHEMOTHERAPY", "TEMODAL", "2013-12-31",
 )
 
 pr <- tribble(
-  ~STUDYID,       ~USUBJID,      ~PRCAT,           ~PRSCAT,           ~PRTRT,    ~PRSTDTC,     
-  "CDISCPILOT01", "01-701-1015", "CANCER RELATED", "ON TREATMENT",    "SURGERY", "2014-06-18", 
-  "CDISCPILOT01", "01-701-1034", "CANCER RELATED", "ON TREATMENT",    "SURGERY", "2014-12-16", 
-  "CDISCPILOT01", "01-701-1028", "CANCER RELATED", "PRIOR TREATMENT", "SURGERY",  NA,          
+  ~STUDYID, ~USUBJID, ~PRCAT, ~PRSCAT, ~PRTRT, ~PRSTDTC,
+  "CDISCPILOT01", "01-701-1015", "CANCER RELATED", "ON TREATMENT", "SURGERY", "2014-06-18",
+  "CDISCPILOT01", "01-701-1034", "CANCER RELATED", "ON TREATMENT", "SURGERY", "2014-12-16",
+  "CDISCPILOT01", "01-701-1028", "CANCER RELATED", "PRIOR TREATMENT", "SURGERY", NA,
 )
-
 ```
 
 ## Single Source{#input}
@@ -103,10 +101,9 @@ pr <- tribble(
 To derive the New Anti-Cancer Therapy start date with data from a single source, the function `admiral::derive_vars_merged()` can be used. If numeric date is required, pre-processing using `admiral::derive_vars_dt()` can be used, or if time part is needed, `admiral::derive_vars_dt()` can be used.
 
 ```{r message=FALSE}
-
 cm_ext <- derive_vars_dt(
   cm,
-  dtc=CMSTDTC,
+  dtc = CMSTDTC,
   new_vars_prefix = "CMST"
 )
 
@@ -119,7 +116,6 @@ adsl <- derive_vars_merged(
   new_vars = exprs(NACTDT = CMSTDT),
   filter_add = CMSCAT == "CHEMOTHERAPY" & CMCAT == "ON TREATMENT"
 )
-
 ```
 
 ```{r, eval=TRUE, echo=FALSE}
@@ -140,7 +136,6 @@ To derive the New Anti-Cancer Therapy start date with data from multiple sources
 Prior to calling the function, two steps must be performed. To start, an input `date_source` object must be created for each source dataset using `admiral::date_source()`. Within this function, any company-specific subsetting can be passed to the `filter` argument. 
 
 ```{r message=FALSE}
-
 cm_date <- date_source(
   dataset_name = "cm",
   filter = CMSCAT == "CHEMOTHERAPY" & CMCAT == "ON TREATMENT" & !is.na(CMSTDT),
@@ -149,17 +144,15 @@ cm_date <- date_source(
 
 pr_date <- date_source(
   dataset_name = "pr",
-  filter = PRCAT == "CANCER RELATED"& PRSCAT == "ON TREATMENT" & !is.na(PRSTDT),
+  filter = PRCAT == "CANCER RELATED" & PRSCAT == "ON TREATMENT" & !is.na(PRSTDT),
   date = PRSTDT
 )
-
 ```
 
 Lastly, numeric version of the dates will be needed, conversion can be done using `admiral::derive_vars_dt()`, or if time part is needed, `admiral::derive_vars_dtm()`. 
 
 
 ```{r message=FALSE}
-
 cm_ext <- cm %>%
   derive_vars_dt(
     dtc = CMSTDTC,
@@ -170,8 +163,7 @@ pr_ext <- pr %>%
   derive_vars_dt(
     dtc = PRSTDTC,
     new_vars_prefix = "PRST"
-  ) 
-
+  )
 ```
 
 ## Multiple Sources - Derive New-Anti Cancer Start Date and Merge with `ADSL` {#nactdt}
@@ -179,18 +171,16 @@ pr_ext <- pr %>%
 After completion of the prerequisite steps, the new anti-cancer date can be derived while simultaneously adding it to `ADSL`.
 
 ```{r message=FALSE}
-
-adsl <- admiral_adsl %>% 
+adsl <- admiral_adsl %>%
   derive_var_extreme_dt(
     new_var = NACTDT,
-    cm_date,pr_date,
+    cm_date, pr_date,
     source_datasets = list(
       cm = cm_ext,
       pr = pr_ext
     ),
     mode = "first"
-  ) 
-
+  )
 ```
 
 ```{r, eval=TRUE, echo=FALSE}
