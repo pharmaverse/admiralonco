@@ -35,14 +35,6 @@
 <li class="active nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/devel">devel</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/pre-release">pre-release</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -67,7 +59,7 @@
 <h2 class="pkg-version" data-toc-text="0.3.0" id="admiralonco-030">admiralonco 0.3.0<a class="anchor" aria-label="anchor" href="#admiralonco-030"></a></h2><p class="text-muted">CRAN release: 2023-03-14</p>
 <div class="section level3">
 <h3 id="breaking-changes-0-3-0">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-3-0"></a></h3>
-<ul><li>All function arguments which expected a list of quosures created by <code><a href="https://rdrr.io/pkg/admiral/man/vars.html" class="external-link">vars()</a></code> are now expecting a list of expressions created by <code><a href="https://rdrr.io/pkg/admiral/man/reexport-exprs.html" class="external-link">exprs()</a></code>. For example, instead of <code>by_vars = vars(STUDYID, USUBJID)</code> <code>by_vars = exprs(STUDYID, USUBJID)</code> must be used now. (<a href="https://github.com/pharmaverse/admiralonco/issues/197" class="external-link">#197</a>)</li>
+<ul><li>All function arguments which expected a list of quosures created by <code><a href="https://dplyr.tidyverse.org/reference/vars.html" class="external-link">vars()</a></code> are now expecting a list of expressions created by <code><a href="https://rdrr.io/pkg/admiral/man/reexport-exprs.html" class="external-link">exprs()</a></code>. For example, instead of <code>by_vars = vars(STUDYID, USUBJID)</code> <code>by_vars = exprs(STUDYID, USUBJID)</code> must be used now. (<a href="https://github.com/pharmaverse/admiralonco/issues/197" class="external-link">#197</a>)</li>
 </ul></div>
 <div class="section level3">
 <h3 id="documentation-0-3-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-3-0"></a></h3>
