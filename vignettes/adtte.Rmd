@@ -246,7 +246,7 @@ values, then you'd need to ensure only one is set per patient.
 
 This case is demonstrated in the below example (where `NACTDT` would be
 pre-derived as first date of new anti-cancer therapy, and `LASTANDT` as the
-single tumor assessment censor date as described above).
+single tumor assessment censor date as described above. See `{admiralonco}` [Creating and Using New Anti-Cancer Start Date](nactdt.html) for deriving `NACTDT`).
 
 ```{r, eval=FALSE}
 pd_nact_event <- event_source(
