@@ -1,3 +1,10 @@
+# admiralonco 0.11.0
+
+## Documentation
+
+- New vignette "Creating and Using New Anti-Cancer Start Date" (#17)
+- "Create `ADRS`" and "Create `ADTTE`" vignette has been updated to include a link to "Creating and Using New Anti-Cancer Start Date" vignette
+
 # admiralonco 0.3.0
 
 ## Breaking Changes
