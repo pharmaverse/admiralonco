@@ -1,3 +1,10 @@
+# admiralonco 0.4.0
+
+## Breaking Changes
+
+- Function `derive_param_lasta()`, which was deprecated in admiralonco 0.2.0,
+has been removed. (#216)
+
 # admiralonco 0.3.0
 
 ## Breaking Changes
