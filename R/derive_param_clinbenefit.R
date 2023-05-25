@@ -94,8 +94,10 @@
 #' that must elapse before an evaluable non-PD assessment counts toward determining
 #' clinical benefit.
 #'
-#' @param aval_fun Function to map character analysis value (`AVALC`) to numeric
-#' analysis value (`AVAL`)
+#' @param aval_fun *Deprecated*, please use `set_values_to` instead.
+#'
+#' Function to map character analysis value (`AVALC`) to numeric analysis value
+#' (`AVAL`)
 #'
 #' The (first) argument of the function must expect a character vector and the
 #' function must return a numeric vector.
@@ -195,7 +197,7 @@ derive_param_clinbenefit <- function(dataset,
                                      source_datasets,
                                      reference_date,
                                      ref_start_window,
-                                     aval_fun = yn_to_numeric,
+                                     aval_fun,
                                      clinben_vals = c("CR", "PR", "SD", "NON-CR/NON-PD"),
                                      set_values_to,
                                      subject_keys = get_admiral_option("subject_keys")) {
@@ -216,11 +218,16 @@ derive_param_clinbenefit <- function(dataset,
     optional = FALSE
   )
 
-  assert_function(aval_fun)
   assert_s3_class(source_resp, "date_source")
   assert_s3_class(source_pd, "date_source", optional = TRUE)
   assert_list_of(source_datasets, "data.frame")
   assert_character_vector(clinben_vals)
+
+  if (!missing(aval_fun)) {
+    deprecate_warn("0.4.0", "derive_param_clinbenefit(aval_fun = )", "derive_param_clinbenefit(set_values_to = )")
+    assert_function(aval_fun)
+    set_values_to <- exprs(!!!set_values_to, AVAL = {{aval_fun}}(AVALC))
+  }
 
   source_names <- names(source_datasets)
 
@@ -313,9 +320,6 @@ derive_param_clinbenefit <- function(dataset,
     mutate(
       AVALC = if_else(!is.na(ADT), "Y", "N"),
       !!!set_values_to
-    ) %>%
-    call_aval_fun(
-      aval_fun
     )
 
   bind_rows(dataset, new_param)

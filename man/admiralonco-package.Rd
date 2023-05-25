@@ -22,6 +22,7 @@ Authors:
   \item Samia Kabi
   \item Stephen Gormley
   \item Hinal Patel
+  \item Vinh Nguyen
 }
 
 Other contributors:

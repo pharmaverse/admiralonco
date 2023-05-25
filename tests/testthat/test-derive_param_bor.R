@@ -4,12 +4,6 @@
 #  Requirements: https://github.com/pharmaverse/admiralonco/issues/22  #
 ######################################################################## !
 
-library(tibble)
-library(dplyr)
-library(lubridate)
-library(admiraldev)
-library(admiral)
-
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # Create Test Data ----
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -23,7 +17,7 @@ library(admiral)
 # 2. CHECKNOTKEPTCOL ensure not in final dataframe
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-adsl <- tribble(
+adsl <- tibble::tribble(
   ~USUBJID, ~TRTSDTC,      ~CHECKKEPTCOL, ~CHECKNOTKEPTCOL,
   "1",      "2020-01-01",  "001",         "991",
   "2",      "2019-12-12",  "002",         "992",
@@ -39,7 +33,7 @@ adsl <- tribble(
     STUDYID = "XX1234"
   )
 
-adrs <- tribble(
+adrs <- tibble::tribble(
   ~USUBJID, ~ADTC, ~AVALC, ~CHECKKEPTCOL,
   "1", "2020-01-01", "PR", "001",
   "1", "2020-02-01", "CR", "001",
@@ -71,7 +65,7 @@ adrs <- tribble(
 ) %>%
   mutate(
     PARAMCD = "OVR",
-    ADT = ymd(ADTC),
+    ADT = lubridate::ymd(ADTC),
     STUDYID = "XX1234"
   ) %>%
   select(-ADTC) %>%
@@ -81,7 +75,7 @@ adrs <- tribble(
     new_vars = exprs(TRTSDT)
   )
 
-# Function to create numeric AVAL from AVALC, overwrites ADMIRAL defauly.
+# Function to create numeric AVAL from AVALC, overwrites ADMIRAL default.
 aval_fun_pass <- function(arg) {
   case_when(
     arg == "CR" ~ 11,
@@ -119,10 +113,10 @@ expected_01 <- bind_rows(
     select(-ADTC, -TRTSDTC)
 )
 
-# derive_param_bor, Test 1 ----
+## Test 1: No source_pd ----
 test_that("derive_param_bor Test 1: No source_pd", {
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # default  BOR, All Subjects have a record after reference date ----
+  ### default  BOR, All Subjects have a record after reference date ----
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   actual_01 <- derive_param_bor(
@@ -133,8 +127,8 @@ test_that("derive_param_bor Test 1: No source_pd", {
     source_datasets = NULL,
     reference_date = TRTSDT,
     ref_start_window = 28,
-    aval_fun = aval_fun_pass,
     set_values_to = exprs(
+      AVAL = {{aval_fun_pass}}(AVALC),
       PARAMCD = "BOR",
       PARAM = "Best Overall Response"
     )
@@ -160,6 +154,7 @@ test_that("derive_param_bor Test 1: No source_pd", {
     reference_date = TRTSDT,
     ref_start_window = 28,
     set_values_to = exprs(
+      AVAL = aval_resp(AVALC),
       PARAMCD = "BOR",
       PARAM = "Best Overall Response"
     )
@@ -176,7 +171,7 @@ test_that("derive_param_bor Test 1: No source_pd", {
   )
 
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Subjects only have records less than reference date (PR/CR) ----
+  ### Subjects only have records less than reference date (PR/CR) ----
   # Response is PR and CR so will be included
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -196,8 +191,8 @@ test_that("derive_param_bor Test 1: No source_pd", {
     source_datasets = NULL,
     reference_date = TRTSDT,
     ref_start_window = 28,
-    aval_fun = aval_fun_pass,
     set_values_to = exprs(
+      AVAL = {{aval_fun_pass}}(AVALC),
       PARAMCD = "BOR",
       PARAM = "Best Overall Response"
     )
@@ -219,7 +214,7 @@ test_that("derive_param_bor Test 1: No source_pd", {
   )
 
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # Subjects only have records less than reference date (SD) ----
+  ### Subjects only have records less than reference date (SD) ----
   # Response is SD will not be included and response will be NE
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
@@ -235,8 +230,8 @@ test_that("derive_param_bor Test 1: No source_pd", {
     source_datasets = NULL,
     reference_date = TRTSDT,
     ref_start_window = 28,
-    aval_fun = aval_fun_pass,
     set_values_to = exprs(
+      AVAL = {{aval_fun_pass}}(AVALC),
       PARAMCD = "BOR",
       PARAM = "Best Overall Response"
     )
@@ -256,16 +251,16 @@ test_that("derive_param_bor Test 1: No source_pd", {
   )
 })
 
-# derive_param_bor, Test 2 ----
+## Test 2: With source_pd ----
 test_that("derive_param_bor Test 2: With source_pd", {
-  pd_date <- date_source(
+  pd_date <- admiral::date_source(
     dataset_name = "adrs_pd",
     date         = ADT,
     filter       = PARAMCD == "PD"
   )
 
   # Add PD rows to input ADRS dataset
-  pd_records <- tribble(
+  pd_records <- tibble::tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
     "9",      "2020-02-16", "Y",
     "2",      "2020-03-01", "Y", # This subjects best response should now be PR
@@ -273,7 +268,7 @@ test_that("derive_param_bor Test 2: With source_pd", {
   ) %>%
     mutate(
       PARAMCD = "PD",
-      ADT = ymd(ADTC),
+      ADT = lubridate::ymd(ADTC),
       STUDYID = "XX1234"
     ) %>%
     select(-ADTC)
@@ -282,7 +277,7 @@ test_that("derive_param_bor Test 2: With source_pd", {
     bind_rows(pd_records)
 
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # default  BOR, All Subjects have a record after reference date ----
+  ### default  BOR, All Subjects have a record after reference date ----
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   actual_pd_01 <- derive_param_bor(
@@ -293,8 +288,8 @@ test_that("derive_param_bor Test 2: With source_pd", {
     source_datasets = list(adrs_pd = adrs_pd),
     reference_date = TRTSDT,
     ref_start_window = 28,
-    aval_fun = aval_fun_pass,
     set_values_to = exprs(
+      AVAL = {{aval_fun_pass}}(AVALC),
       PARAMCD = "BOR",
       PARAM = "Best Overall Response"
     )
@@ -328,8 +323,8 @@ test_that("derive_param_bor Test 2: With source_pd", {
   )
 })
 
-# derive_param_bor, Test 3 ----
-test_that("derive_param_bor Test 3: Test Error Mising Records For filter_source", {
+## Test 3: Error if missing records for filter_source ----
+test_that("derive_param_bor Test 3: Error if missing records for filter_source", {
   expect_error(
     derive_param_bor(
       dataset = adrs,
@@ -339,12 +334,82 @@ test_that("derive_param_bor Test 3: Test Error Mising Records For filter_source"
       source_datasets = NULL,
       reference_date = TRTSDT,
       ref_start_window = 28,
-      aval_fun = aval_fun_pass,
       set_values_to = exprs(
         PARAMCD = "BOR",
         PARAM = "Best Overall Response"
       )
     ),
     'PARAMCD == "MISSING RECORDS" has 0 records'
+  )
+})
+
+## Test 4: Deprecation warning for aval_fun ----
+test_that("derive_param_bor Test 4: Deprecation warning for aval_fun", {
+  pd_date <- admiral::date_source(
+    dataset_name = "adrs_pd",
+    date         = ADT,
+    filter       = PARAMCD == "PD"
+  )
+
+  # Add PD rows to input ADRS dataset
+  pd_records <- tibble::tribble(
+    ~USUBJID, ~ADTC,        ~AVALC,
+    "9",      "2020-02-16", "Y",
+    "2",      "2020-03-01", "Y", # This subjects best response should now be PR
+    "6",      "2020-02-05", "Y" # This subjects best response should now be MISSING
+  ) %>%
+    mutate(
+      PARAMCD = "PD",
+      ADT = lubridate::ymd(ADTC),
+      STUDYID = "XX1234"
+    ) %>%
+    select(-ADTC)
+
+  adrs_pd <- adrs %>%
+    bind_rows(pd_records)
+
+  expect_warning(
+  actual_pd_01 <- derive_param_bor(
+    dataset = adrs_pd,
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR",
+    source_pd = pd_date,
+    source_datasets = list(adrs_pd = adrs_pd),
+    reference_date = TRTSDT,
+    ref_start_window = 28,
+    aval_fun = aval_fun_pass,
+    set_values_to = exprs(
+      PARAMCD = "BOR",
+      PARAM = "Best Overall Response"
+    )
+  ),
+  class = "lifecycle_warning_deprecated"
+  )
+
+  # add PD recodrs to expected
+  expected_pd_01 <- expected_01 %>%
+    bind_rows(pd_records)
+
+  # This is now PR as PD removed CR recrods
+  expected_pd_01$AVALC[expected_pd_01$USUBJID == 2 &
+                         expected_pd_01$PARAMCD == "BOR"] <- "PR"
+  expected_pd_01$AVAL[expected_pd_01$USUBJID == 2 &
+                        expected_pd_01$PARAMCD == "BOR"] <- 22
+  expected_pd_01$ADT[expected_pd_01$USUBJID == 2 &
+                       expected_pd_01$PARAMCD == "BOR"] <- ymd("2020-02-01")
+
+
+  # This is now MISSING as PD removed all records
+  expected_pd_01$AVALC[expected_pd_01$USUBJID == 6 &
+                         expected_pd_01$PARAMCD == "BOR"] <- "MISSING"
+  expected_pd_01$AVAL[expected_pd_01$USUBJID == 6 &
+                        expected_pd_01$PARAMCD == "BOR"] <- 77
+  expected_pd_01$ADT[expected_pd_01$USUBJID == 6 &
+                       expected_pd_01$PARAMCD == "BOR"] <- NA
+
+  expect_dfs_equal(
+    base    = expected_pd_01,
+    compare = actual_pd_01,
+    keys    = c("USUBJID", "PARAMCD", "ADT")
   )
 })

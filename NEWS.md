@@ -5,6 +5,14 @@
 - Function `derive_param_lasta()`, which was deprecated in admiralonco 0.2.0,
 has been removed. (#216)
 
+- The `aval_fun` argument of `derive_param_bor()`, `derive_param_clinbenefit()`,
+`derive_param_confirmed_bor()`, `derive_param_confirmed_resp()`,
+`derive_param_response()` was deprecated in favor of the `set_values_to`
+argument. (#216)
+
+- The `call_aval_fun()` function was deprecated in favor or
+`admiraldev::process_set_values_to()`. (#216)
+
 # admiralonco 0.3.0
 
 ## Breaking Changes

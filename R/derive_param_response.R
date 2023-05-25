@@ -62,8 +62,10 @@
 #'
 #'   The values must be symbols, character strings, numeric values or `NA`.
 #'
-#' @param aval_fun Function to map character analysis value (`AVALC`) to numeric
-#'   analysis value (`AVAL`)
+#' @param aval_fun *Deprecated*, please use `set_values_to` instead.
+#'
+#'   Function to map character analysis value (`AVALC`) to numeric analysis
+#'   value (`AVAL`)
 #'
 #'   The (first) argument of the function must expect a character vector and the
 #'   function must return a numeric vector.
@@ -79,7 +81,7 @@
 #'    as defined by `pd_source`) is added to the response dataset.
 #'
 #'   1. The response dataset is restricted to observations occurring before
-#'   ** or on ** the date of progressive disease.
+#'   **or on** the date of progressive disease.
 #'
 #'   1. For each subject (with respect to the variables specified for the
 #'   `subject_keys` parameter), the first observation (with respect to
@@ -87,11 +89,10 @@
 #'   fulfilled is selected.
 #'
 #'   1. For each observation in `dataset_adsl` a new observation is created.
-#'   + For subjects with a response `AVALC` is set to `"Y"`, `AVAL` to `1`,
-#'   and `ADT` to  the first date (`ADT`) where the response condition is
-#'   fulfilled.
-#'   + For all other subjects `AVALC` is set to `"N"`, `AVAL` to `0`
-#'   and `ADT` to `NA`.
+#'       + For subjects with a response `AVALC` is set to `"Y"`, `AVAL` to `1`, and
+#'       `ADT` to  the first date (`ADT`) where the response condition is fulfilled.
+#'       + For all other subjects `AVALC` is set to `"N"`, `AVAL` to `0`
+#'       and `ADT` to `NA`.
 #'
 #'   1. The variables specified by the `set_values_to` parameter are added to
 #'   the new observations.
@@ -113,9 +114,9 @@
 #' library(dplyr)
 #' library(admiral)
 #' library(lubridate)
-#' library(rlang)
+#' library(tibble)
 #'
-#' adsl <- tibble::tribble(
+#' adsl <- tribble(
 #'   ~USUBJID,
 #'   "1",
 #'   "2",
@@ -124,7 +125,7 @@
 #' ) %>%
 #'   mutate(STUDYID = "XX1234")
 #'
-#' adrs <- tibble::tribble(
+#' adrs <- tribble(
 #'   ~USUBJID, ~PARAMCD, ~ADTC,         ~AVALC, ~ANL01FL,
 #'   "1",      "OVR",    "2020-01-02",  "PR",   "Y",
 #'   "1",      "OVR",    "2020-02-01",  "CR",   "Y",
@@ -162,6 +163,7 @@
 #'   source_pd = pd,
 #'   source_datasets = list(adrs = adrs),
 #'   set_values_to = exprs(
+#'     AVAL = yn_to_numeric(AVALC),
 #'     PARAMCD = "RSP",
 #'     PARAM = "Response by investigator"
 #'   ),
@@ -174,7 +176,7 @@ derive_param_response <- function(dataset,
                                   source_pd = NULL,
                                   source_datasets = NULL,
                                   set_values_to,
-                                  aval_fun = yn_to_numeric,
+                                  aval_fun,
                                   subject_keys = get_admiral_option("subject_keys")) {
   # ---- checking and quoting ----
   assert_vars(subject_keys)
@@ -188,6 +190,11 @@ derive_param_response <- function(dataset,
   assert_varval_list(set_values_to, accept_expr = TRUE, optional = TRUE)
   if (!is.null(set_values_to$PARAMCD) && !is.null(dataset)) {
     assert_param_does_not_exist(dataset, set_values_to$PARAMCD)
+  }
+
+  if (!missing(aval_fun)) {
+    deprecate_warn("0.4.0", "derive_param_response(aval_fun = )", "derive_param_response(set_values_to = )")
+    set_values_to <- exprs(!!!set_values_to, AVAL = {{aval_fun}}(AVALC))
   }
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -220,21 +227,16 @@ derive_param_response <- function(dataset,
 
   # ---- Select the 1st response and add a new PARAMCD to the input dataset ----
   dataset %>%
-    derive_param_extreme_event(
-      dataset_adsl = dataset_adsl,
-      dataset_source = resp_before_pd,
+    derive_extreme_records(
+      dataset_ref = dataset_adsl,
+      dataset_add = resp_before_pd,
+      by_vars = subject_keys,
       # Need to specify a filter otherwise:
       # ERROR ! Argument `filter_source` is missing, with no default
-      filter_source = !!filter_s,
+      filter_add = !!filter_s,
       order = exprs(ADT),
-      new_var = AVALC,
+      mode = "first",
+      exist_flag = AVALC,
       set_values_to = set_values_to
-    ) %>%
-    restrict_derivation(
-      derivation = call_aval_fun,
-      args = params(
-        aval_fun = aval_fun
-      ),
-      filter = PARAMCD == !!set_values_to$PARAMCD
     )
 }

@@ -1,10 +1,5 @@
-library(tibble)
-library(dplyr)
-library(lubridate)
-library(admiraldev)
-library(admiral)
 
-adsl <- tribble(
+adsl <- tibble::tribble(
   ~USUBJID, ~TRTSDTC,
   "1",      "2020-01-01",
   "2",      "2019-12-12",
@@ -17,11 +12,11 @@ adsl <- tribble(
   "9",      "2020-02-01"
 ) %>%
   mutate(
-    TRTSDT = ymd(TRTSDTC),
+    TRTSDT = lubridate::ymd(TRTSDTC),
     STUDYID = "XX1234"
   )
 
-adrs <- tribble(
+adrs <- tibble::tribble(
   ~USUBJID, ~ADTC,        ~AVALC,
   "1",      "2020-01-01", "PR",
   "1",      "2020-02-01", "CR",
@@ -60,7 +55,7 @@ adrs <- tribble(
   ) %>%
     mutate(PARAMCD = "PD")) %>%
   mutate(
-    ADT = ymd(ADTC),
+    ADT = lubridate::ymd(ADTC),
     STUDYID = "XX1234"
   ) %>%
   derive_vars_merged(
@@ -69,7 +64,7 @@ adrs <- tribble(
     new_vars = exprs(TRTSDT)
   )
 
-pd_date <- date_source(
+pd_date <- admiral::date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == "PD"
@@ -90,6 +85,7 @@ test_that("derive_param_confirmed_bor Test 1: default confirmed BOR", {
         ref_start_window = 28,
         ref_confirm = 28,
         set_values_to = exprs(
+          AVAL = aval_resp(AVALC),
           PARAMCD = "CBOR",
           PARAM = "Best Confirmed Overall Response by Investigator"
         )
@@ -112,7 +108,7 @@ test_that("derive_param_confirmed_bor Test 1: default confirmed BOR", {
       "9",      "2020-02-16",  "PD",            5
     ) %>%
       mutate(
-        ADT = ymd(ADTC),
+        ADT = lubridate::ymd(ADTC),
         STUDYID = "XX1234",
         PARAMCD = "CBOR",
         PARAM = "Best Confirmed Overall Response by Investigator"
@@ -135,13 +131,13 @@ test_that("derive_param_confirmed_bor Test 1: default confirmed BOR", {
 test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as NE", {
   adrs_ext <- bind_rows(
     filter(adrs, USUBJID != "7"),
-    tribble(
+    tibble::tribble(
       ~USUBJID, ~ADTC,        ~AVALC,
       "7",      "2020-04-02", "ND"
     ) %>%
       mutate(
         PARAMCD = "OVR",
-        ADT = ymd(ADTC),
+        ADT = lubridate::ymd(ADTC),
         STUDYID = "XX1234"
       ) %>%
       derive_vars_merged(
@@ -166,6 +162,7 @@ test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as
         accept_sd = TRUE,
         missing_as_ne = TRUE,
         set_values_to = exprs(
+          AVAL = aval_resp(AVALC),
           PARAMCD = "CBOR",
           PARAM = "Best Confirmed Overall Response by Investigator"
         )
@@ -175,7 +172,7 @@ test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as
 
   expected <- bind_rows(
     adrs_ext,
-    tribble(
+    tibble::tribble(
       ~USUBJID, ~ADTC,         ~AVALC, ~AVAL,
       "1",      "2020-01-01",  "PR",   2,
       "2",      "2020-02-01",  "PR",   2,
@@ -188,7 +185,7 @@ test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as
       "9",      "2020-02-16",  "PD",   5
     ) %>%
       mutate(
-        ADT = ymd(ADTC),
+        ADT = lubridate::ymd(ADTC),
         STUDYID = "XX1234",
         PARAMCD = "CBOR",
         PARAM = "Best Confirmed Overall Response by Investigator"
@@ -209,7 +206,7 @@ test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as
 
 ## Test 3: error if invalid response values ----
 test_that("derive_param_confirmed_bor Test 3: error if invalid response values", {
-  adrs <- tribble(
+  adrs <- tibble::tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
     "1",      "2020-01-01", "PR",
     "1",      "2020-02-01", "CR",
@@ -219,7 +216,7 @@ test_that("derive_param_confirmed_bor Test 3: error if invalid response values",
   ) %>%
     mutate(
       PARAMCD = "OVR",
-      ADT = ymd(ADTC),
+      ADT = lubridate::ymd(ADTC),
       STUDYID = "XX1234"
     ) %>%
     derive_vars_merged(
@@ -247,7 +244,7 @@ test_that("derive_param_confirmed_bor Test 3: error if invalid response values",
   )
 })
 
-## Test 4: derive_param_confirmed_bor, No source_pd ----
+## Test 4: No source_pd ----
 test_that("derive_param_confirmed_bor Test 4: No source_pd", {
   suppress_warning(
     actual_no_source_pd <-
@@ -261,6 +258,7 @@ test_that("derive_param_confirmed_bor Test 4: No source_pd", {
         ref_start_window = 28,
         ref_confirm = 28,
         set_values_to = exprs(
+          AVAL = aval_resp(AVALC),
           PARAMCD = "CBOR",
           PARAM = "Best Confirmed Overall Response by Investigator"
         )
@@ -270,7 +268,66 @@ test_that("derive_param_confirmed_bor Test 4: No source_pd", {
 
   expected_no_source_pd <- bind_rows(
     adrs,
-    tribble(
+    tibble::tribble(
+      ~USUBJID, ~ADTC,         ~AVALC,          ~AVAL,
+      "1",      "2020-02-01",  "CR",            1,
+      "2",      "2020-02-01",  "SD",            3,
+      "3",      "2020-01-01",  "SD",            3,
+      "4",      "2020-03-01",  "SD",            3,
+      "5",      "2020-05-15",  "NON-CR/NON-PD", 4,
+      "6",      "2020-03-30",  "SD",            3,
+      "7",      "2020-02-06",  "NE",            6,
+      "8",      NA_character_, "MISSING",       7,
+      "9",      "2020-03-06",  "SD",            3 # expected is now SD
+    ) %>%
+      mutate(
+        ADT = ymd(ADTC),
+        STUDYID = "XX1234",
+        PARAMCD = "CBOR",
+        PARAM = "Best Confirmed Overall Response by Investigator"
+      ) %>%
+      derive_vars_merged(
+        dataset_add = adsl,
+        by_vars = exprs(STUDYID, USUBJID),
+        new_vars = exprs(TRTSDT)
+      )
+  )
+
+  expect_dfs_equal(
+    base = expected_no_source_pd,
+    compare = actual_no_source_pd,
+    keys = c("USUBJID", "PARAMCD", "ADT")
+  )
+})
+
+## Test 5: Deprecation warning for aval_fun ----
+test_that("derive_param_confirmed_bor Test 5: Deprecation warning for aval_fun", {
+  expect_warning(
+    suppress_warning(
+    actual_no_source_pd <-
+      derive_param_confirmed_bor(
+        adrs,
+        dataset_adsl = adsl,
+        filter_source = PARAMCD == "OVR",
+        source_pd = NULL,
+        source_datasets = NULL,
+        reference_date = TRTSDT,
+        ref_start_window = 28,
+        ref_confirm = 28,
+        aval_fun = aval_resp,
+        set_values_to = exprs(
+          PARAMCD = "CBOR",
+          PARAM = "Best Confirmed Overall Response by Investigator"
+        )
+      ),
+    "Dataset contains CR records followed by PR"
+  ),
+  class = "lifecycle_warning_deprecated"
+  )
+
+  expected_no_source_pd <- bind_rows(
+    adrs,
+    tibble::tribble(
       ~USUBJID, ~ADTC,         ~AVALC,          ~AVAL,
       "1",      "2020-02-01",  "CR",            1,
       "2",      "2020-02-01",  "SD",            3,
