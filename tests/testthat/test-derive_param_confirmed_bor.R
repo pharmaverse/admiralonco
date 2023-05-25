@@ -1,4 +1,3 @@
-
 adsl <- tibble::tribble(
   ~USUBJID, ~TRTSDTC,
   "1",      "2020-01-01",
@@ -304,25 +303,25 @@ test_that("derive_param_confirmed_bor Test 4: No source_pd", {
 test_that("derive_param_confirmed_bor Test 5: Deprecation warning for aval_fun", {
   expect_warning(
     suppress_warning(
-    actual_no_source_pd <-
-      derive_param_confirmed_bor(
-        adrs,
-        dataset_adsl = adsl,
-        filter_source = PARAMCD == "OVR",
-        source_pd = NULL,
-        source_datasets = NULL,
-        reference_date = TRTSDT,
-        ref_start_window = 28,
-        ref_confirm = 28,
-        aval_fun = aval_resp,
-        set_values_to = exprs(
-          PARAMCD = "CBOR",
-          PARAM = "Best Confirmed Overall Response by Investigator"
-        )
-      ),
-    "Dataset contains CR records followed by PR"
-  ),
-  class = "lifecycle_warning_deprecated"
+      actual_no_source_pd <-
+        derive_param_confirmed_bor(
+          adrs,
+          dataset_adsl = adsl,
+          filter_source = PARAMCD == "OVR",
+          source_pd = NULL,
+          source_datasets = NULL,
+          reference_date = TRTSDT,
+          ref_start_window = 28,
+          ref_confirm = 28,
+          aval_fun = aval_resp,
+          set_values_to = exprs(
+            PARAMCD = "CBOR",
+            PARAM = "Best Confirmed Overall Response by Investigator"
+          )
+        ),
+      "Dataset contains CR records followed by PR"
+    ),
+    class = "lifecycle_warning_deprecated"
   )
 
   expected_no_source_pd <- bind_rows(

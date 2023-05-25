@@ -1,4 +1,3 @@
-
 adsl <- tibble::tribble(
   ~USUBJID, ~TRTSDT,      ~EOSDT,
   "01",     "2020-12-06", "2022-03-06",
@@ -178,25 +177,25 @@ test_that("derive_param_clinbenefit Test 3: Deprecation warning for aval_fun", {
 
   expect_warning(
     actual_output_no_source_pd <- derive_param_clinbenefit(
-    dataset = adrs,
-    dataset_adsl = adsl,
-    filter_source = PARAMCD == "OVR",
-    source_resp = resp,
-    source_pd = NULL,
-    source_datasets = list(adrs = adrs),
-    reference_date = TRTSDT,
-    ref_start_window = 28,
-    aval_fun = yn_to_numeric,
-    set_values_to = exprs(
-      PARAMCD = "CBR",
-      ANL01FL = "Y"
-    )
-  ),
-  class = "lifecycle_warning_deprecated"
+      dataset = adrs,
+      dataset_adsl = adsl,
+      filter_source = PARAMCD == "OVR",
+      source_resp = resp,
+      source_pd = NULL,
+      source_datasets = list(adrs = adrs),
+      reference_date = TRTSDT,
+      ref_start_window = 28,
+      aval_fun = yn_to_numeric,
+      set_values_to = exprs(
+        PARAMCD = "CBR",
+        ANL01FL = "Y"
+      )
+    ),
+    class = "lifecycle_warning_deprecated"
   )
 
   expect_dfs_equal(actual_output_no_source_pd,
-                   expected_output_no_source_pd,
-                   keys = c("USUBJID", "PARAMCD", "ADT")
+    expected_output_no_source_pd,
+    keys = c("USUBJID", "PARAMCD", "ADT")
   )
 })

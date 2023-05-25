@@ -145,20 +145,20 @@ test_that("derive_param_response Test 3: deprecation warning for aval_fun", {
 
   # Derive the response parameter
   expect_warning(
-  actual_output_no_source_pd <- adrs %>%
-    derive_param_response(
-      dataset_adsl = adsl,
-      filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR"),
-      source_pd = NULL,
-      source_datasets = NULL,
-      aval_fun = yn_to_numeric,
-      set_values_to = exprs(
-        PARAMCD = "RSP",
-        PARAM = "Response by investigator"
+    actual_output_no_source_pd <- adrs %>%
+      derive_param_response(
+        dataset_adsl = adsl,
+        filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR"),
+        source_pd = NULL,
+        source_datasets = NULL,
+        aval_fun = yn_to_numeric,
+        set_values_to = exprs(
+          PARAMCD = "RSP",
+          PARAM = "Response by investigator"
+        ),
+        subject_keys = get_admiral_option("subject_keys")
       ),
-      subject_keys = get_admiral_option("subject_keys")
-    ),
-  class = "lifecycle_warning_deprecated"
+    class = "lifecycle_warning_deprecated"
   )
 
   expect_dfs_equal(

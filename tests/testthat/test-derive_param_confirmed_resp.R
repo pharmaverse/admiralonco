@@ -1,4 +1,3 @@
-
 adsl <- tibble::tribble(
   ~USUBJID, ~TRTSDTC,
   "1",      "2020-01-01",
@@ -298,21 +297,21 @@ test_that("derive_param_confirmed_resp Test 4: Deprecation warning for aval_fun"
     )
 
   expect_warning(
-  actual_no_source_pd <-
-    derive_param_confirmed_resp(
-      adrs,
-      dataset_adsl = adsl,
-      filter_source = PARAMCD == "OVR",
-      source_pd = NULL,
-      source_datasets = NULL,
-      ref_confirm = 28,
-      aval_fun = yn_to_numeric,
-      set_values_to = exprs(
-        PARAMCD = "CRSP",
-        PARAM = "Confirmed Response by Investigator"
-      )
-    ),
-  class = "lifecycle_warning_deprecated"
+    actual_no_source_pd <-
+      derive_param_confirmed_resp(
+        adrs,
+        dataset_adsl = adsl,
+        filter_source = PARAMCD == "OVR",
+        source_pd = NULL,
+        source_datasets = NULL,
+        ref_confirm = 28,
+        aval_fun = yn_to_numeric,
+        set_values_to = exprs(
+          PARAMCD = "CRSP",
+          PARAM = "Confirmed Response by Investigator"
+        )
+      ),
+    class = "lifecycle_warning_deprecated"
   )
 
   expected_no_source_pd <- bind_rows(
