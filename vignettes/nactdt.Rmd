@@ -126,7 +126,7 @@ To derive the New Anti-Cancer Therapy start date with data from multiple sources
  
 ### Prerequisite 
 
-Prior to calling the function,an input `date_source` object must be created for each source dataset using `admiral::date_source()`. Within this function, any company-specific subsetting can be passed to the `filter` argument. if numeric version of the dates will be needed,`admiral::convert_dtc_to_dt`, or if time part is needed, `admiral::convert_dtc_to_dtm` can be used as part of an expression for the `new_vars` argument. 
+Prior to calling the function, an input `date_source` object must be created for each source dataset using `admiral::date_source()`. Within this function, any company-specific subsetting can be passed to the `filter` argument. if numeric version of the dates will be needed,`admiral::convert_dtc_to_dt`, or if time part is needed, `admiral::convert_dtc_to_dtm` can be used as part of an expression for the `new_vars` argument. 
 
 ```{r message=FALSE}
 cm_date <- date_source(
