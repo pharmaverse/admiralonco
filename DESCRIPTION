@@ -35,6 +35,8 @@ Description: Programming oncology specific Clinical Data Interchange Standards C
     The package is an extension package of the 'admiral' package.
 Language: en-US
 License: Apache License (>= 2)
+BugReports: https://github.com/pharmaverse/admiralonco/issues
+URL: https://pharmaverse.github.io/admiralonco/, https://github.com/pharmaverse/admiralonco
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)

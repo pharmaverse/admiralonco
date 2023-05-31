@@ -1,3 +1,9 @@
+# admiralonco 0.4.0
+
+## New Features
+
+- Added a "Report a bug" link to `{admiralonco}` website (#211)
+
 # admiralonco 0.3.0
 
 ## Breaking Changes
