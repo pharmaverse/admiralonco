@@ -175,7 +175,7 @@ As of `{admiral}` version 0.11.0, `admiral::derive_param_extreme_record()` is re
 
 Based on individual company standards, this parameter may be added to an event or date dataset such as `ADEVENT` or `ADDATES`, which are generally intermediate datasets to `ADTTE`. For demonstration purpose, a new anti-cancer date parameter will be merged into `ADRS`. A list of `record_source()` objects is expected and this will contain the sources of the dates and any company specific filtering.
 
-```{r, eval=TRUE, echo=FALSE}
+```{r, eval=TRUE, echo=TRUE}
 
 library(admiralonco)
 
