@@ -10,8 +10,8 @@ adsl <- tibble::tribble(
 ) %>%
   mutate(
     STUDYID = "AB42",
-    TRTSDT = as_date(TRTSDT),
-    EOSDT = as_date(EOSDT),
+    TRTSDT = lubridate::as_date(TRTSDT),
+    EOSDT = lubridate::as_date(EOSDT),
   )
 
 adrs <- tibble::tribble(
@@ -44,7 +44,7 @@ adrs <- tibble::tribble(
 ) %>%
   mutate(
     STUDYID = "AB42",
-    ADT = as_date(ADT),
+    ADT = lubridate::as_date(ADT),
     ANL01FL = "Y"
   ) %>%
   derive_vars_merged(
@@ -79,7 +79,7 @@ test_that("derive_param_clinbenefit Test 1: ignore NON-CR/NON-PD", {
   ) %>%
     mutate(
       STUDYID = "AB42",
-      ADT = as_date(ADT),
+      ADT = lubridate::as_date(ADT),
       ANL01FL = "Y"
     ) %>%
     left_join(adsl, by = c("STUDYID", "USUBJID")) %>%
@@ -111,7 +111,7 @@ test_that("derive_param_clinbenefit Test 1: ignore NON-CR/NON-PD", {
 
 ## Test 2: No source_pd ----
 test_that("derive_param_clinbenefit Test 2: No source_pd", {
-  input_cbr <- tribble(
+  input_cbr <- tibble::tribble(
     ~USUBJID, ~PARAMCD, ~AVALC, ~AVAL, ~ADT,
     "01",     "CBR",    "Y",    1,     "2021-03-07",
     "02",     "CBR",    "Y",    1,     "2021-03-07",
@@ -123,7 +123,7 @@ test_that("derive_param_clinbenefit Test 2: No source_pd", {
   ) %>%
     mutate(
       STUDYID = "AB42",
-      ADT = as_date(ADT),
+      ADT = lubridate::as_date(ADT),
       ANL01FL = "Y"
     ) %>%
     left_join(adsl, by = c("STUDYID", "USUBJID")) %>%
@@ -155,7 +155,7 @@ test_that("derive_param_clinbenefit Test 2: No source_pd", {
 
 ## Test 3: Deprecation warning for aval_fun ----
 test_that("derive_param_clinbenefit Test 3: Deprecation warning for aval_fun", {
-  input_cbr <- tribble(
+  input_cbr <- tibble::tribble(
     ~USUBJID, ~PARAMCD, ~AVALC, ~AVAL, ~ADT,
     "01",     "CBR",    "Y",    1,     "2021-03-07",
     "02",     "CBR",    "Y",    1,     "2021-03-07",
@@ -167,7 +167,7 @@ test_that("derive_param_clinbenefit Test 3: Deprecation warning for aval_fun", {
   ) %>%
     mutate(
       STUDYID = "AB42",
-      ADT = as_date(ADT),
+      ADT = lubridate::as_date(ADT),
       ANL01FL = "Y"
     ) %>%
     left_join(adsl, by = c("STUDYID", "USUBJID")) %>%

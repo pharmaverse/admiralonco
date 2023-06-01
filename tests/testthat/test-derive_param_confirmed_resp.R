@@ -251,7 +251,7 @@ test_that("derive_param_confirmed_resp Test 4: No source_pd", {
 
   expected_no_source_pd <- bind_rows(
     adrs,
-    tribble(
+    tibble::tribble(
       ~USUBJID, ~ADTC,         ~AVALC, ~AVAL,
       "1",      "2020-02-16",  "Y",    1,
       "2",      NA_character_, "N",    0,
@@ -264,7 +264,7 @@ test_that("derive_param_confirmed_resp Test 4: No source_pd", {
       "9",      NA_character_, "N",    0
     ) %>%
       mutate(
-        ADT = ymd(ADTC),
+        ADT = lubridate::ymd(ADTC),
         STUDYID = "XX1234",
         PARAMCD = "CRSP",
         PARAM = "Confirmed Response by Investigator"
@@ -278,7 +278,8 @@ test_that("derive_param_confirmed_resp Test 4: No source_pd", {
   )
 })
 
-test_that("derive_param_confirmed_resp Test 4: Deprecation warning for aval_fun", {
+## Test 5: Deprecation warning for aval_fun ----
+test_that("derive_param_confirmed_resp Test 5: Deprecation warning for aval_fun", {
   adrs <- tibble::tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
     "1",      "2020-01-01", "SD",
@@ -316,7 +317,7 @@ test_that("derive_param_confirmed_resp Test 4: Deprecation warning for aval_fun"
 
   expected_no_source_pd <- bind_rows(
     adrs,
-    tribble(
+    tibble::tribble(
       ~USUBJID, ~ADTC,         ~AVALC, ~AVAL,
       "1",      "2020-02-16",  "Y",    1,
       "2",      NA_character_, "N",    0,
@@ -329,7 +330,7 @@ test_that("derive_param_confirmed_resp Test 4: Deprecation warning for aval_fun"
       "9",      NA_character_, "N",    0
     ) %>%
       mutate(
-        ADT = ymd(ADTC),
+        ADT = lubridate::ymd(ADTC),
         STUDYID = "XX1234",
         PARAMCD = "CRSP",
         PARAM = "Confirmed Response by Investigator"

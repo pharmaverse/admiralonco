@@ -48,7 +48,7 @@ adrs <- tibble::tribble(
   "9",      "2020-03-06", "SD"
 ) %>%
   mutate(PARAMCD = "OVR") %>%
-  bind_rows(tribble(
+  bind_rows(tibble::tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
     "9",      "2020-02-16", "Y"
   ) %>%
@@ -94,7 +94,7 @@ test_that("derive_param_confirmed_bor Test 1: default confirmed BOR", {
 
   expected <- bind_rows(
     adrs,
-    tribble(
+    tibble::tribble(
       ~USUBJID, ~ADTC,         ~AVALC,          ~AVAL,
       "1",      "2020-02-01",  "CR",            1,
       "2",      "2020-02-01",  "SD",            3,
@@ -280,7 +280,7 @@ test_that("derive_param_confirmed_bor Test 4: No source_pd", {
       "9",      "2020-03-06",  "SD",            3 # expected is now SD
     ) %>%
       mutate(
-        ADT = ymd(ADTC),
+        ADT = lubridate::ymd(ADTC),
         STUDYID = "XX1234",
         PARAMCD = "CBOR",
         PARAM = "Best Confirmed Overall Response by Investigator"
@@ -339,7 +339,7 @@ test_that("derive_param_confirmed_bor Test 5: Deprecation warning for aval_fun",
       "9",      "2020-03-06",  "SD",            3 # expected is now SD
     ) %>%
       mutate(
-        ADT = ymd(ADTC),
+        ADT = lubridate::ymd(ADTC),
         STUDYID = "XX1234",
         PARAMCD = "CBOR",
         PARAM = "Best Confirmed Overall Response by Investigator"

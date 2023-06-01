@@ -29,7 +29,7 @@ adsl <- tibble::tribble(
   "8",      "2020-04-01",  "008",         "999"
 ) %>%
   mutate(
-    TRTSDT = ymd(TRTSDTC),
+    TRTSDT = lubridate::ymd(TRTSDTC),
     STUDYID = "XX1234"
   )
 
@@ -92,7 +92,7 @@ aval_fun_pass <- function(arg) {
 # excepcted dataframe, deviations from this are handeled in each individual test
 expected_01 <- bind_rows(
   adrs,
-  tribble(
+  tibble::tribble(
     ~USUBJID, ~ADTC, ~AVALC, ~AVAL, ~TRTSDTC, ~CHECKKEPTCOL,
     "1", "2020-02-01", "CR", 11, "2020-01-01", "001",
     "2", "2020-03-13", "CR", 11, "2019-12-12", "002",
@@ -104,8 +104,8 @@ expected_01 <- bind_rows(
     "8", "", "MISSING", 77, "2020-04-01", "008"
   ) %>%
     mutate(
-      ADT = ymd(ADTC),
-      TRTSDT = ymd(TRTSDTC),
+      ADT = lubridate::ymd(ADTC),
+      TRTSDT = lubridate::ymd(TRTSDTC),
       STUDYID = "XX1234",
       PARAMCD = "BOR",
       PARAM = "Best Overall Response"
@@ -178,9 +178,9 @@ test_that("derive_param_bor Test 1: No source_pd", {
   # set subject 7 to only have records before ADT
   adrs_01 <- adrs
   adrs_01$ADT[adrs_01$USUBJID == "7"][1:3] <- c(
-    ymd("2020-01-01"),
-    ymd("2020-01-02"),
-    ymd("2020-01-03")
+    lubridate::ymd("2020-01-01"),
+    lubridate::ymd("2020-01-02"),
+    lubridate::ymd("2020-01-03")
   )
 
   actual_02 <- derive_param_bor(
@@ -201,10 +201,10 @@ test_that("derive_param_bor Test 1: No source_pd", {
   # expected will be the same as previous test except ADT for subject 7
   expected_02 <- expected_01
   expected_02$ADT[expected_02$USUBJID == "7"][1:4] <- c(
-    ymd("2020-01-01"),
-    ymd("2020-01-02"),
-    ymd("2020-01-03"),
-    ymd("2020-01-02")
+    lubridate::ymd("2020-01-01"),
+    lubridate::ymd("2020-01-02"),
+    lubridate::ymd("2020-01-03"),
+    lubridate::ymd("2020-01-02")
   )
 
   expect_dfs_equal(
@@ -240,7 +240,7 @@ test_that("derive_param_bor Test 1: No source_pd", {
   # Expected Updated for Subject 7, response is now NE and 6 with a earlier ADT (first)
   expected_03 <- expected_02
   expected_03$AVALC[expected_03$USUBJID == "7"] <- "SD"
-  expected_03$ADT[expected_02$USUBJID == "7"][4] <- c(ymd("2020-01-01"))
+  expected_03$ADT[expected_02$USUBJID == "7"][4] <- c(lubridate::ymd("2020-01-01"))
   expected_03$AVALC[expected_02$USUBJID == "7"][4] <- "NE"
   expected_03$AVAL[expected_02$USUBJID == "7"][4] <- 66
 
@@ -305,7 +305,7 @@ test_that("derive_param_bor Test 2: With source_pd", {
   expected_pd_01$AVAL[expected_pd_01$USUBJID == 2 &
     expected_pd_01$PARAMCD == "BOR"] <- 22
   expected_pd_01$ADT[expected_pd_01$USUBJID == 2 &
-    expected_pd_01$PARAMCD == "BOR"] <- ymd("2020-02-01")
+    expected_pd_01$PARAMCD == "BOR"] <- lubridate::ymd("2020-02-01")
 
 
   # This is now MISSING as PD removed all records
@@ -396,7 +396,7 @@ test_that("derive_param_bor Test 4: Deprecation warning for aval_fun", {
   expected_pd_01$AVAL[expected_pd_01$USUBJID == 2 &
     expected_pd_01$PARAMCD == "BOR"] <- 22
   expected_pd_01$ADT[expected_pd_01$USUBJID == 2 &
-    expected_pd_01$PARAMCD == "BOR"] <- ymd("2020-02-01")
+    expected_pd_01$PARAMCD == "BOR"] <- lubridate::ymd("2020-02-01")
 
 
   # This is now MISSING as PD removed all records
