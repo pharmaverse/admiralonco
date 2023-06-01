@@ -289,7 +289,7 @@ derive_param_confirmed_resp <- function(dataset,
       "derive_param_confirmed_resp(aval_fun = )",
       "derive_param_confirmed_resp(set_values_to = )"
     )
-    set_values_to <- exprs(!!!set_values_to, AVAL = {{aval_fun}}(AVALC))
+    set_values_to <- exprs(!!!set_values_to, AVAL = {{ aval_fun }}(AVALC))
   }
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # filter_pd and filter_source: Filter source dataset using filter_source----

@@ -313,7 +313,7 @@ derive_param_bor <- function(dataset,
 
   if (!missing(aval_fun)) {
     deprecate_warn("0.4.0", "derive_param_bor(aval_fun = )", "derive_param_bor(set_values_to = )")
-    set_values_to <- exprs(!!!set_values_to, AVAL = {{aval_fun}}(AVALC))
+    set_values_to <- exprs(!!!set_values_to, AVAL = {{ aval_fun }}(AVALC))
   }
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

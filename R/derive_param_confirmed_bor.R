@@ -357,7 +357,7 @@ derive_param_confirmed_bor <- function(dataset,
       "derive_param_confirmed_bor(aval_fun = )",
       "derive_param_confirmed_bor(set_values_to = )"
     )
-    set_values_to <- exprs(!!!set_values_to, AVAL = {{aval_fun}}(AVALC))
+    set_values_to <- exprs(!!!set_values_to, AVAL = {{ aval_fun }}(AVALC))
   }
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # filter_pd and filter_source: Filter source dataset using filter_source----

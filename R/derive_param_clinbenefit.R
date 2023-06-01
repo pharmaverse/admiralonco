@@ -230,7 +230,7 @@ derive_param_clinbenefit <- function(dataset,
       "derive_param_clinbenefit(set_values_to = )"
     )
     assert_function(aval_fun)
-    set_values_to <- exprs(!!!set_values_to, AVAL = {{aval_fun}}(AVALC))
+    set_values_to <- exprs(!!!set_values_to, AVAL = {{ aval_fun }}(AVALC))
   }
 
   source_names <- names(source_datasets)

@@ -1,4 +1,3 @@
-
 data <- tibble::tribble(
   ~AVALC,
   "YES",
@@ -44,10 +43,10 @@ test_that("call_aval_fun Test 2: Test error for invalid aval_fun", {
   expect_error(
     suppress_warning(
       call_aval_fun(
-      data,
-      aval_fun = bad_fun
-    ),
-    regexpr = "deprecated"
+        data,
+        aval_fun = bad_fun
+      ),
+      regexpr = "deprecated"
     ),
     regexp = "Assigning new AVAL records with aval_fun"
   )
