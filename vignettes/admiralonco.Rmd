@@ -62,6 +62,7 @@ for the most common steps are provided by the following vignettes:
 
 - [Creating ADRS](adrs.html)
 - [Creating ADTTE](adtte.html)
+- [Creating ADTR](adtr.html)
 
 `{admiralonco}` also provides template R scripts as a starting point. They can be
 created by calling `use_ad_template()` from {admiral}, e.g.,

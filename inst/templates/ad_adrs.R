@@ -91,17 +91,21 @@ adrs <- adrs %>%
 
 # Progressive disease
 adrs <- adrs %>%
-  derive_param_extreme_event(
-    dataset_adsl = adsl,
-    dataset_source = adrs,
-    filter_source = PARAMCD == "OVR" & AVALC == "PD" & ANL01FL == "Y",
+  derive_extreme_records(
+    dataset_ref = adsl,
+    dataset_add = adrs,
+    by_vars = exprs(STUDYID, USUBJID),
+    filter_add = PARAMCD == "OVR" & AVALC == "PD" & ANL01FL == "Y",
     order = exprs(ADT, RSSEQ),
+    mode = "first",
+    exist_flag = AVALC,
     set_values_to = exprs(
       PARAMCD = "PD",
       PARAM = "Disease Progression by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
+      AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
   )
@@ -126,6 +130,7 @@ adrs <- adrs %>%
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
+      AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
   )
@@ -153,6 +158,7 @@ adrs <- adrs %>%
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
+      AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
   )
@@ -172,23 +178,28 @@ adrs <- adrs %>%
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
+      AVAL = aval_resp(AVALC),
       ANL01FL = "Y"
     )
   )
 
 # Best overall response of CR/PR
 adrs <- adrs %>%
-  derive_param_extreme_event(
-    dataset_adsl = adsl,
-    dataset_source = adrs,
-    filter_source = PARAMCD == "BOR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
+  derive_extreme_records(
+    dataset_ref = adsl,
+    dataset_add = adrs,
+    by_vars = exprs(STUDYID, USUBJID),
+    filter_add = PARAMCD == "BOR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
     order = exprs(ADT, RSSEQ),
+    mode = "first",
+    exist_flag = AVALC,
     set_values_to = exprs(
       PARAMCD = "BCP",
       PARAM = "Best Overall Response of CR/PR by Investigator (confirmation not required)",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
+      AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
   )
@@ -207,6 +218,7 @@ adrs <- adrs %>%
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
+      AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
   )
@@ -232,6 +244,7 @@ adrs <- adrs %>%
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
+      AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
   ) %>%
@@ -249,20 +262,25 @@ adrs <- adrs %>%
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
+      AVAL = aval_resp(AVALC),
       ANL01FL = "Y"
     )
   ) %>%
-  derive_param_extreme_event(
-    dataset_adsl = adsl,
-    dataset_source = adrs,
-    filter_source = PARAMCD == "CBOR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
+  derive_extreme_records(
+    dataset_ref = adsl,
+    dataset_add = adrs,
+    by_vars = exprs(STUDYID, USUBJID),
+    filter_add = PARAMCD == "CBOR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
     order = exprs(ADT, RSSEQ),
+    mode = "first",
+    exist_flag = AVALC,
     set_values_to = exprs(
       PARAMCD = "CBCP",
       PARAM = "Best Confirmed Overall Response of CR/PR by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
+      AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
   )
@@ -272,15 +290,18 @@ adsldth <- adsl %>%
   select(STUDYID, USUBJID, DTHDT, !!!adsl_vars)
 
 adrs <- adrs %>%
-  derive_param_extreme_event(
-    dataset_adsl = adsldth,
-    dataset_source = adsldth,
-    filter_source = !is.na(DTHDT),
+  derive_extreme_records(
+    dataset_ref = adsldth,
+    dataset_add = adsldth,
+    by_vars = exprs(STUDYID, USUBJID),
+    filter_add = !is.na(DTHDT),
+    exist_flag = AVALC,
     set_values_to = exprs(
       PARAMCD = "DEATH",
       PARAM = "Death",
       PARCAT1 = "Reference Event",
       ANL01FL = "Y",
+      AVAL = yn_to_numeric(AVALC),
       ADT = DTHDT
     )
   ) %>%
@@ -288,14 +309,13 @@ adrs <- adrs %>%
 
 # Last disease assessment
 adrs <- adrs %>%
-  derive_param_extreme_event(
-    dataset_adsl = adsl,
-    dataset_source = adrs,
-    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+  derive_extreme_records(
+    dataset_ref = adsl,
+    dataset_add = adrs,
+    by_vars = exprs(STUDYID, USUBJID),
+    filter_add = PARAMCD == "OVR" & ANL01FL == "Y",
     order = exprs(ADT, RSSEQ),
     mode = "last",
-    # Use this approach to ensure AVALC is not overwritten with a Y
-    new_var = dummy,
     set_values_to = exprs(
       PARAMCD = "LSTA",
       PARAM = "Last Disease Assessment by Investigator",
@@ -304,8 +324,7 @@ adrs <- adrs %>%
       PARCAT3 = "Recist 1.1",
       ANL01FL = "Y"
     )
-  ) %>%
-  select(-dummy)
+  )
 
 # Measurable disease at baseline
 adslmdis <- adsl %>%
@@ -323,17 +342,8 @@ adrs <- adrs %>%
       PARAM = "Measurable Disease at Baseline by Investigator",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
+      AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
-    )
-  )
-
-# Derive numeric analysis value for cases where AVALC has been derived for new parameters
-adrs <- adrs %>%
-  mutate(
-    AVAL = case_when(
-      AVALC == "Y" ~ 1,
-      AVALC == "N" ~ 0,
-      TRUE ~ AVAL
     )
   )
 
