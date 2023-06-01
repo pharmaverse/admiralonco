@@ -10,6 +10,15 @@
 
 Programming oncology specific Clinical Data Interchange Standards Consortium (CDISC) compliant Analysis Data Model (ADaM) datasets in 'R'. ADaM datasets are a mandatory part of any New Drug or Biologics License Application submitted to the United States Food and Drug Administration (FDA). Analysis derivations are implemented in accordance with the "Analysis Data Model Implementation Guide" (CDISC Analysis Data Model Team (2021), \url{https://www.cdisc.org/standards/foundational/adam/adamig-v1-3-release-package}). The package is an extension package of the 'admiral' package.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://pharmaverse.github.io/admiralonco/}
+  \item \url{https://github.com/pharmaverse/admiralonco}
+  \item Report bugs at \url{https://github.com/pharmaverse/admiralonco/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Stefan Bundfuss \email{stefan.bundfuss@roche.com}
 

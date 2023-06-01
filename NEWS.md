@@ -1,5 +1,9 @@
 # admiralonco 0.4.0
 
+## New Features
+
+- Added a "Report a bug" link to `{admiralonco}` website (#211)
+
 ## Breaking Changes
 
 - Function `derive_param_lasta()`, which was deprecated in admiralonco 0.2.0,
