@@ -64,8 +64,21 @@ if (!requireNamespace("remotes", quietly = TRUE)) {
   install.packages("remotes")
 }
 
+remotes::install_github("pharmaverse/admiraldev", ref = "devel") # This is a required dependency of {admiralonco}
+remotes::install_github("pharmaverse/admiral", ref = "devel") # This is a required dependency of {admiralonco}
 remotes::install_github("pharmaverse/admiralonco", ref = "devel")
 ```
+
+### Dependencies
+
+The latest version of the package works with the latest versions of the packages
+stated in `DESCRIPTION`.
+
+If a previous version of the package should be used, it is recommended to use
+latest version of the dependencies at the point of time when the previous
+version of {admiralonco} was released. For example, admiralonco 0.3.0 was
+released on 2023-03-14. I.e., it will work with the latest version of packages
+available at that date, e.g., admiral 0.10.
 
 ## Scope
 
