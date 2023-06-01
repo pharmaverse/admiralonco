@@ -67,7 +67,7 @@ test_that("derive_param_response Test 1: With source_pd", {
       source_pd = pd,
       source_datasets = list(adrs = adrs),
       set_values_to = exprs(
-        AVAL = yn_to_numeric(AVALC),
+        AVAL = admiral::yn_to_numeric(AVALC),
         PARAMCD = "RSP",
         PARAM = "Response by investigator"
       ),
@@ -109,7 +109,7 @@ test_that("derive_param_response Test 2: No source_pd", {
       source_pd = NULL,
       source_datasets = NULL,
       set_values_to = exprs(
-        AVAL = yn_to_numeric(AVALC),
+        AVAL = admiral::yn_to_numeric(AVALC),
         PARAMCD = "RSP",
         PARAM = "Response by investigator"
       ),
@@ -151,7 +151,7 @@ test_that("derive_param_response Test 3: deprecation warning for aval_fun", {
         filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR"),
         source_pd = NULL,
         source_datasets = NULL,
-        aval_fun = yn_to_numeric,
+        aval_fun = admiral::yn_to_numeric,
         set_values_to = exprs(
           PARAMCD = "RSP",
           PARAM = "Response by investigator"

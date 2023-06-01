@@ -332,7 +332,7 @@ adslmdis <- adsl %>%
 
 adrs <- adrs %>%
   derive_param_exist_flag(
-    dataset_adsl = adslmdis,
+    dataset_ref = adslmdis,
     dataset_add = tu,
     condition = TUEVAL == "INVESTIGATOR" & TUSTRESC == "TARGET" & VISIT == "BASELINE",
     false_value = "N",

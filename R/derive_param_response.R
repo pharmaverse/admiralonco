@@ -193,7 +193,11 @@ derive_param_response <- function(dataset,
   }
 
   if (!missing(aval_fun)) {
-    deprecate_warn("0.4.0", "derive_param_response(aval_fun = )", "derive_param_response(set_values_to = )")
+    deprecate_warn(
+      "0.4.0",
+      "derive_param_response(aval_fun = )",
+      "derive_param_response(set_values_to = )"
+    )
     set_values_to <- exprs(!!!set_values_to, AVAL = {{aval_fun}}(AVALC))
   }
 

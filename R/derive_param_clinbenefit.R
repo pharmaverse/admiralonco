@@ -224,7 +224,11 @@ derive_param_clinbenefit <- function(dataset,
   assert_character_vector(clinben_vals)
 
   if (!missing(aval_fun)) {
-    deprecate_warn("0.4.0", "derive_param_clinbenefit(aval_fun = )", "derive_param_clinbenefit(set_values_to = )")
+    deprecate_warn(
+      "0.4.0",
+      "derive_param_clinbenefit(aval_fun = )",
+      "derive_param_clinbenefit(set_values_to = )"
+    )
     assert_function(aval_fun)
     set_values_to <- exprs(!!!set_values_to, AVAL = {{aval_fun}}(AVALC))
   }
