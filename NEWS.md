@@ -4,6 +4,16 @@
 
 - Added a "Report a bug" link to `{admiralonco}` website (#211)
 
+- Vignettes and templates were updated due to changes in admiral and
+admiralonco:
+    - The `AVAL` variable is now populated via the `set_values_to` argument as
+    the `aval_fun` argument was deprecated.
+    - `admiral::derive_param_extreme_event()` calls were replaced by
+    `admiral::derive_extreme_records()` calls due to deprecation of
+    `admiral::derive_param_extreme_event()`.
+    - `admiral::derive_param_exist_flag()` calls were updated as the
+    `dataset_adsl` argument was renamed to `dataset_ref`.
+
 ## Breaking Changes
 
 - Function `derive_param_lasta()`, which was deprecated in admiralonco 0.2.0,
