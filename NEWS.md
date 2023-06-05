@@ -4,6 +4,8 @@
 
 - Added a "Report a bug" link to `{admiralonco}` website (#211)
 
+- Added a section regarding dependencies to the `{admiralonco}` website (#223)
+
 # admiralonco 0.3.0
 
 ## Breaking Changes
