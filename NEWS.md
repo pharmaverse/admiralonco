@@ -4,8 +4,10 @@
 
 - Added a "Report a bug" link to `{admiralonco}` website (#211)
 
+- Added a section regarding dependencies to the `{admiralonco}` website (#223)
+
 - Vignettes and templates were updated due to changes in admiral and
-admiralonco:
+admiralonco: (#216)
     - The `AVAL` variable is now populated via the `set_values_to` argument as
     the `aval_fun` argument was deprecated.
     - `admiral::derive_param_extreme_event()` calls were replaced by
