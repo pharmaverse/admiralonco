@@ -1,9 +1,4 @@
-library(tibble)
-library(dplyr, warn.conflicts = FALSE)
-library(lubridate)
-library(admiraldev)
-
-adrs <- tribble(
+adrs <- tibble::tribble(
   ~USUBJID, ~ADTC,        ~AVALC,
   "1",      "2020-01-01", "PR",
   "1",      "2020-02-01", "CR",
@@ -15,7 +10,7 @@ adrs <- tribble(
   "2",      "2020-03-30", "PR"
 ) %>%
   mutate(
-    ADT = ymd(ADTC),
+    ADT = lubridate::ymd(ADTC),
     STUDYID = "XX1234"
   )
 
@@ -67,13 +62,13 @@ test_that("get_crpr_dataset() Test 2: dataset if returned", {
   )
 
   expect_dfs_equal(
-    base = tribble(
+    base = tibble::tribble(
       ~USUBJID, ~ADTC,        ~AVALC,
       "2",      "2020-02-16", "CR",
       "2",      "2020-03-30", "PR"
     ) %>%
       mutate(
-        ADT = ymd(ADTC),
+        ADT = lubridate::ymd(ADTC),
         STUDYID = "XX1234"
       ),
     compare = get_crpr_dataset(),

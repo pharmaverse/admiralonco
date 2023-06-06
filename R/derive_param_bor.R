@@ -113,8 +113,10 @@
 #'
 #'   *Permitted Values:* a logical scalar
 #'
-#' @param aval_fun Function to map character analysis value (`AVALC`) to numeric
-#'                 analysis value (`AVAL`)
+#' @param aval_fun *Deprecated*, please use `set_values_to` instead.
+#'
+#'   Function to map character analysis value (`AVALC`) to numeric analysis
+#'   value (`AVAL`)
 #'
 #'   The (first) argument of the function must expect a character vector and the
 #'   function must return a numeric vector.
@@ -265,7 +267,7 @@ derive_param_bor <- function(dataset,
                              reference_date,
                              ref_start_window,
                              missing_as_ne = FALSE,
-                             aval_fun = aval_resp,
+                             aval_fun,
                              set_values_to,
                              subject_keys = get_admiral_option("subject_keys")) {
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -308,6 +310,11 @@ derive_param_bor <- function(dataset,
     dataset = dataset,
     param   = set_values_to$PARAMCD
   )
+
+  if (!missing(aval_fun)) {
+    deprecate_warn("0.4.0", "derive_param_bor(aval_fun = )", "derive_param_bor(set_values_to = )")
+    set_values_to <- exprs(!!!set_values_to, AVAL = {{ aval_fun }}(AVALC))
+  }
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # filter_pd and filter_source: Filter source dataset using filter_source----
@@ -411,44 +418,8 @@ derive_param_bor <- function(dataset,
       order = exprs(tmp_order, ADT),
       mode = "first"
     ) %>%
-    select(-tmp_order)
-
-  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # set_values_to: Execute set_values_to ----
-  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-  tryCatch(
-    param_bor_values_set <- param_bor %>%
-      mutate(
-        !!!set_values_to
-      ),
-    error = function(cnd) {
-      abort(
-        paste0(
-          "Assigning new columns with set_values_to has failed:\n",
-          "set_values_to = (\n",
-          paste(
-            " ",
-            names(set_values_to),
-            "=",
-            set_values_to,
-            collapse = "\n"
-          ),
-          "\n)\nError message:\n  ",
-          cnd
-        )
-      )
-    }
-  )
-
-  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # aval_fun(AVALC): Execute aval_fun ----
-  #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-  param_bor_aval_fun <- call_aval_fun(
-    param_bor_values_set,
-    aval_fun
-  )
+    select(-tmp_order) %>%
+    process_set_values_to(set_values_to)
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Bind back to passed dataframe in dataset argument and return ----
@@ -456,6 +427,6 @@ derive_param_bor <- function(dataset,
 
   bind_rows(
     dataset,
-    param_bor_aval_fun
+    param_bor
   )
 }

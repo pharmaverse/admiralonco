@@ -1,5 +1,11 @@
 #' Creates `AVAL` from `AVALC` by Calling User Function
 #'
+#' @description
+#' `r lifecycle::badge("deprecated")`
+#'
+#' This function is *deprecated*, please use
+#' `admiraldev::process_set_values_to()` instead.
+#'
 #' Create `AVAL` from `AVALC` by calling a function provided by the user. If
 #' calling the function fails, the error is caught and a helpful error message
 #' provided.
@@ -23,37 +29,16 @@
 #'
 #' @returns The input dataset with `AVAL` added
 #'
-#' @keywords utils_catch
-#' @family utils_catch
+#' @keywords deprecated
+#' @family deprecated
 #'
 #' @export
-#'
-#' @examples
-#'
-#' library(tibble)
-#' library(dplyr)
-#'
-#' data <- tribble(
-#'   ~AVALC,
-#'   "YES",
-#'   "NO"
-#' )
-#'
-#' yn_map <- function(x) {
-#'   case_when(
-#'     x == "YES" ~ 1,
-#'     x == "NO" ~ 0
-#'   )
-#' }
-#'
-#' call_aval_fun(
-#'   data,
-#'   yn_map
-#' )
 call_aval_fun <- function(dataset,
                           aval_fun) {
   assert_data_frame(dataset, required_vars = exprs(AVALC))
   assert_function(aval_fun)
+
+  deprecate_warn("0.4.0", "call_aval_fun()", "admiraldev::process_set_values_to()")
 
   tryCatch(
     mutate(

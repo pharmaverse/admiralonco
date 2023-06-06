@@ -13,7 +13,7 @@ derive_param_bor(
   reference_date,
   ref_start_window,
   missing_as_ne = FALSE,
-  aval_fun = aval_resp,
+  aval_fun,
   set_values_to,
   subject_keys = get_admiral_option("subject_keys")
 )
@@ -96,8 +96,10 @@ for these subjects.
 
 \emph{Permitted Values:} a logical scalar}
 
-\item{aval_fun}{Function to map character analysis value (\code{AVALC}) to numeric
-analysis value (\code{AVAL})
+\item{aval_fun}{\emph{Deprecated}, please use \code{set_values_to} instead.
+
+Function to map character analysis value (\code{AVALC}) to numeric analysis
+value (\code{AVAL})
 
 The (first) argument of the function must expect a character vector and the
 function must return a numeric vector.}

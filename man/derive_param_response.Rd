@@ -12,7 +12,7 @@ derive_param_response(
   source_pd = NULL,
   source_datasets = NULL,
   set_values_to,
-  aval_fun = yn_to_numeric,
+  aval_fun,
   subject_keys = get_admiral_option("subject_keys")
 )
 }
@@ -71,8 +71,10 @@ new parameter, e.g. \code{exprs(PARAMCD = "RSP", PARAM = "Response by investigat
 
 The values must be symbols, character strings, numeric values or \code{NA}.}
 
-\item{aval_fun}{Function to map character analysis value (\code{AVALC}) to numeric
-analysis value (\code{AVAL})
+\item{aval_fun}{\emph{Deprecated}, please use \code{set_values_to} instead.
+
+Function to map character analysis value (\code{AVALC}) to numeric analysis
+value (\code{AVAL})
 
 The (first) argument of the function must expect a character vector and the
 function must return a numeric vector.}
@@ -98,21 +100,18 @@ If a response has not been observed, \code{AVALC} is set to "N", \code{AVAL} to 
 \item The Date of the end of the assessment period (e.g. Progressive disease,
 as defined by \code{pd_source}) is added to the response dataset.
 \item The response dataset is restricted to observations occurring before
-** or on ** the date of progressive disease.
+\strong{or on} the date of progressive disease.
 \item For each subject (with respect to the variables specified for the
 \code{subject_keys} parameter), the first observation (with respect to
 \code{ADT}) where the response condition (\code{filter_source} parameter) is
 fulfilled is selected.
 \item For each observation in \code{dataset_adsl} a new observation is created.
-}
 \itemize{
-\item For subjects with a response \code{AVALC} is set to \code{"Y"}, \code{AVAL} to \code{1},
-and \code{ADT} to  the first date (\code{ADT}) where the response condition is
-fulfilled.
+\item For subjects with a response \code{AVALC} is set to \code{"Y"}, \code{AVAL} to \code{1}, and
+\code{ADT} to  the first date (\code{ADT}) where the response condition is fulfilled.
 \item For all other subjects \code{AVALC} is set to \code{"N"}, \code{AVAL} to \code{0}
 and \code{ADT} to \code{NA}.
 }
-\enumerate{
 \item The variables specified by the \code{set_values_to} parameter are added to
 the new observations.
 \item The new observations are added to input dataset.
@@ -122,9 +121,9 @@ the new observations.
 library(dplyr)
 library(admiral)
 library(lubridate)
-library(rlang)
+library(tibble)
 
-adsl <- tibble::tribble(
+adsl <- tribble(
   ~USUBJID,
   "1",
   "2",
@@ -133,7 +132,7 @@ adsl <- tibble::tribble(
 ) \%>\%
   mutate(STUDYID = "XX1234")
 
-adrs <- tibble::tribble(
+adrs <- tribble(
   ~USUBJID, ~PARAMCD, ~ADTC,         ~AVALC, ~ANL01FL,
   "1",      "OVR",    "2020-01-02",  "PR",   "Y",
   "1",      "OVR",    "2020-02-01",  "CR",   "Y",
@@ -171,6 +170,7 @@ derive_param_response(
   source_pd = pd,
   source_datasets = list(adrs = adrs),
   set_values_to = exprs(
+    AVAL = yn_to_numeric(AVALC),
     PARAMCD = "RSP",
     PARAM = "Response by investigator"
   ),
