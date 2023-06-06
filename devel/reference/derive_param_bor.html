@@ -12,7 +12,7 @@ first progressive disease"><meta property="og:image" content="https://pharmavers
     
     <a class="navbar-brand me-2" href="../index.html">admiralonco</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,14 +37,6 @@ first progressive disease"><meta property="og:image" content="https://pharmavers
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/devel">devel</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/pre-release">pre-release</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -82,7 +74,7 @@ first progressive disease</p>
   <span class="va">reference_date</span>,
   <span class="va">ref_start_window</span>,
   missing_as_ne <span class="op">=</span> <span class="cn">FALSE</span>,
-  aval_fun <span class="op">=</span> <span class="va">aval_resp</span>,
+  <span class="va">aval_fun</span>,
   <span class="va">set_values_to</span>,
   subject_keys <span class="op">=</span> <span class="fu">get_admiral_option</span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
@@ -166,8 +158,9 @@ for these subjects.</p>
 
 
 <dt>aval_fun</dt>
-<dd><p>Function to map character analysis value (<code>AVALC</code>) to numeric
-analysis value (<code>AVAL</code>)</p>
+<dd><p><em>Deprecated</em>, please use <code>set_values_to</code> instead.</p>
+<p>Function to map character analysis value (<code>AVALC</code>) to numeric analysis
+value (<code>AVAL</code>)</p>
 <p>The (first) argument of the function must expect a character vector and the
 function must return a numeric vector.</p></dd>
 
@@ -233,6 +226,14 @@ overwritten using the <code>set_values_to</code> parameter.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"></span>
 <span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://magrittr.tidyverse.org" class="external-link">magrittr</a></span><span class="op">)</span></span>
 <span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Attaching package: ‘dplyr’</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from ‘package:stats’:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     filter, lag</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The following objects are masked from ‘package:base’:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span>     intersect, setdiff, setequal, union</span>
 <span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span><span class="op">)</span></span>
 <span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://lubridate.tidyverse.org" class="external-link">lubridate</a></span><span class="op">)</span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
@@ -301,14 +302,14 @@ overwritten using the <code>set_values_to</code> parameter.</p>
 <span class="r-in">  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>PARAMCD <span class="op">=</span> <span class="st">"OVR"</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">pd_obs</span> <span class="op">&lt;-</span></span>
-<span class="r-in">  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
+<span class="r-in">  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span class="r-in">    <span class="op">~</span><span class="va">USUBJID</span>, <span class="op">~</span><span class="va">ADTC</span>,        <span class="op">~</span><span class="va">AVALC</span>,</span>
 <span class="r-in">    <span class="st">"2"</span>,      <span class="st">"2020-03-01"</span>, <span class="st">"Y"</span>,</span>
 <span class="r-in">    <span class="st">"4"</span>,      <span class="st">"2020-02-01"</span>, <span class="st">"Y"</span></span>
 <span class="r-in">  <span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/admiral/man/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span class="r-in">    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>PARAMCD <span class="op">=</span> <span class="st">"PD"</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">adrs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">ovr_obs</span>, <span class="va">pd_obs</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/admiral/man/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span class="r-in"><span class="va">adrs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">ovr_obs</span>, <span class="va">pd_obs</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/admiral/man/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span class="r-in">  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span class="r-in">    ADT <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/ymd.html" class="external-link">ymd</a></span><span class="op">(</span><span class="va">ADTC</span><span class="op">)</span>,</span>
 <span class="r-in">    STUDYID <span class="op">=</span> <span class="st">"XX1234"</span></span>
@@ -355,6 +356,9 @@ overwritten using the <code>set_values_to</code> parameter.</p>
 <span class="r-in">  <span class="op">)</span></span>
 <span class="r-in"><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/admiral/man/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span class="r-in">  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PARAMCD</span> <span class="op">==</span> <span class="st">"BOR"</span><span class="op">)</span></span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The `aval_fun` argument of `derive_param_bor()` is deprecated as of admiralonco</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> 0.4.0.</span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Please use the `set_values_to` argument instead.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 8 × 9</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   USUBJID AVALC   ANL01FL PARAMCD ADT        STUDYID TRTSDT     PARAM       AVAL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
@@ -373,7 +377,7 @@ overwritten using the <code>set_values_to</code> parameter.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Stefan Bundfuss, Ross Farrugia, Amit Jain, Andrew Smith, Teckla Akinyi, Samia Kabi, Stephen Gormley, Hinal Patel, F. Hoffmann-La Roche AG, GlaxoSmithKline LLC, Amgen Inc., Bristol Myers Squibb.</p>
+  <p></p><p>Developed by Stefan Bundfuss, Ross Farrugia, Amit Jain, Andrew Smith, Teckla Akinyi, Samia Kabi, Stephen Gormley, Hinal Patel, Vinh Nguyen, F. Hoffmann-La Roche AG, GlaxoSmithKline LLC, Amgen Inc., Bristol Myers Squibb.</p>
 </div>
 
 <div class="pkgdown-footer-right">

@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="index.html">admiralonco</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,14 +35,6 @@
 <li class="nav-item">
   <a class="nav-link" href="news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/devel">devel</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/pre-release">pre-release</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -68,35 +60,48 @@
 <p>Thank you for your Pull Request! We have developed this task checklist from the <a href="https://pharmaverse.github.io/admiraldev/main/articles/development_process.html" class="external-link">Development Process Guide</a> to help with the final steps of the process. Completing the below tasks helps to ensure our reviewers can maximize their time on your code as well as making sure the admiral codebase remains robust and consistent.</p>
 <p>Please check off each taskbox as an acknowledgment that you completed the task or check off that it is not relevant to your Pull Request. This checklist is part of the Github Action workflows and the Pull Request will not be merged into the <code>devel</code> branch until you have checked off each task.</p>
 <ul class="task-list"><li>
-<input type="checkbox" disabled>Code is formatted according to the <a href="https://style.tidyverse.org/" class="external-link">tidyverse style guide</a>. Run <code><a href="https://styler.r-lib.org/reference/style_file.html" class="external-link">styler::style_file()</a></code> to style R and Rmd files</li>
+<input type="checkbox" disabled>
+Code is formatted according to the <a href="https://style.tidyverse.org/" class="external-link">tidyverse style guide</a>. Run <code><a href="https://styler.r-lib.org/reference/style_file.html" class="external-link">styler::style_file()</a></code> to style R and Rmd files</li>
 <li>
-<input type="checkbox" disabled>Updated relevant unit tests or have written new unit tests - See <a href="https://pharmaverse.github.io/admiraldev/main/articles/unit_test_guidance.html#writing-unit-tests-in-admiral" class="external-link">Unit Test Guide</a>
+<input type="checkbox" disabled>
+Updated relevant unit tests or have written new unit tests - See <a href="https://pharmaverse.github.io/admiraldev/main/articles/unit_test_guidance.html#writing-unit-tests-in-admiral" class="external-link">Unit Test Guide</a>
 </li>
 <li>
-<input type="checkbox" disabled>If you removed/replaced any function and/or function parameters, did you fully follow the <a href="https://pharmaverse.github.io/admiraldev/main/articles/programming_strategy.html#deprecation" class="external-link">deprecation guidance</a>?</li>
+<input type="checkbox" disabled>
+If you removed/replaced any function and/or function parameters, did you fully follow the <a href="https://pharmaverse.github.io/admiraldev/main/articles/programming_strategy.html#deprecation" class="external-link">deprecation guidance</a>?</li>
 <li>
-<input type="checkbox" disabled>Update to all relevant roxygen headers and examples</li>
+<input type="checkbox" disabled>
+Update to all relevant roxygen headers and examples</li>
 <li>
-<input type="checkbox" disabled>Run <code><a href="https://devtools.r-lib.org/reference/document.html" class="external-link">devtools::document()</a></code> so all <code>.Rd</code> files in the <code>man</code> folder and the <code>NAMESPACE</code> file in the project root are updated appropriately</li>
+<input type="checkbox" disabled>
+Run <code><a href="https://devtools.r-lib.org/reference/document.html" class="external-link">devtools::document()</a></code> so all <code>.Rd</code> files in the <code>man</code> folder and the <code>NAMESPACE</code> file in the project root are updated appropriately</li>
 <li>
-<input type="checkbox" disabled>Address any updates needed for vignettes and/or templates</li>
+<input type="checkbox" disabled>
+Address any updates needed for vignettes and/or templates</li>
 <li>
-<input type="checkbox" disabled>Update <code>NEWS.md</code>
+<input type="checkbox" disabled>
+Update <code>NEWS.md</code>
 </li>
 <li>
-<input type="checkbox" disabled>Build admiral site <code><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">pkgdown::build_site()</a></code> and check that all affected examples are displayed correctly and that all new functions occur on the “<a href="https://pharmaverse.github.io/admiralonco/reference/index.html" class="external-link">Reference</a>” page.</li>
+<input type="checkbox" disabled>
+Build admiral site <code><a href="https://pkgdown.r-lib.org/reference/build_site.html" class="external-link">pkgdown::build_site()</a></code> and check that all affected examples are displayed correctly and that all new functions occur on the “<a href="https://pharmaverse.github.io/admiralonco/reference/index.html" class="external-link">Reference</a>” page.</li>
 <li>
-<input type="checkbox" disabled>Address or fix all lintr warnings and errors - <code><a href="https://lintr.r-lib.org/reference/lint.html" class="external-link">lintr::lint_package()</a></code>
+<input type="checkbox" disabled>
+Address or fix all lintr warnings and errors - <code><a href="https://lintr.r-lib.org/reference/lint.html" class="external-link">lintr::lint_package()</a></code>
 </li>
 <li>
-<input type="checkbox" disabled>Run <code>R CMD check</code> locally and address all errors and warnings - <code><a href="https://devtools.r-lib.org/reference/check.html" class="external-link">devtools::check()</a></code>
+<input type="checkbox" disabled>
+Run <code>R CMD check</code> locally and address all errors and warnings - <code><a href="https://devtools.r-lib.org/reference/check.html" class="external-link">devtools::check()</a></code>
 </li>
 <li>
-<input type="checkbox" disabled>Link the issue so that it closes after successful merging.</li>
+<input type="checkbox" disabled>
+Link the issue so that it closes after successful merging.</li>
 <li>
-<input type="checkbox" disabled>Address all merge conflicts and resolve appropriately</li>
+<input type="checkbox" disabled>
+Address all merge conflicts and resolve appropriately</li>
 <li>
-<input type="checkbox" disabled>Pat yourself on the back for a job well done! Much love to your accomplishment!</li>
+<input type="checkbox" disabled>
+Pat yourself on the back for a job well done! Much love to your accomplishment!</li>
 </ul><p>The following line requests to update the man pages by the “Man Pages” workflow.</p>
 <p>/roxygenize</p>
 
@@ -105,7 +110,7 @@
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Stefan Bundfuss, Ross Farrugia, Amit Jain, Andrew Smith, Teckla Akinyi, Samia Kabi, Stephen Gormley, Hinal Patel, F. Hoffmann-La Roche AG, GlaxoSmithKline LLC, Amgen Inc., Bristol Myers Squibb.</p>
+  <p></p><p>Developed by Stefan Bundfuss, Ross Farrugia, Amit Jain, Andrew Smith, Teckla Akinyi, Samia Kabi, Stephen Gormley, Hinal Patel, Vinh Nguyen, F. Hoffmann-La Roche AG, GlaxoSmithKline LLC, Amgen Inc., Bristol Myers Squibb.</p>
 </div>
 
 <div class="pkgdown-footer-right">

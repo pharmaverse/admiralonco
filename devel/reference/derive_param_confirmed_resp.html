@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">admiralonco</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -35,14 +35,6 @@
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/devel">devel</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/pre-release">pre-release</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -79,7 +71,7 @@
   <span class="va">ref_confirm</span>,
   max_nr_ne <span class="op">=</span> <span class="fl">1</span>,
   accept_sd <span class="op">=</span> <span class="cn">FALSE</span>,
-  aval_fun <span class="op">=</span> <span class="va">yn_to_numeric</span>,
+  <span class="va">aval_fun</span>,
   <span class="va">set_values_to</span>,
   subject_keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/admiral/man/get_admiral_option.html" class="external-link">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
@@ -151,11 +143,11 @@ Otherwise, no <code>"SD"</code> assessment must occur between the two assessment
 
 
 <dt>aval_fun</dt>
-<dd><p>Function to map character analysis value (<code>AVALC</code>) to numeric
-analysis value (<code>AVAL</code>)</p>
+<dd><p><em>Deprecated</em>, please use <code>set_values_to</code> instead.</p>
+<p>Function to map character analysis value (<code>AVALC</code>) to numeric analysis
+value (<code>AVAL</code>)</p>
 <p>The (first) argument of the function must expect a character vector and the
-function must return a numeric vector.</p>
-<p><em>Default:</em> <code>yn_to_numeric</code> (see <code><a href="https://rdrr.io/pkg/admiral/man/yn_to_numeric.html" class="external-link">admiral::yn_to_numeric()</a></code> for details)</p></dd>
+function must return a numeric vector.</p></dd>
 
 
 <dt>set_values_to</dt>
@@ -291,13 +283,13 @@ the new observations.</p></li>
 <span class="r-in">  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>PARAMCD <span class="op">=</span> <span class="st">"OVR"</span>, ANL01FL <span class="op">=</span> <span class="st">"Y"</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="va">pd_obs</span> <span class="op">&lt;-</span></span>
-<span class="r-in">  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
+<span class="r-in">  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span class="r-in">    <span class="op">~</span><span class="va">USUBJID</span>, <span class="op">~</span><span class="va">ADTC</span>,        <span class="op">~</span><span class="va">AVALC</span>,</span>
 <span class="r-in">    <span class="st">"6"</span>,      <span class="st">"2020-04-12"</span>, <span class="st">"Y"</span></span>
 <span class="r-in">  <span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/admiral/man/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span class="r-in">    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>PARAMCD <span class="op">=</span> <span class="st">"PD"</span>, ANL01FL <span class="op">=</span> <span class="st">"Y"</span><span class="op">)</span><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">adrs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">ovr_obs</span>, <span class="va">pd_obs</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/admiral/man/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span class="r-in"><span class="va">adrs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">ovr_obs</span>, <span class="va">pd_obs</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/admiral/man/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span class="r-in">  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span class="r-in">    ADT <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/ymd.html" class="external-link">ymd</a></span><span class="op">(</span><span class="va">ADTC</span><span class="op">)</span>,</span>
 <span class="r-in">    STUDYID <span class="op">=</span> <span class="st">"XX1234"</span></span>
@@ -326,18 +318,18 @@ the new observations.</p></li>
 <span class="r-in">  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PARAMCD</span> <span class="op">==</span> <span class="st">"CRSP"</span><span class="op">)</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Dataset contains CR records followed by PR.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Run `get_crpr_dataset()` to access the CR records records followed by PR</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 9 × 8</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   USUBJID AVALC PARAMCD ANL01FL ADT        STUDYID PARAM                    AVAL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 1       Y     CRSP    Y       2020-01-01 XX1234  Confirmed Response by …     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 2       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by …     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 3       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by …     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 4       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by …     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 5       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by …     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> 6       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by …     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> 7       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by …     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">8</span> 8       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by …     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">9</span> 9       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by …     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 9 × 7</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   USUBJID AVALC PARAMCD ANL01FL ADT        STUDYID PARAM                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 1       Y     CRSP    Y       2020-01-01 XX1234  Confirmed Response by Invest…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 2       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by Invest…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 3       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by Invest…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 4       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by Invest…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 5       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by Invest…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> 6       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by Invest…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> 7       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by Invest…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">8</span> 8       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by Invest…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">9</span> 9       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by Invest…</span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Derive confirmed response parameter (accepting SD for PR and two NEs)</span></span>
 <span class="r-in"><span class="fu">derive_param_confirmed_resp</span><span class="op">(</span></span>
@@ -357,18 +349,18 @@ the new observations.</p></li>
 <span class="r-in">  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">PARAMCD</span> <span class="op">==</span> <span class="st">"CRSP"</span><span class="op">)</span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Dataset contains CR records followed by PR.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Run `get_crpr_dataset()` to access the CR records records followed by PR</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 9 × 8</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   USUBJID AVALC PARAMCD ANL01FL ADT        STUDYID PARAM                    AVAL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 1       Y     CRSP    Y       2020-01-01 XX1234  Confirmed Response by …     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 2       Y     CRSP    Y       2020-02-01 XX1234  Confirmed Response by …     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 3       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by …     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 4       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by …     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 5       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by …     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> 6       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by …     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> 7       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by …     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">8</span> 8       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by …     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">9</span> 9       Y     CRSP    Y       2020-03-16 XX1234  Confirmed Response by …     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 9 × 7</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   USUBJID AVALC PARAMCD ANL01FL ADT        STUDYID PARAM                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 1       Y     CRSP    Y       2020-01-01 XX1234  Confirmed Response by Invest…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> 2       Y     CRSP    Y       2020-02-01 XX1234  Confirmed Response by Invest…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> 3       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by Invest…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> 4       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by Invest…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> 5       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by Invest…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> 6       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by Invest…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> 7       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by Invest…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">8</span> 8       N     CRSP    <span style="color: #BB0000;">NA</span>      <span style="color: #BB0000;">NA</span>         XX1234  Confirmed Response by Invest…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">9</span> 9       Y     CRSP    Y       2020-03-16 XX1234  Confirmed Response by Invest…</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -376,7 +368,7 @@ the new observations.</p></li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Stefan Bundfuss, Ross Farrugia, Amit Jain, Andrew Smith, Teckla Akinyi, Samia Kabi, Stephen Gormley, Hinal Patel, F. Hoffmann-La Roche AG, GlaxoSmithKline LLC, Amgen Inc., Bristol Myers Squibb.</p>
+  <p></p><p>Developed by Stefan Bundfuss, Ross Farrugia, Amit Jain, Andrew Smith, Teckla Akinyi, Samia Kabi, Stephen Gormley, Hinal Patel, Vinh Nguyen, F. Hoffmann-La Roche AG, GlaxoSmithKline LLC, Amgen Inc., Bristol Myers Squibb.</p>
 </div>
 
 <div class="pkgdown-footer-right">

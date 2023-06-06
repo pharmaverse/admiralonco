@@ -22,7 +22,7 @@ ADT is set NA.'><meta property="og:image" content="https://pharmaverse.github.io
     
     <a class="navbar-brand me-2" href="../index.html">admiralonco</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,14 +47,6 @@ ADT is set NA.'><meta property="og:image" content="https://pharmaverse.github.io
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/devel">devel</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/pre-release">pre-release</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -95,7 +87,7 @@ If a response has not been observed, <code>AVALC</code> is set to "N", <code>AVA
   source_pd <span class="op">=</span> <span class="cn">NULL</span>,
   source_datasets <span class="op">=</span> <span class="cn">NULL</span>,
   <span class="va">set_values_to</span>,
-  aval_fun <span class="op">=</span> <span class="va">yn_to_numeric</span>,
+  <span class="va">aval_fun</span>,
   subject_keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/admiral/man/get_admiral_option.html" class="external-link">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span>
 <span class="op">)</span></code></pre></div>
     </div>
@@ -149,21 +141,22 @@ field of the <code><a href="https://rdrr.io/pkg/admiral/man/date_source.html" cl
 
 <dt>set_values_to</dt>
 <dd><p>Variables to set</p>
-<p>A named list returned by <code><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs()</a></code> defining the variables to be set for the
+<p>A named list returned by <code><a href="https://rdrr.io/pkg/admiral/man/reexport-exprs.html" class="external-link">exprs()</a></code> defining the variables to be set for the
 new parameter, e.g. <code>exprs(PARAMCD = "RSP", PARAM = "Response by investigator")</code> is expected.</p>
 <p>The values must be symbols, character strings, numeric values or <code>NA</code>.</p></dd>
 
 
 <dt>aval_fun</dt>
-<dd><p>Function to map character analysis value (<code>AVALC</code>) to numeric
-analysis value (<code>AVAL</code>)</p>
+<dd><p><em>Deprecated</em>, please use <code>set_values_to</code> instead.</p>
+<p>Function to map character analysis value (<code>AVALC</code>) to numeric analysis
+value (<code>AVAL</code>)</p>
 <p>The (first) argument of the function must expect a character vector and the
 function must return a numeric vector.</p></dd>
 
 
 <dt>subject_keys</dt>
 <dd><p>Variables to uniquely identify a subject</p>
-<p>A list of symbols created using <code><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs()</a></code> is expected.</p></dd>
+<p>A list of symbols created using <code><a href="https://rdrr.io/pkg/admiral/man/reexport-exprs.html" class="external-link">exprs()</a></code> is expected.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -179,18 +172,17 @@ response occurred</p>
 <ol><li><p>The Date of the end of the assessment period (e.g. Progressive disease,
 as defined by <code>pd_source</code>) is added to the response dataset.</p></li>
 <li><p>The response dataset is restricted to observations occurring before
-** or on ** the date of progressive disease.</p></li>
+<strong>or on</strong> the date of progressive disease.</p></li>
 <li><p>For each subject (with respect to the variables specified for the
 <code>subject_keys</code> parameter), the first observation (with respect to
 <code>ADT</code>) where the response condition (<code>filter_source</code> parameter) is
 fulfilled is selected.</p></li>
-<li><p>For each observation in <code>dataset_adsl</code> a new observation is created.</p></li>
-</ol><ul><li><p>For subjects with a response <code>AVALC</code> is set to <code>"Y"</code>, <code>AVAL</code> to <code>1</code>,
-and <code>ADT</code> to  the first date (<code>ADT</code>) where the response condition is
-fulfilled.</p></li>
+<li><p>For each observation in <code>dataset_adsl</code> a new observation is created.</p><ul><li><p>For subjects with a response <code>AVALC</code> is set to <code>"Y"</code>, <code>AVAL</code> to <code>1</code>, and
+<code>ADT</code> to  the first date (<code>ADT</code>) where the response condition is fulfilled.</p></li>
 <li><p>For all other subjects <code>AVALC</code> is set to <code>"N"</code>, <code>AVAL</code> to <code>0</code>
 and <code>ADT</code> to <code>NA</code>.</p></li>
-</ul><ol><li><p>The variables specified by the <code>set_values_to</code> parameter are added to
+</ul></li>
+<li><p>The variables specified by the <code>set_values_to</code> parameter are added to
 the new observations.</p></li>
 <li><p>The new observations are added to input dataset.</p></li>
 </ol></div>
@@ -212,23 +204,18 @@ the new observations.</p></li>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pharmaverse.github.io/admiral/" class="external-link">admiral</a></span><span class="op">)</span></span>
 <span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://lubridate.tidyverse.org" class="external-link">lubridate</a></span><span class="op">)</span></span>
-<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rlang.r-lib.org" class="external-link">rlang</a></span><span class="op">)</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Attaching package: ‘rlang’</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The following object is masked from ‘package:magrittr’:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span>     set_names</span>
+<span class="r-in"><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://tibble.tidyverse.org/" class="external-link">tibble</a></span><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">adsl</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
+<span class="r-in"><span class="va">adsl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span class="r-in">  <span class="op">~</span><span class="va">USUBJID</span>,</span>
 <span class="r-in">  <span class="st">"1"</span>,</span>
 <span class="r-in">  <span class="st">"2"</span>,</span>
 <span class="r-in">  <span class="st">"3"</span>,</span>
 <span class="r-in">  <span class="st">"4"</span></span>
-<span class="r-in"><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/admiral/man/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span class="r-in"><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span class="r-in">  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>STUDYID <span class="op">=</span> <span class="st">"XX1234"</span><span class="op">)</span></span>
 <span class="r-in"></span>
-<span class="r-in"><span class="va">adrs</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
+<span class="r-in"><span class="va">adrs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span class="r-in">  <span class="op">~</span><span class="va">USUBJID</span>, <span class="op">~</span><span class="va">PARAMCD</span>, <span class="op">~</span><span class="va">ADTC</span>,         <span class="op">~</span><span class="va">AVALC</span>, <span class="op">~</span><span class="va">ANL01FL</span>,</span>
 <span class="r-in">  <span class="st">"1"</span>,      <span class="st">"OVR"</span>,    <span class="st">"2020-01-02"</span>,  <span class="st">"PR"</span>,   <span class="st">"Y"</span>,</span>
 <span class="r-in">  <span class="st">"1"</span>,      <span class="st">"OVR"</span>,    <span class="st">"2020-02-01"</span>,  <span class="st">"CR"</span>,   <span class="st">"Y"</span>,</span>
@@ -243,12 +230,12 @@ the new observations.</p></li>
 <span class="r-in">  <span class="st">"3"</span>,      <span class="st">"OVR"</span>,    <span class="st">"2021-10-30"</span>,  <span class="st">"PD"</span>,   <span class="st">"Y"</span>,</span>
 <span class="r-in">  <span class="st">"3"</span>,      <span class="st">"OVR"</span>,    <span class="st">"2021-12-25"</span>,  <span class="st">"CR"</span>,   <span class="st">"Y"</span>,</span>
 <span class="r-in">  <span class="st">"3"</span>,      <span class="st">"PD"</span>,     <span class="st">"2021-10-30"</span>,  <span class="st">"Y"</span>,    <span class="st">"Y"</span></span>
-<span class="r-in"><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/admiral/man/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span class="r-in"><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span class="r-in">  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span class="r-in">    STUDYID <span class="op">=</span> <span class="st">"XX1234"</span>,</span>
 <span class="r-in">    ADT <span class="op">=</span> <span class="fu"><a href="https://lubridate.tidyverse.org/reference/ymd.html" class="external-link">ymd</a></span><span class="op">(</span><span class="va">ADTC</span><span class="op">)</span>,</span>
 <span class="r-in">    ANL01FL <span class="op">=</span> <span class="st">"Y"</span></span>
-<span class="r-in">  <span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/admiral/man/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span class="r-in">  <span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span class="r-in">  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">ADTC</span><span class="op">)</span></span>
 <span class="r-in"></span>
 <span class="r-in"><span class="co"># Define the end of the assessment period for responses:</span></span>
@@ -265,37 +252,34 @@ the new observations.</p></li>
 <span class="r-in">  filter_source <span class="op">=</span> <span class="va">PARAMCD</span> <span class="op">==</span> <span class="st">"OVR"</span> <span class="op">&amp;</span> <span class="va">AVALC</span> <span class="op"><a href="https://rdrr.io/r/base/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CR"</span>, <span class="st">"PR"</span><span class="op">)</span> <span class="op">&amp;</span> <span class="va">ANL01FL</span> <span class="op">==</span> <span class="st">"Y"</span>,</span>
 <span class="r-in">  source_pd <span class="op">=</span> <span class="va">pd</span>,</span>
 <span class="r-in">  source_datasets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>adrs <span class="op">=</span> <span class="va">adrs</span><span class="op">)</span>,</span>
-<span class="r-in">  set_values_to <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs</a></span><span class="op">(</span></span>
+<span class="r-in">  set_values_to <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/admiral/man/reexport-exprs.html" class="external-link">exprs</a></span><span class="op">(</span></span>
+<span class="r-in">    AVAL <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/admiral/man/yn_to_numeric.html" class="external-link">yn_to_numeric</a></span><span class="op">(</span><span class="va">AVALC</span><span class="op">)</span>,</span>
 <span class="r-in">    PARAMCD <span class="op">=</span> <span class="st">"RSP"</span>,</span>
 <span class="r-in">    PARAM <span class="op">=</span> <span class="st">"Response by investigator"</span></span>
 <span class="r-in">  <span class="op">)</span>,</span>
 <span class="r-in">  subject_keys <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/pkg/admiral/man/get_admiral_option.html" class="external-link">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span></span>
-<span class="r-in"><span class="op">)</span> <span class="op"><a href="https://rdrr.io/pkg/admiral/man/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span class="r-in"><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span class="r-in">  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">USUBJID</span>, <span class="va">PARAMCD</span>, <span class="va">ADT</span><span class="op">)</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>`derive_param_extreme_event()` was deprecated in admiral 0.11.0.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> Please use `derive_extreme_records()` instead.</span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">This warning is displayed once every 8 hours.</span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span style="color: #555555;">Call `lifecycle::last_lifecycle_warnings()` to see where this warning was generated.</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 17 × 8</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    USUBJID PARAMCD AVALC ANL01FL STUDYID ADT        PARAM                   AVAL</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 1       OVR     PR    Y       XX1234  2020-01-02 <span style="color: #BB0000;">NA</span>                        <span style="color: #BB0000;">NA</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 1       OVR     CR    Y       XX1234  2020-02-01 <span style="color: #BB0000;">NA</span>                        <span style="color: #BB0000;">NA</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 1       OVR     CR    Y       XX1234  2020-03-01 <span style="color: #BB0000;">NA</span>                        <span style="color: #BB0000;">NA</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 1       OVR     SD    Y       XX1234  2020-04-01 <span style="color: #BB0000;">NA</span>                        <span style="color: #BB0000;">NA</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 1       PD      N     Y       XX1234  <span style="color: #BB0000;">NA</span>         <span style="color: #BB0000;">NA</span>                        <span style="color: #BB0000;">NA</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 1       RSP     Y     Y       XX1234  2020-01-02 Response by investiga…     1</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 2       OVR     SD    Y       XX1234  2021-06-15 <span style="color: #BB0000;">NA</span>                        <span style="color: #BB0000;">NA</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 2       OVR     PD    Y       XX1234  2021-07-16 <span style="color: #BB0000;">NA</span>                        <span style="color: #BB0000;">NA</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 2       OVR     PD    Y       XX1234  2021-09-14 <span style="color: #BB0000;">NA</span>                        <span style="color: #BB0000;">NA</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 2       PD      Y     Y       XX1234  2021-09-14 <span style="color: #BB0000;">NA</span>                        <span style="color: #BB0000;">NA</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> 2       RSP     N     <span style="color: #BB0000;">NA</span>      XX1234  <span style="color: #BB0000;">NA</span>         Response by investiga…     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> 3       OVR     SD    Y       XX1234  2021-09-14 <span style="color: #BB0000;">NA</span>                        <span style="color: #BB0000;">NA</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> 3       OVR     PD    Y       XX1234  2021-10-30 <span style="color: #BB0000;">NA</span>                        <span style="color: #BB0000;">NA</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> 3       OVR     CR    Y       XX1234  2021-12-25 <span style="color: #BB0000;">NA</span>                        <span style="color: #BB0000;">NA</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span> 3       PD      Y     Y       XX1234  2021-10-30 <span style="color: #BB0000;">NA</span>                        <span style="color: #BB0000;">NA</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">16</span> 3       RSP     N     <span style="color: #BB0000;">NA</span>      XX1234  <span style="color: #BB0000;">NA</span>         Response by investiga…     0</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">17</span> 4       RSP     N     <span style="color: #BB0000;">NA</span>      XX1234  <span style="color: #BB0000;">NA</span>         Response by investiga…     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    USUBJID PARAMCD AVALC ANL01FL STUDYID ADT         AVAL PARAM                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;date&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> 1       OVR     PR    Y       XX1234  2020-01-02    <span style="color: #BB0000;">NA</span> <span style="color: #BB0000;">NA</span>                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 1       OVR     CR    Y       XX1234  2020-02-01    <span style="color: #BB0000;">NA</span> <span style="color: #BB0000;">NA</span>                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> 1       OVR     CR    Y       XX1234  2020-03-01    <span style="color: #BB0000;">NA</span> <span style="color: #BB0000;">NA</span>                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> 1       OVR     SD    Y       XX1234  2020-04-01    <span style="color: #BB0000;">NA</span> <span style="color: #BB0000;">NA</span>                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> 1       PD      N     Y       XX1234  <span style="color: #BB0000;">NA</span>            <span style="color: #BB0000;">NA</span> <span style="color: #BB0000;">NA</span>                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> 1       RSP     Y     Y       XX1234  2020-01-02     1 Response by investiga…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> 2       OVR     SD    Y       XX1234  2021-06-15    <span style="color: #BB0000;">NA</span> <span style="color: #BB0000;">NA</span>                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> 2       OVR     PD    Y       XX1234  2021-07-16    <span style="color: #BB0000;">NA</span> <span style="color: #BB0000;">NA</span>                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> 2       OVR     PD    Y       XX1234  2021-09-14    <span style="color: #BB0000;">NA</span> <span style="color: #BB0000;">NA</span>                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> 2       PD      Y     Y       XX1234  2021-09-14    <span style="color: #BB0000;">NA</span> <span style="color: #BB0000;">NA</span>                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> 2       RSP     N     <span style="color: #BB0000;">NA</span>      XX1234  <span style="color: #BB0000;">NA</span>             0 Response by investiga…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">12</span> 3       OVR     SD    Y       XX1234  2021-09-14    <span style="color: #BB0000;">NA</span> <span style="color: #BB0000;">NA</span>                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">13</span> 3       OVR     PD    Y       XX1234  2021-10-30    <span style="color: #BB0000;">NA</span> <span style="color: #BB0000;">NA</span>                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">14</span> 3       OVR     CR    Y       XX1234  2021-12-25    <span style="color: #BB0000;">NA</span> <span style="color: #BB0000;">NA</span>                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">15</span> 3       PD      Y     Y       XX1234  2021-10-30    <span style="color: #BB0000;">NA</span> <span style="color: #BB0000;">NA</span>                    </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">16</span> 3       RSP     N     <span style="color: #BB0000;">NA</span>      XX1234  <span style="color: #BB0000;">NA</span>             0 Response by investiga…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">17</span> 4       RSP     N     <span style="color: #BB0000;">NA</span>      XX1234  <span style="color: #BB0000;">NA</span>             0 Response by investiga…</span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
@@ -303,7 +287,7 @@ the new observations.</p></li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p></p><p>Developed by Stefan Bundfuss, Ross Farrugia, Amit Jain, Andrew Smith, Teckla Akinyi, Samia Kabi, Stephen Gormley, Hinal Patel, F. Hoffmann-La Roche AG, GlaxoSmithKline LLC, Amgen Inc., Bristol Myers Squibb.</p>
+  <p></p><p>Developed by Stefan Bundfuss, Ross Farrugia, Amit Jain, Andrew Smith, Teckla Akinyi, Samia Kabi, Stephen Gormley, Hinal Patel, Vinh Nguyen, F. Hoffmann-La Roche AG, GlaxoSmithKline LLC, Amgen Inc., Bristol Myers Squibb.</p>
 </div>
 
 <div class="pkgdown-footer-right">
