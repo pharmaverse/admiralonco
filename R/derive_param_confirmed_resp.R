@@ -66,13 +66,13 @@
 #'
 #'   *Permitted Values:* a logical scalar
 #'
-#' @param aval_fun Function to map character analysis value (`AVALC`) to numeric
-#'   analysis value (`AVAL`)
+#' @param aval_fun *Deprecated*, please use `set_values_to` instead.
+#'
+#'   Function to map character analysis value (`AVALC`) to numeric analysis
+#'   value (`AVAL`)
 #'
 #'   The (first) argument of the function must expect a character vector and the
 #'   function must return a numeric vector.
-#'
-#'   *Default:* `yn_to_numeric` (see `admiral::yn_to_numeric()` for details)
 #'
 #' @param set_values_to Variables to set
 #'
@@ -264,7 +264,7 @@ derive_param_confirmed_resp <- function(dataset,
                                         ref_confirm,
                                         max_nr_ne = 1,
                                         accept_sd = FALSE,
-                                        aval_fun = yn_to_numeric,
+                                        aval_fun,
                                         set_values_to,
                                         subject_keys = get_admiral_option("subject_keys")) {
   # Check input parameters
@@ -283,6 +283,14 @@ derive_param_confirmed_resp <- function(dataset,
     assert_param_does_not_exist(dataset, set_values_to$PARAMCD)
   }
 
+  if (!missing(aval_fun)) {
+    deprecate_warn(
+      "0.4.0",
+      "derive_param_confirmed_resp(aval_fun = )",
+      "derive_param_confirmed_resp(set_values_to = )"
+    )
+    set_values_to <- exprs(!!!set_values_to, AVAL = {{ aval_fun }}(AVALC))
+  }
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # filter_pd and filter_source: Filter source dataset using filter_source----
   # argument and also filter data after progressive disease with filter_pd
@@ -398,11 +406,7 @@ derive_param_confirmed_resp <- function(dataset,
     ) %>%
     mutate(
       !!!set_values_to
-    ) %>%
-    call_aval_fun(
-      aval_fun
     )
-
 
   # Add to input dataset
   bind_rows(dataset, rsp)
