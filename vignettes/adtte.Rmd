@@ -217,7 +217,7 @@ dataset_vignette(
 )
 ```
 
-### Creating Your Own Time-to-Event Source Objects
+### Creating Your Own Time-to-Event Source Objects {#tteobj}
 
 We advise you consult the `{admiral}`
 `r dyn_link("Creating a BDS Time-to-Event ADaM vignette", admiral_homepage, "articles/bds_tte.html")`

@@ -58,6 +58,7 @@ This article describes a process for creating a new anti-cancer start date from 
 -   [Single Source](#input)
 -   [Multiple Sources - Prerequisite Step](#multiinput)
 -   [Multiple Sources - Derive New Anti-Cancer Start Date and Merge with `ADSL`](#nactdt)
+-   [Using the New Anti-Cancer Therapy Date](#unactdt)
 -   [Derive Date Parameter](#par)
 
 ## Read in Data {#readdata}
@@ -166,10 +167,12 @@ dataset_vignette(
   filter = !is.na(NACTDT)
 )
 ```
+
+## Using the New Anti-Cancer Therapy Date {#unactdt}
+
+Please refer to `{admiralonco}` [Derive `ANL01FL`](adrs.html#anl01fl) for an example on the usage of `NACTDT`. Additionally, `{admiralonco}` [Creating Your Own Time-to-Event Source Objects](adtte.html#tteobj) may be referenced for case usage.
+
 ## Derive Date Parameter {#par}
-
-For deriving parameter for new anti-cancer date from a single source, `admiral::derive_param_extreme_event()` may be used, please consult the `{admiralonco}` [Creating ADRS](adrs.html) for guidance on creating parameters and on the usage of `NACTDT` variable with examples. Additionally, subsection *Creating Your Own Time-to-Event Source Objects* in the `{admiralonco}` [Creating ADTTE](adtte.html) vignette may be referenced for case usage.
-
 
 As of `{admiral}` version 0.11.0, `admiral::derive_param_extreme_record()` is recommended to be used for deriving parameter based on the first or last observation from single and multiple sources. 
 
@@ -200,7 +203,7 @@ adrs <- derive_param_extreme_record(
     )
   ),
   source_datasets = list(cm = cm, pr = pr),
-  by_vars = exprs(USUBJID),
+  by_vars = exprs(STUDYID, USUBJID),
   order = exprs(ADT),
   mode = "first",
   set_values_to = exprs(
@@ -214,7 +217,7 @@ adrs <- derive_param_extreme_record(
 ```{r, eval=TRUE, echo=FALSE}
 dataset_vignette(
   adrs,
-  display_vars = exprs(STUDYID, USUBJID, PARAMCD, PARAM, ADT, AVALC),
+  display_vars = exprs(USUBJID, PARAMCD, PARAM, ADT, AVALC),
   filter = !is.na(ADT) & PARAMCD == "NACTDT"
 )
 ```
