@@ -1,6 +1,4 @@
-library(tibble)
-
-data <- tribble(
+data <- tibble::tribble(
   ~AVALC,
   "YES",
   "NO"
@@ -17,12 +15,17 @@ test_that("call_aval_fun Test 1: AVAL is created", {
     )
   }
 
-  expect_dfs_equal(
-    call_aval_fun(
+  expect_warning(
+    actual <- call_aval_fun(
       data,
       yn_map
     ),
-    tribble(
+    class = "lifecycle_warning_deprecated"
+  )
+
+  expect_dfs_equal(
+    actual,
+    tibble::tribble(
       ~AVALC, ~AVAL,
       "YES",      1,
       "NO",       0
@@ -38,9 +41,12 @@ test_that("call_aval_fun Test 2: Test error for invalid aval_fun", {
   }
 
   expect_error(
-    call_aval_fun(
-      data,
-      aval_fun = bad_fun
+    suppress_warning(
+      call_aval_fun(
+        data,
+        aval_fun = bad_fun
+      ),
+      regexpr = "deprecated"
     ),
     regexp = "Assigning new AVAL records with aval_fun"
   )
