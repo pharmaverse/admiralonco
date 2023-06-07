@@ -271,7 +271,7 @@ dataset_vignette(
 
 Here is an alternative example where those records occurring after new
 anti-cancer therapy are additionally excluded (where `NACTDT` would be
-pre-derived as first date of new anti-cancer therapy).
+pre-derived as first date of new anti-cancer therapy. See `{admiralonco}` [Creating and Using New Anti-Cancer Start Date](nactdt.html) for deriving this variable).
 
 ```{r, eval=FALSE}
 adrs <- adrs %>%

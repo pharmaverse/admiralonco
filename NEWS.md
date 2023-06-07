@@ -1,5 +1,10 @@
 # admiralonco 0.4.0
 
+## Documentation
+
+- New vignette "Creating and Using New Anti-Cancer Start Date" (#17)
+- "Create `ADRS`" and "Create `ADTTE`" vignette has been updated to include a link to "Creating and Using New Anti-Cancer Start Date" vignette
+
 ## New Features
 
 - Added a "Report a bug" link to `{admiralonco}` website (#211)
@@ -28,6 +33,7 @@ argument. (#216)
 
 - The `call_aval_fun()` function was deprecated in favor or
 `admiraldev::process_set_values_to()`. (#216)
+
 
 # admiralonco 0.3.0
 
