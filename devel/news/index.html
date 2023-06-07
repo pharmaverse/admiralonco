@@ -30,19 +30,12 @@
     <a class="dropdown-item" href="../articles/adrs.html">Creating ADRS</a>
     <a class="dropdown-item" href="../articles/adtte.html">Creating ADTTE</a>
     <a class="dropdown-item" href="../articles/adtr.html">Creating ADTR</a>
+    <a class="dropdown-item" href="../articles/nactdt.html">Creating and Using New Anti-Cancer Start Date</a>
   </div>
 </li>
 <li class="active nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/devel">devel</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/pre-release">pre-release</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -66,6 +59,11 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.0" id="admiralonco-040">admiralonco 0.4.0<a class="anchor" aria-label="anchor" href="#admiralonco-040"></a></h2>
 <div class="section level3">
+<h3 id="documentation-0-4-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-4-0"></a></h3>
+<ul><li>New vignette “Creating and Using New Anti-Cancer Start Date” (<a href="https://github.com/pharmaverse/admiralonco/issues/17" class="external-link">#17</a>)</li>
+<li>“Create <code>ADRS</code>” and “Create <code>ADTTE</code>” vignette has been updated to include a link to “Creating and Using New Anti-Cancer Start Date” vignette</li>
+</ul></div>
+<div class="section level3">
 <h3 id="new-features-0-4-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-4-0"></a></h3>
 <ul><li><p>Added a “Report a bug” link to <a href="https://pharmaverse.github.io/admiralonco/" class="external-link">admiralonco</a> website (<a href="https://github.com/pharmaverse/admiralonco/issues/211" class="external-link">#211</a>)</p></li>
 <li><p>Added a section regarding dependencies to the <a href="https://pharmaverse.github.io/admiralonco/" class="external-link">admiralonco</a> website (<a href="https://github.com/pharmaverse/admiralonco/issues/223" class="external-link">#223</a>)</p></li>
@@ -82,7 +80,7 @@
 <h3 id="breaking-changes-0-4-0">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-4-0"></a></h3>
 <ul><li><p>Function <code>derive_param_lasta()</code>, which was deprecated in admiralonco 0.2.0, has been removed. (<a href="https://github.com/pharmaverse/admiralonco/issues/216" class="external-link">#216</a>)</p></li>
 <li><p>The <code>aval_fun</code> argument of <code><a href="../reference/derive_param_bor.html">derive_param_bor()</a></code>, <code><a href="../reference/derive_param_clinbenefit.html">derive_param_clinbenefit()</a></code>, <code><a href="../reference/derive_param_confirmed_bor.html">derive_param_confirmed_bor()</a></code>, <code><a href="../reference/derive_param_confirmed_resp.html">derive_param_confirmed_resp()</a></code>, <code><a href="../reference/derive_param_response.html">derive_param_response()</a></code> was deprecated in favor of the <code>set_values_to</code> argument. (<a href="https://github.com/pharmaverse/admiralonco/issues/216" class="external-link">#216</a>)</p></li>
-<li><p>The <code><a href="../reference/call_aval_fun.html">call_aval_fun()</a></code> function was deprecated in favor or <code><a href="https://pharmaverse.github.io/admiraldev/main/reference/process_set_values_to.html" class="external-link">admiraldev::process_set_values_to()</a></code>. (<a href="https://github.com/pharmaverse/admiralonco/issues/216" class="external-link">#216</a>)</p></li>
+<li><p>The <code><a href="../reference/call_aval_fun.html">call_aval_fun()</a></code> function was deprecated in favor or <code><a href="https://pharmaverse.github.io/admiraldev/devel/main/reference/process_set_values_to.html" class="external-link">admiraldev::process_set_values_to()</a></code>. (<a href="https://github.com/pharmaverse/admiralonco/issues/216" class="external-link">#216</a>)</p></li>
 </ul></div>
 </div>
     <div class="section level2">
