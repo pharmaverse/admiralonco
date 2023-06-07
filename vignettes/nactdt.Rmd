@@ -100,7 +100,6 @@ pr <- tribble(
 To derive the New Anti-Cancer Therapy start date with data from a single source, the function `admiral::derive_vars_merged()` can be used. If numeric date is required,  `admiral::convert_dtc_to_dt` , or if time part is needed, `admiral::convert_dtc_to_dtm()` can be used as part of an expression for the `new_vars` argument.
 
 ```{r message=FALSE}
-
 adsl <- derive_vars_merged(
   admiral_adsl,
   dataset_add = cm,
@@ -179,7 +178,6 @@ As of `{admiral}` version 0.11.0, `admiral::derive_param_extreme_record()` is re
 Based on individual company standards, this parameter may be added to an event or date dataset such as `ADEVENT` or `ADDATES`, which are generally intermediate datasets to `ADTTE`. For demonstration purpose, a new anti-cancer date parameter will be merged into `ADRS`. A list of `record_source()` objects is expected and this will contain the sources of the dates and any company specific filtering.
 
 ```{r, eval=TRUE, echo=TRUE}
-
 library(admiralonco)
 
 adrs <- derive_param_extreme_record(
@@ -211,7 +209,6 @@ adrs <- derive_param_extreme_record(
     PARAM = "New Anti-Cancer Therapy Start Date"
   )
 )
-
 ```
 
 ```{r, eval=TRUE, echo=FALSE}
