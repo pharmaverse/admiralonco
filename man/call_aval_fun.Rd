@@ -24,6 +24,11 @@ vector and must return a numeric vector.
 The input dataset with \code{AVAL} added
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}}
+
+This function is \emph{deprecated}, please use
+\code{admiraldev::process_set_values_to()} instead.
+
 Create \code{AVAL} from \code{AVALC} by calling a function provided by the user. If
 calling the function fails, the error is caught and a helpful error message
 provided.
@@ -31,31 +36,8 @@ provided.
 \details{
 The new variable \code{AVAL} is set to \code{aval_fun(AVALC)}.
 }
-\examples{
-
-library(tibble)
-library(dplyr)
-
-data <- tribble(
-  ~AVALC,
-  "YES",
-  "NO"
-)
-
-yn_map <- function(x) {
-  case_when(
-    x == "YES" ~ 1,
-    x == "NO" ~ 0
-  )
-}
-
-call_aval_fun(
-  data,
-  yn_map
-)
-}
 \author{
 Stefan Bundfuss
 }
-\concept{utils_catch}
-\keyword{utils_catch}
+\concept{deprecated}
+\keyword{deprecated}

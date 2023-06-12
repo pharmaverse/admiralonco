@@ -271,7 +271,7 @@ dataset_vignette(
 
 Here is an alternative example where those records occurring after new
 anti-cancer therapy are additionally excluded (where `NACTDT` would be
-pre-derived as first date of new anti-cancer therapy).
+pre-derived as first date of new anti-cancer therapy. See `{admiralonco}` [Creating and Using New Anti-Cancer Start Date](nactdt.html) for deriving this variable).
 
 ```{r, eval=FALSE}
 adrs <- adrs %>%
@@ -322,22 +322,26 @@ records. For the parameter derivations, all values except those
 overwritten by `set_values_to` argument are kept from the earliest
 occurring input record fulfilling the required criteria.
 
-The function `admiral::derive_param_extreme_event()` can be used to find
+The function `admiral::derive_extreme_records()` can be used to find
 the date of first `PD`.
 
 ```{r}
 adrs <- adrs %>%
-  derive_param_extreme_event(
-    dataset_adsl = adsl,
-    dataset_source = adrs,
-    filter_source = PARAMCD == "OVR" & AVALC == "PD" & ANL01FL == "Y",
+  derive_extreme_records(
+    dataset_ref = adsl,
+    dataset_add = adrs,
+    by_vars = exprs(STUDYID, USUBJID),
+    filter_add = PARAMCD == "OVR" & AVALC == "PD" & ANL01FL == "Y",
     order = exprs(ADT, RSSEQ),
+    mode = "first",
+    exist_flag = AVALC,
     set_values_to = exprs(
       PARAMCD = "PD",
       PARAM = "Disease Progression by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
+      AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
   )
@@ -384,11 +388,10 @@ pd <- date_source(
 )
 ```
 
-The function `derive_param_response()` can then be used to find the date
-of first response. This differs from the
-`admiral::derive_param_extreme_event()` function in that it only looks for
-events occurring prior to first `PD`. In the below example, the response
-condition has been defined as `CR` or `PR`.
+The function `derive_param_response()` can then be used to find the date of
+first response. This differs from the `admiral::derive_extreme_records()`
+function in that it only looks for events occurring prior to first `PD`. In the
+below example, the response condition has been defined as `CR` or `PR`.
 
 ```{r}
 adrs <- adrs %>%
@@ -403,6 +406,7 @@ adrs <- adrs %>%
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
+      AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
   )
@@ -452,6 +456,7 @@ adrs <- adrs %>%
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
+      AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
   )
@@ -488,6 +493,7 @@ adrs <- adrs %>%
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
+      AVAL = aval_resp(AVALC),
       ANL01FL = "Y"
     )
   )
@@ -501,9 +507,9 @@ dataset_vignette(
 )
 ```
 
-Note that the above gives pre-defined `AVAL` values of: `"CR" ~ 1`,
-`"PR" ~ 2`, `"SD" ~ 3`, `"NON-CR/NON-PD" ~ 4`, `"PD" ~ 5`, `"NE" ~ 6`,
-`"MISSING" ~ 7`.
+Note that the above gives pre-defined `AVAL` values (defined by `aval_resp()`)
+of: `"CR" ~ 1`, `"PR" ~ 2`, `"SD" ~ 3`, `"NON-CR/NON-PD" ~ 4`, `"PD" ~ 5`, `"NE"
+~ 6`, `"MISSING" ~ 7`.
 
 If you'd like to provide your own company-specific ordering here you
 could do this as follows:
@@ -523,29 +529,33 @@ aval_resp_new <- function(arg) {
 }
 ```
 
-Then add the additional argument `aval_fun = aval_resp_new` to the above
-`derive_param_bor()` call. Be aware that this will only impact the
-`AVAL` mapping, not the derivation of BOR in any way - as the function
-derivation relies only on `AVALC` here.
+Then update the definition of `AVAL` in the `set_values_to` argument of the
+above `derive_param_bor()` call. Be aware that this will only impact the `AVAL`
+mapping, not the derivation of BOR in any way - as the function derivation
+relies only on `AVALC` here.
 
 ## Derive Best Overall Response of CR/PR Parameter {#bcp}
 
-The function `admiral::derive_param_extreme_event()` can be used to check if a
+The function `admiral::derive_extreme_records()` can be used to check if a
 patient had a response for BOR.
 
 ```{r}
 adrs <- adrs %>%
-  derive_param_extreme_event(
-    dataset_adsl = adsl,
-    dataset_source = adrs,
-    filter_source = PARAMCD == "BOR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
+  derive_extreme_records(
+    dataset_ref = adsl,
+    dataset_add = adrs,
+    by_vars = exprs(STUDYID, USUBJID),
+    filter_add = PARAMCD == "BOR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
     order = exprs(ADT, RSSEQ),
+    mode = "first",
+    exist_flag = AVALC,
     set_values_to = exprs(
       PARAMCD = "BCP",
       PARAM = "Best Overall Response of CR/PR by Investigator (confirmation not required)",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
+      AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
   )
@@ -584,6 +594,7 @@ adrs <- adrs %>%
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
+      AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
   )
@@ -609,6 +620,7 @@ adrs <- adrs %>%
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
+      AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
   ) %>%
@@ -626,20 +638,25 @@ adrs <- adrs %>%
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
+      AVAL = aval_resp(AVALC),
       ANL01FL = "Y"
     )
   ) %>%
-  derive_param_extreme_event(
-    dataset_adsl = adsl,
-    dataset_source = adrs,
-    filter_source = PARAMCD == "CBOR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
+  derive_extreme_records(
+    dataset_ref = adsl,
+    dataset_add = adrs,
+    by_vars = exprs(STUDYID, USUBJID),
+    filter_add = PARAMCD == "CBOR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
     order = exprs(ADT, RSSEQ),
+    mode = "first",
+    exist_flag = AVALC,
     set_values_to = exprs(
       PARAMCD = "CBCP",
       PARAM = "Best Confirmed Overall Response of CR/PR by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
+      AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
   )
@@ -666,7 +683,9 @@ be required for passing to `source_pd` and `source_resp` respectively.
 
 ```{r}
 adrsirf <- rs %>%
-  filter(RSEVAL == "INDEPENDENT ASSESSOR" & RSEVALID == "RADIOLOGIST 1" & RSTESTCD == "OVRLRESP") %>%
+  filter(
+    RSEVAL == "INDEPENDENT ASSESSOR" & RSEVALID == "RADIOLOGIST 1" & RSTESTCD == "OVRLRESP"
+  ) %>%
   mutate(
     PARAMCD = "OVRR1",
     PARAM = "Overall Response by Radiologist 1",
@@ -689,7 +708,7 @@ replace the `PARAMCD == "OVR"` source with `PARAMCD == "OVRR1"`.
 
 ## Derive Death Parameter {#death}
 
-The function `admiral::derive_param_extreme_event()` can be used to create
+The function `admiral::derive_extreme_records()` can be used to create
 a new death parameter using death date from `ADSL`. We need to restrict
 the columns from `ADSL` as we'll merge all required variables later
 across all our `ADRS` records.
@@ -699,14 +718,17 @@ adsldth <- adsl %>%
   select(STUDYID, USUBJID, DTHDT, !!!adsl_vars)
 
 adrs <- adrs %>%
-  derive_param_extreme_event(
-    dataset_adsl = adsldth,
-    dataset_source = adsldth,
-    filter_source = !is.na(DTHDT),
+  derive_extreme_records(
+    dataset_ref = adsldth,
+    dataset_add = adsldth,
+    by_vars = exprs(STUDYID, USUBJID),
+    filter_add = !is.na(DTHDT),
+    exist_flag = AVALC,
     set_values_to = exprs(
       PARAMCD = "DEATH",
       PARAM = "Death",
       PARCAT1 = "Reference Event",
+      AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y",
       ADT = DTHDT
     )
@@ -724,19 +746,18 @@ dataset_vignette(
 
 ## Derive Last Disease Assessment Parameters {#lsta}
 
-The function `admiral::derive_param_extreme_event()` can be used to create a parameter
-for last disease assessment. We need to set `new_var` to a dummy variable here, or
-otherwise the original `AVALC` value from the record would be overwritten with `"Y"`.
+The function `admiral::derive_extreme_records()` can be used to create a
+parameter for last disease assessment.
 
 ```{r}
 adrs <- adrs %>%
-  derive_param_extreme_event(
-    dataset_adsl = adsl,
-    dataset_source = adrs,
-    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+  derive_extreme_records(
+    dataset_ref = adsl,
+    dataset_add = adrs,
+    by_vars = exprs(STUDYID, USUBJID),
+    filter_add = PARAMCD == "OVR" & ANL01FL == "Y",
     order = exprs(ADT, RSSEQ),
     mode = "last",
-    new_var = dummy,
     set_values_to = exprs(
       PARAMCD = "LSTA",
       PARAM = "Last Disease Assessment by Investigator",
@@ -745,8 +766,7 @@ adrs <- adrs %>%
       PARCAT3 = "Recist 1.1",
       ANL01FL = "Y"
     )
-  ) %>%
-  select(-dummy)
+  )
 ```
 
 ```{r, echo=FALSE}
@@ -772,7 +792,7 @@ adslmdis <- adsl %>%
 
 adrs <- adrs %>%
   derive_param_exist_flag(
-    dataset_adsl = adslmdis,
+    dataset_ref = adslmdis,
     dataset_add = tu,
     condition = TUEVAL == "INVESTIGATOR" & TUSTRESC == "TARGET" & VISIT == "BASELINE",
     false_value = "N",
@@ -782,6 +802,7 @@ adrs <- adrs %>%
       PARAM = "Measurable Disease at Baseline by Investigator",
       PARCAT2 = "Investigator",
       PARCAT3 = "Recist 1.1",
+      AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
   )
@@ -792,30 +813,6 @@ dataset_vignette(
   adrs,
   display_vars = exprs(USUBJID, AVISIT, PARAMCD, PARAM, AVALC, ADT, ANL01FL),
   filter = PARAMCD == "MDIS"
-)
-```
-
-## Derive `AVAL` for New Parameters {#aval}
-
-For cases where `AVALC` has been derived for new parameters above as `"Y"` or `"N"`,
-we need to set `AVAL` to numeric versions such as `1`/`0`.
-
-```{r eval=TRUE}
-adrs <- adrs %>%
-  mutate(
-    AVAL = case_when(
-      AVALC == "Y" ~ 1,
-      AVALC == "N" ~ 0,
-      TRUE ~ AVAL
-    )
-  )
-```
-
-```{r, eval=TRUE, echo=FALSE}
-dataset_vignette(
-  adrs,
-  display_vars = exprs(USUBJID, PARAMCD, AVALC, AVAL),
-  filter = USUBJID == "01-701-1015" & AVALC %in% c("Y", "N")
 )
 ```
 

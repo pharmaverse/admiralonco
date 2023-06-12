@@ -91,8 +91,10 @@
 #'
 #'   *Permitted Values:* a logical scalar
 #'
-#' @param aval_fun Function to map character analysis value (`AVALC`) to numeric
-#'   analysis value (`AVAL`)
+#' @param aval_fun *Deprecated*, please use `set_values_to` instead.
+#'
+#'   Function to map character analysis value (`AVALC`) to numeric analysis
+#'   value (`AVAL`)
 #'
 #'   The (first) argument of the function must expect a character vector and the
 #'   function must return a numeric vector.
@@ -330,7 +332,7 @@ derive_param_confirmed_bor <- function(dataset,
                                        max_nr_ne = 1,
                                        accept_sd = FALSE,
                                        missing_as_ne = FALSE,
-                                       aval_fun = aval_resp,
+                                       aval_fun,
                                        set_values_to,
                                        subject_keys = get_admiral_option("subject_keys")) {
   # Check input parameters
@@ -349,6 +351,14 @@ derive_param_confirmed_bor <- function(dataset,
   assert_data_frame(dataset_adsl, required_vars = subject_keys)
   assert_param_does_not_exist(dataset, set_values_to$PARAMCD)
 
+  if (!missing(aval_fun)) {
+    deprecate_warn(
+      "0.4.0",
+      "derive_param_confirmed_bor(aval_fun = )",
+      "derive_param_confirmed_bor(set_values_to = )"
+    )
+    set_values_to <- exprs(!!!set_values_to, AVAL = {{ aval_fun }}(AVALC))
+  }
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # filter_pd and filter_source: Filter source dataset using filter_source----
   # argument and also filter data after progressive disease with filter_pd
@@ -505,11 +515,7 @@ derive_param_confirmed_bor <- function(dataset,
     select(-tmp_order) %>%
     mutate(
       !!!set_values_to
-    ) %>%
-    call_aval_fun(
-      aval_fun
     )
-
 
   # Add to input dataset
   bind_rows(dataset, bor)

@@ -1,0 +1,220 @@
+---
+title: "Creating and Using New Anti-Cancer Start Date"
+output: 
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Creating and Using New Anti-Cancer Start Date}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(admiralonco)
+link <- function(text, url) {
+  return(
+    paste0(
+      "[", text, "]",
+      "(", url, ")"
+    )
+  )
+}
+dyn_link <- function(text,
+                     base_url,
+                     relative_url = "",
+                     # Change to TRUE when admiral adopts multiversion docs
+                     is_multiversion = FALSE,
+                     multiversion_default_ref = "main") {
+  url <- paste(base_url, relative_url, sep = "/")
+  if (is_multiversion) {
+    url <- paste(
+      base_url,
+      Sys.getenv("BRANCH_NAME", multiversion_default_ref),
+      relative_url,
+      sep = "/"
+    )
+  }
+  return(link(text, url))
+}
+# Other variables
+admiral_homepage <- "https://pharmaverse.github.io/admiral/cran-release"
+
+library(admiraldev)
+```
+
+# Introduction
+
+In Oncology trials, for censoring the patients for any time-to-event analysis (e.g., progression free survival analysis, duration of response, etc.), it is necessary to check if the patients have started any new anti-cancer therapy. Anti-cancer therapy generally includes radiation therapy, cancer related surgery and any systemic anti-cancer therapy such as chemotherapy, t-cell therapy, etc.
+These therapies can be collected on a prior or on-treatment CRF pages, with radiation and surgery being mapped to the SDTM PR domain and systemic anti-cancer therapy being mapped to the SDTM CM domain. Collection and mapping may vary with each company and it is important that only on-treatment therapies are considered for the censoring of time-to-event. Generally, if the patients start a new anti-cancer therapy that were on-treatment, they should be discontinued from the study treatment and no further efficacy assessments should be performed.
+
+This article describes a process for creating a new anti-cancer start date from a single and multiple source SDTMs.
+
+# Programming Workflow
+
+-   [Read in Data and create test data](#readdata)
+-   [Single Source](#input)
+-   [Multiple Sources - Prerequisite Step](#multiinput)
+-   [Multiple Sources - Derive New Anti-Cancer Start Date and Merge with `ADSL`](#nactdt)
+-   [Using the New Anti-Cancer Therapy Date](#unactdt)
+-   [Derive Date Parameter](#par)
+
+## Read in Data {#readdata}
+
+To start, all data frames needed for the creation of the new anti-cancer therapy start date (`NACTDT`) should be read into the environment. This will be a company specific process. Some of the data frames needed may be `CM` and `PR`.
+
+For example purpose, `CM` and `PR` has been generated (based on CDISC Pilot test data), with oncology specific test data.
+
+```{r, warning=FALSE, message=FALSE}
+library(admiral)
+library(dplyr)
+library(admiral.test)
+
+adsl <- admiral_adsl
+
+cm <- tribble(
+  ~STUDYID, ~USUBJID, ~CMCAT, ~CMSCAT, ~CMTRT, ~CMSTDTC,
+  "CDISCPILOT01", "01-701-1015", "PRIOR TREATMENT", "CHEMOTHERAPY", "DEXRAZOXANE", NA,
+  "CDISCPILOT01", "01-701-1015", "ON TREATMENT", "CHEMOTHERAPY", "DEXROZOXANE", "2014-07-02",
+  "CDISCPILOT01", "01-701-1015", "ON TREATMENT", "CHEMOTHERAPY", "DEXROZOXANE", "2014-06-19",
+  "CDISCPILOT01", "01-701-1028", "PRIOR TREATMENT", "CHEMOTHERAPY", "METHOTREXATE", NA,
+  "CDISCPILOT01", "01-701-1028", "ON TREATMENT", "CHEMOTHERAPY", "METHOTREXATE", "2014-01-14",
+  "CDISCPILOT01", "01-701-1034", "PRIOR TREATMENT", "CHEMOTHERAPY", "OLAPARIB", NA,
+  "CDISCPILOT01", "01-701-1034", "ON TREATMENT", "CHEMOTHERAPY", "OLAPARIB", "2014-12-30",
+  "CDISCPILOT01", "01-701-1097", "PRIOR TREATMENT", "CHEMOTHERAPY", "TEMODAL", NA,
+  "CDISCPILOT01", "01-701-1097", "ON TREATMENT", "CHEMOTHERAPY", "TEMODAL", "2013-12-31",
+)
+
+pr <- tribble(
+  ~STUDYID, ~USUBJID, ~PRCAT, ~PRSCAT, ~PRTRT, ~PRSTDTC,
+  "CDISCPILOT01", "01-701-1015", "CANCER RELATED", "ON TREATMENT", "SURGERY", "2014-06-18",
+  "CDISCPILOT01", "01-701-1034", "CANCER RELATED", "ON TREATMENT", "SURGERY", "2014-12-16",
+  "CDISCPILOT01", "01-701-1028", "CANCER RELATED", "PRIOR TREATMENT", "SURGERY", NA,
+)
+```
+
+## Single Source{#input}
+
+To derive the New Anti-Cancer Therapy start date with data from a single source, the function `admiral::derive_vars_merged()` can be used. If numeric date is required,  `admiral::convert_dtc_to_dt` , or if time part is needed, `admiral::convert_dtc_to_dtm()` can be used as part of an expression for the `new_vars` argument.
+
+```{r message=FALSE}
+adsl <- derive_vars_merged(
+  admiral_adsl,
+  dataset_add = cm,
+  by_vars = exprs(STUDYID, USUBJID),
+  order = exprs(NACTDT),
+  mode = "first",
+  new_vars = exprs(NACTDT = convert_dtc_to_dt(CMSTDTC)),
+  filter_add = CMSCAT == "CHEMOTHERAPY" & CMCAT == "ON TREATMENT"
+)
+```
+
+```{r, eval=TRUE, echo=FALSE}
+dataset_vignette(
+  adsl,
+  display_vars = exprs(USUBJID, NACTDT),
+  filter = !is.na(NACTDT)
+)
+```
+
+## Multiple Sources - Prerequisite Steps {#multiinput}
+
+To derive the New Anti-Cancer Therapy start date with data from multiple sources, the function `admiral::derive_var_extreme_dt()` can be used, or if time part is needed, `admiral::derive_var_extreme_dtm()` can be used.
+ 
+ 
+### Prerequisite 
+
+Prior to calling the function, an input `date_source` object must be created for each source dataset using `admiral::date_source()`. Within this function, any company-specific subsetting can be passed to the `filter` argument. If numeric version of the dates will be needed, `admiral::convert_dtc_to_dt()`, or if time part is needed, `admiral::convert_dtc_to_dtm()` can be used as part of an expression for the `new_vars` argument. 
+
+```{r message=FALSE}
+cm_date <- date_source(
+  dataset_name = "cm",
+  filter = CMSCAT == "CHEMOTHERAPY" & CMCAT == "ON TREATMENT" & !is.na(CMSTDTC),
+  date = convert_dtc_to_dt(CMSTDTC)
+)
+
+pr_date <- date_source(
+  dataset_name = "pr",
+  filter = PRCAT == "CANCER RELATED" & PRSCAT == "ON TREATMENT" & !is.na(PRSTDTC),
+  date = convert_dtc_to_dt(PRSTDTC)
+)
+```
+
+## Multiple Sources - Derive New Anti-Cancer Start Date and Merge with `ADSL` {#nactdt}
+
+After completion of the prerequisite step, the new anti-cancer date can be derived while simultaneously adding it to `ADSL`.
+
+```{r message=FALSE}
+adsl <- admiral_adsl %>%
+  derive_var_extreme_dt(
+    new_var = NACTDT,
+    cm_date, pr_date,
+    source_datasets = list(
+      cm = cm,
+      pr = pr
+    ),
+    mode = "first"
+  )
+```
+
+```{r, eval=TRUE, echo=FALSE}
+dataset_vignette(
+  adsl,
+  display_vars = exprs(USUBJID, NACTDT),
+  filter = !is.na(NACTDT)
+)
+```
+
+## Using the New Anti-Cancer Therapy Date {#unactdt}
+
+Please refer to `{admiralonco}` [Derive `ANL01FL`](adrs.html#anl01fl) for an example on the usage of `NACTDT`. Additionally, `{admiralonco}` [Creating Your Own Time-to-Event Source Objects](adtte.html#tteobj) may be referenced for case usage.
+
+## Derive Date Parameter {#par}
+
+As of `{admiral}` version 0.11.0, `admiral::derive_param_extreme_record()` is recommended to be used for deriving parameter based on the first or last observation from single and multiple sources. 
+
+Based on individual company standards, this parameter may be added to an event or date dataset such as `ADEVENT` or `ADDATES`, which are generally intermediate datasets to `ADTTE`. For demonstration purpose, a new anti-cancer date parameter will be merged into `ADRS`. A list of `record_source()` objects is expected and this will contain the sources of the dates and any company specific filtering.
+
+```{r, eval=TRUE, echo=TRUE}
+library(admiralonco)
+
+adrs <- derive_param_extreme_record(
+  dataset = admiral_adrs,
+  sources = list(
+    records_source(
+      dataset_name = "cm",
+      filter = CMSCAT == "CHEMOTHERAPY" & CMCAT == "ON TREATMENT" & !is.na(CMSTDTC),
+      new_vars = exprs(
+        ADT = convert_dtc_to_dt(CMSTDTC),
+        AVALC = CMTRT
+      )
+    ),
+    records_source(
+      dataset_name = "pr",
+      filter = PRCAT == "CANCER RELATED" & PRSCAT == "ON TREATMENT" & !is.na(PRSTDTC),
+      new_vars = exprs(
+        ADT = convert_dtc_to_dt(PRSTDTC),
+        AVALC = PRTRT
+      )
+    )
+  ),
+  source_datasets = list(cm = cm, pr = pr),
+  by_vars = exprs(STUDYID, USUBJID),
+  order = exprs(ADT),
+  mode = "first",
+  set_values_to = exprs(
+    PARAMCD = "NACTDT",
+    PARAM = "New Anti-Cancer Therapy Start Date"
+  )
+)
+```
+
+```{r, eval=TRUE, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = exprs(USUBJID, PARAMCD, PARAM, ADT, AVALC),
+  filter = !is.na(ADT) & PARAMCD == "NACTDT"
+)
+```

@@ -13,7 +13,7 @@ derive_param_confirmed_resp(
   ref_confirm,
   max_nr_ne = 1,
   accept_sd = FALSE,
-  aval_fun = yn_to_numeric,
+  aval_fun,
   set_values_to,
   subject_keys = get_admiral_option("subject_keys")
 )
@@ -81,13 +81,13 @@ Otherwise, no \code{"SD"} assessment must occur between the two assessments.
 
 \emph{Permitted Values:} a logical scalar}
 
-\item{aval_fun}{Function to map character analysis value (\code{AVALC}) to numeric
-analysis value (\code{AVAL})
+\item{aval_fun}{\emph{Deprecated}, please use \code{set_values_to} instead.
+
+Function to map character analysis value (\code{AVALC}) to numeric analysis
+value (\code{AVAL})
 
 The (first) argument of the function must expect a character vector and the
-function must return a numeric vector.
-
-\emph{Default:} \code{yn_to_numeric} (see \code{admiral::yn_to_numeric()} for details)}
+function must return a numeric vector.}
 
 \item{set_values_to}{Variables to set
 

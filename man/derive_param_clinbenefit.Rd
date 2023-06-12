@@ -13,7 +13,7 @@ derive_param_clinbenefit(
   source_datasets,
   reference_date,
   ref_start_window,
-  aval_fun = yn_to_numeric,
+  aval_fun,
   clinben_vals = c("CR", "PR", "SD", "NON-CR/NON-PD"),
   set_values_to,
   subject_keys = get_admiral_option("subject_keys")
@@ -58,8 +58,10 @@ The list must contain the names provided by the \code{dataset_name} field of the
 that must elapse before an evaluable non-PD assessment counts toward determining
 clinical benefit.}
 
-\item{aval_fun}{Function to map character analysis value (\code{AVALC}) to numeric
-analysis value (\code{AVAL})
+\item{aval_fun}{\emph{Deprecated}, please use \code{set_values_to} instead.
+
+Function to map character analysis value (\code{AVALC}) to numeric analysis value
+(\code{AVAL})
 
 The (first) argument of the function must expect a character vector and the
 function must return a numeric vector.}

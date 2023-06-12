@@ -41,10 +41,6 @@ reference:
  - contents:
    - has_keyword('utils_fil')
 
- - subtitle: Utilities for Catching Errors
- - contents:
-   - has_keyword('utils_catch')
-
  - title: Example Datasets
    desc: You can run `admiral::use_ad_template()` to produce additional datasets
  - contents:
@@ -77,3 +73,5 @@ navbar:
         href: articles/adtte.html
       - text: Creating ADTR
         href: articles/adtr.html
+      - text: Creating and Using New Anti-Cancer Start Date
+        href: articles/nactdt.html
