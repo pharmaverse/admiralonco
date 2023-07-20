@@ -85,6 +85,15 @@ adrs <- adrs %>%
       mode = "last"
     ),
     filter = !is.na(AVAL) & ADT >= RANDDT
+  ) %>%
+  derive_var_relative_flag(
+    by_vars = exprs(STUDYID, USUBJID),
+    order = exprs(ADT, RSSEQ),
+    new_var = ANL02FL,
+    condition = AVALC == "PD",
+    mode = "first",
+    selection = "before",
+    inclusive = TRUE
   )
 
 # ---- Parameter derivations ----
@@ -119,11 +128,23 @@ pd <- date_source(
 
 # Response
 adrs <- adrs %>%
-  derive_param_response(
-    dataset_adsl = adsl,
-    filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
-    source_pd = pd,
-    source_datasets = list(adrs = adrs),
+  derive_extreme_event(
+    by_vars = exprs(STUDYID, USUBJID),
+    order = exprs(ADT),
+    mode = "first",
+    events = list(
+      event(
+        condition = PARAMCD == "OVR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y" & ANL02FL == "Y",
+        set_values_to = exprs(AVALC = "Y")
+      ),
+      event(
+        dataset_name = "adsl",
+        condition = TRUE,
+        set_values_to = exprs(AVALC = "N"),
+        keep_vars_source = adsl_vars
+      )
+    ),
+    source_datasets = list(adsl = adsl),
     set_values_to = exprs(
       PARAMCD = "RSP",
       PARAM = "Response by Investigator (confirmation not required)",
@@ -144,14 +165,25 @@ resp <- date_source(
 
 # Clinical benefit
 adrs <- adrs %>%
-  derive_param_clinbenefit(
-    dataset_adsl = adsl,
-    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
-    source_resp = resp,
-    source_pd = pd,
-    source_datasets = list(adrs = adrs),
-    reference_date = RANDDT,
-    ref_start_window = 42,
+  derive_extreme_event(
+    by_vars = exprs(STUDYID, USUBJID),
+    order = exprs(ADT, RSSEQ, PARAMCD),
+    mode = "first",
+    events = list(
+      event(
+        condition = PARAMCD == "RSP" & AVALC == "Y" |
+          PARAMCD == "OVR" & AVALC %in% c("CR", "PR", "SD", "NON-CR/NON-PD") &
+          ANL01FL == "Y" & ANL02FL == "Y" & ADT >= RANDDT + 42,
+        set_values_to = exprs(AVALC = "Y")
+      ),
+      event(
+        dataset_name = "adsl",
+        condition = TRUE,
+        set_values_to = exprs(AVALC = "N"),
+        keep_vars_source = adsl_vars
+      )
+    ),
+    source_datasets = list(adsl = adsl),
     set_values_to = exprs(
       PARAMCD = "CB",
       PARAM = "Clinical Benefit by Investigator (confirmation for response not required)",
@@ -165,13 +197,66 @@ adrs <- adrs %>%
 
 # Best overall response (without confirmation)
 adrs <- adrs %>%
-  derive_param_bor(
-    dataset_adsl = adsl,
-    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
-    source_pd = pd,
-    source_datasets = list(adrs = adrs),
-    reference_date = RANDDT,
-    ref_start_window = 42,
+  derive_extreme_event(
+    by_vars = exprs(STUDYID, USUBJID),
+    order = exprs(ADT),
+    mode = "first",
+    source_datasets = list(
+      ovr = filter(adrs, PARAMCD == "OVR" & ANL01FL == "Y" & ANL02FL == "Y"),
+      adsl = adsl
+    ),
+    events = list(
+      event(
+        dataset_name = "ovr",
+        condition = AVALC == "CR",
+        set_values_to = exprs(
+          AVALC = "CR"
+        )
+      ),
+      event(
+        dataset_name = "ovr",
+        condition = AVALC == "PR",
+        set_values_to = exprs(
+          AVALC = "PR"
+        )
+      ),
+      event(
+        dataset_name = "ovr",
+        condition = AVALC == "SD" & ADT >= RANDDT + 42,
+        set_values_to = exprs(
+          AVALC = "SD"
+        )
+      ),
+      event(
+        dataset_name = "ovr",
+        condition = AVALC == "NON-CR/NON-PD" & ADT >= RANDDT + 42,
+        set_values_to = exprs(
+          AVALC = "NON-CR/NON-PD"
+        )
+      ),
+      event(
+        dataset_name = "ovr",
+        condition = AVALC == "PD",
+        set_values_to = exprs(
+          AVALC = "PD"
+        )
+      ),
+      event(
+        dataset_name = "ovr",
+        condition = AVALC %in% c("SD", "NON-CR/NON-PD", "NE"),
+        set_values_to = exprs(
+          AVALC = "NE"
+        )
+      ),
+      event(
+        dataset_name = "adsl",
+        condition = TRUE,
+        set_values_to = exprs(
+          AVALC = "MISSING"
+        ),
+        keep_vars_source = adsl_vars
+      )
+    ),
     set_values_to = exprs(
       PARAMCD = "BOR",
       PARAM = "Best Overall Response by Investigator (confirmation not required)",
@@ -189,7 +274,7 @@ adrs <- adrs %>%
     dataset_ref = adsl,
     dataset_add = adrs,
     by_vars = exprs(STUDYID, USUBJID),
-    filter_add = PARAMCD == "BOR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
+    filter_add = PARAMCD == "BOR" & AVALC %in% c("CR", "PR"),
     order = exprs(ADT, RSSEQ),
     mode = "first",
     exist_flag = AVALC,
@@ -205,13 +290,57 @@ adrs <- adrs %>%
   )
 
 # Confirmed response versions of the above parameters
+#debugonce(derive_extreme_event)
 adrs <- adrs %>%
-  derive_param_confirmed_resp(
-    dataset_adsl = adsl,
-    filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
-    source_pd = pd,
-    source_datasets = list(adrs = adrs),
-    ref_confirm = 28,
+  derive_extreme_event(
+    by_vars = exprs(STUDYID, USUBJID),
+    order = exprs(desc(AVALC), ADT),
+    mode = "first",
+    source_datasets = list(
+      ovr = filter(adrs, PARAMCD == "OVR" & ANL01FL == "Y" & ANL02FL == "Y"),
+      adsl = adsl
+    ),
+    events = list(
+      event_joined(
+        dataset_name = "ovr",
+        join_vars = exprs(AVALC, ADT),
+        join_type = "after",
+        order = exprs(ADT),
+        first_cond = AVALC.join == "CR" &
+          ADT.join >= ADT + days(28),
+        condition = AVALC == "CR" &
+          all(AVALC.join %in% c("CR", "NE")) &
+          count_vals(var = AVALC.join, val = "NE") <= 1,
+        set_values_to = exprs(AVALC = "Y")
+      ),
+      event_joined(
+        dataset_name = "ovr",
+        join_vars = exprs(AVALC, ADT),
+        join_type = "after",
+        order = exprs(ADT),
+        first_cond = AVALC.join %in% c("CR", "PR") &
+          ADT.join >= ADT + days(28),
+        condition = AVALC == "PR" &
+          all(AVALC.join %in% c("CR", "PR", "NE")) &
+          count_vals(var = AVALC.join, val = "NE") <= 1 &
+          (
+            min_cond(
+              var = ADT.join,
+              cond = AVALC.join == "CR"
+            ) > max_cond(var = ADT.join, cond = AVALC.join == "PR") |
+              count_vals(var = AVALC.join, val = "CR") == 0 |
+              count_vals(var = AVALC.join, val = "PR") == 0
+          ),
+        set_values_to = exprs(AVALC = "Y")
+      ),
+      event(
+        dataset_name = "adsl",
+        condition = TRUE,
+        set_values_to = exprs(AVALC = "N"),
+        keep_vars_source = adsl_vars
+      )
+    ),
+    ignore_event_order = TRUE,
     set_values_to = exprs(
       PARAMCD = "CRSP",
       PARAM = "Confirmed Response by Investigator",
