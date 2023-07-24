@@ -290,7 +290,6 @@ adrs <- adrs %>%
   )
 
 # Confirmed response versions of the above parameters
-#debugonce(derive_extreme_event)
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(STUDYID, USUBJID),
@@ -359,14 +358,25 @@ confirmed_resp <- date_source(
 )
 
 adrs <- adrs %>%
-  derive_param_clinbenefit(
-    dataset_adsl = adsl,
-    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
-    source_resp = confirmed_resp,
-    source_pd = pd,
-    source_datasets = list(adrs = adrs),
-    reference_date = RANDDT,
-    ref_start_window = 42,
+  derive_extreme_event(
+    by_vars = exprs(STUDYID, USUBJID),
+    order = exprs(ADT, RSSEQ, PARAMCD),
+    mode = "first",
+    events = list(
+      event(
+        condition = PARAMCD == "CRSP" & AVALC == "Y" |
+          PARAMCD == "OVR" & AVALC %in% c("CR", "PR", "SD", "NON-CR/NON-PD") &
+          ANL01FL == "Y" & ANL02FL == "Y" & ADT >= RANDDT + 42,
+        set_values_to = exprs(AVALC = "Y")
+      ),
+      event(
+        dataset_name = "adsl",
+        condition = TRUE,
+        set_values_to = exprs(AVALC = "N"),
+        keep_vars_source = adsl_vars
+      )
+    ),
+    source_datasets = list(adsl = adsl),
     set_values_to = exprs(
       PARAMCD = "CCB",
       PARAM = "Confirmed Clinical Benefit by Investigator",
