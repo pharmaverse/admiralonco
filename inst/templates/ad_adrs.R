@@ -177,7 +177,8 @@ adrs <- adrs %>%
     ),
     source_datasets = list(
       ovr = ovr,
-      adsl = adsl),
+      adsl = adsl
+    ),
     ignore_event_order = TRUE,
     set_values_to = exprs(
       PARAMCD = "CB",
@@ -269,7 +270,8 @@ adrs <- adrs %>%
     ),
     source_datasets = list(
       ovr = ovr,
-      adsl = adsl),
+      adsl = adsl
+    ),
     ignore_event_order = TRUE,
     set_values_to = exprs(
       PARAMCD = "CCB",
