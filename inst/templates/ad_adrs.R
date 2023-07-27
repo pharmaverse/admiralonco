@@ -32,149 +32,6 @@ tu <- convert_blanks_to_na(tu)
 # Get list of ADSL vars required for derivations - here we assume randomized study
 adsl_vars <- exprs(RANDDT)
 
-response_y <- event(
-  dataset_name = "ovr",
-  condition = AVALC %in% c("CR", "PR"),
-  set_values_to = exprs(AVALC = "Y")
-)
-
-no_data_n <- event(
-  dataset_name = "adsl",
-  condition = TRUE,
-  set_values_to = exprs(AVALC = "N"),
-  keep_vars_source = adsl_vars
-)
-
-cb_y <- event(
-  dataset_name = "ovr",
-  condition = AVALC %in% c("CR", "PR", "SD", "NON-CR/NON-PD") &
-    ADT >= RANDDT + 42,
-  set_values_to = exprs(AVALC = "Y")
-)
-
-bor_cr <- event(
-  dataset_name = "ovr",
-  condition = AVALC == "CR",
-  set_values_to = exprs(
-    AVALC = "CR"
-  )
-)
-
-bor_pr <- event(
-  dataset_name = "ovr",
-  condition = AVALC == "PR",
-  set_values_to = exprs(
-    AVALC = "PR"
-  )
-)
-
-bor_sd <- event(
-  dataset_name = "ovr",
-  condition = AVALC %in% c("CR", "PR", "SD") & ADT >= RANDDT + 42,
-  set_values_to = exprs(
-    AVALC = "SD"
-  )
-)
-
-bor_non_crpd <- event(
-  dataset_name = "ovr",
-  condition = AVALC == "NON-CR/NON-PD" & ADT >= RANDDT + 42,
-  set_values_to = exprs(
-    AVALC = "NON-CR/NON-PD"
-  )
-)
-
-bor_pd <- event(
-  dataset_name = "ovr",
-  condition = AVALC == "PD",
-  set_values_to = exprs(
-    AVALC = "PD"
-  )
-)
-
-bor_ne <- event(
-  dataset_name = "ovr",
-  condition = AVALC %in% c("SD", "NON-CR/NON-PD", "NE"),
-  set_values_to = exprs(
-    AVALC = "NE"
-  )
-)
-
-no_data_missing <- event(
-  dataset_name = "adsl",
-  condition = TRUE,
-  set_values_to = exprs(
-    AVALC = "MISSING"
-  ),
-  keep_vars_source = adsl_vars
-)
-
-crsp_y_cr <- event_joined(
-  dataset_name = "ovr",
-  join_vars = exprs(AVALC, ADT),
-  join_type = "after",
-  order = exprs(ADT),
-  first_cond = AVALC.join == "CR" &
-    ADT.join >= ADT + days(28),
-  condition = AVALC == "CR" &
-    all(AVALC.join %in% c("CR", "NE")) &
-    count_vals(var = AVALC.join, val = "NE") <= 1,
-  set_values_to = exprs(AVALC = "Y")
-)
-
-crsp_y_pr <- event_joined(
-  dataset_name = "ovr",
-  join_vars = exprs(AVALC, ADT),
-  join_type = "after",
-  order = exprs(ADT),
-  first_cond = AVALC.join %in% c("CR", "PR") &
-    ADT.join >= ADT + days(28),
-  condition = AVALC == "PR" &
-    all(AVALC.join %in% c("CR", "PR", "NE")) &
-    count_vals(var = AVALC.join, val = "NE") <= 1 &
-    (
-      min_cond(
-        var = ADT.join,
-        cond = AVALC.join == "CR"
-      ) > max_cond(var = ADT.join, cond = AVALC.join == "PR") |
-        count_vals(var = AVALC.join, val = "CR") == 0 |
-        count_vals(var = AVALC.join, val = "PR") == 0
-    ),
-  set_values_to = exprs(AVALC = "Y")
-)
-
-cbor_cr <- event_joined(
-  dataset_name = "ovr",
-  join_vars = exprs(AVALC, ADT),
-  join_type = "after",
-  first_cond = AVALC.join == "CR" &
-    ADT.join >= ADT + 28,
-  condition = AVALC == "CR" &
-    all(AVALC.join %in% c("CR", "NE")) &
-    count_vals(var = AVALC.join, val = "NE") <= 1,
-  set_values_to = exprs(AVALC = "CR")
-)
-
-cbor_pr <- event_joined(
-  dataset_name = "ovr",
-  join_vars = exprs(AVALC, ADT),
-  join_type = "after",
-  first_cond = AVALC.join %in% c("CR", "PR") &
-    ADT.join >= ADT + 28,
-  condition = AVALC == "PR" &
-    all(AVALC.join %in% c("CR", "PR", "NE")) &
-    count_vals(var = AVALC.join, val = "NE") <= 1 &
-    (
-      min_cond(
-        var = ADT.join,
-        cond = AVALC.join == "CR"
-      ) > max_cond(var = ADT.join, cond = AVALC.join == "PR") |
-        count_vals(var = AVALC.join, val = "CR") == 0 |
-        count_vals(var = AVALC.join, val = "PR") == 0
-    ),
-  set_values_to = exprs(AVALC = "PR")
-)
-
 # Join ADSL vars to RS
 adrs <- rs %>%
   derive_vars_merged(
@@ -243,6 +100,23 @@ adrs <- adrs %>%
 ovr <- filter(adrs, PARAMCD == "OVR" & ANL01FL == "Y" & ANL02FL == "Y")
 
 # Parameter derivations ----
+
+## Define events ----
+no_data_n <- event(
+  dataset_name = "adsl",
+  condition = TRUE,
+  set_values_to = exprs(AVALC = "N"),
+  keep_vars_source = adsl_vars
+)
+
+no_data_missing <- event(
+  dataset_name = "adsl",
+  condition = TRUE,
+  set_values_to = exprs(
+    AVALC = "MISSING"
+  ),
+  keep_vars_source = adsl_vars
+)
 
 ## Progressive disease ----
 adrs <- adrs %>%
@@ -345,8 +219,6 @@ adrs <- adrs %>%
     dataset_add = adrs,
     by_vars = exprs(STUDYID, USUBJID),
     filter_add = PARAMCD == "BOR" & AVALC %in% c("CR", "PR"),
-    order = exprs(ADT, RSSEQ),
-    mode = "first",
     exist_flag = AVALC,
     set_values_to = exprs(
       PARAMCD = "BCP",
@@ -434,9 +306,7 @@ adrs <- adrs %>%
     dataset_ref = adsl,
     dataset_add = adrs,
     by_vars = exprs(STUDYID, USUBJID),
-    filter_add = PARAMCD == "CBOR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
-    order = exprs(ADT, RSSEQ),
-    mode = "first",
+    filter_add = PARAMCD == "CBOR" & AVALC %in% c("CR", "PR"),
     exist_flag = AVALC,
     set_values_to = exprs(
       PARAMCD = "CBCP",

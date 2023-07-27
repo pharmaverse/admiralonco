@@ -23,8 +23,8 @@ reference:
    - has_keyword("der_prm_adrs")
 
  - title: Advanced Functions
- - subtitle: Pre-Defined Time-to-Event Sources
-   desc: '`tte_source` objects defined by {admiralonco} that can be used as input for `admiral::derive_param_tte()`'
+ - subtitle: Pre-Defined Objects
+   desc: 'Objects defined by {admiralonco} that can be used as input for derivations'
  - contents:
    - has_keyword("source_specifications")
 
