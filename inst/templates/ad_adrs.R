@@ -291,7 +291,7 @@ adrs <- adrs %>%
     mode = "first",
     events = list(cbor_cr, cbor_pr, bor_sd, bor_non_crpd, bor_pd, bor_ne, no_data_missing),
     source_datasets = list(
-      ovr = filter(adrs, PARAMCD == "OVR" & ANL01FL == "Y" & ANL02FL == "Y"),
+      ovr = ovr,
       adsl = adsl
     ),
     set_values_to = exprs(
