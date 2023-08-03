@@ -18,7 +18,7 @@
 		"ghcr.io/rocker-org/devcontainer-features/renv-cache:latest": {},
 		"ghcr.io/devcontainers/features/common-utils:2": {
 			"installZsh": true,
-			"configureZshAsDefaultShell": true,
+			"configureZshAsDefaultShell": false,
 			"installOhMyZsh": true,
 			"username": "rstudio",
 			"upgradePackages": false
@@ -28,10 +28,9 @@
 	"init": true,
 	"overrideCommand": false,
 	
-	"postCreateCommand": {
-		"renv": "R -q -e 'renv::activate(profile = \"4.3\"); renv::restore(); staged.dependencies::install_deps(staged.dependencies::dependency_table(project = \".\", verbose = 1), verbose = 1);'",
-		"rstudio": "jq --arg folder \"$(pwd)/\" '. + { \"initial_working_directory\": $folder }' .devcontainer/rstudio-prefs.json > ~/.config/rstudio/rstudio-prefs.json"
-	},
+	"postCreateCommand": "bash ./.devcontainer/postCreateCommand.sh",
+
+	"postAttachCommand": "$BROWSER \"https://${CODESPACE_NAME}-8787.${GITHUB_CODESPACES_PORT_FORWARDING_DOMAIN}/\"",
 
 	"customizations": {
 		"vscode": {
@@ -68,7 +67,7 @@
 		"8787": {
 			"label": "Rstudio",
 			"requireLocalPort": true,
-			"onAutoForward": "ignore"
+			"onAutoForward": "openBrowser"
 		}
 	},
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root
