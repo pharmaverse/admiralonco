@@ -103,19 +103,24 @@ ovr <- filter(adrs, PARAMCD == "OVR" & ANL01FL == "Y" & ANL02FL == "Y")
 
 ## Define events ----
 no_data_n <- event(
+  description = "Define no response for all patients in adsl (should be used as last event)",
   dataset_name = "adsl",
   condition = TRUE,
   set_values_to = exprs(AVALC = "N"),
-  keep_vars_source = adsl_vars
+  keep_source_vars = adsl_vars
 )
 
 no_data_missing <- event(
+  description = paste(
+    "Define missing response (MISSING) for all patients in adsl (should be used",
+    "as last event)"
+  ),
   dataset_name = "adsl",
   condition = TRUE,
   set_values_to = exprs(
     AVALC = "MISSING"
   ),
-  keep_vars_source = adsl_vars
+  keep_source_vars = adsl_vars
 )
 
 ## Progressive disease ----
@@ -145,7 +150,7 @@ adrs <- adrs %>%
     by_vars = exprs(STUDYID, USUBJID),
     order = exprs(ADT),
     mode = "first",
-    events = list(response_y, no_data_n),
+    events = list(rsp_y, no_data_n),
     source_datasets = list(
       ovr = ovr,
       adsl = adsl

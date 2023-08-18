@@ -34,7 +34,8 @@
 #'     print(obj, indent = 2)
 #'   }
 #' }
-response_y <- event(
+rsp_y <- event(
+  description = "Define CR or PR as (unconfirmed) response",
   dataset_name = "ovr",
   condition = AVALC %in% c("CR", "PR"),
   set_values_to = exprs(AVALC = "Y")
@@ -45,10 +46,11 @@ response_y <- event(
 #' @rdname event_objects
 #' @export
 no_data_n <- event(
+  description = "Define no response for all patients in adsl (should be used as last event)",
   dataset_name = "adsl",
   condition = TRUE,
   set_values_to = exprs(AVALC = "N"),
-  keep_vars_source = exprs(RANDDT)
+  keep_source_vars = exprs(RANDDT)
 )
 
 #' @format NULL
@@ -56,6 +58,10 @@ no_data_n <- event(
 #' @rdname event_objects
 #' @export
 cb_y <- event(
+  description = paste(
+    "Define CR, PR, SD, or NON-CR/NON-PD occuring at least 42 days after",
+    "randomization as clinical benefit"
+  ),
   dataset_name = "ovr",
   condition = AVALC %in% c("CR", "PR", "SD", "NON-CR/NON-PD") &
     ADT >= RANDDT + 42,
@@ -67,6 +73,7 @@ cb_y <- event(
 #' @rdname event_objects
 #' @export
 bor_cr <- event(
+  description = "Define complete response (CR) for best overall response (BOR)",
   dataset_name = "ovr",
   condition = AVALC == "CR",
   set_values_to = exprs(
@@ -79,6 +86,7 @@ bor_cr <- event(
 #' @rdname event_objects
 #' @export
 bor_pr <- event(
+  description = "Define partial response (PR) for best overall response (BOR)",
   dataset_name = "ovr",
   condition = AVALC == "PR",
   set_values_to = exprs(
@@ -91,6 +99,10 @@ bor_pr <- event(
 #' @rdname event_objects
 #' @export
 bor_sd <- event(
+  description = paste(
+    "Define stable disease (SD) for best overall respone (BOR) as CR, PR, or SD",
+    "occurring at least 42 days after randomization"
+  ),
   dataset_name = "ovr",
   condition = AVALC %in% c("CR", "PR", "SD") & ADT >= RANDDT + 42,
   set_values_to = exprs(
@@ -103,6 +115,10 @@ bor_sd <- event(
 #' @rdname event_objects
 #' @export
 bor_non_crpd <- event(
+  description = paste(
+    "Define NON-CR/NON-PD for best overall response (BOR) as NON-CR/NON-PD",
+    "occuring at least 42 days after randomization"
+  ),
   dataset_name = "ovr",
   condition = AVALC == "NON-CR/NON-PD" & ADT >= RANDDT + 42,
   set_values_to = exprs(
@@ -115,6 +131,7 @@ bor_non_crpd <- event(
 #' @rdname event_objects
 #' @export
 bor_pd <- event(
+  description = "Define progressive disease (PD) for best overall response (BOR)",
   dataset_name = "ovr",
   condition = AVALC == "PD",
   set_values_to = exprs(
@@ -127,6 +144,10 @@ bor_pd <- event(
 #' @rdname event_objects
 #' @export
 bor_ne <- event(
+  description = paste(
+    "Define not evaluable (NE) for best overall response (BOR) as SD, NON-CR/NON-PD,",
+    "or NE (should be specified after bor_sd and bor_non_crpd)"
+  ),
   dataset_name = "ovr",
   condition = AVALC %in% c("SD", "NON-CR/NON-PD", "NE"),
   set_values_to = exprs(
@@ -139,12 +160,16 @@ bor_ne <- event(
 #' @rdname event_objects
 #' @export
 no_data_missing <- event(
+  description = paste(
+    "Define missing response (MISSING) for all patients in adsl (should be used",
+    "as last event)"
+  ),
   dataset_name = "adsl",
   condition = TRUE,
   set_values_to = exprs(
     AVALC = "MISSING"
   ),
-  keep_vars_source = exprs(RANDDT)
+  keep_source_vars = exprs(RANDDT)
 )
 
 #' @format NULL
@@ -152,6 +177,10 @@ no_data_missing <- event(
 #' @rdname event_objects
 #' @export
 crsp_y_cr <- event_joined(
+  description = paste(
+    "Define confirmed response as CR followed by CR at least 28 days later and",
+    "at most one NE in between"
+  ),
   dataset_name = "ovr",
   join_vars = exprs(AVALC, ADT),
   join_type = "after",
@@ -169,6 +198,10 @@ crsp_y_cr <- event_joined(
 #' @rdname event_objects
 #' @export
 crsp_y_pr <- event_joined(
+  description = paste(
+    "Define confirmed response as PR followed by CR or PR at least 28 days later,",
+    "at most one NE in between, and no PR after CR"
+  ),
   dataset_name = "ovr",
   join_vars = exprs(AVALC, ADT),
   join_type = "after",
@@ -194,6 +227,10 @@ crsp_y_pr <- event_joined(
 #' @rdname event_objects
 #' @export
 cbor_cr <- event_joined(
+  description = paste(
+    "Define complete response (CR) for confirmed best overall response (CBOR) as",
+    "CR followed by CR at least 28 days later and at most one NE in between"
+  ),
   dataset_name = "ovr",
   join_vars = exprs(AVALC, ADT),
   join_type = "after",
@@ -210,6 +247,11 @@ cbor_cr <- event_joined(
 #' @rdname event_objects
 #' @export
 cbor_pr <- event_joined(
+  description = paste(
+    "Define partial response (PR) for confirmed best overall response (CBOR) as",
+    "PR followed by CR or PR at least 28 days later, at most one NE in between,",
+    "and no PR after CR"
+  ),
   dataset_name = "ovr",
   join_vars = exprs(AVALC, ADT),
   join_type = "after",

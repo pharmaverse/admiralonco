@@ -332,21 +332,26 @@ Common events like complete response (CR), partial response (PR), ... are
 predefined in admiralonco (see [Pre-Defined Event
 Objects](../reference/event_objects.html)). Some may need to be adjusted for
 study-specific needs, e.g., minimum time between response and confirmation
-assessment. Here the `keep_vars_source` argument is updated.
+assessment. Here the `keep_source_vars` argument is updated.
 
 ```{r}
 no_data_n <- event(
+  description = "Define no response for all patients in adsl (should be used as last event)",
   dataset_name = "adsl",
   condition = TRUE,
   set_values_to = exprs(AVALC = "N"),
-  keep_vars_source = adsl_vars
+  keep_source_vars = adsl_vars
 )
 
 no_data_missing <- event(
+  description = paste(
+    "Define missing response (MISSING) for all patients in adsl (should be used",
+    "as last event)"
+  ),
   dataset_name = "adsl",
   condition = TRUE,
   set_values_to = exprs(AVALC = "MISSING"),
-  keep_vars_source = adsl_vars
+  keep_source_vars = adsl_vars
 )
 ```
 
@@ -402,7 +407,7 @@ first `PD` as a variable, rather than as a new parameter record.
 
 The function `derive_extreme_event()` can then be used to find the date of first
 response. In the below example, the response condition has been defined as `CR`
-or `PR` via the `response_y` event.
+or `PR` via the `rsp_y` event.
 
 ```{r}
 adrs <- adrs %>%
@@ -410,7 +415,7 @@ adrs <- adrs %>%
     by_vars = exprs(STUDYID, USUBJID),
     order = exprs(ADT),
     mode = "first",
-    events = list(response_y, no_data_n),
+    events = list(rsp_y, no_data_n),
     source_datasets = list(
       ovr = ovr,
       adsl = adsl
