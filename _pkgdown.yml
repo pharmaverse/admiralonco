@@ -67,7 +67,9 @@ navbar:
     articles:
       text: User Guides
       menu:
-      - text: Creating ADRS
+      - text: Creating a Basic ADRS
+        href: articles/adrs_basic.html
+      - text: Creating ADRS (Including Non-standard Endpoints)
         href: articles/adrs.html
       - text: Creating ADTTE
         href: articles/adtte.html
