@@ -77,7 +77,8 @@ The examples of this vignette require the following packages.
 ```{r, warning=FALSE, message=FALSE}
 library(admiral)
 library(dplyr)
-library(admiral.test)
+library(pharamaversesdtm)
+library(pharmaverseadam)
 library(lubridate)
 library(stringr)
 library(admiralonco)
@@ -119,16 +120,16 @@ then the template code where we derive parameters for lesions diameters should
 be updated accordingly.
 
 ```{r}
-data("admiral_adsl")
+data("adsl")
 data("admiral_adrs")
-data("admiral_rs")
-data("admiral_tu")
-data("admiral_tr")
-adsl <- admiral_adsl
+data("rs_onco_recist")
+data("tu_onco_recist")
+data("tr_onco_recist")
+adsl <- adsl
 adrs <- admiral_adrs
-tu <- admiral_tu
-tr <- admiral_tr
-rs <- admiral_rs
+tu <- tu_onco_recist
+tr <- tr_onco_recist
+rs <- rs_onco_recist
 
 tu <- convert_blanks_to_na(tu) %>%
   filter(TUEVAL == "INVESTIGATOR")
