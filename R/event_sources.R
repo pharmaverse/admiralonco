@@ -76,9 +76,7 @@ bor_cr <- event(
   description = "Define complete response (CR) for best overall response (BOR)",
   dataset_name = "ovr",
   condition = AVALC == "CR",
-  set_values_to = exprs(
-    AVALC = "CR"
-  )
+  set_values_to = exprs(AVALC = "CR")
 )
 
 #' @format NULL
@@ -89,9 +87,7 @@ bor_pr <- event(
   description = "Define partial response (PR) for best overall response (BOR)",
   dataset_name = "ovr",
   condition = AVALC == "PR",
-  set_values_to = exprs(
-    AVALC = "PR"
-  )
+  set_values_to = exprs(AVALC = "PR")
 )
 
 #' @format NULL
@@ -105,9 +101,7 @@ bor_sd <- event(
   ),
   dataset_name = "ovr",
   condition = AVALC %in% c("CR", "PR", "SD") & ADT >= RANDDT + 42,
-  set_values_to = exprs(
-    AVALC = "SD"
-  )
+  set_values_to = exprs(AVALC = "SD")
 )
 
 #' @format NULL
@@ -121,9 +115,7 @@ bor_non_crpd <- event(
   ),
   dataset_name = "ovr",
   condition = AVALC == "NON-CR/NON-PD" & ADT >= RANDDT + 42,
-  set_values_to = exprs(
-    AVALC = "NON-CR/NON-PD"
-  )
+  set_values_to = exprs(AVALC = "NON-CR/NON-PD")
 )
 
 #' @format NULL
@@ -134,9 +126,7 @@ bor_pd <- event(
   description = "Define progressive disease (PD) for best overall response (BOR)",
   dataset_name = "ovr",
   condition = AVALC == "PD",
-  set_values_to = exprs(
-    AVALC = "PD"
-  )
+  set_values_to = exprs(AVALC = "PD")
 )
 
 #' @format NULL
@@ -150,9 +140,7 @@ bor_ne <- event(
   ),
   dataset_name = "ovr",
   condition = AVALC %in% c("SD", "NON-CR/NON-PD", "NE"),
-  set_values_to = exprs(
-    AVALC = "NE"
-  )
+  set_values_to = exprs(AVALC = "NE")
 )
 
 #' @format NULL
@@ -166,9 +154,7 @@ no_data_missing <- event(
   ),
   dataset_name = "adsl",
   condition = TRUE,
-  set_values_to = exprs(
-    AVALC = "MISSING"
-  ),
+  set_values_to = exprs(AVALC = "MISSING"),
   keep_source_vars = exprs(RANDDT)
 )
 

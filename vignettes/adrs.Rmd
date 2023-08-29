@@ -53,7 +53,7 @@ This article describes creating an `ADRS` ADaM with oncology endpoint parameters
 based on RECIST v1.1. It shows an alternative way of deriving the endpoints
 presented in [Creating a Basic ADRS](adrs_basic.html) and additionally modified
 versions of the endpoints (see [Derive Non-standard Parameters](#nonstandard))
-which can not be derived by the admiralonco functions. Most of the endpoints are
+which cannot be derived by the admiralonco functions. Most of the endpoints are
 derived by calling `admiral::derive_extreme_event()`. It is very flexible. Thus
 the examples in this vignette can also be used as a starting point for
 implementing other response criteria than RECIST 1.1, e.g., iRECIST or
@@ -336,13 +336,105 @@ dataset_vignette(
 
 ## Define Events
 
-Common events like complete response (CR), partial response (PR), ... are
-predefined in admiralonco (see [Pre-Defined Event
+The building blocks for the events that contribute to deriving common endpoints
+like what constitutes a responder, or a Best Overall Response of complete
+response (CR), ... are predefined in admiralonco (see [Pre-Defined Event
 Objects](../reference/event_objects.html)). Some may need to be adjusted for
 study-specific needs, e.g., minimum time between response and confirmation
-assessment. Here the `keep_source_vars` argument is updated.
+assessment. Here the confirmation period ad the `keep_source_vars` argument is
+updated.
 
 ```{r}
+confirmation_period <- 21
+
+crsp_y_cr <- event_joined(
+  description = paste(
+    "Define confirmed response as CR followed by CR at least",
+    confirmation_period,
+    "days later and at most one NE in between"
+  ),
+  dataset_name = "ovr",
+  join_vars = exprs(AVALC, ADT),
+  join_type = "after",
+  order = exprs(ADT),
+  first_cond = AVALC.join == "CR" &
+    ADT.join >= ADT + days(confirmation_period),
+  condition = AVALC == "CR" &
+    all(AVALC.join %in% c("CR", "NE")) &
+    count_vals(var = AVALC.join, val = "NE") <= 1,
+  set_values_to = exprs(AVALC = "Y")
+)
+
+crsp_y_pr <- event_joined(
+  description = paste(
+    "Define confirmed response as PR followed by CR or PR at least",
+    confirmation_period,
+    "days later, at most one NE in between, and no PR after CR"
+  ),
+  dataset_name = "ovr",
+  join_vars = exprs(AVALC, ADT),
+  join_type = "after",
+  order = exprs(ADT),
+  first_cond = AVALC.join %in% c("CR", "PR") &
+    ADT.join >= ADT + days(confirmation_period),
+  condition = AVALC == "PR" &
+    all(AVALC.join %in% c("CR", "PR", "NE")) &
+    count_vals(var = AVALC.join, val = "NE") <= 1 &
+    (
+      min_cond(
+        var = ADT.join,
+        cond = AVALC.join == "CR"
+      ) > max_cond(var = ADT.join, cond = AVALC.join == "PR") |
+        count_vals(var = AVALC.join, val = "CR") == 0 |
+        count_vals(var = AVALC.join, val = "PR") == 0
+    ),
+  set_values_to = exprs(AVALC = "Y")
+)
+
+cbor_cr <- event_joined(
+  description = paste(
+    "Define complete response (CR) for confirmed best overall response (CBOR) as",
+    "CR followed by CR at least",
+    confirmation_period,
+    "days later and at most one NE in between"
+  ),
+  dataset_name = "ovr",
+  join_vars = exprs(AVALC, ADT),
+  join_type = "after",
+  first_cond = AVALC.join == "CR" &
+    ADT.join >= ADT + confirmation_period,
+  condition = AVALC == "CR" &
+    all(AVALC.join %in% c("CR", "NE")) &
+    count_vals(var = AVALC.join, val = "NE") <= 1,
+  set_values_to = exprs(AVALC = "CR")
+)
+
+cbor_pr <- event_joined(
+  description = paste(
+    "Define partial response (PR) for confirmed best overall response (CBOR) as",
+    "PR followed by CR or PR at least",
+    confirmation_period,
+    "28 days later, at most one NE in between, and no PR after CR"
+  ),
+  dataset_name = "ovr",
+  join_vars = exprs(AVALC, ADT),
+  join_type = "after",
+  first_cond = AVALC.join %in% c("CR", "PR") &
+    ADT.join >= ADT + confirmation_period,
+  condition = AVALC == "PR" &
+    all(AVALC.join %in% c("CR", "PR", "NE")) &
+    count_vals(var = AVALC.join, val = "NE") <= 1 &
+    (
+      min_cond(
+        var = ADT.join,
+        cond = AVALC.join == "CR"
+      ) > max_cond(var = ADT.join, cond = AVALC.join == "PR") |
+        count_vals(var = AVALC.join, val = "CR") == 0 |
+        count_vals(var = AVALC.join, val = "PR") == 0
+    ),
+  set_values_to = exprs(AVALC = "PR")
+)
+
 no_data_n <- event(
   description = "Define no response for all patients in adsl (should be used as last event)",
   dataset_name = "adsl",
@@ -413,9 +505,9 @@ first `PD` as a variable, rather than as a new parameter record.
 
 ## Derive Response Parameter {#rsp}
 
-The function `derive_extreme_event()` can then be used to find the date of first
-response. In the below example, the response condition has been defined as `CR`
-or `PR` via the `rsp_y`[^1] event.
+The function `adiral::derive_extreme_event()` can then be used to find the date
+of first response. In the below example, the response condition has been defined
+as `CR` or `PR` via the `rsp_y`[^1] event.
 
 [^1]:
 ```{r}
@@ -455,11 +547,11 @@ dataset_vignette(
 
 ## Derive Clinical Benefit Parameter {#cb}
 
-The function `derive_extreme_event()` can then be used to derive the clinical
-benefit parameter, which we define as a patient having had a response or a
-sustained period of time before first `PD`. This could also be known as disease
-control. In this example the "sustained period" has been defined as 42 days
-after randomization date via the `cb_y`[^2] event.
+The function `adiral::derive_extreme_event()` can then be used to derive the
+clinical benefit parameter, which we define as a patient having had a response
+or a sustained period of time before first `PD`. This could also be known as
+disease control. In this example the "sustained period" has been defined as 42
+days after randomization date via the `cb_y`[^2] event.
 
 [^2]:
 ```{r}
@@ -506,11 +598,11 @@ dataset_vignette(
 
 ## Derive Best Overall Response Parameter {#bor}
 
-The function `derive_extreme_event()` can be used to derive the best overall
-response (without confirmation required) parameter. Similar to the above
-function you can optionally decide what period would you consider a `SD`
-or `NON-CR/NON-PD` as being eligible from. In this example, 42 days
-after randomization date has been used again.
+The function `adiral::derive_extreme_event()` can be used to derive the best
+overall response (without confirmation required) parameter. Similar to the above
+function you can optionally decide what period would you consider a `SD` or
+`NON-CR/NON-PD` as being eligible from. In this example, 42 days after
+randomization date has been used again.
 
 ```{r}
 adrs <- adrs %>%
@@ -566,8 +658,8 @@ aval_resp_new <- function(arg) {
 ```
 
 Then update the definition of `AVAL` in the `set_values_to` argument of the
-above `derive_extreme_event()` call. Be aware that this will only impact the
-`AVAL` mapping, not the derivation of BOR in any way - as the function
+above `adiral::derive_extreme_event()` call. Be aware that this will only impact
+the `AVAL` mapping, not the derivation of BOR in any way - as the function
 derivation relies only on the events and their order specified for the `events`
 argument here.
 
@@ -607,13 +699,13 @@ dataset_vignette(
 ## Derive Response Parameters requiring Confirmation {#confirm}
 
 Any of the above response parameters can be repeated for "confirmed" responses
-only. For these the function `derive_extreme_event()` can be used with different
-events. Some of the other functions from above can then be re-used passing in
-these confirmed response records. See the examples below of derived parameters
-requiring confirmation. The assessment and the confirmatory assessment here need
-to occur at least 28 days apart *(without any +1 applied to this calculation of
-days between visits)*, using the `crsp_y_cr`[^3], `crsp_y_pr`[^4],
-`cbor_cr`[^5], and `cbor_pr`[^6] event.
+only. For these the function `adiral::derive_extreme_event()` can be used with
+different events. Some of the other functions from above can then be re-used
+passing in these confirmed response records. See the examples below of derived
+parameters requiring confirmation. The assessment and the confirmatory
+assessment here need to occur at least 28 days apart *(without any +1 applied to
+this calculation of days between visits)*, using the `crsp_y_cr`[^3],
+`crsp_y_pr`[^4], `cbor_cr`[^5], and `cbor_pr`[^6] event.
 
 [^3]:
 ```{r}
@@ -781,7 +873,8 @@ adrs <- adrs %>%
 
 Assume no evidence of disease (NED) is a valid value collected for overall
 response. A new event (`bor_ned`) can be defined for this response value and be
-added to the list of events (`events`) in the `derive_extreme_event()` call.
+added to the list of events (`events`) in the `adiral::derive_extreme_event()`
+call.
 
 ```{r}
 bor_ned <- event(

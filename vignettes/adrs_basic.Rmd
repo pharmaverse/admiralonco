@@ -247,7 +247,7 @@ dataset_vignette(
 )
 ```
 
-### Derive `ANL01FL` {#anl01fl}
+### Flag Worst Assessment at Each Date (`ANL01FL`) {#anl01fl}
 
 When deriving `ANL01FL` this is an opportunity to exclude any records
 that should not contribute to any downstream parameter derivations. In
@@ -295,7 +295,7 @@ stage, as that is specifically catered for in the `{admiralonco}`
 parameter derivation functions in the below steps, via `source_pd`
 arguments. 
 
-### Derive `ANL02FL` {#anl02fl}
+### Flag Assessments up to First PD (`ANL02FL`) {#anl02fl}
 
 However, if you prefer not to rely on `source_pd` arguments,
 then the user is free to filter out records after first `PD` at this
@@ -311,7 +311,7 @@ we could create `ANL02FL` as below.
 ```{r, eval=FALSE}
 adrs <- adrs %>%
   derive_var_relative_flag(
-    by_vars = exprs(USUBJID),
+    by_vars = exprs(STUDYID, USUBJID),
     order = exprs(ADT, AVISITN),
     new_var = ANL02FL,
     condition = AVALC == "PD",
@@ -870,4 +870,4 @@ dataset_vignette(
 
 ADaM | Sample Code
 ---- | --------------
-ADRS | `r dyn_link("ad_adrs.R", "https://github.com/pharmaverse/admiralonco/blob", "inst/templates/ad_adrs.R", is_multiversion = TRUE)`
+ADRS_BASIC | `r dyn_link("ad_adrs_basic.R", "https://github.com/pharmaverse/admiralonco/blob", "inst/templates/ad_adrs_basic.R", is_multiversion = TRUE)`
