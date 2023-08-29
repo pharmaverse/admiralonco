@@ -54,6 +54,7 @@ Imports:
     tidyselect (>= 1.0.0)
 Suggests:
     admiral.test,
+    pharmaversesdtm,
     devtools,
     diffdf,
     lintr,
