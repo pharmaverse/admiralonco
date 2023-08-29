@@ -1,3 +1,8 @@
+# admiralonco 0.5.0
+
+- The "Create `ADTR`" vignette and the `ADTR` template were updated such that
+test data from `{pharmasdtm}` instead of `{admiral.test}` is used. (#247)
+
 # admiralonco 0.4.0
 
 ## Documentation
