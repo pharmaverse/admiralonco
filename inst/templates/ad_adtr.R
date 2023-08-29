@@ -15,13 +15,14 @@ library(stringr)
 # Use e.g. haven::read_sas to read in .sas7bdat, or other suitable functions
 # as needed and assign to the variables below.
 # For illustration purposes read in admiral test data
-data("adsl")
-data("rs_onco")
+data("admiral_adsl")
+data("rs_onco_recist")
 data("tu_onco_recist")
 data("tr_onco_recist")
-tu <- admiral_tu
-tr <- admiral_tr
-rs <- admiral_rs
+adsl <- admiral_adsl
+tu <- tu_onco_recist
+tr <- tr_onco_recist
+rs <- rs_onco_recist
 
 tu <- convert_blanks_to_na(tu) %>%
   filter(TUEVAL == "INVESTIGATOR")
@@ -75,8 +76,16 @@ tr <- derive_vars_dt(
     source_vars = exprs(ADT)
   ) %>%
   mutate(
-    AVISIT = VISIT,
-    AVISITN = VISITNUM
+    AVISIT = if_else(
+      VISIT == "SCREENING",
+      "BASELINE",
+      VISIT
+    ),
+    AVISITN = if_else(
+      AVISIT == "BASELINE",
+      0,
+      VISITNUM
+    )
   )
 
 # Derive parameters for lesion diameters (LDIAMn & NLDIAMn) ----
