@@ -13,7 +13,7 @@
 
 library(admiral)
 library(admiralonco)
-library(admiral.test) # Contains example datasets from the CDISC pilot project
+library(pharmaversesdtm) # Contains example datasets from the CDISC pilot project
 library(dplyr)
 library(lubridate)
 library(stringr)
@@ -22,15 +22,15 @@ library(stringr)
 
 # Use e.g. haven::read_sas to read in .sas7bdat, or other suitable functions
 # as needed and assign to the variables below.
-# For illustration purposes read in admiral test data
+# For illustration purposes read in pharmaverse test data
 
 data("admiral_adsl")
-data("admiral_rs")
-data("admiral_tu")
+data("rs_onco_recist")
+data("tu_onco_recist")
 
 adsl <- admiral_adsl
-rs <- admiral_rs
-tu <- admiral_tu
+rs <- rs_onco_recist
+tu <- tu_onco_recist
 
 rs <- convert_blanks_to_na(rs)
 tu <- convert_blanks_to_na(tu)
@@ -342,7 +342,7 @@ adrs <- adrs %>%
   derive_param_exist_flag(
     dataset_ref = adslmdis,
     dataset_add = tu,
-    condition = TUEVAL == "INVESTIGATOR" & TUSTRESC == "TARGET" & VISIT == "BASELINE",
+    condition = TUEVAL == "INVESTIGATOR" & TUSTRESC == "TARGET" & VISIT == "SCREENING",
     false_value = "N",
     missing_value = "N",
     set_values_to = exprs(
