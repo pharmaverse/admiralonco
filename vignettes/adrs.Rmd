@@ -557,6 +557,12 @@ days after randomization date via the `cb_y`[^2] event.
 ```{r}
 cb_y
 ```
+
+Please note that the result `AVALC = "Y"` is defined by the first _two_ events
+specified for `events`. For subjects with observations fulfilling both events
+the one with the earlier date should be selected (and not the first one in the
+list). Thus `ignore_event_order = TRUE` is specified.
+
 ```{r}
 adrs <- adrs %>%
   derive_extreme_event(
@@ -724,6 +730,12 @@ cbor_cr
 cbor_pr
 ```
 
+Please note that the result `AVALC = "Y"` for confirmed clinical benefit is
+defined by the first _two_ events specified for `events`. For subjects with
+observations fulfilling both events the one with the earlier date should be
+selected (and not the first one in the list). Thus `ignore_event_order = TRUE`
+is specified.
+
 ```{r}
 adrs <- adrs %>%
   derive_extreme_event(
@@ -834,6 +846,16 @@ SD, or NON-CR/NON-PD at least 42 days after randomization. Here an alternative
 definition is implemented which considers PD more than 42 days after
 randomization as an additional criterion for clinical benefit.
 ```{r}
+cb_y_pd <- event(
+  description = paste(
+    "Define PD occuring more than 42 days after",
+    "randomization as clinical benefit"
+  ),
+  dataset_name = "ovr",
+  condition = AVALC == "PD" & ADT > RANDDT + 42,
+  set_values_to = exprs(AVALC = "Y")
+)
+
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(STUDYID, USUBJID),
@@ -845,11 +867,7 @@ adrs <- adrs %>%
         set_values_to = exprs(AVALC = "Y")
       ),
       cb_y,
-      event(
-        dataset_name = "ovr",
-        condition = AVALC == "PD" & ADT > RANDDT + 42,
-        set_values_to = exprs(AVALC = "Y")
-      ),
+      cb_y_pd,
       no_data_n
     ),
     source_datasets = list(

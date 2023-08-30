@@ -552,7 +552,7 @@ adrs <- adrs %>%
     dataset_ref = adsl,
     dataset_add = adrs,
     by_vars = exprs(STUDYID, USUBJID),
-    filter_add = PARAMCD == "BOR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
+    filter_add = PARAMCD == "BOR" & AVALC %in% c("CR", "PR"),
     order = exprs(ADT, RSSEQ),
     mode = "first",
     exist_flag = AVALC,
@@ -653,7 +653,7 @@ adrs <- adrs %>%
     dataset_ref = adsl,
     dataset_add = adrs,
     by_vars = exprs(STUDYID, USUBJID),
-    filter_add = PARAMCD == "CBOR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
+    filter_add = PARAMCD == "CBOR" & AVALC %in% c("CR", "PR"),
     order = exprs(ADT, RSSEQ),
     mode = "first",
     exist_flag = AVALC,
@@ -689,7 +689,7 @@ Remember that a new progressive disease and response source object would
 be required for passing to `source_pd` and `source_resp` respectively.
 
 ```{r}
-adrsirf <- rs %>%
+adrs_bicr <- rs %>%
   filter(
     RSEVAL == "INDEPENDENT ASSESSOR" & RSEVALID == "RADIOLOGIST 1" & RSTESTCD == "OVRLRESP"
   ) %>%
@@ -704,7 +704,7 @@ adrsirf <- rs %>%
 
 ```{r, echo=FALSE}
 dataset_vignette(
-  adrsirf,
+  adrs_bicr,
   display_vars = exprs(USUBJID, VISIT, RSTESTCD, RSEVAL, PARAMCD, PARAM, PARCAT1, PARCAT2, PARCAT3),
   filter = PARAMCD == "OVRR1"
 )
