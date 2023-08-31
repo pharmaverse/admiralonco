@@ -55,10 +55,11 @@ To see the definition of the various objects simply print the object in the
 R console, e.g. \code{bor_sd}. For details of how to use these objects
 please refer to \code{\link[admiral:derive_extreme_event]{admiral::derive_extreme_event()}}.
 
-It is assumed that \code{dataset_name = "ovr"} refers to the dataset of the
-overall response assessments which should be considered for the parameter
-derivations. For example the dataset should not include assessment after PD
-or start of anti-cancer therapy.
+It is assumed that \code{dataset_name = "ovr"} refers to the dataset of the only
+overall response assessments at each visit which should be considered for the
+parameter derivations. For example the dataset should include only
+post-baseline assessments up to first PD and before start of anti-cancer
+therapy.
 }
 \examples{
 # This shows the definition of all pre-defined `event` objects that ship

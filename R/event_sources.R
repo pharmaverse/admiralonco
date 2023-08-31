@@ -8,10 +8,11 @@
 #' R console, e.g. `bor_sd`. For details of how to use these objects
 #' please refer to [admiral::derive_extreme_event()].
 #'
-#' It is assumed that `dataset_name = "ovr"` refers to the dataset of the
-#' overall response assessments which should be considered for the parameter
-#' derivations. For example the dataset should not include assessment after PD
-#' or start of anti-cancer therapy.
+#' It is assumed that `dataset_name = "ovr"` refers to the dataset of the only
+#' overall response assessments at each visit which should be considered for the
+#' parameter derivations. For example the dataset should include only
+#' post-baseline assessments up to first PD and before start of anti-cancer
+#' therapy.
 #'
 #' @seealso [admiral::derive_extreme_event()], [admiral::event()], [admiral::event_joined()]
 #'
@@ -149,8 +150,8 @@ bor_ne <- event(
 #' @export
 no_data_missing <- event(
   description = paste(
-    "Define missing response (MISSING) for all patients in adsl (should be used",
-    "as last event)"
+    "Define missing response (MISSING) for all subjects in adsl in your population",
+    "who has no post baseline response (should be used as last event)"
   ),
   dataset_name = "adsl",
   condition = TRUE,

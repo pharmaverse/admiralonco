@@ -197,6 +197,10 @@ adrs <- adrs %>%
   )
 
 ## Best overall response (without confirmation) ----
+# Please note that the order of the events specified for `events` is important.
+# For example, a subject with `PR`, `PR`, `CR` qualifies for both `bor_cr` and
+# `bor_pr`. As `bor_cr` is listed before `bor_pr`, CR is selected as best overall
+# response for this subject.
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(STUDYID, USUBJID),

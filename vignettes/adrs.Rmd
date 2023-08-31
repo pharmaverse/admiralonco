@@ -612,6 +612,11 @@ function you can optionally decide what period would you consider a `SD` or
 `NON-CR/NON-PD` as being eligible from. In this example, 42 days after
 randomization date has been used again.
 
+Please note that the order of the events specified for `events` is important.
+For example, a subject with `PR`, `PR`, `CR` qualifies for both `bor_cr` and
+`bor_pr`. As `bor_cr` is listed before `bor_pr`, CR is selected as best overall
+response for this subject.
+
 ```{r}
 adrs <- adrs %>%
   derive_extreme_event(
