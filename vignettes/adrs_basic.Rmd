@@ -693,13 +693,13 @@ be required for passing to `source_pd` and `source_resp` respectively.
 ```{r}
 adrs_bicr <- rs %>%
   filter(
-    RSEVAL == "INDEPENDENT ASSESSOR" & RSEVALID == "RADIOLOGIST 1" & RSTESTCD == "OVRLRESP"
+    RSEVAL == "INDEPENDENT ASSESSOR" & RSACPTFL == "Y" & RSTESTCD == "OVRLRESP"
   ) %>%
   mutate(
-    PARAMCD = "OVRR1",
-    PARAM = "Overall Response by Radiologist 1",
+    PARAMCD = "OVRB",
+    PARAM = "Overall Response by BICR",
     PARCAT1 = "Tumor Response",
-    PARCAT2 = "Radiologist",
+    PARCAT2 = "Blinded Independent Central Review",
     PARCAT3 = "Recist 1.1"
   )
 ```
