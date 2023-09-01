@@ -36,14 +36,6 @@
 <li class="nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/devel">devel</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/pre-release">pre-release</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -120,7 +112,7 @@ and appropriate values for <code>EVNTDESC</code>, <code>CNSDTDSC</code>, <code>S
 <span class="r-out co"><span class="r-pr">#&gt;</span> dataset_name: "adrs"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> filter: PARAMCD == "LSTA" &amp; ANL01FL == "Y"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> date: ADT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> censor: 1L</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> censor: 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> set_values_to:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   EVNTDESC: "Last Tumor Assessment"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   CNSDTDSC: "Last Tumor Assessment"</span>
@@ -133,7 +125,7 @@ and appropriate values for <code>EVNTDESC</code>, <code>CNSDTDSC</code>, <code>S
 <span class="r-out co"><span class="r-pr">#&gt;</span> dataset_name: "adsl"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> filter: NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> date: TRTSDT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> censor: 1L</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> censor: 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> set_values_to:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   EVNTDESC: "Treatment Start"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   CNSDTDSC: "Treatment Start"</span>
@@ -145,7 +137,7 @@ and appropriate values for <code>EVNTDESC</code>, <code>CNSDTDSC</code>, <code>S
 <span class="r-out co"><span class="r-pr">#&gt;</span> dataset_name: "adsl"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> filter: NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> date: RANDDT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> censor: 1L</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> censor: 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> set_values_to:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   EVNTDESC: "Randomization"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   CNSDTDSC: "Randomization"</span>
@@ -157,7 +149,7 @@ and appropriate values for <code>EVNTDESC</code>, <code>CNSDTDSC</code>, <code>S
 <span class="r-out co"><span class="r-pr">#&gt;</span> dataset_name: "adsl"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> filter: NULL</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> date: LSTALVDT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> censor: 1L</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> censor: 1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> set_values_to:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   EVNTDESC: "ALIVE"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   SRCDOM: "ADSL"</span>
@@ -168,7 +160,7 @@ and appropriate values for <code>EVNTDESC</code>, <code>CNSDTDSC</code>, <code>S
 <span class="r-out co"><span class="r-pr">#&gt;</span> dataset_name: "adsl"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> filter: DTHFL == "Y"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> date: DTHDT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> censor: 0L</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> censor: 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> set_values_to:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   EVNTDESC: "DEATH"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   SRCDOM: "ADSL"</span>
@@ -179,7 +171,7 @@ and appropriate values for <code>EVNTDESC</code>, <code>CNSDTDSC</code>, <code>S
 <span class="r-out co"><span class="r-pr">#&gt;</span> dataset_name: "adrs"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> filter: PARAMCD == "PD" &amp; AVALC == "Y" &amp; ANL01FL == "Y"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> date: ADT</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> censor: 0L</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> censor: 0</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> set_values_to:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   EVNTDESC: "Disease Progression"</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   SRCDOM: "ADRS"</span>
