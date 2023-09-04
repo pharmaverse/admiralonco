@@ -74,6 +74,11 @@ jobs:
       # Note that if you have multiple versions of docs,
       # your URL links are likely to break due to path changes
       skip-multiversion-docs: false
+      latest-tag-alt-name: main
+      multiversion-docs-landing-page: main
+      branches-or-tags-to-list: >-
+        ^devel$|^main$|^v([0-9]+\\.)?([0-9]+\\.)?([0-9]+)$
+
   linter:
     name: Lint
     uses: pharmaverse/admiralci/.github/workflows/lintr.yml@main
