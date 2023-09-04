@@ -314,7 +314,7 @@ we could create `ANL02FL` as below.
 adrs <- adrs %>%
   derive_var_relative_flag(
     by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(ADT, AVISITN),
+    order = exprs(ADT, RSSEQ),
     new_var = ANL02FL,
     condition = AVALC == "PD",
     mode = "first",

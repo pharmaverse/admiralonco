@@ -170,16 +170,9 @@ adrs <- adrs %>%
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(desc(AVALC), ADT, PARAMCD),
+    order = exprs(desc(AVALC), ADT),
     mode = "first",
-    events = list(
-      event(
-        condition = PARAMCD == "RSP" & AVALC == "Y",
-        set_values_to = exprs(AVALC = "Y")
-      ),
-      cb_y,
-      no_data_n
-    ),
+    events = list(rsp_y, cb_y, no_data_n),
     source_datasets = list(
       ovr = ovr,
       adsl = adsl
@@ -193,7 +186,8 @@ adrs <- adrs %>%
       PARCAT3 = "Recist 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
-    )
+    ),
+    check_type = "none"
   )
 
 ## Best overall response (without confirmation) ----
@@ -267,16 +261,9 @@ adrs <- adrs %>%
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(desc(AVALC), ADT, PARAMCD),
+    order = exprs(desc(AVALC), ADT),
     mode = "first",
-    events = list(
-      event(
-        condition = PARAMCD == "CRSP" & AVALC == "Y",
-        set_values_to = exprs(AVALC = "Y")
-      ),
-      cb_y,
-      no_data_n
-    ),
+    events = list(crsp_y_cr, crsp_y_pr , cb_y, no_data_n),
     source_datasets = list(
       ovr = ovr,
       adsl = adsl
@@ -290,7 +277,8 @@ adrs <- adrs %>%
       PARCAT3 = "Recist 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
-    )
+    ),
+    check_type = "none"
   )
 
 adrs <- adrs %>%
