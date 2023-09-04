@@ -263,7 +263,7 @@ adrs <- adrs %>%
     by_vars = exprs(STUDYID, USUBJID),
     order = exprs(desc(AVALC), ADT),
     mode = "first",
-    events = list(crsp_y_cr, crsp_y_pr , cb_y, no_data_n),
+    events = list(crsp_y_cr, crsp_y_pr, cb_y, no_data_n),
     source_datasets = list(
       ovr = ovr,
       adsl = adsl
