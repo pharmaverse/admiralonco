@@ -340,9 +340,9 @@ dataset_vignette(
 
 The building blocks for the events that contribute to deriving common endpoints
 like what constitutes a responder, or a Best Overall Response of complete
-response (CR), ... are predefined in admiralonco (see [Pre-Defined Event
-Objects](../reference/event_objects.html)). Some may need to be adjusted for
-study-specific needs, e.g., minimum time between response and confirmation
+response (CR), ... are predefined in admiralonco (see [Pre-Defined Response
+Event Objects](../reference/event_objects.html)). Some may need to be adjusted
+for study-specific needs, e.g., minimum time between response and confirmation
 assessment. Here the confirmation period and the `keep_source_vars` argument is
 updated.
 

@@ -1,4 +1,4 @@
-#' Pre-Defined Event Objects
+#' Pre-Defined Response Event Objects
 #'
 #' These pre-defined `event()` and `event_joined()` objects can be used as input
 #' to `admiral::derive_extreme_event()`.

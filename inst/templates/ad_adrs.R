@@ -102,6 +102,9 @@ ovr <- filter(adrs, PARAMCD == "OVR" & ANL01FL == "Y" & ANL02FL == "Y")
 # Parameter derivations ----
 
 ## Define events ----
+# These events are just examples showing how to define the ADSL variables to keep.
+# More may need to be added depending on the study needs, e.g., for adjusting
+# confirmation period.
 no_data_n <- event(
   description = "Define no response for all patients in adsl (should be used as last event)",
   dataset_name = "adsl",
@@ -117,9 +120,7 @@ no_data_missing <- event(
   ),
   dataset_name = "adsl",
   condition = TRUE,
-  set_values_to = exprs(
-    AVALC = "MISSING"
-  ),
+  set_values_to = exprs(AVALC = "MISSING"),
   keep_source_vars = adsl_vars
 )
 
