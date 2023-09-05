@@ -16,7 +16,7 @@
 \alias{crsp_y_pr}
 \alias{cbor_cr}
 \alias{cbor_pr}
-\title{Pre-Defined Event Objects}
+\title{Pre-Defined Response Event Objects}
 \usage{
 rsp_y
 
