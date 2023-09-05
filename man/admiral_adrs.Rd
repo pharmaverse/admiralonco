@@ -5,7 +5,7 @@
 \alias{admiral_adrs}
 \title{Response Analysis Dataset}
 \format{
-An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 4305 rows and 79 columns.
+An object of class \code{tbl_df} (inherits from \code{tbl}, \code{data.frame}) with 3694 rows and 75 columns.
 }
 \source{
 Derived from the \code{adsl}, \code{rs} and \code{tu} datasets using \code{{admiralonco}}

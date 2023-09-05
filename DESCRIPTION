@@ -1,7 +1,7 @@
 Package: admiralonco
 Type: Package
 Title: Oncology Extension Package for ADaM in 'R' Asset Library
-Version: 0.4.0
+Version: 0.5.0
 Authors@R: c(
     person("Stefan", "Bundfuss", email = "stefan.bundfuss@roche.com", role = c("aut", "cre")),
     person("Ross", "Farrugia", role = "aut"),
@@ -53,6 +53,7 @@ Imports:
     rlang (>= 0.4.4),
     tidyselect (>= 1.0.0)
 Suggests:
+    pharmaversesdtm,
     admiral.test,
     devtools,
     diffdf,
