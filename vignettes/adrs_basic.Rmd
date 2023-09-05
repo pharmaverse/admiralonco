@@ -1,9 +1,9 @@
 ---
-title: "Creating ADRS (Including Non-standard Endpoints)"
+title: "Creating a Basic ADRS"
 output: 
   rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Creating ADRS (Including Non-standard Endpoints)}
+  %\VignetteIndexEntry{Creating a Basic ADRS}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 ---
@@ -49,16 +49,16 @@ library(admiraldev)
 
 # Introduction
 
-This article describes creating an `ADRS` ADaM with oncology endpoint parameters
-based on RECIST v1.1. It shows an alternative way of deriving the endpoints
-presented in [Creating a Basic ADRS](adrs_basic.html) and additionally modified
-versions of the endpoints (see [Derive Non-standard Parameters](#nonstandard))
-which cannot be derived by the admiralonco functions. Most of the endpoints are
-derived by calling `admiral::derive_extreme_event()`. It is very flexible. Thus
-the examples in this vignette can also be used as a starting point for
-implementing other response criteria than RECIST 1.1, e.g., iRECIST or
-International Myeloma Working Group (IMWG) criteria for the diagnosis of
-multiple myeloma.
+This article describes creating an `ADRS` ADaM with common oncology
+endpoint parameters based on RECIST v1.1. Therefore response values are
+expected as either `CR`, `PR`, `SD`, `NON-CR/NON-PD`, `PD` or `NE`.
+
+Please note that this vignette describes the endpoints which were considered by
+the admiralonco team as the most common ones. The admiralonco functions used to
+derive these endpoints provide a certain flexibility, e.g., specifying the
+reference date or time windows for confirmation or stable disease. If different
+endpoints or more flexibility is required please read [Creating ADRS (Including
+Non-standard Endpoints)](adrs.html).
 
 Examples are currently presented and tested using `ADSL` (ADaM) and
 `RS`, `TU` (SDTM) inputs. However, other domains could be used. The
@@ -78,7 +78,6 @@ unless otherwise specified.*
 -   [Derive Best Overall Response Parameter](#bor)
 -   [Derive Best Overall Response of CR/PR Parameter](#bcp)
 -   [Derive Response Parameters requiring Confirmation](#confirm)
--   [Derive Non-standard Parameters](#nonstandard)
 -   [Derive Parameters using Independent Review Facility (IRF)/
     Blinded Independent Central Review (BICR) responses](#irf)
 -   [Derive Death Parameter](#death)
@@ -231,9 +230,9 @@ dataset_vignette(
 ### Derive `AVALC` and `AVAL`
 
 Here we populate `AVALC` and create the numeric version as `AVAL`
-(ordered from best to worst response). The `AVAL` values are not considered in
-the parameter derivations below, and so changing `AVAL` here would not change
-the result of those derivations.
+(ordered from best to worst response). This ordering is already covered
+within our RECIST v1.1 parameter derivation functions, and so changing
+`AVAL` here would not change the result of those derivations.
 
 ```{r}
 adrs <- adrs %>%
@@ -281,9 +280,7 @@ dataset_vignette(
 
 Here is an alternative example where those records occurring after new
 anti-cancer therapy are additionally excluded (where `NACTDT` would be
-pre-derived as first date of new anti-cancer therapy. See `{admiralonco}`
-[Creating and Using New Anti-Cancer Start Date](nactdt.html) for deriving this
-variable).
+pre-derived as first date of new anti-cancer therapy. See `{admiralonco}` [Creating and Using New Anti-Cancer Start Date](nactdt.html) for deriving this variable).
 
 ```{r, eval=FALSE}
 adrs <- adrs %>%
@@ -295,13 +292,25 @@ adrs <- adrs %>%
   )
 ```
 
+Note here that we don't filter out records after first `PD` at this
+stage, as that is specifically catered for in the `{admiralonco}`
+parameter derivation functions in the below steps, via `source_pd`
+arguments. 
+
 ### Flag Assessments up to First PD (`ANL02FL`) {#anl02fl}
 
-To restrict response data up to and including first reported progressive disease
-`ANL02FL` flag could be created by using `{admiral}` function
-`admiral::derive_var_relative_flag()`.
+However, if you prefer not to rely on `source_pd` arguments,
+then the user is free to filter out records after first `PD` at this
+stage in a similar way via a `ANLzzFL` flag, and then you could leave
+`source_pd` as null in all downstream parameter derivation function
+calls. So, for example the user could create `ANL02FL` flag to subset
+the post-baseline response data up to and including first reported
+progressive disease. This would be an alternative and transparent method
+to the use of `source_pd` argument approach to create ADRS parameters
+below. Using `{admiral}` function `admiral::derive_var_relative_flag()`
+we could create `ANL02FL` as below.
 
-```{r}
+```{r, eval=FALSE}
 adrs <- adrs %>%
   derive_var_relative_flag(
     by_vars = exprs(STUDYID, USUBJID),
@@ -312,149 +321,6 @@ adrs <- adrs %>%
     selection = "before",
     inclusive = TRUE
   )
-```
-
-```{r, echo=FALSE}
-dataset_vignette(
-  adrs,
-  display_vars = exprs(USUBJID, AVISIT, PARAMCD, AVALC, ADT, ANL01FL, ANL02FL)
-)
-```
-
-### Select Source Assessments for Parameter derivations
-
-For most parameter derivations the post-baseline overall response assessments up
-to and including first PD are considered.
-```{r}
-ovr <- filter(adrs, PARAMCD == "OVR" & ANL01FL == "Y" & ANL02FL == "Y")
-```
-
-```{r, echo=FALSE}
-dataset_vignette(
-  ovr,
-  display_vars = exprs(USUBJID, AVISIT, AVALC, ADT, RANDDT)
-)
-```
-
-## Define Events
-
-The building blocks for the events that contribute to deriving common endpoints
-like what constitutes a responder, or a Best Overall Response of complete
-response (CR), ... are predefined in admiralonco (see [Pre-Defined Response
-Event Objects](../reference/event_objects.html)). Some may need to be adjusted
-for study-specific needs, e.g., minimum time between response and confirmation
-assessment. Here the confirmation period and the `keep_source_vars` argument is
-updated.
-
-```{r}
-confirmation_period <- 21
-
-crsp_y_cr <- event_joined(
-  description = paste(
-    "Define confirmed response as CR followed by CR at least",
-    confirmation_period,
-    "days later and at most one NE in between"
-  ),
-  dataset_name = "ovr",
-  join_vars = exprs(AVALC, ADT),
-  join_type = "after",
-  order = exprs(ADT),
-  first_cond = AVALC.join == "CR" &
-    ADT.join >= ADT + days(confirmation_period),
-  condition = AVALC == "CR" &
-    all(AVALC.join %in% c("CR", "NE")) &
-    count_vals(var = AVALC.join, val = "NE") <= 1,
-  set_values_to = exprs(AVALC = "Y")
-)
-
-crsp_y_pr <- event_joined(
-  description = paste(
-    "Define confirmed response as PR followed by CR or PR at least",
-    confirmation_period,
-    "days later, at most one NE in between, and no PR after CR"
-  ),
-  dataset_name = "ovr",
-  join_vars = exprs(AVALC, ADT),
-  join_type = "after",
-  order = exprs(ADT),
-  first_cond = AVALC.join %in% c("CR", "PR") &
-    ADT.join >= ADT + days(confirmation_period),
-  condition = AVALC == "PR" &
-    all(AVALC.join %in% c("CR", "PR", "NE")) &
-    count_vals(var = AVALC.join, val = "NE") <= 1 &
-    (
-      min_cond(
-        var = ADT.join,
-        cond = AVALC.join == "CR"
-      ) > max_cond(var = ADT.join, cond = AVALC.join == "PR") |
-        count_vals(var = AVALC.join, val = "CR") == 0 |
-        count_vals(var = AVALC.join, val = "PR") == 0
-    ),
-  set_values_to = exprs(AVALC = "Y")
-)
-
-cbor_cr <- event_joined(
-  description = paste(
-    "Define complete response (CR) for confirmed best overall response (CBOR) as",
-    "CR followed by CR at least",
-    confirmation_period,
-    "days later and at most one NE in between"
-  ),
-  dataset_name = "ovr",
-  join_vars = exprs(AVALC, ADT),
-  join_type = "after",
-  first_cond = AVALC.join == "CR" &
-    ADT.join >= ADT + confirmation_period,
-  condition = AVALC == "CR" &
-    all(AVALC.join %in% c("CR", "NE")) &
-    count_vals(var = AVALC.join, val = "NE") <= 1,
-  set_values_to = exprs(AVALC = "CR")
-)
-
-cbor_pr <- event_joined(
-  description = paste(
-    "Define partial response (PR) for confirmed best overall response (CBOR) as",
-    "PR followed by CR or PR at least",
-    confirmation_period,
-    "28 days later, at most one NE in between, and no PR after CR"
-  ),
-  dataset_name = "ovr",
-  join_vars = exprs(AVALC, ADT),
-  join_type = "after",
-  first_cond = AVALC.join %in% c("CR", "PR") &
-    ADT.join >= ADT + confirmation_period,
-  condition = AVALC == "PR" &
-    all(AVALC.join %in% c("CR", "PR", "NE")) &
-    count_vals(var = AVALC.join, val = "NE") <= 1 &
-    (
-      min_cond(
-        var = ADT.join,
-        cond = AVALC.join == "CR"
-      ) > max_cond(var = ADT.join, cond = AVALC.join == "PR") |
-        count_vals(var = AVALC.join, val = "CR") == 0 |
-        count_vals(var = AVALC.join, val = "PR") == 0
-    ),
-  set_values_to = exprs(AVALC = "PR")
-)
-
-no_data_n <- event(
-  description = "Define no response for all patients in adsl (should be used as last event)",
-  dataset_name = "adsl",
-  condition = TRUE,
-  set_values_to = exprs(AVALC = "N"),
-  keep_source_vars = adsl_vars
-)
-
-no_data_missing <- event(
-  description = paste(
-    "Define missing response (MISSING) for all patients in adsl (should be used",
-    "as last event)"
-  ),
-  dataset_name = "adsl",
-  condition = TRUE,
-  set_values_to = exprs(AVALC = "MISSING"),
-  keep_source_vars = adsl_vars
-)
 ```
 
 ## Derive Progressive Disease Parameter {#pd}
@@ -503,30 +369,46 @@ here and below, in our examples we show these as `ADRS` parameters, but
 they could equally be achieved via `ADSL` dates or `ADEVENT` parameters.
 If you prefer to store as an ADSL date, then the function
 `admiral::derive_var_extreme_dt()` could be used to find the date of
-first `PD` as a variable, rather than as a new parameter record.
+first `PD` as a variable, rather than as a new parameter record. All the
+parameter derivation functions that use these dates are flexible to
+allow sourcing these from any input source using
+`admiral::date_source()`. See examples below.
 
 ## Derive Response Parameter {#rsp}
 
-The function `admiral::derive_extreme_event()` can then be used to find the date
-of first response. In the below example, the response condition has been defined
-as `CR` or `PR` via the `rsp_y`[^1] event.
+The next required step is to define the source location for this newly
+derived `PD` date.
 
-[^1]:
 ```{r}
-rsp_y
+pd <- date_source(
+  dataset_name = "adrs",
+  date = ADT,
+  filter = PARAMCD == "PD" & AVALC == "Y"
+)
 ```
+
+An equivalent example if using `ADSL` instead could be as follows (where
+`PDDT` would be pre-derived as first date of progressive disease).
+
+```{r, eval=FALSE}
+pd <- date_source(
+  dataset_name = "adsl",
+  date = PDDT
+)
+```
+
+The function `derive_param_response()` can then be used to find the date of
+first response. This differs from the `admiral::derive_extreme_records()`
+function in that it only looks for events occurring prior to first `PD`. In the
+below example, the response condition has been defined as `CR` or `PR`.
 
 ```{r}
 adrs <- adrs %>%
-  derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(ADT),
-    mode = "first",
-    events = list(rsp_y, no_data_n),
-    source_datasets = list(
-      ovr = ovr,
-      adsl = adsl
-    ),
+  derive_param_response(
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
+    source_pd = pd,
+    source_datasets = list(adrs = adrs),
     set_values_to = exprs(
       PARAMCD = "RSP",
       PARAM = "Response by Investigator (confirmation not required)",
@@ -549,34 +431,34 @@ dataset_vignette(
 
 ## Derive Clinical Benefit Parameter {#cb}
 
-The function `admiral::derive_extreme_event()` can then be used to derive the
-clinical benefit parameter, which we define as a patient having had a response
-or a sustained period of time before first `PD`. This could also be known as
-disease control. In this example the "sustained period" has been defined as 42
-days after randomization date via the `cb_y`[^2] event.
+Similarly, we now define the source location for this newly derived
+first response date.
 
-[^2]:
 ```{r}
-cb_y
+resp <- date_source(
+  dataset_name = "adrs",
+  date = ADT,
+  filter = PARAMCD == "RSP" & AVALC == "Y"
+)
 ```
 
-Please note that the result `AVALC = "Y"` is defined by the first _two_ events
-specified for `events`. For subjects with observations fulfilling both events
-the one with the earlier date should be selected (and not the first one in the
-list). Thus `ignore_event_order = TRUE` is specified.
+The function `derive_param_clinbenefit()` can then be used to derive the
+clinical benefit parameter, which we define as a patient having had a
+response or a sustained period of time before first `PD`. This could
+also be known as disease control. In this example the "sustained period"
+has been defined as 42 days after randomization date, using the
+`ref_start_window` argument.
 
 ```{r}
 adrs <- adrs %>%
-  derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(desc(AVALC), ADT),
-    mode = "first",
-    events = list(rsp_y, cb_y, no_data_n),
-    source_datasets = list(
-      ovr = ovr,
-      adsl = adsl
-    ),
-    ignore_event_order = TRUE,
+  derive_param_clinbenefit(
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+    source_resp = resp,
+    source_pd = pd,
+    source_datasets = list(adrs = adrs),
+    reference_date = RANDDT,
+    ref_start_window = 42,
     set_values_to = exprs(
       PARAMCD = "CB",
       PARAM = "Clinical Benefit by Investigator (confirmation for response not required)",
@@ -585,8 +467,7 @@ adrs <- adrs %>%
       PARCAT3 = "Recist 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
-    ),
-    check_type = "none"
+    )
   )
 ```
 
@@ -600,28 +481,21 @@ dataset_vignette(
 
 ## Derive Best Overall Response Parameter {#bor}
 
-The function `admiral::derive_extreme_event()` can be used to derive the best
-overall response (without confirmation required) parameter. Similar to the above
-function you can optionally decide what period would you consider a `SD` or
-`NON-CR/NON-PD` as being eligible from. In this example, 42 days after
-randomization date has been used again.
-
-Please note that the order of the events specified for `events` is important.
-For example, a subject with `PR`, `PR`, `CR` qualifies for both `bor_cr` and
-`bor_pr`. As `bor_cr` is listed before `bor_pr`, CR is selected as best overall
-response for this subject.
+The function `derive_param_bor()` can be used to derive the best overall
+response (without confirmation required) parameter. Similar to the above
+function you can optionally decide what period would you consider a `SD`
+or `NON-CR/NON-PD` as being eligible from. In this example, 42 days
+after randomization date has been used again.
 
 ```{r}
 adrs <- adrs %>%
-  derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(ADT),
-    mode = "first",
-    source_datasets = list(
-      ovr = ovr,
-      adsl = adsl
-    ),
-    events = list(bor_cr, bor_pr, bor_sd, bor_non_crpd, bor_pd, bor_ne, no_data_missing),
+  derive_param_bor(
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+    source_pd = pd,
+    source_datasets = list(adrs = adrs),
+    reference_date = RANDDT,
+    ref_start_window = 42,
     set_values_to = exprs(
       PARAMCD = "BOR",
       PARAM = "Best Overall Response by Investigator (confirmation not required)",
@@ -665,10 +539,9 @@ aval_resp_new <- function(arg) {
 ```
 
 Then update the definition of `AVAL` in the `set_values_to` argument of the
-above `admiral::derive_extreme_event()` call. Be aware that this will only impact
-the `AVAL` mapping, not the derivation of BOR in any way - as the function
-derivation relies only on the events and their order specified for the `events`
-argument here.
+above `derive_param_bor()` call. Be aware that this will only impact the `AVAL`
+mapping, not the derivation of BOR in any way - as the function derivation
+relies only on `AVALC` here.
 
 ## Derive Best Overall Response of CR/PR Parameter {#bcp}
 
@@ -682,6 +555,8 @@ adrs <- adrs %>%
     dataset_add = adrs,
     by_vars = exprs(STUDYID, USUBJID),
     filter_add = PARAMCD == "BOR" & AVALC %in% c("CR", "PR"),
+    order = exprs(ADT, RSSEQ),
+    mode = "first",
     exist_flag = AVALC,
     set_values_to = exprs(
       PARAMCD = "BCP",
@@ -705,50 +580,23 @@ dataset_vignette(
 
 ## Derive Response Parameters requiring Confirmation {#confirm}
 
-Any of the above response parameters can be repeated for "confirmed" responses
-only. For these the function `admiral::derive_extreme_event()` can be used with
-different events. Some of the other functions from above can then be re-used
-passing in these confirmed response records. See the examples below of derived
-parameters requiring confirmation. The assessment and the confirmatory
-assessment here need to occur at least 28 days apart *(without any +1 applied to
-this calculation of days between visits)*, using the `crsp_y_cr`[^3],
-`crsp_y_pr`[^4], `cbor_cr`[^5], and `cbor_pr`[^6] event.
-
-[^3]:
-```{r}
-crsp_y_cr
-```
-[^4]:
-```{r}
-crsp_y_pr
-```
-[^5]:
-```{r}
-cbor_cr
-```
-[^6]:
-```{r}
-cbor_pr
-```
-
-Please note that the result `AVALC = "Y"` for confirmed clinical benefit is
-defined by the first _two_ events specified for `events`. For subjects with
-observations fulfilling both events the one with the earlier date should be
-selected (and not the first one in the list). Thus `ignore_event_order = TRUE`
-is specified.
+Any of the above response parameters can be repeated for "confirmed"
+responses only. For these the functions `derive_param_confirmed_resp()`
+and `derive_param_confirmed_bor()` can be used. Some of the other
+functions from above can then be re-used passing in these confirmed
+response records. See the examples below of derived parameters requiring
+confirmation. The assessment and the confirmatory assessment here need
+to occur at least 28 days apart *(without any +1 applied to this
+calculation of days between visits)*, using the `ref_confirm` argument.
 
 ```{r}
 adrs <- adrs %>%
-  derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(desc(AVALC), ADT),
-    mode = "first",
-    source_datasets = list(
-      ovr = ovr,
-      adsl = adsl
-    ),
-    events = list(crsp_y_cr, crsp_y_pr, no_data_n),
-    ignore_event_order = TRUE,
+  derive_param_confirmed_resp(
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
+    source_pd = pd,
+    source_datasets = list(adrs = adrs),
+    ref_confirm = 28,
     set_values_to = exprs(
       PARAMCD = "CRSP",
       PARAM = "Confirmed Response by Investigator",
@@ -760,17 +608,21 @@ adrs <- adrs %>%
     )
   )
 
+confirmed_resp <- date_source(
+  dataset_name = "adrs",
+  date = ADT,
+  filter = PARAMCD == "CRSP" & AVALC == "Y"
+)
+
 adrs <- adrs %>%
-  derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(desc(AVALC), ADT),
-    mode = "first",
-    events = list(crsp_y_cr, crsp_y_pr, cb_y, no_data_n),
-    source_datasets = list(
-      ovr = ovr,
-      adsl = adsl
-    ),
-    ignore_event_order = TRUE,
+  derive_param_clinbenefit(
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+    source_resp = confirmed_resp,
+    source_pd = pd,
+    source_datasets = list(adrs = adrs),
+    reference_date = RANDDT,
+    ref_start_window = 42,
     set_values_to = exprs(
       PARAMCD = "CCB",
       PARAM = "Confirmed Clinical Benefit by Investigator",
@@ -779,20 +631,16 @@ adrs <- adrs %>%
       PARCAT3 = "Recist 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
-    ),
-    check_type = "none"
-  )
-
-adrs <- adrs %>%
-  derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(ADT),
-    mode = "first",
-    events = list(cbor_cr, cbor_pr, bor_sd, bor_non_crpd, bor_pd, bor_ne, no_data_missing),
-    source_datasets = list(
-      ovr = ovr,
-      adsl = adsl
-    ),
+    )
+  ) %>%
+  derive_param_confirmed_bor(
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+    source_pd = pd,
+    source_datasets = list(adrs = adrs),
+    reference_date = RANDDT,
+    ref_start_window = 42,
+    ref_confirm = 28,
     set_values_to = exprs(
       PARAMCD = "CBOR",
       PARAM = "Best Confirmed Overall Response by Investigator",
@@ -808,6 +656,8 @@ adrs <- adrs %>%
     dataset_add = adrs,
     by_vars = exprs(STUDYID, USUBJID),
     filter_add = PARAMCD == "CBOR" & AVALC %in% c("CR", "PR"),
+    order = exprs(ADT, RSSEQ),
+    mode = "first",
     exist_flag = AVALC,
     set_values_to = exprs(
       PARAMCD = "CBCP",
@@ -829,103 +679,16 @@ dataset_vignette(
 )
 ```
 
-## Derive Non-standard Parameters {#nonstandard}
-
-As `admiral::derive_extreme_event()` is very flexible, it is easy to implement
-non-standard parameters. Below two examples for modified RECIST 1.1 parameters
-are shown.
-
-### Adding a Criterion for Confirmed Clinical Benefit
-Confirmed clinical benefit was defined before as confirmed response or CR, PR,
-SD, or NON-CR/NON-PD at least 42 days after randomization. Here an alternative
-definition is implemented which considers PD more than 42 days after
-randomization as an additional criterion for clinical benefit.
-```{r}
-cb_y_pd <- event(
-  description = paste(
-    "Define PD occuring more than 42 days after",
-    "randomization as clinical benefit"
-  ),
-  dataset_name = "ovr",
-  condition = AVALC == "PD" & ADT > RANDDT + 42,
-  set_values_to = exprs(AVALC = "Y")
-)
-
-adrs <- adrs %>%
-  derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(desc(AVALC), ADT),
-    mode = "first",
-    events = list(crsp_y_cr, crsp_y_pr, cb_y, cb_y_pd, no_data_n),
-    source_datasets = list(
-      ovr = ovr,
-      adsl = adsl
-    ),
-    ignore_event_order = TRUE,
-    set_values_to = exprs(
-      PARAMCD = "ACCB",
-      PARAM = "Alternative Confirmed Clinical Benefit by Investigator",
-      PARCAT1 = "Tumor Response",
-      PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
-      AVAL = yn_to_numeric(AVALC),
-      ANL01FL = "Y"
-    ),
-    check_type = "none"
-  )
-```
-
-### Considering Non-Standard Response Values
-
-Assume no evidence of disease (NED) is a valid value collected for overall
-response. A new event (`bor_ned`) can be defined for this response value and be
-added to the list of events (`events`) in the `admiral::derive_extreme_event()`
-call.
-
-```{r}
-bor_ned <- event(
-  description = paste(
-    "Define no evidence of disease (NED) for best overall response (BOR) as NED",
-    "occuring at least 42 days after randomization"
-  ),
-  dataset_name = "ovr",
-  condition = AVALC == "NED" & ADT >= RANDDT + 42,
-  set_values_to = exprs(AVALC = "NED")
-)
-
-adrs <- adrs %>%
-  derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(ADT),
-    mode = "first",
-    source_datasets = list(
-      ovr = ovr,
-      adsl = adsl
-    ),
-    events = list(bor_cr, bor_pr, bor_sd, bor_non_crpd, bor_ned, bor_pd, bor_ne, no_data_missing),
-    set_values_to = exprs(
-      PARAMCD = "A1BOR",
-      PARAM = paste(
-        "Best Overall Response by Investigator (confirmation not required)",
-        "- Recist 1.1 adjusted for NED at Baseline"
-      ),
-      PARCAT1 = "Tumor Response",
-      PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1 adjusted for NED at Baseline",
-      AVAL = aval_resp(AVALC),
-      ANL01FL = "Y"
-    )
-  )
-```
-
 ## Derive Parameters using Independent Review Facility (IRF)/Blinded Independent Central Review (BICR) responses {#irf}
 
-All of the above steps can be repeated for different sets of records, such as
-now using assessments from the IRF/BICR instead of investigator. For this you
-would just need to replace the first steps with selecting the required records,
-create the variables `AVALC`, `AVAL`, `ADT`, `AVISIT`, `ANL01FL`, `ANL02FL` and
-the dataset `ovrb` (see [Pre-processing of Input Records](#input)) and then feed
-these as input to the downstream parameter functions.
+All of the above steps can be repeated for different sets of records,
+such as now using assessments from the IRF/BICR
+instead of investigator. For this you would just need to replace the
+first steps with selecting the required records, and then feed these as
+input to the downstream parameter functions.
+
+Remember that a new progressive disease and response source object would
+be required for passing to `source_pd` and `source_resp` respectively.
 
 ```{r}
 adrs_bicr <- rs %>%
@@ -945,12 +708,12 @@ adrs_bicr <- rs %>%
 dataset_vignette(
   adrs_bicr,
   display_vars = exprs(USUBJID, VISIT, RSTESTCD, RSEVAL, PARAMCD, PARAM, PARCAT1, PARCAT2, PARCAT3),
-  filter = PARAMCD == "OVRB"
+  filter = PARAMCD == "OVRR1"
 )
 ```
 
-Then in all the calls to the parameter derivation functions you would replace
-`ovr = ovr` with `ovr == ovrb` in the value of the `source_datasets` argument.
+Then in all the calls to the parameter derivation functions you would
+replace the `PARAMCD == "OVR"` source with `PARAMCD == "OVRR1"`.
 
 ## Derive Death Parameter {#death}
 
@@ -1109,4 +872,4 @@ dataset_vignette(
 
 ADaM | Sample Code
 ---- | --------------
-ADRS | `r dyn_link("ad_adrs.R", "https://github.com/pharmaverse/admiralonco/blob", "inst/templates/ad_adrs.R", is_multiversion = TRUE)`
+ADRS_BASIC | `r dyn_link("ad_adrs_basic.R", "https://github.com/pharmaverse/admiralonco/blob", "inst/templates/ad_adrs_basic.R", is_multiversion = TRUE)`

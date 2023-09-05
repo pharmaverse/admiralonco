@@ -10,10 +10,10 @@
 #' Printing an object will display input dataset_name, filter (if applicable), date variable,
 #' and appropriate values for `EVNTDESC`, `CNSDTDSC`, `SRCDOM`, `SRCVAR`, and `SRCSEQ`.
 #'
+#' @format NULL
+#'
 #' @seealso [admiral::derive_param_tte()], [admiral::tte_source()], [admiral::event_source()],
 #'  [admiral::censor_source()]
-#'
-#' @format NULL
 #'
 #' @export
 #'
@@ -42,6 +42,7 @@ death_event <- event_source(
   )
 )
 
+#' @format NULL
 #' @keywords source_specifications
 #' @rdname tte_source_objects
 #' @export
@@ -56,6 +57,7 @@ lastalive_censor <- censor_source(
   )
 )
 
+#' @format NULL
 #' @keywords source_specifications
 #' @rdname tte_source_objects
 #' @export
@@ -71,6 +73,7 @@ pd_event <- event_source(
   )
 )
 
+#' @format NULL
 #' @keywords source_specifications
 #' @rdname tte_source_objects
 #' @export
@@ -87,6 +90,7 @@ lasta_censor <- censor_source(
   )
 )
 
+#' @format NULL
 #' @keywords source_specifications
 #' @rdname tte_source_objects
 #' @export
@@ -101,6 +105,7 @@ rand_censor <- censor_source(
   )
 )
 
+#' @format NULL
 #' @keywords source_specifications
 #' @rdname tte_source_objects
 #' @export

@@ -1,5 +1,22 @@
 # admiralonco 0.5.0
 
+## New Features
+
+- Oncology specific events are provided for deriving oncology parameters with
+`admiral::derive_extreme_event()`. (#234)
+
+## Documentation
+
+- The `ADRS` vignette and template were split into two:
+    - A basic version which uses the `{admiralonco}` functions to cover standard
+    RECIST 1.1.
+    - A more flexible version which uses `admiral::derive_extreme_event()`. This
+    should be used if non-standard `ADRS` parameters should be implemented or
+    non-standard response values should be considered. This version can also be
+    used as a starting point for implementing other response criteria than
+    RECIST 1.1, e.g., iRECIST or International Myeloma Working Group (IMWG)
+    criteria for the diagnosis of multiple myeloma.
+
 - The "Create `ADTR`" vignette and the `ADTR` template were updated such that
 test data from `{pharmasdtm}` instead of `{admiral.test}` is used. (#247)
 

@@ -60,7 +60,8 @@ conventions as `{admiral}` but are focused to oncology-specific needs.
 For the oncology ADaM data structures, an overview of the flow and example function calls
 for the most common steps are provided by the following vignettes:
 
-- [Creating ADRS](adrs.html)
+- [Creating a Basic ADRS](adrs_basic.html)
+- [Creating ADRS (Including Non-standard Endpoints)](adrs.html)
 - [Creating ADTTE](adtte.html)
 - [Creating ADTR](adtr.html)
 
