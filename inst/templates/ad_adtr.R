@@ -14,7 +14,7 @@ library(stringr)
 
 # Use e.g. haven::read_sas to read in .sas7bdat, or other suitable functions
 # as needed and assign to the variables below.
-# For illustration purposes read in admiral test data
+# For illustration purposes read in pharmaverse test data
 data("admiral_adsl")
 data("rs_onco_recist")
 data("tu_onco_recist")

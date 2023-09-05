@@ -5,7 +5,6 @@
 # Input: adsl, adrs, tte_source objects
 library(admiral)
 library(admiralonco)
-library(admiral.test) # Contains example datasets from the CDISC pilot project
 library(dplyr)
 library(lubridate)
 

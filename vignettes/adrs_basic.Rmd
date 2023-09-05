@@ -94,7 +94,7 @@ read into the environment. This will be a company specific process. Some
 of the data frames needed may be `ADSL`, `RS` and `TU`.
 
 For example purpose, the SDTM and ADaM datasets (based on CDISC Pilot
-test data)---which are included in `{admiral.test}`---are used.
+test data)---which are included in `{pharmaversesdtm}`---are used.
 
 ```{r message=FALSE}
 library(admiral)

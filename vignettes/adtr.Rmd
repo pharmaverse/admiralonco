@@ -104,13 +104,10 @@ To start, all data frames needed for the creation of `ADTR` should be read into 
 Some of the data frames needed may be `ADSL`, `ADRS` ,`RS`, `TU`, `TR`, `SUPPTU` `SUPPTR`.
 
 For example purposes, the SDTM and ADaM datasets (based on CDISC Pilot test
-data)---which are included in `{admiral.test}`---are used [^1]. Also, see
+data)---which are included in `{pharmaversesdtm}`---are used. Also, see
 [Handling of Missing
 Values](https://pharmaverse.github.io/admiral/cran-release/articles/admiral.html#handling-of-missing-values)
 explains why we need to use the `convert_blanks_to_na()` function.
-
-[^1]: In this vignette we use only data for subjects "01-701-1015",
-"01-701-1023", "01-701-1440". This avoids that the vignette takes a long time to load. 
 
 On the `TR` domain we filter on where tumor assessment short name `TRTESTCD` is
 `"LDIAM"` or `"LPERP"`. Depending on your data collection standards you may need
