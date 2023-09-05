@@ -10,7 +10,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">admiralonco</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,7 +27,8 @@
 <li class="nav-item dropdown">
   <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" role="button" aria-expanded="false" aria-haspopup="true" id="dropdown-user-guides">User Guides</a>
   <div class="dropdown-menu" aria-labelledby="dropdown-user-guides">
-    <a class="dropdown-item" href="../articles/adrs.html">Creating ADRS</a>
+    <a class="dropdown-item" href="../articles/adrs_basic.html">Creating a Basic ADRS</a>
+    <a class="dropdown-item" href="../articles/adrs.html">Creating ADRS (Including Non-standard Endpoints)</a>
     <a class="dropdown-item" href="../articles/adtte.html">Creating ADTTE</a>
     <a class="dropdown-item" href="../articles/adtr.html">Creating ADTR</a>
     <a class="dropdown-item" href="../articles/nactdt.html">Creating and Using New Anti-Cancer Start Date</a>
@@ -36,13 +37,6 @@
 <li class="active nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/devel">devel</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -63,6 +57,20 @@
       <small>Source: <a href="https://github.com/pharmaverse/admiralonco/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.5.0" id="admiralonco-050">admiralonco 0.5.0<a class="anchor" aria-label="anchor" href="#admiralonco-050"></a></h2>
+<div class="section level3">
+<h3 id="new-features-0-5-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-5-0"></a></h3>
+<ul><li>Oncology specific events are provided for deriving oncology parameters with <code><a href="https://rdrr.io/pkg/admiral/man/derive_extreme_event.html" class="external-link">admiral::derive_extreme_event()</a></code>. (<a href="https://github.com/pharmaverse/admiralonco/issues/234" class="external-link">#234</a>)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="documentation-0-5-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-5-0"></a></h3>
+<ul><li>The <code>ADRS</code> vignette and template were split into two:
+<ul><li>A basic version which uses the <a href="https://pharmaverse.github.io/admiralonco/" class="external-link">admiralonco</a> functions to cover standard RECIST 1.1.</li>
+<li>A more flexible version which uses <code><a href="https://rdrr.io/pkg/admiral/man/derive_extreme_event.html" class="external-link">admiral::derive_extreme_event()</a></code>. This should be used if non-standard <code>ADRS</code> parameters should be implemented or non-standard response values should be considered. This version can also be used as a starting point for implementing other response criteria than RECIST 1.1, e.g., iRECIST or International Myeloma Working Group (IMWG) criteria for the diagnosis of multiple myeloma.</li>
+</ul></li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.0" id="admiralonco-040">admiralonco 0.4.0<a class="anchor" aria-label="anchor" href="#admiralonco-040"></a></h2><p class="text-muted">CRAN release: 2023-06-12</p>
 <div class="section level3">

@@ -13,6 +13,9 @@
     <loc>https://pharmaverse.github.io/admiralonco/devel/articles/adrs.html</loc>
   </url>
   <url>
+    <loc>https://pharmaverse.github.io/admiralonco/devel/articles/adrs_basic.html</loc>
+  </url>
+  <url>
     <loc>https://pharmaverse.github.io/admiralonco/devel/articles/adtr.html</loc>
   </url>
   <url>
@@ -62,6 +65,9 @@
   </url>
   <url>
     <loc>https://pharmaverse.github.io/admiralonco/devel/reference/derive_param_response.html</loc>
+  </url>
+  <url>
+    <loc>https://pharmaverse.github.io/admiralonco/devel/reference/event_objects.html</loc>
   </url>
   <url>
     <loc>https://pharmaverse.github.io/admiralonco/devel/reference/filter_pd.html</loc>
