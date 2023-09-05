@@ -17,7 +17,7 @@
     RECIST 1.1, e.g., iRECIST or International Myeloma Working Group (IMWG)
     criteria for the diagnosis of multiple myeloma.
 
-- The confirmed response derivation was fixed in the `ADRS` vignette and
+- The confirmed response derivation was fixed in the basic `ADRS` vignette and
 template. When calling `derive_param_confirmed_resp()` the `filter_source`
 argument has to be set to `PARAMCD == "OVR" & ANL01FL == "Y"` instead of
 `PARAMCD == "OVR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y"`. Otherwise,
