@@ -71,7 +71,6 @@ The examples of this vignette require the following packages.
 library(admiral)
 library(admiralonco)
 library(dplyr)
-library(admiral.test)
 library(lubridate)
 ```
 

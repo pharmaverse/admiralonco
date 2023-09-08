@@ -17,6 +17,12 @@
     RECIST 1.1, e.g., iRECIST or International Myeloma Working Group (IMWG)
     criteria for the diagnosis of multiple myeloma.
 
+- The `ADRS` vignette and template were updated such that test data from
+`{pharmaversesdtm}` instead of `{admiral.test}` is used. (#226)
+
+- The "Create `ADTR`" vignette and the `ADTR` template were updated such that
+test data from `{pharmaversesdtm}` instead of `{admiral.test}` is used. (#247)
+
 - The confirmed response derivation was fixed in the basic `ADRS` vignette and
 template. When calling `derive_param_confirmed_resp()` the `filter_source`
 argument has to be set to `PARAMCD == "OVR" & ANL01FL == "Y"` instead of

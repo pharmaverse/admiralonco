@@ -44,7 +44,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Depends: R (>= 3.5)
 Imports:
-    admiral (>= 0.11.0),
+    admiral (>= 0.12.0),
     admiraldev (>= 0.4.0),
     dplyr (>= 0.8.4),
     lifecycle (>= 0.1.0),
@@ -54,7 +54,6 @@ Imports:
     tidyselect (>= 1.0.0)
 Suggests:
     pharmaversesdtm,
-    admiral.test,
     devtools,
     diffdf,
     lintr,

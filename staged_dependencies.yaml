@@ -2,8 +2,6 @@
 upstream_repos:
   - repo: pharmaverse/admiral
     host: https://github.com
-  - repo: pharmaverse/admiral.test
-    host: https://github.com
   - repo: pharmaverse/pharmaversesdtm
     host: https://github.com
   - repo: pharmaverse/admiraldev
