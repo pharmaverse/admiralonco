@@ -216,7 +216,7 @@ adrs <- adrs %>%
 adrs <- adrs %>%
   derive_param_confirmed_resp(
     dataset_adsl = adsl,
-    filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
+    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
     source_pd = pd,
     source_datasets = list(adrs = adrs),
     ref_confirm = 28,

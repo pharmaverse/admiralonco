@@ -7,7 +7,7 @@
 
 ## Documentation
 
-- The `ADRS` vignette and template were split into two:
+- The `ADRS` vignette and template were split into two (#234):
     - A basic version which uses the `{admiralonco}` functions to cover standard
     RECIST 1.1.
     - A more flexible version which uses `admiral::derive_extreme_event()`. This
@@ -17,8 +17,18 @@
     RECIST 1.1, e.g., iRECIST or International Myeloma Working Group (IMWG)
     criteria for the diagnosis of multiple myeloma.
 
+- The `ADRS` vignette and template were updated such that test data from
+`{pharmaversesdtm}` instead of `{admiral.test}` is used. (#226)
+
 - The "Create `ADTR`" vignette and the `ADTR` template were updated such that
-test data from `{pharmasdtm}` instead of `{admiral.test}` is used. (#247)
+test data from `{pharmaversesdtm}` instead of `{admiral.test}` is used. (#247)
+
+- The confirmed response derivation was fixed in the basic `ADRS` vignette and
+template. When calling `derive_param_confirmed_resp()` the `filter_source`
+argument has to be set to `PARAMCD == "OVR" & ANL01FL == "Y"` instead of
+`PARAMCD == "OVR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y"`. Otherwise,
+responses like `CR`, `NE`, `NE`, `CR` are considered as confirmed response.
+(#245)
 
 # admiralonco 0.4.0
 
