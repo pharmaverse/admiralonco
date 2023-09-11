@@ -18,4 +18,4 @@ jobs:
     with:
       r-version: "4.1"
       push-templates-data: true
-      exclude-templates-data: "adrs_basic.rda"
+      exclude-templates-data: "adrs_basic"
