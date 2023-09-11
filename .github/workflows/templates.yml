@@ -17,4 +17,5 @@ jobs:
     #if: github.event_name == 'pull_request'
     with:
       r-version: "4.1"
+      push-templates-data: true
       exclude-templates-data: "adrs_basic.rda"
