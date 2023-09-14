@@ -4,11 +4,10 @@ pkgdown_sha: ~
 articles:
   admiralonco: admiralonco.html
   adrs: adrs.html
-  adrs_basic: adrs_basic.html
   adtr: adtr.html
   adtte: adtte.html
   nactdt: nactdt.html
-last_built: 2023-09-14T09:06Z
+last_built: 2023-06-12T09:53Z
 urls:
   reference: https://pharmaverse.github.io/admiralonco/main/reference
   article: https://pharmaverse.github.io/admiralonco/main/articles
