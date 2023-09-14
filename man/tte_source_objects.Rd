@@ -9,17 +9,6 @@
 \alias{rand_censor}
 \alias{trts_censor}
 \title{Pre-Defined Time-to-Event Source Objects}
-\format{
-An object of class \code{censor_source} (inherits from \code{tte_source}, \code{source}, \code{list}) of length 5.
-
-An object of class \code{event_source} (inherits from \code{tte_source}, \code{source}, \code{list}) of length 5.
-
-An object of class \code{censor_source} (inherits from \code{tte_source}, \code{source}, \code{list}) of length 5.
-
-An object of class \code{censor_source} (inherits from \code{tte_source}, \code{source}, \code{list}) of length 5.
-
-An object of class \code{censor_source} (inherits from \code{tte_source}, \code{source}, \code{list}) of length 5.
-}
 \usage{
 death_event
 

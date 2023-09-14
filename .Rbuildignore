@@ -14,3 +14,4 @@
 ^staged_dependencies.yaml$
 ^pkgdown$
 ^\.lycheeignore$
+^\.devcontainer$

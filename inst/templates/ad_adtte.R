@@ -5,11 +5,10 @@
 # Input: adsl, adrs, tte_source objects
 library(admiral)
 library(admiralonco)
-library(admiral.test) # Contains example datasets from the CDISC pilot project
 library(dplyr)
 library(lubridate)
 
-# ---- Load source datasets ----
+# Load source datasets ----
 
 # Use e.g. haven::read_sas to read in .sas7bdat, or other suitable functions
 # as needed and assign to the variables below.
@@ -21,7 +20,7 @@ data("admiral_adrs")
 adsl <- admiral_adsl
 adrs <- admiral_adrs
 
-# ---- Derivations ----
+# Derivations ----
 
 # Add response date to ADSL for duration of response calculation
 adsl <- adsl %>%
@@ -80,7 +79,7 @@ adtte <- adtte %>%
     by_vars = exprs(STUDYID, USUBJID)
   )
 
-# ---- Save output ----
+# Save output ----
 
 dir <- tempdir() # Change to whichever directory you want to save the dataset in
 saveRDS(adtte, file = file.path(dir, "adtte.rds"), compress = "bzip2")

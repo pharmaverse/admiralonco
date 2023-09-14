@@ -3,6 +3,14 @@
 # Label: Response Analysis Dataset
 #
 # Input: adsl, rs, tu
+#
+# Please note that this template implements the endpoints which were considered
+# by the admiralonco team as the most common ones. The admiralonco functions
+# used to derive these endpoints provide a certain flexibility, e.g., specifying
+# the reference date or time windows for confirmation or stable disease. If
+# different endpoints or more flexibility is required please use the ad_adrs.R
+# template.
+
 library(admiral)
 library(admiralonco)
 library(pharmaversesdtm) # Contains example datasets from the CDISC pilot project
@@ -10,7 +18,7 @@ library(dplyr)
 library(lubridate)
 library(stringr)
 
-# Load source datasets ----
+# ---- Load source datasets ----
 
 # Use e.g. haven::read_sas to read in .sas7bdat, or other suitable functions
 # as needed and assign to the variables below.
@@ -27,7 +35,7 @@ tu <- tu_onco_recist
 rs <- convert_blanks_to_na(rs)
 tu <- convert_blanks_to_na(tu)
 
-# Derivations ----
+# ---- Derivations ----
 
 # Get list of ADSL vars required for derivations - here we assume randomized study
 adsl_vars <- exprs(RANDDT)
@@ -40,7 +48,7 @@ adrs <- rs %>%
     by_vars = exprs(STUDYID, USUBJID)
   )
 
-# Company-specific pre-processing ----
+# ---- Company-specific pre-processing ----
 
 # Filtering to select Overall Response records - here we used Investigator records
 # but all these steps could equally be repeated for Independent Review Facility
@@ -85,46 +93,11 @@ adrs <- adrs %>%
       mode = "last"
     ),
     filter = !is.na(AVAL) & ADT >= RANDDT
-  ) %>%
-  derive_var_relative_flag(
-    by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(ADT, RSSEQ),
-    new_var = ANL02FL,
-    condition = AVALC == "PD",
-    mode = "first",
-    selection = "before",
-    inclusive = TRUE
   )
 
-# Create dataset with overall responses to be used for deriving parameters
-ovr <- filter(adrs, PARAMCD == "OVR" & ANL01FL == "Y" & ANL02FL == "Y")
+# ---- Parameter derivations ----
 
-# Parameter derivations ----
-
-## Define events ----
-# These events are just examples showing how to define the ADSL variables to keep.
-# More may need to be added depending on the study needs, e.g., for adjusting
-# confirmation period.
-no_data_n <- event(
-  description = "Define no response for all patients in adsl (should be used as last event)",
-  dataset_name = "adsl",
-  condition = TRUE,
-  set_values_to = exprs(AVALC = "N"),
-  keep_source_vars = adsl_vars
-)
-
-no_data_missing <- event(
-  description = paste(
-    "Define missing response (MISSING) for all patients in adsl (should be used",
-    "as last event)"
-  ),
-  dataset_name = "adsl",
-  condition = TRUE,
-  set_values_to = exprs(AVALC = "MISSING"),
-  keep_source_vars = adsl_vars
-)
-
-## Progressive disease ----
+# Progressive disease
 adrs <- adrs %>%
   derive_extreme_records(
     dataset_ref = adsl,
@@ -145,17 +118,20 @@ adrs <- adrs %>%
     )
   )
 
-## Response ----
+# Define the progressive disease source location
+pd <- date_source(
+  dataset_name = "adrs",
+  date = ADT,
+  filter = PARAMCD == "PD" & AVALC == "Y"
+)
+
+# Response
 adrs <- adrs %>%
-  derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(ADT),
-    mode = "first",
-    events = list(rsp_y, no_data_n),
-    source_datasets = list(
-      ovr = ovr,
-      adsl = adsl
-    ),
+  derive_param_response(
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR") & ANL01FL == "Y",
+    source_pd = pd,
+    source_datasets = list(adrs = adrs),
     set_values_to = exprs(
       PARAMCD = "RSP",
       PARAM = "Response by Investigator (confirmation not required)",
@@ -167,18 +143,23 @@ adrs <- adrs %>%
     )
   )
 
-## Clinical benefit ----
+# Define the response source location
+resp <- date_source(
+  dataset_name = "adrs",
+  date = ADT,
+  filter = PARAMCD == "RSP" & AVALC == "Y"
+)
+
+# Clinical benefit
 adrs <- adrs %>%
-  derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(desc(AVALC), ADT),
-    mode = "first",
-    events = list(rsp_y, cb_y, no_data_n),
-    source_datasets = list(
-      ovr = ovr,
-      adsl = adsl
-    ),
-    ignore_event_order = TRUE,
+  derive_param_clinbenefit(
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+    source_resp = resp,
+    source_pd = pd,
+    source_datasets = list(adrs = adrs),
+    reference_date = RANDDT,
+    ref_start_window = 42,
     set_values_to = exprs(
       PARAMCD = "CB",
       PARAM = "Clinical Benefit by Investigator (confirmation for response not required)",
@@ -187,25 +168,18 @@ adrs <- adrs %>%
       PARCAT3 = "Recist 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
-    ),
-    check_type = "none"
+    )
   )
 
-## Best overall response (without confirmation) ----
-# Please note that the order of the events specified for `events` is important.
-# For example, a subject with `PR`, `PR`, `CR` qualifies for both `bor_cr` and
-# `bor_pr`. As `bor_cr` is listed before `bor_pr`, CR is selected as best overall
-# response for this subject.
+# Best overall response (without confirmation)
 adrs <- adrs %>%
-  derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(ADT),
-    mode = "first",
-    source_datasets = list(
-      ovr = ovr,
-      adsl = adsl
-    ),
-    events = list(bor_cr, bor_pr, bor_sd, bor_non_crpd, bor_pd, bor_ne, no_data_missing),
+  derive_param_bor(
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+    source_pd = pd,
+    source_datasets = list(adrs = adrs),
+    reference_date = RANDDT,
+    ref_start_window = 42,
     set_values_to = exprs(
       PARAMCD = "BOR",
       PARAM = "Best Overall Response by Investigator (confirmation not required)",
@@ -217,13 +191,15 @@ adrs <- adrs %>%
     )
   )
 
-## Best overall response of CR/PR ----
+# Best overall response of CR/PR
 adrs <- adrs %>%
   derive_extreme_records(
     dataset_ref = adsl,
     dataset_add = adrs,
     by_vars = exprs(STUDYID, USUBJID),
     filter_add = PARAMCD == "BOR" & AVALC %in% c("CR", "PR"),
+    order = exprs(ADT, RSSEQ),
+    mode = "first",
     exist_flag = AVALC,
     set_values_to = exprs(
       PARAMCD = "BCP",
@@ -236,18 +212,14 @@ adrs <- adrs %>%
     )
   )
 
-## Confirmed response versions of the above parameters ----
+# Confirmed response versions of the above parameters
 adrs <- adrs %>%
-  derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(desc(AVALC), ADT),
-    mode = "first",
-    source_datasets = list(
-      ovr = ovr,
-      adsl = adsl
-    ),
-    events = list(crsp_y_cr, crsp_y_pr, no_data_n),
-    ignore_event_order = TRUE,
+  derive_param_confirmed_resp(
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+    source_pd = pd,
+    source_datasets = list(adrs = adrs),
+    ref_confirm = 28,
     set_values_to = exprs(
       PARAMCD = "CRSP",
       PARAM = "Confirmed Response by Investigator",
@@ -259,17 +231,21 @@ adrs <- adrs %>%
     )
   )
 
+confirmed_resp <- date_source(
+  dataset_name = "adrs",
+  date = ADT,
+  filter = PARAMCD == "CRSP" & AVALC == "Y"
+)
+
 adrs <- adrs %>%
-  derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(desc(AVALC), ADT),
-    mode = "first",
-    events = list(crsp_y_cr, crsp_y_pr, cb_y, no_data_n),
-    source_datasets = list(
-      ovr = ovr,
-      adsl = adsl
-    ),
-    ignore_event_order = TRUE,
+  derive_param_clinbenefit(
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+    source_resp = confirmed_resp,
+    source_pd = pd,
+    source_datasets = list(adrs = adrs),
+    reference_date = RANDDT,
+    ref_start_window = 42,
     set_values_to = exprs(
       PARAMCD = "CCB",
       PARAM = "Confirmed Clinical Benefit by Investigator",
@@ -278,20 +254,16 @@ adrs <- adrs %>%
       PARCAT3 = "Recist 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
-    ),
-    check_type = "none"
-  )
-
-adrs <- adrs %>%
-  derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(ADT),
-    mode = "first",
-    events = list(cbor_cr, cbor_pr, bor_sd, bor_non_crpd, bor_pd, bor_ne, no_data_missing),
-    source_datasets = list(
-      ovr = ovr,
-      adsl = adsl
-    ),
+    )
+  ) %>%
+  derive_param_confirmed_bor(
+    dataset_adsl = adsl,
+    filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
+    source_pd = pd,
+    source_datasets = list(adrs = adrs),
+    reference_date = RANDDT,
+    ref_start_window = 42,
+    ref_confirm = 28,
     set_values_to = exprs(
       PARAMCD = "CBOR",
       PARAM = "Best Confirmed Overall Response by Investigator",
@@ -307,6 +279,8 @@ adrs <- adrs %>%
     dataset_add = adrs,
     by_vars = exprs(STUDYID, USUBJID),
     filter_add = PARAMCD == "CBOR" & AVALC %in% c("CR", "PR"),
+    order = exprs(ADT, RSSEQ),
+    mode = "first",
     exist_flag = AVALC,
     set_values_to = exprs(
       PARAMCD = "CBCP",
@@ -319,7 +293,7 @@ adrs <- adrs %>%
     )
   )
 
-## Death ----
+# Death
 adsldth <- adsl %>%
   select(STUDYID, USUBJID, DTHDT, !!!adsl_vars)
 
@@ -341,7 +315,7 @@ adrs <- adrs %>%
   ) %>%
   select(-DTHDT)
 
-## Last disease assessment ----
+# Last disease assessment
 adrs <- adrs %>%
   derive_extreme_records(
     dataset_ref = adsl,
@@ -360,7 +334,7 @@ adrs <- adrs %>%
     )
   )
 
-## Measurable disease at baseline ----
+# Measurable disease at baseline
 adslmdis <- adsl %>%
   select(STUDYID, USUBJID, !!!adsl_vars)
 
@@ -396,7 +370,7 @@ adrs <- adrs %>%
     by_vars = exprs(STUDYID, USUBJID)
   )
 
-# Save output ----
+# ---- Save output ----
 
 dir <- tempdir() # Change to whichever directory you want to save the dataset in
 saveRDS(adrs, file = file.path(dir, "adrs.rds"), compress = "bzip2")
