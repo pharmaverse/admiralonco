@@ -287,3 +287,13 @@ adtr <- adtr %>%
     dataset_add = select(adsl, !!!negate_vars(adsl_vars)),
     by_vars = exprs(STUDYID, USUBJID)
   )
+
+# Save output ----
+
+dir <- file.path(getwd(), "tmp")
+print(dir)
+if (!file.exists(dir)) {
+  # Create the folder
+  dir.create(dir)
+}
+save(adtr, file = file.path(dir, "adtr.rda"), compress = "bzip2")
