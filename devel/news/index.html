@@ -37,17 +37,6 @@
 <li class="active nav-item">
   <a class="nav-link" href="../news/index.html">Changelog</a>
 </li>
-<!-- start dropdown for versions --> <li class="nav-item dropdown">
-        <a href="#" class="nav-link dropdown-toggle"
-          data-bs-toggle="dropdown" role="button"
-          aria-expanded="false" aria-haspopup="true"
-          id="dropdown-versions">Versions</a> <div class="dropdown-menu" aria-labelledby="dropdown-versions"> <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/main">main</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/devel">devel</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/v0.4.0">v0.4.0</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/v0.3.0">v0.3.0</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/v0.2.0">v0.2.0</a>
-<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/v0.1.0">v0.1.0</a> </div></li>
-<!-- end dropdown for versions -->
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
@@ -72,14 +61,14 @@
 <h2 class="pkg-version" data-toc-text="0.5.0" id="admiralonco-050">admiralonco 0.5.0<a class="anchor" aria-label="anchor" href="#admiralonco-050"></a></h2><p class="text-muted">CRAN release: 2023-09-14</p>
 <div class="section level3">
 <h3 id="new-features-0-5-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-5-0"></a></h3>
-<ul><li>Oncology specific events are provided for deriving oncology parameters with <code><a href="https://rdrr.io/pkg/admiral/man/derive_extreme_event.html" class="external-link">admiral::derive_extreme_event()</a></code>. (<a href="https://github.com/pharmaverse/admiralonco/issues/234" class="external-link">#234</a>)</li>
+<ul><li>Oncology specific events are provided for deriving oncology parameters with <code><a href="https://pharmaverse.github.io/admiral/main/reference/derive_extreme_event.html" class="external-link">admiral::derive_extreme_event()</a></code>. (<a href="https://github.com/pharmaverse/admiralonco/issues/234" class="external-link">#234</a>)</li>
 </ul></div>
 <div class="section level3">
 <h3 id="documentation-0-5-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-5-0"></a></h3>
 <ul><li>
 <p>The <code>ADRS</code> vignette and template were split into two (<a href="https://github.com/pharmaverse/admiralonco/issues/234" class="external-link">#234</a>):</p>
 <ul><li>A basic version which uses the <a href="https://pharmaverse.github.io/admiralonco/" class="external-link">admiralonco</a> functions to cover standard RECIST 1.1.</li>
-<li>A more flexible version which uses <code><a href="https://rdrr.io/pkg/admiral/man/derive_extreme_event.html" class="external-link">admiral::derive_extreme_event()</a></code>. This should be used if non-standard <code>ADRS</code> parameters should be implemented or non-standard response values should be considered. This version can also be used as a starting point for implementing other response criteria than RECIST 1.1, e.g., iRECIST or International Myeloma Working Group (IMWG) criteria for the diagnosis of multiple myeloma.</li>
+<li>A more flexible version which uses <code><a href="https://pharmaverse.github.io/admiral/main/reference/derive_extreme_event.html" class="external-link">admiral::derive_extreme_event()</a></code>. This should be used if non-standard <code>ADRS</code> parameters should be implemented or non-standard response values should be considered. This version can also be used as a starting point for implementing other response criteria than RECIST 1.1, e.g., iRECIST or International Myeloma Working Group (IMWG) criteria for the diagnosis of multiple myeloma.</li>
 </ul></li>
 <li><p>The <code>ADRS</code> vignette and template were updated such that test data from <a href="https://pharmaverse.github.io/pharmaversesdtm" class="external-link">pharmaversesdtm</a> instead of <code>{admiral.test}</code> is used. (<a href="https://github.com/pharmaverse/admiralonco/issues/226" class="external-link">#226</a>)</p></li>
 <li><p>The “Create <code>ADTR</code>” vignette and the <code>ADTR</code> template were updated such that test data from <a href="https://pharmaverse.github.io/pharmaversesdtm" class="external-link">pharmaversesdtm</a> instead of <code>{admiral.test}</code> is used. (<a href="https://github.com/pharmaverse/admiralonco/issues/247" class="external-link">#247</a>)</p></li>
@@ -101,9 +90,9 @@
 <p>Vignettes and templates were updated due to changes in admiral and admiralonco: (<a href="https://github.com/pharmaverse/admiralonco/issues/216" class="external-link">#216</a>)</p>
 <ul><li>The <code>AVAL</code> variable is now populated via the <code>set_values_to</code> argument as the <code>aval_fun</code> argument was deprecated.</li>
 <li>
-<code><a href="https://rdrr.io/pkg/admiral/man/derive_param_extreme_event.html" class="external-link">admiral::derive_param_extreme_event()</a></code> calls were replaced by <code><a href="https://rdrr.io/pkg/admiral/man/derive_extreme_records.html" class="external-link">admiral::derive_extreme_records()</a></code> calls due to deprecation of <code><a href="https://rdrr.io/pkg/admiral/man/derive_param_extreme_event.html" class="external-link">admiral::derive_param_extreme_event()</a></code>.</li>
+<code><a href="https://pharmaverse.github.io/admiral/main/reference/derive_param_extreme_event.html" class="external-link">admiral::derive_param_extreme_event()</a></code> calls were replaced by <code><a href="https://pharmaverse.github.io/admiral/main/reference/derive_extreme_records.html" class="external-link">admiral::derive_extreme_records()</a></code> calls due to deprecation of <code><a href="https://pharmaverse.github.io/admiral/main/reference/derive_param_extreme_event.html" class="external-link">admiral::derive_param_extreme_event()</a></code>.</li>
 <li>
-<code><a href="https://rdrr.io/pkg/admiral/man/derive_param_exist_flag.html" class="external-link">admiral::derive_param_exist_flag()</a></code> calls were updated as the <code>dataset_adsl</code> argument was renamed to <code>dataset_ref</code>.</li>
+<code><a href="https://pharmaverse.github.io/admiral/main/reference/derive_param_exist_flag.html" class="external-link">admiral::derive_param_exist_flag()</a></code> calls were updated as the <code>dataset_adsl</code> argument was renamed to <code>dataset_ref</code>.</li>
 </ul></li>
 </ul></div>
 <div class="section level3">
@@ -125,18 +114,18 @@
 </ul></div>
 <div class="section level3">
 <h3 id="various-0-3-0">Various<a class="anchor" aria-label="anchor" href="#various-0-3-0"></a></h3>
-<ul><li>ADTTE template simplified for duration of response in line with <code><a href="https://rdrr.io/pkg/admiral/man/derive_param_tte.html" class="external-link">admiral::derive_param_tte()</a></code> enhancement (<a href="https://github.com/pharmaverse/admiralonco/issues/203" class="external-link">#203</a>)</li>
+<ul><li>ADTTE template simplified for duration of response in line with <code><a href="https://pharmaverse.github.io/admiral/main/reference/derive_param_tte.html" class="external-link">admiral::derive_param_tte()</a></code> enhancement (<a href="https://github.com/pharmaverse/admiralonco/issues/203" class="external-link">#203</a>)</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="admiralonco-020">admiralonco 0.2.0<a class="anchor" aria-label="anchor" href="#admiralonco-020"></a></h2><p class="text-muted">CRAN release: 2022-12-07</p>
 <div class="section level3">
 <h3 id="updates-of-existing-functions-0-2-0">Updates of Existing Functions<a class="anchor" aria-label="anchor" href="#updates-of-existing-functions-0-2-0"></a></h3>
-<ul><li>Functions that use <code>subject_keys</code> as a function argument now default to <code>get_admiral_option("subject_keys")</code>instead of <code>vars(STUDYID, USUBJID)</code> to allow users to change the variables that uniquely identify a subject once using <code><a href="https://rdrr.io/pkg/admiral/man/set_admiral_options.html" class="external-link">set_admiral_options()</a></code> to avoid several instances of find + replace in a script. (<a href="https://github.com/pharmaverse/admiralonco/issues/175" class="external-link">#175</a>)</li>
+<ul><li>Functions that use <code>subject_keys</code> as a function argument now default to <code>get_admiral_option("subject_keys")</code>instead of <code>vars(STUDYID, USUBJID)</code> to allow users to change the variables that uniquely identify a subject once using <code><a href="https://pharmaverse.github.io/admiral/main/reference/set_admiral_options.html" class="external-link">set_admiral_options()</a></code> to avoid several instances of find + replace in a script. (<a href="https://github.com/pharmaverse/admiralonco/issues/175" class="external-link">#175</a>)</li>
 </ul></div>
 <div class="section level3">
 <h3 id="breaking-changes-0-2-0">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-0"></a></h3>
-<ul><li>Function <code>derive_param_lasta()</code> has been deprecated. Please use <code><a href="https://rdrr.io/pkg/admiral/man/derive_param_extreme_event.html" class="external-link">admiral::derive_param_extreme_event()</a></code> instead (<a href="https://github.com/pharmaverse/admiralonco/issues/89" class="external-link">#89</a>).</li>
+<ul><li>Function <code>derive_param_lasta()</code> has been deprecated. Please use <code><a href="https://pharmaverse.github.io/admiral/main/reference/derive_param_extreme_event.html" class="external-link">admiral::derive_param_extreme_event()</a></code> instead (<a href="https://github.com/pharmaverse/admiralonco/issues/89" class="external-link">#89</a>).</li>
 </ul></div>
 <div class="section level3">
 <h3 id="documentation-0-2-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-2-0"></a></h3>
