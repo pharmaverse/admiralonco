@@ -69,9 +69,10 @@ For example purpose, `CM` and `PR` has been generated (based on CDISC Pilot test
 
 ```{r, warning=FALSE, message=FALSE}
 library(admiral)
+library(pharmaverseadam)
 library(dplyr)
 
-adsl <- admiral_adsl
+adsl_onco <- adsl
 
 cm <- tribble(
   ~STUDYID, ~USUBJID, ~CMCAT, ~CMSCAT, ~CMTRT, ~CMSTDTC,
@@ -100,7 +101,7 @@ To derive the New Anti-Cancer Therapy start date with data from a single source,
 
 ```{r message=FALSE}
 adsl <- derive_vars_merged(
-  admiral_adsl,
+  adsl_onco,
   dataset_add = cm,
   by_vars = exprs(STUDYID, USUBJID),
   order = exprs(NACTDT),
@@ -146,7 +147,7 @@ pr_date <- date_source(
 After completion of the prerequisite step, the new anti-cancer date can be derived while simultaneously adding it to `ADSL`.
 
 ```{r message=FALSE}
-adsl <- admiral_adsl %>%
+adsl <- adsl_onco %>%
   derive_var_extreme_dt(
     new_var = NACTDT,
     cm_date, pr_date,
@@ -180,7 +181,7 @@ Based on individual company standards, this parameter may be added to an event o
 library(admiralonco)
 
 adrs <- derive_param_extreme_record(
-  dataset = admiral_adrs,
+  dataset = adrs_onco,
   sources = list(
     records_source(
       dataset_name = "cm",
