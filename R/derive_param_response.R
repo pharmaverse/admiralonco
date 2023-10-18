@@ -241,6 +241,7 @@ derive_param_response <- function(dataset,
       order = exprs(ADT),
       mode = "first",
       exist_flag = AVALC,
+      false_value = "N",
       set_values_to = set_values_to
     )
 }
