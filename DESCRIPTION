@@ -1,7 +1,7 @@
 Package: admiralonco
 Type: Package
 Title: Oncology Extension Package for ADaM in 'R' Asset Library
-Version: 0.5.0.9000
+Version: 0.5.0.9001
 Authors@R: c(
     person("Stefan", "Bundfuss", email = "stefan.bundfuss@roche.com", role = c("aut", "cre")),
     person("Ross", "Farrugia", role = "aut"),
@@ -13,6 +13,7 @@ Authors@R: c(
     person("Hinal", "Patel", role = "aut"),
     person("Vinh", "Nguyen", role = "aut"),
     person("Karl", "Kennedy", role = "ctb"),
+    person("Edoardo", "Mancini", role = "ctb"),
     person("Matt", "Marino", role = "ctb"),
     person("Gopi", "Vegesna", role = "ctb"),    
     person("Thomas", "Neitmann", role = "ctb"),

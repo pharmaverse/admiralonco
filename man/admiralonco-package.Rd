@@ -37,6 +37,7 @@ Authors:
 Other contributors:
 \itemize{
   \item Karl Kennedy [contributor]
+  \item Edoardo Mancini [contributor]
   \item Matt Marino [contributor]
   \item Gopi Vegesna [contributor]
   \item Thomas Neitmann [contributor]
