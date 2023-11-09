@@ -1,5 +1,9 @@
 # admiralonco (development version)
 
+## Various
+
+- Website now has button/links to Slack channel and GitHub Issues. (#262)
+
 # admiralonco 0.5.0
 
 ## New Features
