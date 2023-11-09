@@ -77,3 +77,5 @@ navbar:
         href: articles/adtr.html
       - text: Creating and Using New Anti-Cancer Start Date
         href: articles/nactdt.html
+      - text: Creating ADRS with iRECIST endpoints
+        href: articles/irecist.html
