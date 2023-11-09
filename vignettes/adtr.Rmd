@@ -447,6 +447,7 @@ adtr_sum <- adtr_sum %>%
     order = exprs(AVAL),
     new_vars = exprs(NADIR = AVAL),
     join_vars = exprs(ADY),
+    join_type = "all",
     filter_add = ANL01FL == "Y",
     filter_join = ADY.join < ADY,
     mode = "first",
