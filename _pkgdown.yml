@@ -14,6 +14,10 @@ repo:
     user: https://github.com/
 news:
     cran_dates: true
+
+development:
+  mode: auto
+
 reference:
 
  - title: Derivations for Adding Parameters
@@ -56,8 +60,8 @@ reference:
 
 navbar:
   structure:
-    left: [getstarted, reference, articles, news]
-    right: [search, slack, newissue, github]
+    left: [getstarted, reference, articles, news, versions]
+    right: [search, slack, history, newissue, github]
   components:
     getstarted:
       text: Get Started
@@ -78,6 +82,10 @@ navbar:
         href: articles/adtr.html
       - text: Creating and Using New Anti-Cancer Start Date
         href: articles/nactdt.html
+    history:
+      icon: fa-history
+      href: articles/website-versions.html
+      aria-label: Previous Release Websites
     slack:
       icon: fa-slack
       href: https://app.slack.com/client/T028PB489D3/C02M8KN8269

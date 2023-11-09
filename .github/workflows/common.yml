@@ -93,7 +93,7 @@ jobs:
       # Whether to skip multiversion docs
       # Note that if you have multiple versions of docs,
       # your URL links are likely to break due to path changes
-      skip-multiversion-docs: false
+      skip-multiversion-docs: true
       latest-tag-alt-name: main
       multiversion-docs-landing-page: main
       branches-or-tags-to-list: >-
