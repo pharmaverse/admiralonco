@@ -52,13 +52,10 @@ library(admiraldev)
 This article describes creating an `ADRS` ADaM with oncology endpoint parameters
 based on iRECIST. It shows a similar way of deriving the endpoints presented in 
 [Creating ADRS (Including Non-standard Endpoints)](adrs.html). Most of the endpoints 
-are derived by calling `admiral::derive_extreme_event()`. Thus the examples in this 
-vignette can also be used as a starting point for implementing response criteria other 
-than iRECIST 1.1,  e.g., RECIST 1.1 or International Myeloma Working Group (IMWG) 
-criteria for the diagnosis of multiple myeloma.
+are derived by calling `admiral::derive_extreme_event()`.
 
 For more information on the iRECIST guidelines user may visit
-https://recist.eortc.org/recist-1-1-2/
+https://recist.eortc.org/irecist/
 
 Examples are currently presented and tested using `ADSL` (ADaM) and
 `RS` (SDTM) inputs. However, other domains could be used. The functions 
@@ -76,6 +73,7 @@ unless otherwise specified.*
 -   [Derive Clinical Benefit Parameter](#cb)
 -   [Derive Best Overall Response Parameter](#bor)
 -   [Derive Response Parameters requiring Confirmation](#confirm)
+-   [Other Endpoints](#Other)
 
 ## Read in Data {#readdata}
 
@@ -95,9 +93,9 @@ library(pharmaversesdtm)
 library(lubridate)
 library(stringr)
 data("adsl")
+# iRECIST oncology data
 data("rs_onco_irecist")
 
-adsl_onco <- adsl
 rs <- rs_onco_irecist
 
 rs <- convert_blanks_to_na(rs)
@@ -106,9 +104,9 @@ rs <- convert_blanks_to_na(rs)
 ```{r echo=FALSE}
 # select subjects from adsl such that there is one subject without RS data
 rs_subjects <- unique(rs$USUBJID)
-adsl_subjects <- unique(adsl_onco$USUBJID)
+adsl_subjects <- unique(adsl$USUBJID)
 adsl <- filter(
-  adsl_onco,
+  adsl,
   USUBJID %in% union(rs_subjects, setdiff(adsl_subjects, rs_subjects)[1])
 )
 ```
@@ -138,8 +136,11 @@ dataset_vignette(
 ## Pre-processing of Input Records {#input}
 
 The first step involves company-specific pre-processing of records for
-the required input to the downstream parameter functions. It could involve
-merging input data from other sources besides `RS`, such as `ADTR`.
+the required input to the downstream parameter functions. Note that this
+could be needed multiple times (e.g. once for investigator and once for
+Independent Review Facility (IRF)/Blinded Independent Central Review
+(BICR) records). It could even involve merging input data from other
+sources besides `RS`, such as `ADTR`.
 
 This step would include any required selection/derivation of `ADT` or
 applying any necessary partial date imputations, updating `AVAL` (e.g.
@@ -296,7 +297,7 @@ adrs <- adrs %>%
   )
 ```
 
-### Flag Assessments up to First PD (`ANL02FL`) {#anl02fl}
+### Flag Assessments up to First iCPD (`ANL02FL`) {#anl02fl}
 
 To restrict response data up to and including first reported progressive disease
 `ANL02FL` flag could be created by using `{admiral}` function
@@ -372,7 +373,7 @@ icbor_ipr <- event_joined(
     "Define partial response (iPR) for confirmed best overall response (iCBOR) as",
     "iPR followed by iCR or iPR at least",
     confirmation_period,
-    "28 days later, at most one NE in between, and no iPR after iCR"
+    "days later, at most one NE in between, and no iPR after iCR"
   ),
   dataset_name = "ovr",
   join_vars = exprs(AVALC, ADT),
@@ -454,7 +455,7 @@ dataset_vignette(
 )
 ```
 
-For progressive disease response shown in steps here and below, in our 
+For progressive disease and response shown in steps here and below, in our 
 examples we show these as `ADRS` parameters, but they could equally be 
 achieved via `ADSL` dates or `ADEVENT` parameters.If you prefer to store 
 as an ADSL date, then the function `admiral::derive_var_extreme_dt()` 
@@ -513,7 +514,7 @@ dataset_vignette(
 
 The function `admiral::derive_extreme_event()` can then be used to derive the
 clinical benefit parameter, which we define as a patient having had a response
-or a sustained period of time before first `iCPD`. This could also be known as
+or a sustained period of time before first `iUPD`. This could also be known as
 disease control. In this example the "sustained period" has been defined as 42
 days after randomization date via the created `icb_y` event.
 
@@ -521,7 +522,7 @@ days after randomization date via the created `icb_y` event.
 ```{r}
 icb_y <- event(
   description = paste(
-    "Define iCR, iPR, iSD, or NON-iCR/NON-iPD occuring at least 42 days after",
+    "Define iCR, iPR, iSD, or NON-iCR/NON-iUPD occuring at least 42 days after",
     "randomization as clinical benefit"
   ),
   dataset_name = "ovr",
@@ -618,14 +619,14 @@ ibor_non_icripd <- event(
 )
 
 ibor_icpd <- event(
-  description = "Define progressive disease (iCPD) for best overall response (iBOR)",
+  description = "Define confirmed progressive disease (iCPD) for best overall response (iBOR)",
   dataset_name = "ovr",
   condition = AVALC == "iCPD",
   set_values_to = exprs(AVALC = "iCPD")
 )
 
 ibor_iupd <- event(
-  description = "Define progressive disease (iUPD) for best overall response (iBOR)",
+  description = "Define unconfirmed progressive disease (iUPD) for best overall response (iBOR)",
   dataset_name = "ovr",
   condition = AVALC == "iUPD",
   set_values_to = exprs(AVALC = "iUPD")
@@ -685,17 +686,18 @@ this calculation of days between visits)*, using the `icrsp_y_cr`[^1],
 
 [^1]:
 ```{r}
+confirmation_period <- 28
 icrsp_y_icr <- event_joined(
   description = paste(
-    "Define confirmed response as iCR followed by CR at least 28 days later and",
+    "Define confirmed response as iCR followed by iCR at least 28 days later and",
     "at most one NE in between"
   ),
   dataset_name = "ovr",
   join_vars = exprs(AVALC, ADT),
   join_type = "after",
   order = exprs(ADT),
-  first_cond = AVALC.join == "CR" &
-    ADT.join >= ADT + days(28),
+  first_cond = AVALC.join == "iCR" &
+    ADT.join >= ADT + days(confirmation_period),
   condition = AVALC == "iCR" &
     all(AVALC.join %in% c("iCR", "NE")) &
     count_vals(var = AVALC.join, val = "NE") <= 1,
@@ -704,9 +706,10 @@ icrsp_y_icr <- event_joined(
 ```
 [^2]:
 ```{r}
+confirmation_period <- 28
 icrsp_y_ipr <- event_joined(
   description = paste(
-    "Define confirmed response as iPR followed by iCR or PR at least 28 days later,",
+    "Define confirmed response as iPR followed by iCR or iPR at least 28 days later,",
     "at most one NE in between, and no iPR after iCR"
   ),
   dataset_name = "ovr",
@@ -714,7 +717,7 @@ icrsp_y_ipr <- event_joined(
   join_type = "after",
   order = exprs(ADT),
   first_cond = AVALC.join %in% c("iCR", "iPR") &
-    ADT.join >= ADT + days(28),
+    ADT.join >= ADT + days(confirmation_period),
   condition = AVALC == "iPR" &
     all(AVALC.join %in% c("iCR", "iPR", "NE")) &
     count_vals(var = AVALC.join, val = "NE") <= 1 &
@@ -731,16 +734,17 @@ icrsp_y_ipr <- event_joined(
 ```
 [^3]:
 ```{r}
+confirmation_period <- 28
 icbor_icr <- event_joined(
   description = paste(
-    "Define complete response (iCR) for confirmed best overall response (ICBOR) as",
+    "Define complete response (iCR) for confirmed best overall response (iCBOR) as",
     "iCR followed by iCR at least 28 days later and at most one NE in between"
   ),
   dataset_name = "ovr",
   join_vars = exprs(AVALC, ADT),
   join_type = "after",
   first_cond = AVALC.join == "iCR" &
-    ADT.join >= ADT + 28,
+    ADT.join >= ADT + confirmation_period,
   condition = AVALC == "iCR" &
     all(AVALC.join %in% c("iCR", "NE")) &
     count_vals(var = AVALC.join, val = "NE") <= 1,
@@ -749,9 +753,10 @@ icbor_icr <- event_joined(
 ```
 [^4]:
 ```{r}
+confirmation_period <- 28
 icbor_ipr <- event_joined(
   description = paste(
-    "Define partial response (iPR) for confirmed best overall response (ICBOR) as",
+    "Define partial response (iPR) for confirmed best overall response (iCBOR) as",
     "iPR followed by iCR or iPR at least 28 days later, at most one NE in between,",
     "and no iPR after iCR"
   ),
@@ -759,7 +764,7 @@ icbor_ipr <- event_joined(
   join_vars = exprs(AVALC, ADT),
   join_type = "after",
   first_cond = AVALC.join %in% c("iCR", "iPR") &
-    ADT.join >= ADT + 28,
+    ADT.join >= ADT + confirmation_period,
   condition = AVALC == "iPR" &
     all(AVALC.join %in% c("iCR", "iPR", "NE")) &
     count_vals(var = AVALC.join, val = "NE") <= 1 &
@@ -842,17 +847,20 @@ adrs <- adrs %>%
       PARAM = "Immune Best Overall Response by Investigator (confirmation required)",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "iRecist",
       AVAL = aval_resp(AVALC),
       ANL01FL = "Y"
     )
   )
 ```
 
-```{r, echo=FALSE}
+```{r, eval=TRUE, echo=FALSE}
 dataset_vignette(
   adrs,
   display_vars = exprs(USUBJID, AVISIT, PARAMCD, PARAM, AVALC, ADT, RANDDT, ANL01FL),
   filter = PARAMCD %in% c("ICRSP", "ICCB", "ICBOR")
 )
 ```
+## Other Endpoints {#other}
+
+For additional endpoints that can be added please see [Creating ADRS (Including Non-standard Endpoints)](adrs.html).
