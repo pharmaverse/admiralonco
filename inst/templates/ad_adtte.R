@@ -81,5 +81,9 @@ adtte <- adtte %>%
 
 # Save output ----
 
-dir <- tempdir() # Change to whichever directory you want to save the dataset in
-saveRDS(adtte, file = file.path(dir, "adtte.rds"), compress = "bzip2")
+dir <- tools::R_user_dir("admiralonco_templates_data", which = "cache")
+if (!file.exists(dir)) {
+  # Create the folder
+  dir.create(dir, recursive = TRUE, showWarnings = FALSE)
+}
+save(adtte, file = file.path(dir, "adtte.rda"), compress = "bzip2")
