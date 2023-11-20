@@ -54,12 +54,16 @@ based on iRECIST. It shows a similar way of deriving the endpoints presented in
 [Creating ADRS (Including Non-standard Endpoints)](adrs.html). Most of the endpoints 
 are derived by calling `admiral::derive_extreme_event()`.
 
-For more information on the iRECIST guidelines user may visit
+This vignette follows the iRECIST guidelines, for more information user may visit
 https://recist.eortc.org/irecist/
 
 Examples are currently presented and tested using `ADSL` (ADaM) and
-`RS` (SDTM) inputs. However, other domains could be used. The functions 
-and workflow could similarly be used to create an intermediary `ADEVENT` ADaM.
+`RS` (SDTM) inputs. However, other domains could be used. The `RS` test data
+contains iRECIST response for target, non-target and overall response. Further 
+pre-processing and considerations may be needed if iRECIST are only collected 
+after RECIST 1.1 progression and input data contains multiple response criteria. 
+The functions and workflow could similarly be used to create an intermediary 
+`ADEVENT` ADaM.
 
 **Note**: *All examples assume CDISC SDTM and/or ADaM format as input
 unless otherwise specified.*
@@ -93,7 +97,7 @@ library(pharmaversesdtm)
 library(lubridate)
 library(stringr)
 data("adsl")
-# iRECIST oncology data
+# iRECIST oncology sdtm data
 data("rs_onco_irecist")
 
 rs <- rs_onco_irecist
@@ -178,7 +182,7 @@ adrs <- adrs %>%
     PARAM = "Overall Response by Investigator",
     PARCAT1 = "Tumor Response",
     PARCAT2 = "Investigator",
-    PARCAT3 = "iRecist"
+    PARCAT3 = "iRECIST"
   )
 ```
 
@@ -230,8 +234,8 @@ aval_resp_new <- function(arg) {
     arg == "iPR" ~ 7,
     arg == "iSD" ~ 6,
     arg == "NON-iCR/NON-iUPD" ~ 5,
-    arg == "iCPD" ~ 4,
-    arg == "iUPD" ~ 3,
+    arg == "iUPD" ~ 4,
+    arg == "iCPD" ~ 3,
     arg == "NE" ~ 2,
     arg == "MISSING" ~ 1,
     TRUE ~ NA_real_
@@ -270,7 +274,7 @@ adrs <- adrs %>%
       new_var = ANL01FL,
       mode = "last"
     ),
-    filter = !is.na(AVAL) & ADT >= RANDDT
+    filter = !is.na(AVAL) & AVALC !="MISSING" & ADT >= RANDDT
   )
 ```
 
@@ -326,7 +330,7 @@ dataset_vignette(
 ### Select Source Assessments for Parameter derivations
 
 For most parameter derivations the post-baseline overall response assessments up
-to and including first PD are considered.
+to and including first iCPD are considered.
 ```{r}
 ovr <- filter(adrs, PARAMCD == "OVR" & ANL01FL == "Y" & ANL02FL == "Y")
 ```
@@ -344,54 +348,33 @@ The building blocks for the events that contribute to deriving common endpoints
 like what constitutes a responder, or a Best Overall Response of complete
 response (CR), ... are predefined in admiralonco for Recist 1.1 (see [Pre-Defined
 Response Event Objects](../reference/event_objects.html)). New Response Event Objects 
-are needed for iRECIST and any study-specific needs. Here the confirmation period 
-and the `keep_source_vars` argument is updated, as well as the `first_cond` and `condition` for the iRECIST values.
+are needed for iRECIST and any study-specific needs. 
 
 ```{r}
-confirmation_period <- 21
-
-icbor_icr <- event_joined(
+icpd_y <- event_joined(
   description = paste(
-    "Define complete response (iCR) for confirmed best overall response (iCBOR) as",
-    "iCR followed by iCR at least",
-    confirmation_period,
-    "days later and at most one NE in between"
+    "Define confirmed progressive disease (iCPD) as",
+    "iUPD followed by iCPD with only other iUPD and NE responses in between"
   ),
   dataset_name = "ovr",
   join_vars = exprs(AVALC, ADT),
   join_type = "after",
-  first_cond = AVALC.join == "iCR" &
-    ADT.join >= ADT + confirmation_period,
-  condition = AVALC == "iCR" &
-    all(AVALC.join %in% c("iCR", "NE")) &
-    count_vals(var = AVALC.join, val = "NE") <= 1,
-  set_values_to = exprs(AVALC = "iCR")
+  first_cond_upper = AVALC.join == "iCPD",
+  condition = AVALC == "iUPD" &
+    all(AVALC.join %in% c("iCPD", "iUPD", "NE" )),
+  set_values_to = exprs(AVALC = "Y")
 )
 
-icbor_ipr <- event_joined(
+iupd_y <- event_joined(
   description = paste(
-    "Define partial response (iPR) for confirmed best overall response (iCBOR) as",
-    "iPR followed by iCR or iPR at least",
-    confirmation_period,
-    "days later, at most one NE in between, and no iPR after iCR"
+    "Define unconfirmed progressive disease (iUPD) as",
+    "iUPD followed only by other iUPD or NE responses"
   ),
   dataset_name = "ovr",
   join_vars = exprs(AVALC, ADT),
-  join_type = "after",
-  first_cond = AVALC.join %in% c("iCR", "iPR") &
-    ADT.join >= ADT + confirmation_period,
-  condition = AVALC == "iPR" &
-    all(AVALC.join %in% c("iCR", "iPR", "NE")) &
-    count_vals(var = AVALC.join, val = "NE") <= 1 &
-    (
-      min_cond(
-        var = ADT.join,
-        cond = AVALC.join == "iCR"
-      ) > max_cond(var = ADT.join, cond = AVALC.join == "iPR") |
-        count_vals(var = AVALC.join, val = "iCR") == 0 |
-        count_vals(var = AVALC.join, val = "iPR") == 0
-    ),
-  set_values_to = exprs(AVALC = "iPR")
+  join_type = "all",
+  condition = ADT <= ADT.join & AVALC == "iUPD" & all(AVALC.join %in% c("iUPD", "NE")),
+  set_values_to = exprs(AVALC = "Y")
 )
 
 no_data_n <- event(
@@ -412,9 +395,10 @@ no_data_missing <- event(
   set_values_to = exprs(AVALC = "MISSING"),
   keep_source_vars = adsl_vars
 )
+
 ```
 
-## Derive Confirmed Progressive Disease Parameter {#pd}
+## Derive Confirmed and Unconfirmed Progressive Disease Parameter {#pd}
 
 Now that we have the input records prepared above with any
 company-specific requirements, we can start to derive new parameter
@@ -422,36 +406,69 @@ records. For the parameter derivations, all values except those
 overwritten by `set_values_to` argument are kept from the earliest
 occurring input record fulfilling the required criteria.
 
-The function `admiral::derive_extreme_records()` can be used to find
-the date of first `iCPD`.
+When an `iCPD` occurs,the date would be that of the first `iUPD`. 
+The function `admiral::derive_extreme_records()`, in conjunction with the event `icpd_y`, 
+could be used to find the date of the first `iUPD`.
+
+For the Unconfirmed Progressive Disease Parameter, it can be of interest to look at `iUPD` that has
+never been confirmed and no subsequent `iSD`, `iPR` or `iCR` has been observed.
 
 ```{r}
 adrs <- adrs %>%
-  derive_extreme_records(
-    dataset_ref = adsl,
-    dataset_add = adrs,
+  derive_extreme_event(
     by_vars = exprs(STUDYID, USUBJID),
-    filter_add = PARAMCD == "OVR" & AVALC == "iCPD" & ANL01FL == "Y",
-    order = exprs(ADT, RSSEQ),
+    order = exprs(ADT),
     mode = "first",
-    exist_flag = AVALC,
+    source_datasets = list(
+      ovr = ovr,
+      adsl = adsl
+    ),
+    events = list(icpd_y, no_data_n),
     set_values_to = exprs(
       PARAMCD = "ICPD",
       PARAM = "Immune Confirmation of Disease Progression by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "iRecist",
+      PARCAT3 = "iRECIST",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
   )
+
+ovr_orig <- ovr
+ovr <- ovr %>%
+  group_by(USUBJID) %>%
+  filter(ADT >= max_cond(var = ADT, cond = AVALC == "iUPD")) %>% 
+  ungroup(USUBJID)
+
+adrs <- adrs %>%
+  derive_extreme_event(
+    by_vars = exprs(STUDYID, USUBJID),
+    order = exprs(ADT),
+    mode = "first",
+    source_datasets = list(
+      ovr = ovr,
+      adsl = adsl
+    ),
+    events = list(iupd_y, no_data_n),
+    set_values_to = exprs(
+      PARAMCD = "IUPD",
+      PARAM = "Immune Unconfirmed Disease Progression by Investigator",
+      PARCAT1 = "Tumor Response",
+      PARCAT2 = "Investigator",
+      PARCAT3 = "iRECIST",
+      AVAL = yn_to_numeric(AVALC),
+      ANL01FL = "Y"
+    )
+  )
+ovr <- ovr_orig
 ```
 
 ```{r, echo=FALSE}
 dataset_vignette(
   adrs,
   display_vars = exprs(USUBJID, AVISIT, PARAMCD, PARAM, AVALC, ADT, ANL01FL),
-  filter = PARAMCD == "ICPD"
+  filter = PARAMCD %in% c("ICPD", "IUPD")
 )
 ```
 
@@ -468,8 +485,6 @@ The function `admiral::derive_extreme_event()` can then be used to find the date
 of first response. In the below example, the response condition has been defined
 as `iCR` or `iPR` via the event `irsp_y` that was created for iRECIST.
 
-
-
 ```{r}
 irsp_y <- event(
   description = "Define iCR or iPR as (unconfirmed) response",
@@ -477,9 +492,7 @@ irsp_y <- event(
   condition = AVALC %in% c("iCR", "iPR"),
   set_values_to = exprs(AVALC = "Y")
 )
-```
 
-```{r}
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(STUDYID, USUBJID),
@@ -495,7 +508,7 @@ adrs <- adrs %>%
       PARAM = "Immune Response by Investigator (confirmation not required)",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "iRecist",
+      PARCAT3 = "iRECIST",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
@@ -518,7 +531,6 @@ or a sustained period of time before first `iUPD`. This could also be known as
 disease control. In this example the "sustained period" has been defined as 42
 days after randomization date via the created `icb_y` event.
 
-
 ```{r}
 icb_y <- event(
   description = paste(
@@ -535,7 +547,7 @@ icb_y <- event(
 Please note that the result `AVALC = "Y"` is defined by the first _two_ events
 specified for `events`. For subjects with observations fulfilling both events
 the one with the earlier date should be selected (and not the first one in the
-list). Thus `ignore_event_order = TRUE` is specified.
+list). Thus `ignore_event_order` and `tmp_event_nr_var` are not specified.
 
 ```{r}
 adrs <- adrs %>%
@@ -548,13 +560,12 @@ adrs <- adrs %>%
       ovr = ovr,
       adsl = adsl
     ),
-    ignore_event_order = TRUE,
     set_values_to = exprs(
       PARAMCD = "ICB",
       PARAM = "Immune Clinical Benefit by Investigator (confirmation for response not required)",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "iRecist",
+      PARCAT3 = "iRECIST",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     ),
@@ -608,7 +619,7 @@ ibor_isd <- event(
   set_values_to = exprs(AVALC = "iSD")
 )
 
-ibor_non_icripd <- event(
+ibor_non_icriupd <- event(
   description = paste(
     "Define NON-iCR/NON-iUPD for best overall response (iBOR) as NON-iCR/NON-iUPD",
     "occuring at least 42 days after randomization"
@@ -618,12 +629,21 @@ ibor_non_icripd <- event(
   set_values_to = exprs(AVALC = "NON-iCR/NON-iUPD")
 )
 
-ibor_icpd <- event(
-  description = "Define confirmed progressive disease (iCPD) for best overall response (iBOR)",
+
+ibor_icpd <- event_joined(
+  description = paste(
+    "Define confirmed progressive disease (iCPD) for best overall response (iBOR) as",
+    "iUPD followed by iCPD with only other iUPD and NE responses in between"
+  ),
   dataset_name = "ovr",
-  condition = AVALC == "iCPD",
+  join_vars = exprs(AVALC, ADT),
+  join_type = "after",
+  first_cond_upper = AVALC.join == "iCPD",
+  condition = AVALC == "iUPD" &
+    all(AVALC.join %in% c("iCPD", "iUPD", "NE")),
   set_values_to = exprs(AVALC = "iCPD")
 )
+
 
 ibor_iupd <- event(
   description = "Define unconfirmed progressive disease (iUPD) for best overall response (iBOR)",
@@ -635,30 +655,30 @@ ibor_iupd <- event(
 ibor_ne <- event(
   description = paste(
     "Define not evaluable (NE) for best overall response (iBOR) as iSD, NON-iCR/NON-iUPD,",
-    "or NE (should be specified after ibor_isd and ibor_non_icripd)"
+    "or NE (should be specified after ibor_isd and ibor_non_icriupd)"
   ),
   dataset_name = "ovr",
   condition = AVALC %in% c("iSD", "NON-iCR/NON-iUPD", "NE"),
   set_values_to = exprs(AVALC = "NE")
 )
 
-
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(ADT),
+    tmp_event_nr_var = event_nr,
+    order = exprs(event_nr,ADT),
     mode = "first",
     source_datasets = list(
       ovr = ovr,
       adsl = adsl
     ),
-    events = list(ibor_icr, ibor_ipr, ibor_isd, ibor_non_icripd, ibor_icpd, ibor_iupd, ibor_ne, no_data_missing),
+    events = list(ibor_icr, ibor_ipr, ibor_isd, ibor_non_icriupd, ibor_iupd, ibor_icpd, ibor_ne,  no_data_missing),
     set_values_to = exprs(
       PARAMCD = "IBOR",
       PARAM = "Immune Best Overall Response by Investigator (confirmation not required)",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "iRecist",
+      PARCAT3 = "iRECIST",
       AVAL = aval_resp_new(AVALC),
       ANL01FL = "Y"
     )
@@ -681,12 +701,14 @@ different events. Some of the other functions from above can then be re-used
 passing in these confirmed response records. See the examples below of derived
 parameters requiring confirmation. The assessment and the confirmatory
 assessment here need to occur at least 28 days apart *(without any +1 applied to
-this calculation of days between visits)*, using the `icrsp_y_cr`[^1],
-`icrsp_y_ipr`[^2], `icbor_icr`[^3], and `icbor_ipr`[^4] event.
+this calculation of days between visits)*, using the `icrsp_y_cr`,
+`icrsp_y_ipr`, `icbor_icr`, and `icbor_ipr` event. Here the confirmation period
+and the `keep_source_vars` argument is updated, as well as the `first_cond_upper` and 
+`condition` for the iRECIST values.
 
-[^1]:
-```{r}
+```{r }
 confirmation_period <- 28
+
 icrsp_y_icr <- event_joined(
   description = paste(
     "Define confirmed response as iCR followed by iCR at least 28 days later and",
@@ -696,17 +718,14 @@ icrsp_y_icr <- event_joined(
   join_vars = exprs(AVALC, ADT),
   join_type = "after",
   order = exprs(ADT),
-  first_cond = AVALC.join == "iCR" &
+  first_cond_upper = AVALC.join == "iCR" &
     ADT.join >= ADT + days(confirmation_period),
   condition = AVALC == "iCR" &
     all(AVALC.join %in% c("iCR", "NE")) &
     count_vals(var = AVALC.join, val = "NE") <= 1,
   set_values_to = exprs(AVALC = "Y")
 )
-```
-[^2]:
-```{r}
-confirmation_period <- 28
+
 icrsp_y_ipr <- event_joined(
   description = paste(
     "Define confirmed response as iPR followed by iCR or iPR at least 28 days later,",
@@ -716,7 +735,7 @@ icrsp_y_ipr <- event_joined(
   join_vars = exprs(AVALC, ADT),
   join_type = "after",
   order = exprs(ADT),
-  first_cond = AVALC.join %in% c("iCR", "iPR") &
+  first_cond_upper = AVALC.join %in% c("iCR", "iPR") &
     ADT.join >= ADT + days(confirmation_period),
   condition = AVALC == "iPR" &
     all(AVALC.join %in% c("iCR", "iPR", "NE")) &
@@ -731,10 +750,7 @@ icrsp_y_ipr <- event_joined(
     ),
   set_values_to = exprs(AVALC = "Y")
 )
-```
-[^3]:
-```{r}
-confirmation_period <- 28
+
 icbor_icr <- event_joined(
   description = paste(
     "Define complete response (iCR) for confirmed best overall response (iCBOR) as",
@@ -743,17 +759,14 @@ icbor_icr <- event_joined(
   dataset_name = "ovr",
   join_vars = exprs(AVALC, ADT),
   join_type = "after",
-  first_cond = AVALC.join == "iCR" &
+  first_cond_upper = AVALC.join == "iCR" &
     ADT.join >= ADT + confirmation_period,
   condition = AVALC == "iCR" &
     all(AVALC.join %in% c("iCR", "NE")) &
     count_vals(var = AVALC.join, val = "NE") <= 1,
   set_values_to = exprs(AVALC = "iCR")
 )
-```
-[^4]:
-```{r}
-confirmation_period <- 28
+
 icbor_ipr <- event_joined(
   description = paste(
     "Define partial response (iPR) for confirmed best overall response (iCBOR) as",
@@ -763,7 +776,7 @@ icbor_ipr <- event_joined(
   dataset_name = "ovr",
   join_vars = exprs(AVALC, ADT),
   join_type = "after",
-  first_cond = AVALC.join %in% c("iCR", "iPR") &
+  first_cond_upper = AVALC.join %in% c("iCR", "iPR") &
     ADT.join >= ADT + confirmation_period,
   condition = AVALC == "iPR" &
     all(AVALC.join %in% c("iCR", "iPR", "NE")) &
@@ -783,8 +796,7 @@ icbor_ipr <- event_joined(
 Please note that the result `AVALC = "Y"` for confirmed clinical benefit is
 defined by the first _two_ events specified for `events`. For subjects with
 observations fulfilling both events the one with the earlier date should be
-selected (and not the first one in the list). Thus `ignore_event_order = TRUE`
-is specified.
+selected (and not the first one in the list).
 
 ```{r}
 adrs <- adrs %>%
@@ -797,13 +809,12 @@ adrs <- adrs %>%
       adsl = adsl
     ),
     events = list(icrsp_y_icr, icrsp_y_ipr, no_data_n),
-    ignore_event_order = TRUE,
     set_values_to = exprs(
       PARAMCD = "ICRSP",
-      PARAM = "Immune Response by Investigator (confirmation required)",
+      PARAM = "Immune Confirmed Response by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "iRecist",
+      PARCAT3 = "iRECIST",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
@@ -819,13 +830,12 @@ adrs <- adrs %>%
       ovr = ovr,
       adsl = adsl
     ),
-    ignore_event_order = TRUE,
     set_values_to = exprs(
       PARAMCD = "ICCB",
-      PARAM = "Immune Clinical Benefit by Investigator (confirmation required)",
+      PARAM = "Immune Confirmed Clinical Benefit by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "iRecist",
+      PARCAT3 = "iRECIST",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     ),
@@ -835,19 +845,20 @@ adrs <- adrs %>%
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(ADT),
+    tmp_event_nr_var = event_nr,
+    order = exprs(event_nr,ADT),
     mode = "first",
-    events = list(icbor_icr, icbor_ipr, ibor_isd, ibor_non_icripd, ibor_icpd, ibor_iupd, ibor_ne, no_data_missing),
+    events = list(icbor_icr, icbor_ipr, ibor_isd, ibor_non_icriupd, ibor_iupd, ibor_icpd, ibor_ne, no_data_missing),
     source_datasets = list(
       ovr = ovr,
       adsl = adsl
     ),
     set_values_to = exprs(
       PARAMCD = "ICBOR",
-      PARAM = "Immune Best Overall Response by Investigator (confirmation required)",
+      PARAM = "Immune Best Confirmed Overall Response by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "iRecist",
+      PARCAT3 = "iRECIST",
       AVAL = aval_resp(AVALC),
       ANL01FL = "Y"
     )
