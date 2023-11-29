@@ -81,9 +81,13 @@ unless otherwise specified.*
 
 ## Read in Data {#readdata}
 
-To start, all data frames needed for the creation of `ADRS` should be
-read into the environment. This will be a company specific process. Some
-of the data frames needed may be `ADSL`, `RS` and `TU`.
+To start, all data frames needed for the creation of `ADRS` should be read into
+the environment. This will be a company specific process. Some of the data
+frames needed may be `ADSL`, `RS` and `TU`. For this vignette we assume that
+`RS` provides the response values `"iCR"`, `"iPR"`, `"iSD"`,
+`"NON-iCR/NON-iUPD"`, `"iUPD"`, `"iCP"`, and `"NE"`. All examples can be easily
+modified to consider other response values (see [Handling Different Input
+Response Values](#different_resp_vals)).
 
 For example purpose, the SDTM and ADaM datasets (based on CDISC Pilot
 test data)---which are included in `{pharmaversesdtm}` and `{pharmaverseadam}`---are used.
@@ -394,6 +398,22 @@ no_data_missing <- event(
   condition = TRUE,
   set_values_to = exprs(AVALC = "MISSING"),
   keep_source_vars = adsl_vars
+)
+
+```
+
+### Handling Different Input Response Values {#different_resp_vals}
+If `RS` contains other response values than the iRECIST responses, the `event()`
+and `event_joined()` can be adjusted to cover this scenario. For example, if
+RECIST responses (`"CR"`, `"PR"`, `"SD"`, ...) are collected up to first PD and
+iRECIST responses (`"iCR"`, `"iPR"`, `"iSD"`, ...) thereafter, the `event()`
+object defining unconfirmed response can be adjusted in the following way.
+```
+irsp_y <- event(
+  description = "Define CR, iCR, PR, or iPR as (unconfirmed) response",
+  dataset_name = "ovr",
+  condition = AVALC %in% c("CR", "iCR", "PR", "iPR"),
+  set_values_to = exprs(AVALC = "Y")
 )
 
 ```
