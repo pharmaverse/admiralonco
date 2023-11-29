@@ -280,7 +280,7 @@ adrs <- adrs %>%
       new_var = ANL01FL,
       mode = "first"
     ),
-    filter = !is.na(AVAL) & AVALC !="MISSING" & ADT >= RANDDT
+    filter = !is.na(AVAL) & AVALC != "MISSING" & ADT >= RANDDT
   )
 ```
 
@@ -367,7 +367,7 @@ icpd_y <- event_joined(
   join_type = "after",
   first_cond_upper = AVALC.join == "iCPD",
   condition = AVALC == "iUPD" &
-    all(AVALC.join %in% c("iCPD", "iUPD", "NE" )),
+    all(AVALC.join %in% c("iCPD", "iUPD", "NE")),
   set_values_to = exprs(AVALC = "Y")
 )
 
@@ -401,7 +401,6 @@ no_data_missing <- event(
   set_values_to = exprs(AVALC = "MISSING"),
   keep_source_vars = adsl_vars
 )
-
 ```
 
 ### Handling Different Input Response Values {#different_resp_vals}
@@ -461,7 +460,7 @@ adrs <- adrs %>%
 ovr_orig <- ovr
 ovr <- ovr %>%
   group_by(USUBJID) %>%
-  filter(ADT >= max_cond(var = ADT, cond = AVALC == "iUPD")) %>% 
+  filter(ADT >= max_cond(var = ADT, cond = AVALC == "iUPD")) %>%
   ungroup(USUBJID)
 
 adrs <- adrs %>%
@@ -689,13 +688,13 @@ adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(STUDYID, USUBJID),
     tmp_event_nr_var = event_nr,
-    order = exprs(event_nr,ADT),
+    order = exprs(event_nr, ADT),
     mode = "first",
     source_datasets = list(
       ovr = ovr,
       adsl = adsl
     ),
-    events = list(ibor_icr, ibor_ipr, ibor_isd, ibor_non_icriupd, ibor_icpd, ibor_iupd, ibor_ne,  no_data_missing),
+    events = list(ibor_icr, ibor_ipr, ibor_isd, ibor_non_icriupd, ibor_icpd, ibor_iupd, ibor_ne, no_data_missing),
     set_values_to = exprs(
       PARAMCD = "IBOR",
       PARAM = "iRECIST Best Overall Response by Investigator (confirmation not required)",
@@ -735,7 +734,7 @@ confirmation_period <- 28
 icrsp_y_icr <- event_joined(
   description = paste(
     "Define confirmed response as iCR followed by iCR at least",
-     confirmation_period,
+    confirmation_period,
     "days later and at most one NE in between"
   ),
   dataset_name = "ovr",
@@ -780,7 +779,7 @@ icbor_icr <- event_joined(
   description = paste(
     "Define complete response (iCR) for confirmed best overall response (iCBOR) as",
     "iCR followed by iCR at least",
-     confirmation_period,
+    confirmation_period,
     "days later and at most one NE in between"
   ),
   dataset_name = "ovr",
@@ -874,7 +873,7 @@ adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(STUDYID, USUBJID),
     tmp_event_nr_var = event_nr,
-    order = exprs(event_nr,ADT),
+    order = exprs(event_nr, ADT),
     mode = "first",
     events = list(icbor_icr, icbor_ipr, ibor_isd, ibor_non_icriupd, ibor_icpd, ibor_iupd, ibor_ne, no_data_missing),
     source_datasets = list(
