@@ -352,7 +352,7 @@ dataset_vignette(
 
 The building blocks for the events that contribute to deriving common endpoints
 like what constitutes a responder, or a Best Overall Response of complete
-response (CR), ... are predefined in admiralonco for Recist 1.1 (see [Pre-Defined
+response (CR), ... are predefined in admiralonco for RECIST 1.1 (see [Pre-Defined
 Response Event Objects](../reference/event_objects.html)). New Response Event Objects 
 are needed for iRECIST and any study-specific needs. 
 
@@ -906,11 +906,11 @@ The following parameters may also be added:
 
 BCP - Best Overall Response of CR/PR by Investigator (confirmation not required)<br>
 CBCP - Best Confirmed Overall Response of CR/PR by Investigator<br>
-A1BOR - Best Overall Response by Investigator (confirmation not required) - Recist 1.1 adjusted for NED at Baseline<br>
+A1BOR - Best Overall Response by Investigator (confirmation not required) - RECIST 1.1 adjusted for NED at Baseline<br>
 ACCB - Alternative Confirmed Clinical Benefit by Investigator<br>
 OVRB - Overall Response by BICR<br>
 DEATH - Death<br>
 LSTA - Last Disease Assessment by Investigator<br>
-MDIS - Measurable Disease at Baseline by Investigator<br> %>% 
+MDIS - Measurable Disease at Baseline by Investigator
 
 For examples on the additional endpoints, please see [Creating ADRS (Including Non-standard Endpoints)](adrs.html).
