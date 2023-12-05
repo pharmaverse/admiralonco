@@ -14,36 +14,6 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 
-library(admiral)
-
-link <- function(text, url) {
-  return(
-    paste0(
-      "[", text, "]",
-      "(", url, ")"
-    )
-  )
-}
-dyn_link <- function(text,
-                     base_url,
-                     relative_url = "",
-                     # Change to TRUE when admiral adopts multiversion docs
-                     is_multiversion = FALSE,
-                     multiversion_default_ref = "main") {
-  url <- paste(base_url, relative_url, sep = "/")
-  if (is_multiversion) {
-    url <- paste(
-      base_url,
-      Sys.getenv("BRANCH_NAME", multiversion_default_ref),
-      relative_url,
-      sep = "/"
-    )
-  }
-  return(link(text, url))
-}
-# Other variables
-admiral_homepage <- "https://pharmaverse.github.io/admiral/cran-release"
-
 library(admiraldev)
 ```
 
@@ -93,21 +63,22 @@ To start, all data frames needed for the creation of `ADRS` should be
 read into the environment. This will be a company specific process. Some
 of the data frames needed may be `ADSL`, `RS` and `TU`.
 
-For example purpose, the SDTM and ADaM datasets (based on CDISC Pilot
-test data)---which are included in `{pharmaversesdtm}`---are used.
+For example purpose, the SDTM and ADaM datasets (based on CDISC Pilot test
+data)---which are included in `{pharmaversesdtm}` and `{pharmaverseadam}`---are
+used.
 
 ```{r message=FALSE}
 library(admiral)
 library(admiralonco)
 library(dplyr)
 library(pharmaversesdtm)
+library(pharmaverseadam)
 library(lubridate)
 library(stringr)
-data("admiral_adsl")
+data("adsl")
 data("rs_onco_recist")
 data("tu_onco_recist")
 
-adsl <- admiral_adsl
 rs <- rs_onco_recist
 tu <- tu_onco_recist
 
@@ -192,7 +163,7 @@ adrs <- adrs %>%
     PARAM = "Overall Response by Investigator",
     PARCAT1 = "Tumor Response",
     PARCAT2 = "Investigator",
-    PARCAT3 = "Recist 1.1"
+    PARCAT3 = "RECIST 1.1"
   )
 ```
 
@@ -344,12 +315,13 @@ adrs <- adrs %>%
     order = exprs(ADT, RSSEQ),
     mode = "first",
     exist_flag = AVALC,
+    false_value = "N",
     set_values_to = exprs(
       PARAMCD = "PD",
       PARAM = "Disease Progression by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
@@ -414,7 +386,7 @@ adrs <- adrs %>%
       PARAM = "Response by Investigator (confirmation not required)",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
@@ -464,7 +436,7 @@ adrs <- adrs %>%
       PARAM = "Clinical Benefit by Investigator (confirmation for response not required)",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
@@ -501,7 +473,7 @@ adrs <- adrs %>%
       PARAM = "Best Overall Response by Investigator (confirmation not required)",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       AVAL = aval_resp(AVALC),
       ANL01FL = "Y"
     )
@@ -558,12 +530,13 @@ adrs <- adrs %>%
     order = exprs(ADT, RSSEQ),
     mode = "first",
     exist_flag = AVALC,
+    false_value = "N",
     set_values_to = exprs(
       PARAMCD = "BCP",
       PARAM = "Best Overall Response of CR/PR by Investigator (confirmation not required)",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
@@ -602,7 +575,7 @@ adrs <- adrs %>%
       PARAM = "Confirmed Response by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
@@ -628,7 +601,7 @@ adrs <- adrs %>%
       PARAM = "Confirmed Clinical Benefit by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
@@ -646,7 +619,7 @@ adrs <- adrs %>%
       PARAM = "Best Confirmed Overall Response by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       AVAL = aval_resp(AVALC),
       ANL01FL = "Y"
     )
@@ -659,12 +632,13 @@ adrs <- adrs %>%
     order = exprs(ADT, RSSEQ),
     mode = "first",
     exist_flag = AVALC,
+    false_value = "N",
     set_values_to = exprs(
       PARAMCD = "CBCP",
       PARAM = "Best Confirmed Overall Response of CR/PR by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
@@ -700,7 +674,7 @@ adrs_bicr <- rs %>%
     PARAM = "Overall Response by BICR",
     PARCAT1 = "Tumor Response",
     PARCAT2 = "Blinded Independent Central Review",
-    PARCAT3 = "Recist 1.1"
+    PARCAT3 = "RECIST 1.1"
   )
 ```
 
@@ -733,6 +707,7 @@ adrs <- adrs %>%
     by_vars = exprs(STUDYID, USUBJID),
     filter_add = !is.na(DTHDT),
     exist_flag = AVALC,
+    false_value = "N",
     set_values_to = exprs(
       PARAMCD = "DEATH",
       PARAM = "Death",
@@ -772,7 +747,7 @@ adrs <- adrs %>%
       PARAM = "Last Disease Assessment by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       ANL01FL = "Y"
     )
   )
@@ -810,7 +785,7 @@ adrs <- adrs %>%
       PARAMCD = "MDIS",
       PARAM = "Measurable Disease at Baseline by Investigator",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
@@ -872,4 +847,4 @@ dataset_vignette(
 
 ADaM | Sample Code
 ---- | --------------
-ADRS_BASIC | `r dyn_link("ad_adrs_basic.R", "https://github.com/pharmaverse/admiralonco/blob", "inst/templates/ad_adrs_basic.R", is_multiversion = TRUE)`
+ADRS_BASIC | `use_ad_template("ADRS_BASIC")`

@@ -51,7 +51,7 @@ adrs <- adrs %>%
     PARAM = "Overall Response by Investigator",
     PARCAT1 = "Tumor Response",
     PARCAT2 = "Investigator",
-    PARCAT3 = "Recist 1.1"
+    PARCAT3 = "RECIST 1.1"
   )
 
 # Date imputations - here we impute missing day to last possible date
@@ -140,7 +140,7 @@ adrs <- adrs %>%
       PARAM = "Disease Progression by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
@@ -163,7 +163,7 @@ adrs <- adrs %>%
       PARAM = "Response by Investigator (confirmation not required)",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
@@ -186,7 +186,7 @@ adrs <- adrs %>%
       PARAM = "Clinical Benefit by Investigator (confirmation for response not required)",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     ),
@@ -214,7 +214,7 @@ adrs <- adrs %>%
       PARAM = "Best Overall Response by Investigator (confirmation not required)",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       AVAL = aval_resp(AVALC),
       ANL01FL = "Y"
     )
@@ -234,7 +234,7 @@ adrs <- adrs %>%
       PARAM = "Best Overall Response of CR/PR by Investigator (confirmation not required)",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
@@ -257,7 +257,7 @@ adrs <- adrs %>%
       PARAM = "Confirmed Response by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
@@ -279,7 +279,7 @@ adrs <- adrs %>%
       PARAM = "Confirmed Clinical Benefit by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
@@ -301,7 +301,7 @@ adrs <- adrs %>%
       PARAM = "Best Confirmed Overall Response by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       AVAL = aval_resp(AVALC),
       ANL01FL = "Y"
     )
@@ -318,7 +318,7 @@ adrs <- adrs %>%
       PARAM = "Best Confirmed Overall Response of CR/PR by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
@@ -361,7 +361,7 @@ adrs <- adrs %>%
       PARAM = "Last Disease Assessment by Investigator",
       PARCAT1 = "Tumor Response",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       ANL01FL = "Y"
     )
   )
@@ -381,7 +381,7 @@ adrs <- adrs %>%
       PARAMCD = "MDIS",
       PARAM = "Measurable Disease at Baseline by Investigator",
       PARCAT2 = "Investigator",
-      PARCAT3 = "Recist 1.1",
+      PARCAT3 = "RECIST 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
     )
