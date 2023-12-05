@@ -6,6 +6,7 @@
 library(admiral)
 library(admiralonco)
 library(pharmaversesdtm) # Contains example datasets from the CDISC pilot project
+library(pharmaverseadam) # Contains example datasets from the CDISC pilot project
 library(dplyr)
 library(lubridate)
 library(stringr)
@@ -15,11 +16,10 @@ library(stringr)
 # Use e.g. haven::read_sas to read in .sas7bdat, or other suitable functions
 # as needed and assign to the variables below.
 # For illustration purposes read in pharmaverse test data
-data("admiral_adsl")
+data("adsl")
 data("rs_onco_recist")
 data("tu_onco_recist")
 data("tr_onco_recist")
-adsl <- admiral_adsl
 tu <- tu_onco_recist
 tr <- tr_onco_recist
 rs <- rs_onco_recist
@@ -107,26 +107,27 @@ adtr <- bind_rows(
   mutate(
     PARCAT1 = "Target Lesion(s)",
     PARCAT2 = "Investigator",
-    PARCAT3 = "Recist 1.1",
+    PARCAT3 = "RECIST 1.1",
     AVAL = TRSTRESN,
     ANL01FL = if_else(!is.na(AVAL), "Y", NA_character_)
   ) %>%
   select(-tmp_lesion_nr)
 
 # Derive parameter for sum of diameter (SDIAM) ----
-adtr_sum <- get_summary_records(
-  adtr,
+adtr_sum <- derive_summary_records(
+  dataset_add = adtr,
   by_vars = exprs(STUDYID, USUBJID, !!!adsl_vars, AVISIT, AVISITN),
-  filter = (str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
+  filter_add = (str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
     (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL"),
-  analysis_var = AVAL,
-  summary_fun = function(x) sum(x, na.rm = TRUE),
   set_values_to = exprs(
+    AVAL = sum(AVAL, na.rm = TRUE),
+    ADY = min(ADY, na.rm = TRUE),
+    ADT = min(ADT, na.rm = TRUE),
     PARAMCD = "SDIAM",
     PARAM = "Target Lesions Sum of Diameters by Investigator",
     PARCAT1 = "Target Lesion(s)",
     PARCAT2 = "Investigator",
-    PARCAT3 = "Recist 1.1"
+    PARCAT3 = "RECIST 1.1"
   )
 )
 
@@ -138,42 +139,17 @@ adtr_sum <- adtr_sum %>%
     filter_add = AVISIT == "BASELINE" &
       ((str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
         (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")),
-    new_var = LSEXP,
-    analysis_var = TRLNKID,
-    summary_fun = function(x) paste(sort(x), collapse = ", ")
+    new_vars = exprs(LSEXP = paste(sort(TRLNKID), collapse = ", "))
   ) %>%
   derive_var_merged_summary(
     dataset_add = adtr,
     by_vars = exprs(USUBJID, AVISIT),
     filter_add = ((str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
       (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")) & ANL01FL == "Y",
-    new_var = LSASS,
-    analysis_var = TRLNKID,
-    summary_fun = function(x) paste(sort(x), collapse = ", ")
+    new_vars = exprs(LSASS = paste(sort(TRLNKID), collapse = ", "))
   ) %>%
   mutate(
     ANL01FL = if_else(LSEXP == LSASS, "Y", NA_character_)
-  )
-
-# Derive timing variables for sums (ADT, ADY) ----
-adtr_sum <- adtr_sum %>%
-  derive_var_merged_summary(
-    dataset_add = adtr,
-    by_vars = exprs(USUBJID, AVISIT),
-    filter_add = (str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
-      (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL"),
-    new_var = ADY,
-    analysis_var = ADY,
-    summary_fun = function(x) min(x, na.rm = TRUE)
-  ) %>%
-  derive_var_merged_summary(
-    dataset_add = adtr,
-    by_vars = exprs(USUBJID, AVISIT),
-    filter_add = (str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
-      (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL"),
-    new_var = ADT,
-    analysis_var = ADT,
-    summary_fun = function(x) min(x, na.rm = TRUE)
   )
 
 # Derive baseline (ABLFL, BASE) ----
@@ -200,6 +176,7 @@ adtr_sum <- adtr_sum %>%
     order = exprs(AVAL),
     new_vars = exprs(NADIR = AVAL),
     join_vars = exprs(ADY),
+    join_type = "all",
     filter_add = ANL01FL == "Y",
     filter_join = ADY.join < ADY,
     mode = "first",

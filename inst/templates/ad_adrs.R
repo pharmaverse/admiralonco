@@ -6,6 +6,7 @@
 library(admiral)
 library(admiralonco)
 library(pharmaversesdtm) # Contains example datasets from the CDISC pilot project
+library(pharmaverseadam) # Contains example datasets from the CDISC pilot project
 library(dplyr)
 library(lubridate)
 library(stringr)
@@ -16,11 +17,10 @@ library(stringr)
 # as needed and assign to the variables below.
 # For illustration purposes read in pharmaverse test data
 
-data("admiral_adsl")
+data("adsl")
 data("rs_onco_recist")
 data("tu_onco_recist")
 
-adsl <- admiral_adsl
 rs <- rs_onco_recist
 tu <- tu_onco_recist
 
