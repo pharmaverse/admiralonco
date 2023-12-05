@@ -85,7 +85,7 @@ To start, all data frames needed for the creation of `ADRS` should be read into
 the environment. This will be a company specific process. Some of the data
 frames needed may be `ADSL`, `RS` and `TU`. For this vignette we assume that
 `RS` provides the response values `"iCR"`, `"iPR"`, `"iSD"`,
-`"NON-iCR/NON-iUPD"`, `"iUPD"`, `"iCP"`, and `"NE"`. All examples can be easily
+`"NON-iCR/NON-iUPD"`, `"iUPD"`, `"iCPD"`, and `"NE"`. All examples can be easily
 modified to consider other response values (see [Handling Different Input
 Response Values](#different_resp_vals)).
 
@@ -150,15 +150,14 @@ Independent Review Facility (IRF)/Blinded Independent Central Review
 (BICR) records). It could even involve merging input data from other
 sources besides `RS`, such as `ADTR`.
 
-This step would include any required selection/derivation of `ADT` or
-applying any necessary partial date imputations, updating `AVAL` (e.g.
-this should be ordered from best to worst response), and setting
-analysis flag `ANL01FL`. Common options for `ANL01FL` would be to set
-null for invalid assessments or those occurring after new anti-cancer
-therapy, or to only flag assessments on or after after date of first
-treatment/randomization, or rules to cover the case when a patient has
-multiple observations per visit (e.g. by selecting worst value). Another
-consideration could be extra potential protocol-specific sources of
+This step would include any required selection/derivation of `ADT` or applying
+any necessary partial date imputations, updating `AVAL` (e.g. this should be
+ordered from best to worst response), and setting analysis flag `ANL01FL`.
+Common options for `ANL01FL` would be to set null for invalid assessments or
+those occurring after new anti-cancer therapy, or to only flag assessments on or
+after date of first treatment/randomization, or rules to cover the case when a
+patient has multiple observations per visit (e.g. by selecting the worst value).
+Another consideration could be extra potential protocol-specific sources of
 Progressive Disease such as radiological assessments, which could be
 pre-processed here to create a PD record to feed downstream derivations.
 
