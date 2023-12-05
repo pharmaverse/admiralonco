@@ -107,6 +107,7 @@ adrs <- adrs %>%
     order = exprs(ADT, RSSEQ),
     mode = "first",
     exist_flag = AVALC,
+    false_value = "N",
     set_values_to = exprs(
       PARAMCD = "PD",
       PARAM = "Disease Progression by Investigator",
@@ -201,6 +202,7 @@ adrs <- adrs %>%
     order = exprs(ADT, RSSEQ),
     mode = "first",
     exist_flag = AVALC,
+    false_value = "N",
     set_values_to = exprs(
       PARAMCD = "BCP",
       PARAM = "Best Overall Response of CR/PR by Investigator (confirmation not required)",
@@ -282,6 +284,7 @@ adrs <- adrs %>%
     order = exprs(ADT, RSSEQ),
     mode = "first",
     exist_flag = AVALC,
+    false_value = "N",
     set_values_to = exprs(
       PARAMCD = "CBCP",
       PARAM = "Best Confirmed Overall Response of CR/PR by Investigator",
@@ -304,6 +307,7 @@ adrs <- adrs %>%
     by_vars = exprs(STUDYID, USUBJID),
     filter_add = !is.na(DTHDT),
     exist_flag = AVALC,
+    false_value = "N",
     set_values_to = exprs(
       PARAMCD = "DEATH",
       PARAM = "Death",

@@ -134,6 +134,7 @@ adrs <- adrs %>%
     order = exprs(ADT, RSSEQ),
     mode = "first",
     exist_flag = AVALC,
+    false_value = "N",
     set_values_to = exprs(
       PARAMCD = "PD",
       PARAM = "Disease Progression by Investigator",
@@ -149,7 +150,8 @@ adrs <- adrs %>%
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(ADT),
+    order = exprs(event_nr, ADT),
+    tmp_event_nr_var = event_nr,
     mode = "first",
     events = list(rsp_y, no_data_n),
     source_datasets = list(
@@ -171,14 +173,14 @@ adrs <- adrs %>%
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(desc(AVALC), ADT),
+    order = exprs(desc(AVALC), ADT, event_nr),
+    tmp_event_nr_var = event_nr,
     mode = "first",
     events = list(rsp_y, cb_y, no_data_n),
     source_datasets = list(
       ovr = ovr,
       adsl = adsl
     ),
-    ignore_event_order = TRUE,
     set_values_to = exprs(
       PARAMCD = "CB",
       PARAM = "Clinical Benefit by Investigator (confirmation for response not required)",
@@ -199,7 +201,8 @@ adrs <- adrs %>%
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(ADT),
+    order = exprs(event_nr, ADT),
+    tmp_event_nr_var = event_nr,
     mode = "first",
     source_datasets = list(
       ovr = ovr,
@@ -225,6 +228,7 @@ adrs <- adrs %>%
     by_vars = exprs(STUDYID, USUBJID),
     filter_add = PARAMCD == "BOR" & AVALC %in% c("CR", "PR"),
     exist_flag = AVALC,
+    false_value = "N",
     set_values_to = exprs(
       PARAMCD = "BCP",
       PARAM = "Best Overall Response of CR/PR by Investigator (confirmation not required)",
@@ -240,14 +244,14 @@ adrs <- adrs %>%
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(desc(AVALC), ADT),
+    order = exprs(desc(AVALC), ADT, event_nr),
+    tmp_event_nr_var = event_nr,
     mode = "first",
     source_datasets = list(
       ovr = ovr,
       adsl = adsl
     ),
     events = list(crsp_y_cr, crsp_y_pr, no_data_n),
-    ignore_event_order = TRUE,
     set_values_to = exprs(
       PARAMCD = "CRSP",
       PARAM = "Confirmed Response by Investigator",
@@ -262,14 +266,14 @@ adrs <- adrs %>%
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(desc(AVALC), ADT),
+    order = exprs(desc(AVALC), ADT, event_nr),
+    tmp_event_nr_var = event_nr,
     mode = "first",
     events = list(crsp_y_cr, crsp_y_pr, cb_y, no_data_n),
     source_datasets = list(
       ovr = ovr,
       adsl = adsl
     ),
-    ignore_event_order = TRUE,
     set_values_to = exprs(
       PARAMCD = "CCB",
       PARAM = "Confirmed Clinical Benefit by Investigator",
@@ -278,14 +282,14 @@ adrs <- adrs %>%
       PARCAT3 = "Recist 1.1",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
-    ),
-    check_type = "none"
+    )
   )
 
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(ADT),
+    order = exprs(event_nr, ADT),
+    tmp_event_nr_var = event_nr,
     mode = "first",
     events = list(cbor_cr, cbor_pr, bor_sd, bor_non_crpd, bor_pd, bor_ne, no_data_missing),
     source_datasets = list(
@@ -308,6 +312,7 @@ adrs <- adrs %>%
     by_vars = exprs(STUDYID, USUBJID),
     filter_add = PARAMCD == "CBOR" & AVALC %in% c("CR", "PR"),
     exist_flag = AVALC,
+    false_value = "N",
     set_values_to = exprs(
       PARAMCD = "CBCP",
       PARAM = "Best Confirmed Overall Response of CR/PR by Investigator",
@@ -330,6 +335,7 @@ adrs <- adrs %>%
     by_vars = exprs(STUDYID, USUBJID),
     filter_add = !is.na(DTHDT),
     exist_flag = AVALC,
+    false_value = "N",
     set_values_to = exprs(
       PARAMCD = "DEATH",
       PARAM = "Death",
