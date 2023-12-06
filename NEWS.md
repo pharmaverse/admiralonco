@@ -4,6 +4,23 @@
 
 - Website now has button/links to Slack channel and GitHub Issues. (#262)
 
+## Documentation
+
+- All vignettes and templates were updated to be in line with the changes in
+`{admiral}` (see [Breaking
+Changes](https://pharmaverse.github.io/admiral/news/index.html#breaking-changes-1-0-0)
+for details)(#256).
+
+## Breaking Changes
+
+- The `derive_*()` functions were superseded in favor of
+`derive_extreme_event()`. (#256)
+
+- The `filter_pd()` function was superseded in favor of `filter_relative()`. (#256)
+
+- The function `call_aval_fun()`, which was deprecated in admiralonco 0.4.0,
+has been removed. (#256)
+
 # admiralonco 0.5.0
 
 ## New Features

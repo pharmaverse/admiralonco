@@ -1,5 +1,9 @@
 #' Adds a Parameter for Confirmed Response
 #'
+#' @description
+#' `r lifecycle::badge("superseded")` The `derive_param_confirmed_resp()`
+#' function has been superseded in favor of `derive_extreme_event()`.
+#'
 #' Adds a parameter for confirmed response
 #'
 #' @param dataset Input dataset
@@ -135,9 +139,8 @@
 #'
 #' @return The input dataset with a new parameter for confirmed response
 #'
-#' @family der_prm_adrs
-#'
-#' @keywords der_prm_adrs
+#' @family superseded
+#' @keywords superseded
 #'
 #' @author Stefan Bundfuss
 #'

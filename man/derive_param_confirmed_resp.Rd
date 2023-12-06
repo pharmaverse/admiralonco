@@ -104,6 +104,9 @@ A list of symbols created using \code{exprs()} is expected.}
 The input dataset with a new parameter for confirmed response
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}} The \code{derive_param_confirmed_resp()}
+function has been superseded in favor of \code{derive_extreme_event()}.
+
 Adds a parameter for confirmed response
 }
 \details{
@@ -268,14 +271,15 @@ derive_param_confirmed_resp(
   filter(PARAMCD == "CRSP")
 }
 \seealso{
-ADRS Functions for adding Parameters: 
+Other superseded: 
 \code{\link{derive_param_bor}()},
 \code{\link{derive_param_clinbenefit}()},
 \code{\link{derive_param_confirmed_bor}()},
-\code{\link{derive_param_response}()}
+\code{\link{derive_param_response}()},
+\code{\link{filter_pd}()}
 }
 \author{
 Stefan Bundfuss
 }
-\concept{der_prm_adrs}
-\keyword{der_prm_adrs}
+\concept{superseded}
+\keyword{superseded}

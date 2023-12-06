@@ -1,5 +1,9 @@
 #' Adds a Parameter for Confirmed Best Overall Response
 #'
+#' @description
+#' `r lifecycle::badge("superseded")` The `derive_param_confirmed_bor()`
+#' function has been superseded in favor of `derive_extreme_event()`.
+#'
 #' Adds a parameter for confirmed best overall response (BOR)
 #'
 #' @param dataset Input dataset
@@ -187,9 +191,8 @@
 #' @return The input dataset with a new parameter for confirmed best overall
 #'   response
 #'
-#' @family der_prm_adrs
-#'
-#' @keywords der_prm_adrs
+#' @family superseded
+#' @keywords superseded
 #'
 #' @author Stefan Bundfuss
 #'
