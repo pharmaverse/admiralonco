@@ -379,10 +379,10 @@ derive_param_confirmed_resp <- function(dataset,
       {{ count_vals }}(var = AVALC.join, val = "NE") <= !!max_nr_ne &
       {{ count_vals }}(var = AVALC.join, val = "SD") <= !!max_nr_sd &
       (
-        {{ min_cond}}(
+        {{ min_cond }}(
           var = ADT.join,
           cond = AVALC.join == "CR"
-        ) > {{ max_cond}}(var = ADT.join, cond = AVALC.join == "PR") |
+        ) > {{ max_cond }}(var = ADT.join, cond = AVALC.join == "PR") |
           {{ count_vals }}(var = AVALC.join, val = "CR") == 0 |
           {{ count_vals }}(var = AVALC.join, val = "PR") == 0
       )
