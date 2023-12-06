@@ -45,7 +45,7 @@ library(dplyr)
 
 data("adsl")
 adsl_onco <- adsl
-data("adrs_onco") 
+data("adrs_onco")
 
 cm <- tribble(
   ~STUDYID, ~USUBJID, ~CMCAT, ~CMSCAT, ~CMTRT, ~CMSTDTC,
