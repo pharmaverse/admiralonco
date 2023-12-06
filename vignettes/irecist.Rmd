@@ -426,8 +426,11 @@ records. For the parameter derivations, all values except those
 overwritten by `set_values_to` argument are kept from the earliest
 occurring input record fulfilling the required criteria.
 
-When an iCPD occurs, the date of progression would be the same as 
-RECIST 1.1 date (i.e., first `iUPD` date in that block/bar). 
+When an `iCPD` occurs, the date of progression would be the first occurrence of `iUPD` in that block.
+For example, when we have values of `iUPD`, `iUPD`, and `iCPD`, the iRECIST `PD` date would
+be the first occurrence of `iUPD`. In cases where we have `SD`, `SD`, `iUPD`, `PR`, `PR`, `iUPD`, and `iCPD`,
+the iRECIST `PD` date would be the second occurrence of `iUPD`.
+
 The function `admiral::derive_extreme_records()`, in conjunction with the event `icpd_y`, 
 could be used to find the date of the first `iUPD`.
 
@@ -902,13 +905,10 @@ dataset_vignette(
 
 The following parameters may also be added:
 
-BCP - Best Overall Response of CR/PR by Investigator (confirmation not required)<br>
-CBCP - Best Confirmed Overall Response of CR/PR by Investigator<br>
-A1BOR - Best Overall Response by Investigator (confirmation not required) - RECIST 1.1 adjusted for NED at Baseline<br>
-ACCB - Alternative Confirmed Clinical Benefit by Investigator<br>
-OVRB - Overall Response by BICR<br>
-DEATH - Death<br>
-LSTA - Last Disease Assessment by Investigator<br>
-MDIS - Measurable Disease at Baseline by Investigator
+IBCP - iRECIST Best Overall Response of CR/PR by Investigator (confirmation not required)<br>
+ICBCP - iRECIST Best Confirmed Overall Response of CR/PR by Investigator<br>
+IOVRB - iRECIST Overall Response by BICR<br>
+ILSTA - iRECIST Last Disease Assessment by Investigator<br>
+IMDIS - iRECIST Measurable Disease at Baseline by Investigator
 
 For examples on the additional endpoints, please see [Creating ADRS (Including Non-standard Endpoints)](adrs.html).
