@@ -14,7 +14,9 @@ for details)(#256).
 ## Breaking Changes
 
 - The `derive_*()` functions were superseded in favor of
-`derive_extreme_event()`. (#256)
+`derive_extreme_event()`. Any superseded functions can continue to be used as
+demonstrated via the "Basic ADRS" vignette, as they will remain supported and
+won't be deprecated in the near future. (#256)
 
 - The `filter_pd()` function was superseded in favor of `filter_relative()`. (#256)
 

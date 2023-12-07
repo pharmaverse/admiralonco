@@ -6,7 +6,9 @@
 library(admiral)
 library(admiralonco)
 library(pharmaversesdtm) # Contains example datasets from the CDISC pilot project
-library(pharmaverseadam) # Contains example datasets from the CDISC pilot project
+# pharmaverseadam contains example datasets generated from the CDISC pilot
+# project SDTM ran through admiral templates
+library(pharmaverseadam)
 library(dplyr)
 library(lubridate)
 library(stringr)

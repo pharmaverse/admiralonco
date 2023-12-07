@@ -683,4 +683,4 @@ dataset_vignette(
 
 ADaM | Sample Code
 ---- | --------------
-`ADTR` | `use_ad_template("ADTR)`
+`ADTR` | `admiral::use_ad_template(package = "admiralonco", "ADTR")`

@@ -5,7 +5,9 @@
 # Input: adsl, adrs, tte_source objects
 library(admiral)
 library(admiralonco)
-library(pharmaverseadam) # Contains example datasets from the CDISC pilot project
+# pharmaverseadam contains example datasets generated from the CDISC pilot
+# project SDTM ran through admiral templates
+library(pharmaverseadam)
 library(dplyr)
 library(lubridate)
 
