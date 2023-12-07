@@ -21,7 +21,7 @@ development:
 reference:
 
  - title: Pre-Defined Objects
-   desc: 'Objects defined by {admiralonco} that can be used as input for derivations'
+   desc: 'Objects defined by `{admiralonco}` that can be used as input for derivations'
  - contents:
    - has_keyword("source_specifications")
 
@@ -41,9 +41,11 @@ reference:
 
  - title: Superseded
    desc: |
-     Superseded functions have been replaced with better functions. However, we
-     will not be removing these functions from `{admiralonco}`.  We do strongly
-     encourage you to make the switch over.
+     Superseded functions have been replaced with more flexible functions that
+     allow for construction of more diverse endpoints for a wider array of
+     oncology indications, beyond solid tumor/RECIST. However, we will not be
+     removing these functions from `{admiralonco}` in the near future and they
+     will continue to be supported.
    contents:
    - has_keyword("superseded")
 
