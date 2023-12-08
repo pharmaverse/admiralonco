@@ -223,7 +223,7 @@ dataset_vignette(
 ### Derive `AVALC` and `AVAL`
 
 Here we populate `AVALC` and create the numeric version as `AVAL`
-(ordered from worst to best response). The `AVAL` values are not considered in
+(ordered from worst to best response, followed by `NE` and MISSING). The `AVAL` values are not considered in
 the parameter derivations below, and so changing `AVAL` here would not change
 the result of those derivations. However, please note that the ordering of `AVAL` 
 will be used to determine `ANL01FL` in the subsequent step, ensure that the appropriate 
@@ -235,14 +235,14 @@ could do this as follows:
 ```{r}
 aval_resp_new <- function(arg) {
   case_when(
-    arg == "iCR" ~ 8,
-    arg == "iPR" ~ 7,
-    arg == "iSD" ~ 6,
-    arg == "NON-iCR/NON-iUPD" ~ 5,
-    arg == "iUPD" ~ 4,
-    arg == "iCPD" ~ 3,
-    arg == "NE" ~ 2,
-    arg == "MISSING" ~ 1,
+    arg == "NE" ~ 8,
+    arg == "MISSING" ~ 7,
+    arg == "iCR" ~ 6,
+    arg == "iPR" ~ 5,
+    arg == "iSD" ~ 4,
+    arg == "NON-iCR/NON-iUPD" ~ 3,
+    arg == "iUPD" ~ 2,
+    arg == "iCPD" ~ 1,
     TRUE ~ NA_real_
   )
 }
