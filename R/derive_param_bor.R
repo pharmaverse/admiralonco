@@ -1,5 +1,9 @@
 #' Adds a Parameter for Best Overall Response (without confirmation)
 #'
+#' @description
+#' `r lifecycle::badge("superseded")` The `derive_param_bor()` function has been
+#' superseded in favor of `derive_extreme_event()`.
+#'
 #' Adds a parameter for best overall response, without confirmation, optionally up to
 #' first progressive disease
 #'
@@ -252,9 +256,8 @@
 #'
 #' @author Stephen Gormley
 #'
-#' @family der_prm_adrs
-#'
-#' @keywords der_prm_adrs
+#' @family superseded
+#' @keywords superseded
 #'
 #' @return The dataframe passed in the `dataset` argument with additional columns and/or
 #'         rows as set in the `set_values_to` argument.

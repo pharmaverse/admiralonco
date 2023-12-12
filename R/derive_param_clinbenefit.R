@@ -1,5 +1,9 @@
 #' Adds a Parameter for Clinical Benefit
 #'
+#' @description
+#' `r lifecycle::badge("superseded")` The `derive_param_clinbenefit()` function
+#' has been superseded in favor of `derive_extreme_event()`.
+#'
 #' Adds a parameter for clinical benefit/disease control
 #'
 #' @details
@@ -114,9 +118,8 @@
 #'
 #' @return The input dataset with a new parameter for clinical benefit
 #'
-#' @family der_prm_adrs
-#'
-#' @keywords der_prm_adrs
+#' @family superseded
+#' @keywords superseded
 #'
 #' @export
 #'
