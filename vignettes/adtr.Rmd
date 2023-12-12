@@ -79,7 +79,7 @@ Some of the data frames needed may be `ADSL`, `ADRS` ,`RS`, `TU`, `TR`, `SUPPTU`
 For example purposes, the SDTM and ADaM datasets (based on CDISC Pilot test
 data)---which are included in `{pharmaversesdtm}` and `{pharmaverseadam}`---are
 used. Also, see [Handling of Missing
-Values](https://pharmaverse.github.io/admiral/cran-release/articles/admiral.html#handling-of-missing-values)
+Values](https://pharmaverse.github.io/admiral/articles/admiral.html#handling-of-missing-values)
 explains why we need to use the `convert_blanks_to_na()` function.
 
 On the `TR` domain we filter on where tumor assessment short name `TRTESTCD` is
