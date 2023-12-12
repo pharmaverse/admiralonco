@@ -230,12 +230,24 @@ those occurring on or after randomization date. If there is more than
 one assessment at a date, the worst one is flagged.
 
 ```{r}
+worst_resp <- function(arg) {
+  case_when(
+    arg == "CR" ~ 1,
+    arg == "PR" ~ 2,
+    arg == "SD" ~ 3,
+    arg == "NON-CR/NON-PD" ~ 4,
+    arg == "NE" ~ 5,
+    arg == "PD" ~ 6,
+    TRUE ~ 0
+  )
+}
+
 adrs <- adrs %>%
   restrict_derivation(
     derivation = derive_var_extreme_flag,
     args = params(
       by_vars = exprs(STUDYID, USUBJID, ADT),
-      order = exprs(AVAL, RSSEQ),
+      order = exprs(worst_resp(AVALC), RSSEQ),
       new_var = ANL01FL,
       mode = "last"
     ),
@@ -492,7 +504,7 @@ rsp_y
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(STUDYID, USUBJID),
-    order = exprs(ADT, event_nr),
+    order = exprs(event_nr, ADT),
     tmp_event_nr_var = event_nr,
     mode = "first",
     events = list(rsp_y, no_data_n),

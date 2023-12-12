@@ -77,12 +77,24 @@ adrs <- adrs %>%
 # parameter derivations - here only valid assessments and those occurring on or
 # after randomization date, if there is more than one assessment per date the
 # worst one is flagged
+worst_resp <- function(arg) {
+  case_when(
+    arg == "CR" ~ 1,
+    arg == "PR" ~ 2,
+    arg == "SD" ~ 3,
+    arg == "NON-CR/NON-PD" ~ 4,
+    arg == "NE" ~ 5,
+    arg == "PD" ~ 6,
+    TRUE ~ 0
+  )
+}
+
 adrs <- adrs %>%
   restrict_derivation(
     derivation = derive_var_extreme_flag,
     args = params(
       by_vars = exprs(STUDYID, USUBJID, ADT),
-      order = exprs(AVAL, RSSEQ),
+      order = exprs(worst_resp(AVALC), RSSEQ),
       new_var = ANL01FL,
       mode = "last"
     ),
