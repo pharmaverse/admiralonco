@@ -79,11 +79,11 @@ adrs <- adrs %>%
 # worst one is flagged
 worst_resp <- function(arg) {
   case_when(
-    arg == "CR" ~ 1,
-    arg == "PR" ~ 2,
-    arg == "SD" ~ 3,
-    arg == "NON-CR/NON-PD" ~ 4,
-    arg == "NE" ~ 5,
+    arg == "NE" ~ 1,
+    arg == "CR" ~ 2,
+    arg == "PR" ~ 3,
+    arg == "SD" ~ 4,
+    arg == "NON-CR/NON-PD" ~ 5,
     arg == "PD" ~ 6,
     TRUE ~ 0
   )
