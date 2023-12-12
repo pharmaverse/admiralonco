@@ -88,6 +88,9 @@ The input dataset with a new parameter indicating if and when a
 response occurred
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}} The \code{derive_param_response()} function has
+been superseded in favor of \code{derive_extreme_event()}.
+
 Adds a parameter indicating if a response has been observed.
 If a response has been observed, \code{AVALC} is set to "Y", \code{AVAL} to 1 and \code{ADT}
 is set to the
@@ -179,14 +182,15 @@ derive_param_response(
   arrange(USUBJID, PARAMCD, ADT)
 }
 \seealso{
-ADRS Functions for adding Parameters: 
+Other superseded: 
 \code{\link{derive_param_bor}()},
 \code{\link{derive_param_clinbenefit}()},
 \code{\link{derive_param_confirmed_bor}()},
-\code{\link{derive_param_confirmed_resp}()}
+\code{\link{derive_param_confirmed_resp}()},
+\code{\link{filter_pd}()}
 }
 \author{
 Samia Kabi
 }
-\concept{der_prm_adrs}
-\keyword{der_prm_adrs}
+\concept{superseded}
+\keyword{superseded}

@@ -80,6 +80,9 @@ used to uniquely identify subjects.}
 The input dataset with a new parameter for clinical benefit
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}} The \code{derive_param_clinbenefit()} function
+has been superseded in favor of \code{derive_extreme_event()}.
+
 Adds a parameter for clinical benefit/disease control
 }
 \details{
@@ -206,14 +209,15 @@ derive_param_clinbenefit(
   filter(PARAMCD == "CBR")
 }
 \seealso{
-ADRS Functions for adding Parameters: 
+Other superseded: 
 \code{\link{derive_param_bor}()},
 \code{\link{derive_param_confirmed_bor}()},
 \code{\link{derive_param_confirmed_resp}()},
-\code{\link{derive_param_response}()}
+\code{\link{derive_param_response}()},
+\code{\link{filter_pd}()}
 }
 \author{
 Andrew Smith
 }
-\concept{der_prm_adrs}
-\keyword{der_prm_adrs}
+\concept{superseded}
+\keyword{superseded}
