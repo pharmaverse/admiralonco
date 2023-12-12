@@ -4,12 +4,6 @@
 
 - New vignette "Creating ADRS with iRECIST endpoints". (#233)
 
-## Various
-
-- Website now has button/links to Slack channel and GitHub Issues. (#262)
-
-## Documentation
-
 - All vignettes and templates were updated to be in line with the changes in
 `{admiral}` (see [Breaking
 Changes](https://pharmaverse.github.io/admiral/news/index.html#breaking-changes-1-0-0)
@@ -26,6 +20,10 @@ won't be deprecated in the near future. (#256)
 
 - The function `call_aval_fun()`, which was deprecated in admiralonco 0.4.0,
 has been removed. (#256)
+
+## Various
+
+- Website now has button/links to Slack channel and GitHub Issues. (#262)
 
 # admiralonco 0.5.0
 
