@@ -1,5 +1,9 @@
 # admiralonco (development version)
 
+## Documentation
+
+- New vignette "Creating ADRS with iRECIST endpoints". (#233)
+
 ## Various
 
 - Website now has button/links to Slack channel and GitHub Issues. (#262)
