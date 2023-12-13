@@ -29,6 +29,7 @@
   <div class="dropdown-menu" aria-labelledby="dropdown-user-guides">
     <a class="dropdown-item" href="articles/adrs_basic.html">Creating a Basic ADRS</a>
     <a class="dropdown-item" href="articles/adrs.html">Creating ADRS (Including Non-standard Endpoints)</a>
+    <a class="dropdown-item" href="articles/irecist.html">Creating ADRS with iRECIST endpoints</a>
     <a class="dropdown-item" href="articles/adtte.html">Creating ADTTE</a>
     <a class="dropdown-item" href="articles/adtr.html">Creating ADTR</a>
     <a class="dropdown-item" href="articles/nactdt.html">Creating and Using New Anti-Cancer Start Date</a>
@@ -76,10 +77,11 @@
     </div>
 
 
-<p>Please add “Closes #<issue number>” to the title of the pull request. Then the issue is closed automatically once it is merged to <code>main</code>.</issue></p>
 <p>Thank you for your Pull Request! We have developed this task checklist from the <a href="https://pharmaverse.github.io/admiral/CONTRIBUTING.html#detailed-development-process" class="external-link">Development Process Guide</a> to help with the final steps of the process. Completing the below tasks helps to ensure our reviewers can maximize their time on your code as well as making sure the admiral codebase remains robust and consistent.</p>
 <p>Please check off each taskbox as an acknowledgment that you completed the task or check off that it is not relevant to your Pull Request. This checklist is part of the Github Action workflows and the Pull Request will not be merged into the <code>main</code> branch until you have checked off each task.</p>
 <ul class="task-list"><li>
+<input type="checkbox">Place Closes #<insert_issue_number> into the beginning of your Pull Request Title (Use Edit button in top-right if you need to update). Then the issue is closed automatically once it is merged to <code>main</code>.</insert_issue_number></li>
+<li>
 <input type="checkbox">Code is formatted according to the <a href="https://style.tidyverse.org/" class="external-link">tidyverse style guide</a>. Run <code><a href="https://styler.r-lib.org/reference/style_file.html" class="external-link">styler::style_file()</a></code> to style R and Rmd files</li>
 <li>
 <input type="checkbox">Updated relevant unit tests or have written new unit tests - See <a href="https://pharmaverse.github.io/admiraldev/articles/unit_test_guidance.html#writing-unit-tests-in-admiral" class="external-link">Unit Test Guide</a>
