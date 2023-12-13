@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-library(admiral)
+library(admiraldev)
 ```
 
 # Introduction
@@ -50,6 +50,7 @@ The examples of this vignette require the following packages.
 library(admiral)
 library(dplyr)
 library(pharmaversesdtm)
+library(pharmaverseadam)
 library(lubridate)
 library(stringr)
 library(admiralonco)
@@ -76,9 +77,9 @@ To start, all data frames needed for the creation of `ADTR` should be read into 
 Some of the data frames needed may be `ADSL`, `ADRS` ,`RS`, `TU`, `TR`, `SUPPTU` `SUPPTR`.
 
 For example purposes, the SDTM and ADaM datasets (based on CDISC Pilot test
-data)---which are included in `{pharmaversesdtm}`---are used. Also, see
-[Handling of Missing
-Values](https://pharmaverse.github.io/admiral/cran-release/articles/admiral.html#handling-of-missing-values)
+data)---which are included in `{pharmaversesdtm}` and `{pharmaverseadam}`---are
+used. Also, see [Handling of Missing
+Values](https://pharmaverse.github.io/admiral/articles/admiral.html#handling-of-missing-values)
 explains why we need to use the `convert_blanks_to_na()` function.
 
 On the `TR` domain we filter on where tumor assessment short name `TRTESTCD` is
@@ -88,13 +89,12 @@ then the template code where we derive parameters for lesions diameters should
 be updated accordingly.
 
 ```{r}
-data("admiral_adsl")
-data("admiral_adrs")
+data("adsl")
+data("adrs_onco")
 data("rs_onco_recist")
 data("tu_onco_recist")
 data("tr_onco_recist")
-adsl <- admiral_adsl
-adrs <- admiral_adrs
+adrs <- adrs_onco
 tu <- tu_onco_recist
 tr <- tr_onco_recist
 rs <- rs_onco_recist
@@ -244,7 +244,7 @@ adtr <- bind_rows(
   mutate(
     PARCAT1 = "Target Lesion(s)",
     PARCAT2 = "Investigator",
-    PARCAT3 = "Recist 1.1",
+    PARCAT3 = "RECIST 1.1",
     AVAL = TRSTRESN,
     ANL01FL = if_else(!is.na(AVAL), "Y", NA_character_)
   ) %>%
@@ -274,21 +274,24 @@ flags therefore should be setup according to your company specifications.
 In the example below, the lesion sizes are counted and grouped according to the
 by variables specified, in this case we group by the visit (`AVISIT` and
 `AVISITN`) to ensure that the correct lesion measurements are summed together.
+If there are different analysis day/dates (`ADY`/`ADT`) associated with a
+particular visit, we take the minimum day/date.
 
 ```{r}
-adtr_sum <- get_summary_records(
-  adtr,
+adtr_sum <- derive_summary_records(
+  dataset_add = adtr,
   by_vars = exprs(STUDYID, USUBJID, !!!adsl_vars, AVISIT, AVISITN),
-  filter = (str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
+  filter_add = (str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
     (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL"),
-  analysis_var = AVAL,
-  summary_fun = function(x) sum(x, na.rm = TRUE),
   set_values_to = exprs(
+    AVAL = sum(AVAL, na.rm = TRUE),
+    ADY = min(ADY, na.rm = TRUE),
+    ADT = min(ADT, na.rm = TRUE),
     PARAMCD = "SDIAM",
     PARAM = "Target Lesions Sum of Diameters by Investigator",
     PARCAT1 = "Target Lesion(s)",
     PARCAT2 = "Investigator",
-    PARCAT3 = "Recist 1.1"
+    PARCAT3 = "RECIST 1.1"
   )
 )
 ```
@@ -297,10 +300,10 @@ adtr_sum <- get_summary_records(
 dataset_vignette(
   adtr_sum %>%
     arrange(USUBJID, AVISITN) %>%
-    select(USUBJID, PARAMCD, PARAM, AVISIT, AVAL, everything()),
-  display_vars = exprs(USUBJID, PARAMCD, PARAM, AVISIT, AVAL)
+    select(USUBJID, PARAMCD, PARAM, AVISIT, AVAL, ADT, ADY, everything()),
+  display_vars = exprs(USUBJID, PARAMCD, PARAM, AVISIT, AVAL, ADT, ADY)
 )
-```  
+```
 
 The analysis flag `ANL01FL` flags the sum of diameters where the number of lesions assessed at baseline and at post-baseline match.  To assess whether the number of lesions expected and assessed match, you could compare lesion identifiers (`TR.TRLNKID`) or use the previous variables set up earlier to compare lesion expected (`LSEXP`) vs lesion assessed (`LSASS`) or check for target lesion response (from `RS`) = `NE`.   A target lesion response of `NE` means all lesions from baseline are not measured at that post-baseline visit.   
 
@@ -326,57 +329,19 @@ adtr_sum <- adtr_sum %>%
     filter_add = AVISIT == "BASELINE" &
       ((str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
         (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")),
-    new_var = LSEXP,
-    analysis_var = TRLNKID,
-    summary_fun = function(x) paste(sort(x), collapse = ", ")
+    new_vars = exprs(LSEXP = paste(sort(TRLNKID), collapse = ", "))
   ) %>%
   derive_var_merged_summary(
     dataset_add = adtr,
     by_vars = exprs(USUBJID, AVISIT),
     filter_add = ((str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
       (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")) & ANL01FL == "Y",
-    new_var = LSASS,
-    analysis_var = TRLNKID,
-    summary_fun = function(x) paste(sort(x), collapse = ", ")
+    new_vars = exprs(LSASS = paste(sort(TRLNKID), collapse = ", "))
   ) %>%
   mutate(
     ANL01FL = if_else(LSEXP == LSASS, "Y", NA_character_)
   )
 ```
-
-In the next step we include the analysis day and date (`ADY`/`ADT`) variables to
-the sum of diameter parameter dataset.  If there are different analysis
-day/dates associated with a particular visit, we take the minimum day/date.
-
-```{r}
-adtr_sum <- adtr_sum %>%
-  derive_var_merged_summary(
-    dataset_add = adtr,
-    by_vars = exprs(USUBJID, AVISIT),
-    filter_add = (str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
-      (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL"),
-    new_var = ADY,
-    analysis_var = ADY,
-    summary_fun = function(x) min(x, na.rm = TRUE)
-  ) %>%
-  derive_var_merged_summary(
-    dataset_add = adtr,
-    by_vars = exprs(USUBJID, AVISIT),
-    filter_add = (str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
-      (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL"),
-    new_var = ADT,
-    analysis_var = ADT,
-    summary_fun = function(x) min(x, na.rm = TRUE)
-  )
-```
-
-```{r, echo=FALSE}
-dataset_vignette(
-  arrange(adtr_sum, USUBJID, AVISITN),
-  display_vars = exprs(USUBJID, PARAMCD, AVISIT, LSEXP, LSASS, ANL01FL, ADT, ADY)
-)
-```  
-
 
 ## Derive Baseline (`ABLFL`, `BASE`) {#base}
 
@@ -419,6 +384,7 @@ adtr_sum <- adtr_sum %>%
     order = exprs(AVAL),
     new_vars = exprs(NADIR = AVAL),
     join_vars = exprs(ADY),
+    join_type = "all",
     filter_add = ANL01FL == "Y",
     filter_join = ADY.join < ADY,
     mode = "first",
@@ -717,8 +683,4 @@ dataset_vignette(
 
 ADaM | Sample Code
 ---- | --------------
-`ADTR` | [ad_adtr.R](https://github.com/pharmaverse/admiralonco/blob/main/inst/templates/ad_adtr.R)
-
-
-
-
+`ADTR` | `admiral::use_ad_template("ADTR", package = "admiralonco")`

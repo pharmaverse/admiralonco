@@ -1,6 +1,10 @@
 #' Adds a Parameter Indicating If a Subject Had a Response before Progressive
 #' Disease
 #'
+#' @description
+#' `r lifecycle::badge("superseded")` The `derive_param_response()` function has
+#' been superseded in favor of `derive_extreme_event()`.
+#'
 #' Adds a parameter indicating if a response has been observed.
 #' If a response has been observed, `AVALC` is set to "Y", `AVAL` to 1 and `ADT`
 #'  is set to the
@@ -104,9 +108,8 @@
 #' @return The input dataset with a new parameter indicating if and when a
 #' response occurred
 #'
-#' @family der_prm_adrs
-#'
-#' @keywords der_prm_adrs
+#' @family superseded
+#' @keywords superseded
 #'
 #' @export
 #'

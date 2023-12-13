@@ -119,6 +119,9 @@ The dataframe passed in the \code{dataset} argument with additional columns and/
 rows as set in the \code{set_values_to} argument.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}} The \code{derive_param_bor()} function has been
+superseded in favor of \code{derive_extreme_event()}.
+
 Adds a parameter for best overall response, without confirmation, optionally up to
 first progressive disease
 }
@@ -270,14 +273,15 @@ derive_param_bor(
   filter(PARAMCD == "BOR")
 }
 \seealso{
-ADRS Functions for adding Parameters: 
+Other superseded: 
 \code{\link{derive_param_clinbenefit}()},
 \code{\link{derive_param_confirmed_bor}()},
 \code{\link{derive_param_confirmed_resp}()},
-\code{\link{derive_param_response}()}
+\code{\link{derive_param_response}()},
+\code{\link{filter_pd}()}
 }
 \author{
 Stephen Gormley
 }
-\concept{der_prm_adrs}
-\keyword{der_prm_adrs}
+\concept{superseded}
+\keyword{superseded}

@@ -1,5 +1,9 @@
 #' Filter up to First PD (Progressive Disease) Date
 #'
+#' @description
+#' `r lifecycle::badge("superseded")` The `filter_pd()` function has been
+#' superseded in favor of `filter_relative()`.
+#'
 #' Filter a dataset to only include the source parameter records up to and
 #' including the first PD (progressive disease). These records are passed to
 #' downstream derivations regarding responses such as BOR (best overall
@@ -45,8 +49,8 @@
 #'
 #' @export
 #'
-#' @keywords utils_fil
-#' @family utils_fil
+#' @family superseded
+#' @keywords superseded
 #'
 #' @examples
 #'

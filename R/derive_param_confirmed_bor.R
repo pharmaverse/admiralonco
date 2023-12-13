@@ -1,5 +1,9 @@
 #' Adds a Parameter for Confirmed Best Overall Response
 #'
+#' @description
+#' `r lifecycle::badge("superseded")` The `derive_param_confirmed_bor()`
+#' function has been superseded in favor of `derive_extreme_event()`.
+#'
 #' Adds a parameter for confirmed best overall response (BOR)
 #'
 #' @param dataset Input dataset
@@ -187,9 +191,8 @@
 #' @return The input dataset with a new parameter for confirmed best overall
 #'   response
 #'
-#' @family der_prm_adrs
-#'
-#' @keywords der_prm_adrs
+#' @family superseded
+#' @keywords superseded
 #'
 #' @author Stefan Bundfuss
 #'
@@ -410,15 +413,16 @@ derive_param_confirmed_bor <- function(dataset,
   # Create observations for potential responses
   cr_data <- filter_joined(
     source_data,
+    dataset_add = source_data,
     by_vars = subject_keys,
     join_vars = exprs(AVALC, ADT),
     join_type = "after",
     order = exprs(ADT),
-    first_cond = AVALC.join == "CR" &
+    first_cond_upper = AVALC.join == "CR" &
       ADT.join >= ADT + days(!!ref_confirm),
-    filter = AVALC == "CR" &
+    filter_join = AVALC == "CR" &
       all(AVALC.join %in% c("CR", "NE")) &
-      count_vals(var = AVALC.join, val = "NE") <= !!max_nr_ne
+      {{ count_vals }}(var = AVALC.join, val = "NE") <= !!max_nr_ne
   ) %>%
     mutate(tmp_order = 1)
 
@@ -429,23 +433,24 @@ derive_param_confirmed_bor <- function(dataset,
   }
   pr_data <- filter_joined(
     source_data,
+    dataset_add = source_data,
     by_vars = subject_keys,
     join_vars = exprs(AVALC, ADT),
     join_type = "after",
     order = exprs(ADT),
-    first_cond = AVALC.join %in% c("CR", "PR") &
+    first_cond_upper = AVALC.join %in% c("CR", "PR") &
       ADT.join >= ADT + days(!!ref_confirm),
-    filter = AVALC == "PR" &
+    filter_join = AVALC == "PR" &
       all(AVALC.join %in% c("CR", "PR", "SD", "NE")) &
-      count_vals(var = AVALC.join, val = "NE") <= !!max_nr_ne &
-      count_vals(var = AVALC.join, val = "SD") <= !!max_nr_sd &
+      {{ count_vals }}(var = AVALC.join, val = "NE") <= !!max_nr_ne &
+      {{ count_vals }}(var = AVALC.join, val = "SD") <= !!max_nr_sd &
       (
-        min_cond(
+        {{ min_cond }}(
           var = ADT.join,
           cond = AVALC.join == "CR"
-        ) > max_cond(var = ADT.join, cond = AVALC.join == "PR") |
-          count_vals(var = AVALC.join, val = "CR") == 0 |
-          count_vals(var = AVALC.join, val = "PR") == 0
+        ) > {{ max_cond }}(var = ADT.join, cond = AVALC.join == "PR") |
+          {{ count_vals }}(var = AVALC.join, val = "CR") == 0 |
+          {{ count_vals }}(var = AVALC.join, val = "PR") == 0
       )
   ) %>%
     mutate(tmp_order = 2)

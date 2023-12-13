@@ -42,6 +42,7 @@ The examples of this vignette require the following packages.
 ```{r, warning=FALSE, message=FALSE}
 library(admiral)
 library(admiralonco)
+library(pharmaverseadam)
 library(dplyr)
 library(lubridate)
 ```
@@ -59,15 +60,14 @@ library(lubridate)
 To start, all datasets needed for the creation of the time-to-event dataset
 should be read into the environment. This will be a company specific process.
 
-For example purpose, the ADaM datasets---which are included
-in `{admiral}` and `{admiralonco}`---are used. An alternative might be to use
-`ADEVENT` as input.
+For example purpose, the ADaM datasets---which are included in
+`{pharmaverseadam}`---are used. An alternative might be to use `ADEVENT` as
+input.
 
 ```{r}
-data("admiral_adsl")
-data("admiral_adrs")
-adsl <- admiral_adsl
-adrs <- admiral_adrs
+data("adsl")
+data("adrs_onco")
+adrs <- adrs_onco
 ```
 
 ## Derive Parameters (`CNSR`, `ADT`, `STARTDT`) {#parameters}
@@ -347,4 +347,4 @@ dataset_vignette(
 
 ADaM | Sample Code
 ---- | --------------
-ADTTE | [ad_adtte.R](https://github.com/pharmaverse/admiralonco/blob/main/inst/templates/ad_adtte.R)
+ADTTE | `admiral::use_ad_template("ADTTE", package = "admiralonco")`

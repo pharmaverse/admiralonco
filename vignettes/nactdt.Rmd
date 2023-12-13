@@ -13,7 +13,6 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-library(admiralonco)
 library(admiraldev)
 ```
 
@@ -44,7 +43,9 @@ library(admiral)
 library(pharmaverseadam)
 library(dplyr)
 
+data("adsl")
 adsl_onco <- adsl
+data("adrs_onco")
 
 cm <- tribble(
   ~STUDYID, ~USUBJID, ~CMCAT, ~CMSCAT, ~CMTRT, ~CMSTDTC,
@@ -93,24 +94,29 @@ dataset_vignette(
 
 ## Multiple Sources - Prerequisite Steps {#multiinput}
 
-To derive the New Anti-Cancer Therapy start date with data from multiple sources, the function `admiral::derive_var_extreme_dt()` can be used, or if time part is needed, `admiral::derive_var_extreme_dtm()` can be used.
- 
+To derive the New Anti-Cancer Therapy start date with data from multiple
+sources, the function `admiral::derive_vars_extreme_event()` can be used.
  
 ### Prerequisite 
 
-Prior to calling the function, an input `date_source` object must be created for each source dataset using `admiral::date_source()`. Within this function, any company-specific subsetting can be passed to the `filter` argument. If numeric version of the dates will be needed, `admiral::convert_dtc_to_dt()`, or if time part is needed, `admiral::convert_dtc_to_dtm()` can be used as part of an expression for the `new_vars` argument. 
+Prior to calling the function, an input `event` object must be created for each
+source dataset using `admiral::event()`. Within this function, any
+company-specific subsetting can be passed to the `condition` argument. If
+numeric version of the dates will be needed, `admiral::convert_dtc_to_dt()`, or
+if time part is needed, `admiral::convert_dtc_to_dtm()` can be used as part of
+an expression for the `set_values_to` argument.
 
 ```{r message=FALSE}
-cm_date <- date_source(
+cm_date <- event(
   dataset_name = "cm",
-  filter = CMSCAT == "CHEMOTHERAPY" & CMCAT == "ON TREATMENT" & !is.na(CMSTDTC),
-  date = convert_dtc_to_dt(CMSTDTC)
+  condition = CMSCAT == "CHEMOTHERAPY" & CMCAT == "ON TREATMENT" & !is.na(CMSTDTC),
+  set_values_to = exprs(NACTDT = convert_dtc_to_dt(CMSTDTC))
 )
 
-pr_date <- date_source(
+pr_date <- event(
   dataset_name = "pr",
-  filter = PRCAT == "CANCER RELATED" & PRSCAT == "ON TREATMENT" & !is.na(PRSTDTC),
-  date = convert_dtc_to_dt(PRSTDTC)
+  condition = PRCAT == "CANCER RELATED" & PRSCAT == "ON TREATMENT" & !is.na(PRSTDTC),
+  set_values_to = exprs(NACTDT = convert_dtc_to_dt(PRSTDTC))
 )
 ```
 
@@ -120,9 +126,11 @@ After completion of the prerequisite step, the new anti-cancer date can be deriv
 
 ```{r message=FALSE}
 adsl <- adsl_onco %>%
-  derive_var_extreme_dt(
-    new_var = NACTDT,
-    cm_date, pr_date,
+  derive_vars_extreme_event(
+    by_vars = exprs(STUDYID, USUBJID),
+    order = exprs(NACTDT),
+    new_vars = exprs(NACTDT),
+    events = list(cm_date, pr_date),
     source_datasets = list(
       cm = cm,
       pr = pr
@@ -145,28 +153,32 @@ Please refer to `{admiralonco}` [Derive `ANL01FL`](adrs.html#anl01fl) for an exa
 
 ## Derive Date Parameter {#par}
 
-As of `{admiral}` version 0.11.0, `admiral::derive_param_extreme_record()` is recommended to be used for deriving parameter based on the first or last observation from single and multiple sources. 
+The `{admiral}` function `admiral::derive_extreme_event()` can be used for
+deriving parameter based on the first or last observation from single and
+multiple sources.
 
-Based on individual company standards, this parameter may be added to an event or date dataset such as `ADEVENT` or `ADDATES`, which are generally intermediate datasets to `ADTTE`. For demonstration purpose, a new anti-cancer date parameter will be merged into `ADRS`. A list of `record_source()` objects is expected and this will contain the sources of the dates and any company specific filtering.
+Based on individual company standards, this parameter may be added to an event
+or date dataset such as `ADEVENT` or `ADDATES`, which are generally intermediate
+datasets to `ADTTE`. For demonstration purpose, a new anti-cancer date parameter
+will be merged into `ADRS`. A list of `event()` objects is expected and this
+will contain the sources of the dates and any company specific filtering.
 
 ```{r, eval=TRUE, echo=TRUE}
-library(admiralonco)
-
-adrs <- derive_param_extreme_record(
+adrs <- derive_extreme_event(
   dataset = adrs_onco,
-  sources = list(
-    records_source(
+  events = list(
+    event(
       dataset_name = "cm",
-      filter = CMSCAT == "CHEMOTHERAPY" & CMCAT == "ON TREATMENT" & !is.na(CMSTDTC),
-      new_vars = exprs(
+      condition = CMSCAT == "CHEMOTHERAPY" & CMCAT == "ON TREATMENT" & !is.na(CMSTDTC),
+      set_values_to = exprs(
         ADT = convert_dtc_to_dt(CMSTDTC),
         AVALC = CMTRT
       )
     ),
-    records_source(
+    event(
       dataset_name = "pr",
-      filter = PRCAT == "CANCER RELATED" & PRSCAT == "ON TREATMENT" & !is.na(PRSTDTC),
-      new_vars = exprs(
+      condition = PRCAT == "CANCER RELATED" & PRSCAT == "ON TREATMENT" & !is.na(PRSTDTC),
+      set_values_to = exprs(
         ADT = convert_dtc_to_dt(PRSTDTC),
         AVALC = PRTRT
       )
