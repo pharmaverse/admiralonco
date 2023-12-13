@@ -136,11 +136,11 @@ bor_pd <- event(
 #' @export
 bor_ne <- event(
   description = paste(
-    "Define not evaluable (NE) for best overall response (BOR) as SD, NON-CR/NON-PD,",
-    "or NE (should be specified after bor_sd and bor_non_crpd)"
+    "Define not evaluable (NE) for best overall response (BOR) as CR, PR, SD,",
+    "NON-CR/NON-PD, or NE (should be specified after bor_sd and bor_non_crpd)"
   ),
   dataset_name = "ovr",
-  condition = AVALC %in% c("SD", "NON-CR/NON-PD", "NE"),
+  condition = AVALC %in% c("CR", "PR", "SD", "NON-CR/NON-PD", "NE"),
   set_values_to = exprs(AVALC = "NE")
 )
 
