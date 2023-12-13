@@ -2,9 +2,9 @@
 
 ## Updates of Existing Functions
 
-- The `bor_ne` event object was updated such that CR and PR are additionally
+- The `bor_ne` event object was updated such that `CR` and `PR` are additionally
 considered as event. This ensures that the confirmed best overall response for a
-patient with a single CR or PR assessment is derived as `"NE"` instead of
+patient with a single `CR` or `PR` assessment is derived as `"NE"` instead of
 `"MISSING"`. (#253)
 
 ## Documentation
