@@ -648,11 +648,11 @@ ibor_iupd <- event(
 
 ibor_ne <- event(
   description = paste(
-    "Define not evaluable (NE) for best overall response (iBOR) as iSD, NON-iCR/NON-iUPD,",
-    "or NE (should be specified after ibor_isd and ibor_non_icriupd)"
+    "Define not evaluable (NE) for best overall response (iBOR) as iCR, iPR, iSD,",
+    "NON-iCR/NON-iUPD, or NE (should be specified after ibor_isd and ibor_non_icriupd)"
   ),
   dataset_name = "ovr",
-  condition = AVALC %in% c("iSD", "NON-iCR/NON-iUPD", "NE"),
+  condition = AVALC %in% c("iCR", "iPR", "iSD", "NON-iCR/NON-iUPD", "NE"),
   set_values_to = exprs(AVALC = "NE")
 )
 
