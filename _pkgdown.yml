@@ -67,6 +67,8 @@ navbar:
         href: articles/adrs_basic.html
       - text: Creating ADRS (Including Non-standard Endpoints)
         href: articles/adrs.html
+      - text: Creating ADRS with iRECIST endpoints
+        href: articles/irecist.html
       - text: Creating ADTTE
         href: articles/adtte.html
       - text: Creating ADTR

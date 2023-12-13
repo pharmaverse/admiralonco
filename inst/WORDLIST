@@ -12,7 +12,12 @@ CDISC
 CRF
 GlaxoSmithKline
 Hoffmann
+IBCP
+ICBCP
+ILSTA
+IMDIS
 IMWG
+IOVRB
 IRF
 LLC
 Myeloma
@@ -29,6 +34,7 @@ durations
 evaluable
 fmt
 funder
+iCPD
 iRECIST
 myeloma
 pharmaverse
