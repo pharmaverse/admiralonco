@@ -1,6 +1,3 @@
-Please add "Closes #<issue number>" to the title of the pull request. Then the
-issue is closed automatically once it is merged to `main`.
-
 Thank you for your Pull Request! We have developed this task checklist from the
 [Development Process
 Guide](https://pharmaverse.github.io/admiral/CONTRIBUTING.html#detailed-development-process)
@@ -13,6 +10,7 @@ or check off that it is not relevant to your Pull Request. This checklist is
 part of the Github Action workflows and the Pull Request will not be merged into
 the `main` branch until you have checked off each task.
 
+- [ ] Place Closes #<insert_issue_number> into the beginning of your Pull Request Title (Use Edit button in top-right if you need to update). Then the issue is closed automatically once it is merged to `main`.
 - [ ] Code is formatted according to the [tidyverse style guide](https://style.tidyverse.org/). Run `styler::style_file()` to style R and Rmd files
 - [ ] Updated relevant unit tests or have written new unit tests - See [Unit Test Guide](https://pharmaverse.github.io/admiraldev/articles/unit_test_guidance.html#writing-unit-tests-in-admiral)
 - [ ] If you removed/replaced any function and/or function parameters, did you fully follow the [deprecation guidance](https://pharmaverse.github.io/admiraldev/articles/programming_strategy.html#deprecation)?
