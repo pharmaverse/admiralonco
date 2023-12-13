@@ -14,17 +14,14 @@ repo:
     user: https://github.com/
 news:
     cran_dates: true
+
+development:
+  mode: auto
+
 reference:
 
- - title: Derivations for Adding Parameters
- - subtitle: ADRS-specific
-   desc: Parameter Derivation Functions helpful for building the ADRS dataset
- - contents:
-   - has_keyword("der_prm_adrs")
-
- - title: Advanced Functions
- - subtitle: Pre-Defined Objects
-   desc: 'Objects defined by {admiralonco} that can be used as input for derivations'
+ - title: Pre-Defined Objects
+   desc: 'Objects defined by `{admiralonco}` that can be used as input for derivations'
  - contents:
    - has_keyword("source_specifications")
 
@@ -37,27 +34,25 @@ reference:
  - contents:
    - has_keyword('utils_ds_chk')
 
- - subtitle: Utilities for Filtering Observations
- - contents:
-   - has_keyword('utils_fil')
-
  - title: Example Datasets
    desc: You can run `admiral::use_ad_template()` to produce additional datasets
  - contents:
    - has_keyword('datasets')
 
- - title: Relocated/Deprecated
- - subtitle: Functions moved to another admiraldev package
- - contents:
-   - has_keyword("move_adm_dev")
- - subtitle: Deprecated
- - contents:
-   - has_keyword("deprecated")
+ - title: Superseded
+   desc: |
+     Superseded functions have been replaced with more flexible functions that
+     allow for construction of more diverse endpoints for a wider array of
+     oncology indications, beyond solid tumor/RECIST. However, we will not be
+     removing these functions from `{admiralonco}` in the near future and they
+     will continue to be supported.
+   contents:
+   - has_keyword("superseded")
 
 navbar:
   structure:
     left: [getstarted, reference, articles, news]
-    right: [search, slack, newissue, github]
+    right: [search, slack, history, newissue, github]
   components:
     getstarted:
       text: Get Started
@@ -72,12 +67,18 @@ navbar:
         href: articles/adrs_basic.html
       - text: Creating ADRS (Including Non-standard Endpoints)
         href: articles/adrs.html
+      - text: Creating ADRS with iRECIST endpoints
+        href: articles/irecist.html
       - text: Creating ADTTE
         href: articles/adtte.html
       - text: Creating ADTR
         href: articles/adtr.html
       - text: Creating and Using New Anti-Cancer Start Date
         href: articles/nactdt.html
+    history:
+      icon: fa-history
+      href: articles/website-versions.html
+      aria-label: Previous Release Websites
     slack:
       icon: fa-slack
       href: https://app.slack.com/client/T028PB489D3/C02M8KN8269

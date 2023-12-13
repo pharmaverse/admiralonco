@@ -5,6 +5,9 @@
 # Input: adsl, adrs, tte_source objects
 library(admiral)
 library(admiralonco)
+# pharmaverseadam contains example datasets generated from the CDISC pilot
+# project SDTM ran through admiral templates
+library(pharmaverseadam)
 library(dplyr)
 library(lubridate)
 
@@ -14,11 +17,10 @@ library(lubridate)
 # as needed and assign to the variables below.
 # For illustration purposes read in admiral test data
 
-data("admiral_adsl")
-data("admiral_adrs")
+data("adsl")
+data("adrs_onco")
 
-adsl <- admiral_adsl
-adrs <- admiral_adrs
+adrs <- adrs_onco
 
 # Derivations ----
 

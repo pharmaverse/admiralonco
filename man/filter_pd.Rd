@@ -38,6 +38,9 @@ A list of symbols created using \code{exprs()} is expected.}
 A subset of the input dataset
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}} The \code{filter_pd()} function has been
+superseded in favor of \code{filter_relative()}.
+
 Filter a dataset to only include the source parameter records up to and
 including the first PD (progressive disease). These records are passed to
 downstream derivations regarding responses such as BOR (best overall
@@ -187,8 +190,16 @@ filter_pd(
   source_datasets = list(adrs = adrs)
 )
 }
+\seealso{
+Other superseded: 
+\code{\link{derive_param_bor}()},
+\code{\link{derive_param_clinbenefit}()},
+\code{\link{derive_param_confirmed_bor}()},
+\code{\link{derive_param_confirmed_resp}()},
+\code{\link{derive_param_response}()}
+}
 \author{
 Teckla Akinyi, Stefan Bundfuss
 }
-\concept{utils_fil}
-\keyword{utils_fil}
+\concept{superseded}
+\keyword{superseded}

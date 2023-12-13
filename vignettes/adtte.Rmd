@@ -13,34 +13,6 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-link <- function(text, url) {
-  return(
-    paste0(
-      "[", text, "]",
-      "(", url, ")"
-    )
-  )
-}
-dyn_link <- function(text,
-                     base_url,
-                     relative_url = "",
-                     # Change to TRUE when admiral adopts multiversion docs
-                     is_multiversion = FALSE,
-                     multiversion_default_ref = "main") {
-  url <- paste(base_url, relative_url, sep = "/")
-  if (is_multiversion) {
-    url <- paste(
-      base_url,
-      Sys.getenv("BRANCH_NAME", multiversion_default_ref),
-      relative_url,
-      sep = "/"
-    )
-  }
-  return(link(text, url))
-}
-# Other variables
-admiral_homepage <- "https://pharmaverse.github.io/admiral/cran-release"
-
 library(admiraldev)
 ```
 
@@ -70,6 +42,7 @@ The examples of this vignette require the following packages.
 ```{r, warning=FALSE, message=FALSE}
 library(admiral)
 library(admiralonco)
+library(pharmaverseadam)
 library(dplyr)
 library(lubridate)
 ```
@@ -87,15 +60,14 @@ library(lubridate)
 To start, all datasets needed for the creation of the time-to-event dataset
 should be read into the environment. This will be a company specific process.
 
-For example purpose, the ADaM datasets---which are included
-in `{admiral}` and `{admiralonco}`---are used. An alternative might be to use
-`ADEVENT` as input.
+For example purpose, the ADaM datasets---which are included in
+`{pharmaverseadam}`---are used. An alternative might be to use `ADEVENT` as
+input.
 
 ```{r}
-data("admiral_adsl")
-data("admiral_adrs")
-adsl <- admiral_adsl
-adrs <- admiral_adrs
+data("adsl")
+data("adrs_onco")
+adrs <- adrs_onco
 ```
 
 ## Derive Parameters (`CNSR`, `ADT`, `STARTDT`) {#parameters}
@@ -219,7 +191,7 @@ dataset_vignette(
 ### Creating Your Own Time-to-Event Source Objects {#tteobj}
 
 We advise you consult the `{admiral}`
-`r dyn_link("Creating a BDS Time-to-Event ADaM vignette", admiral_homepage, "articles/bds_tte.html")`
+[Creating a BDS Time-to-Event ADaM vignette](https://pharmaverse.github.io/admiral/articles/bds_tte.html)
 for further guidance on the different options available and more examples.
 
 One extra common oncology case we include here is around PFS when censoring
@@ -375,4 +347,4 @@ dataset_vignette(
 
 ADaM | Sample Code
 ---- | --------------
-ADTTE | `r dyn_link("ad_adtte.R", "https://github.com/pharmaverse/admiralonco/blob", "inst/templates/ad_adtte.R", is_multiversion = TRUE)`
+ADTTE | `admiral::use_ad_template("ADTTE", package = "admiralonco")`

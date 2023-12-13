@@ -1,5 +1,33 @@
 # admiralonco (development version)
 
+## Updates of Existing Functions
+
+- The `bor_ne` event object was updated such that `CR` and `PR` are additionally
+considered as event. This ensures that the confirmed best overall response for a
+patient with a single `CR` or `PR` assessment is derived as `"NE"` instead of
+`"MISSING"`. (#253)
+
+## Documentation
+
+- New vignette "Creating ADRS with iRECIST endpoints". (#233)
+
+- All vignettes and templates were updated to be in line with the changes in
+`{admiral}` (see [Breaking
+Changes](https://pharmaverse.github.io/admiral/news/index.html#breaking-changes-1-0-0)
+for details)(#256).
+
+## Breaking Changes
+
+- The `derive_*()` functions were superseded in favor of
+`derive_extreme_event()`. Any superseded functions can continue to be used as
+demonstrated via the "Basic ADRS" vignette, as they will remain supported and
+won't be deprecated in the near future. (#256)
+
+- The `filter_pd()` function was superseded in favor of `filter_relative()`. (#256)
+
+- The function `call_aval_fun()`, which was deprecated in admiralonco 0.4.0,
+has been removed. (#256)
+
 ## Various
 
 - Website now has button/links to Slack channel and GitHub Issues. (#262)

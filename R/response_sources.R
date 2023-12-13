@@ -136,11 +136,11 @@ bor_pd <- event(
 #' @export
 bor_ne <- event(
   description = paste(
-    "Define not evaluable (NE) for best overall response (BOR) as SD, NON-CR/NON-PD,",
-    "or NE (should be specified after bor_sd and bor_non_crpd)"
+    "Define not evaluable (NE) for best overall response (BOR) as CR, PR, SD,",
+    "NON-CR/NON-PD, or NE (should be specified after bor_sd and bor_non_crpd)"
   ),
   dataset_name = "ovr",
-  condition = AVALC %in% c("SD", "NON-CR/NON-PD", "NE"),
+  condition = AVALC %in% c("CR", "PR", "SD", "NON-CR/NON-PD", "NE"),
   set_values_to = exprs(AVALC = "NE")
 )
 
@@ -172,7 +172,7 @@ crsp_y_cr <- event_joined(
   join_vars = exprs(AVALC, ADT),
   join_type = "after",
   order = exprs(ADT),
-  first_cond = AVALC.join == "CR" &
+  first_cond_upper = AVALC.join == "CR" &
     ADT.join >= ADT + days(28),
   condition = AVALC == "CR" &
     all(AVALC.join %in% c("CR", "NE")) &
@@ -193,7 +193,7 @@ crsp_y_pr <- event_joined(
   join_vars = exprs(AVALC, ADT),
   join_type = "after",
   order = exprs(ADT),
-  first_cond = AVALC.join %in% c("CR", "PR") &
+  first_cond_upper = AVALC.join %in% c("CR", "PR") &
     ADT.join >= ADT + days(28),
   condition = AVALC == "PR" &
     all(AVALC.join %in% c("CR", "PR", "NE")) &
@@ -221,7 +221,7 @@ cbor_cr <- event_joined(
   dataset_name = "ovr",
   join_vars = exprs(AVALC, ADT),
   join_type = "after",
-  first_cond = AVALC.join == "CR" &
+  first_cond_upper = AVALC.join == "CR" &
     ADT.join >= ADT + 28,
   condition = AVALC == "CR" &
     all(AVALC.join %in% c("CR", "NE")) &
@@ -242,7 +242,7 @@ cbor_pr <- event_joined(
   dataset_name = "ovr",
   join_vars = exprs(AVALC, ADT),
   join_type = "after",
-  first_cond = AVALC.join %in% c("CR", "PR") &
+  first_cond_upper = AVALC.join %in% c("CR", "PR") &
     ADT.join >= ADT + 28,
   condition = AVALC == "PR" &
     all(AVALC.join %in% c("CR", "PR", "NE")) &
