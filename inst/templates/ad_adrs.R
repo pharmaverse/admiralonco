@@ -418,5 +418,10 @@ adrs <- adrs %>%
 
 # Save output ----
 
-dir <- tempdir() # Change to whichever directory you want to save the dataset in
-saveRDS(adrs, file = file.path(dir, "adrs.rds"), compress = "bzip2")
+# Change to whichever directory you want to save the dataset in
+dir <- tools::R_user_dir("admiralonco_templates_data", which = "cache")
+if (!file.exists(dir)) {
+  # Create the folder
+  dir.create(dir, recursive = TRUE, showWarnings = FALSE)
+}
+save(adrs, file = file.path(dir, "adrs.rda"), compress = "bzip2")

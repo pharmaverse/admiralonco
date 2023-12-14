@@ -266,3 +266,11 @@ adtr <- adtr %>%
     dataset_add = select(adsl, !!!negate_vars(adsl_vars)),
     by_vars = exprs(STUDYID, USUBJID)
   )
+
+# Change to whichever directory you want to save the dataset in
+dir <- tools::R_user_dir("admiralonco_templates_data", which = "cache")
+if (!file.exists(dir)) {
+  # Create the folder
+  dir.create(dir, recursive = TRUE, showWarnings = FALSE)
+}
+save(adtr, file = file.path(dir, "adtr.rda"), compress = "bzip2")
