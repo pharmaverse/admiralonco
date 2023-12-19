@@ -36,6 +36,8 @@ Authors:
 
 Other contributors:
 \itemize{
+  \item Olga Starostecka [contributor]
+  \item Uwe Bader [contributor]
   \item Karl Kennedy [contributor]
   \item Edoardo Mancini [contributor]
   \item Matt Marino [contributor]
