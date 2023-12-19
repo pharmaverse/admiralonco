@@ -13,7 +13,7 @@ A \code{data.frame} or \code{NULL}
 Get CR Records Followed by PR That Lead to a Prior Error
 }
 \details{
-Some {admiralonco} function check that the in the source records CR is not
+Some \code{{admiralonco}} functions check that in the source records CR is not
 followed by PR and throw an error otherwise. The \code{get_crpr_dataset()}
 function allows one to retrieve the duplicate records that lead to an error.
 
