@@ -1,4 +1,4 @@
-pandoc: 2.19.2
+pandoc: 3.1.1
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
@@ -7,8 +7,10 @@ articles:
   adrs_basic: adrs_basic.html
   adtr: adtr.html
   adtte: adtte.html
+  website-versions: website-versions.html
+  irecist: irecist.html
   nactdt: nactdt.html
-last_built: 2023-11-09T16:29Z
+last_built: 2023-12-19T15:24Z
 urls:
   reference: https://pharmaverse.github.io/admiralonco/reference
   article: https://pharmaverse.github.io/admiralonco/articles
