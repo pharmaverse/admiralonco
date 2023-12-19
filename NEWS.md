@@ -1,4 +1,4 @@
-# admiralonco (development version)
+# admiralonco 1.0.0
 
 ## Updates of Existing Functions
 
