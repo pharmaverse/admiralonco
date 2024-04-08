@@ -1,0 +1,897 @@
+---
+title: "Creating ADRS with IMWG criteria"
+output: 
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Creating ADRS with IMWG criteria}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+```
+
+# Introduction
+
+There are currently 2 commonly used sets of international criteria to assess
+multiple myeloma (MM):
+
+* IMWG criteria incorporating the FLC test,
+* EBMT/Center for International Blood and Marrow Transplant Research criteria.
+
+A specific trial may arbitrarily use either of them or a modified version.
+
+This article describes creating an `ADRS` ADaM in multiple myeloma studies
+based on IMWG criteria. It shows a similar way of deriving the endpoints 
+presented in [Creating ADRS (Including Non-standard Endpoints)](adrs.html). 
+Most of the endpoints are derived by calling `admiral::derive_extreme_event()`.
+
+The hallmark of MM is the production of monoclonal immunoglobulins 
+and/or light chains by the clonal plasma cells.
+Numerous parameters need to be considered while assessing response:
+
+1. Monoclonal protein level (confirmatory assessment required):
+    + SPEP - serum protein electrophoresis,
+    + SIFE - serum immunofixation electrophoresis,
+    + UPEP - urine protein electrophoresis,
+    + UIFE - urine immunofixation electrophoresis, 
+    + SFLC - serum free light chains.
+2. Marrow plasma cells: bone marrow aspirate/biopsy.
+3. Plasmacytoma: imaging (PET/CT, CT or MRI).
+4. Bone lesions: skeletal survey.
+
+It is worth to mention:  
+*Whenever more than one parameter is used to assess response, the overall 
+assigned level of response is determined by the lowest level of response.*  
+*If a critical data point to establish a level of response is missing, 
+the evaluation is downgraded to the next lower level.*
+
+For more information user may visit [International Myeloma Working Group consensus criteria for response and minimal residual disease assessment in multiple myeloma](https://www.sciencedirect.com/science/article/abs/pii/S1470204516302066?via%3Dihub)
+
+Examples are currently presented and tested using `ADSL` (ADaM), 
+`RS` and `SUPPRS` (SDTM) inputs. However, other domains could be used. 
+
+In IMWG criteria each status should be confirmed by second tests giving consistent
+results. Confirmation should be obtained for biochemical markers but is not 
+necessary for bone marrow or imaging studies.
+
+Two scenarios are possible:
+
+- `RS` contains a confirmed response,  
+- `RS` contains an unconfirmed response and the confirmed response should be derived.
+
+In our example will consider the second scenario.
+
+**Note**: *All examples assume CDISC SDTM and/or ADaM format as input
+unless otherwise specified.*
+
+# Programming Workflow
+
+-   [Read in Data](#readdata)
+-   [Pre-processing of Input Records](#input)
+-   [Derive Confirmed Overall Response Parameter](#covr)
+-   [Analysis flag derivation](#anlfl)
+-   [Derive Progressive Disease Parameter](#pd)
+-   [Define Events](#ev)
+-   [Derive Response Parameter](#rsp)
+-   [Derive Clinical Benefit Parameter](#cb)
+-   [Derive Best Overall Response Parameter](#bor)
+-   [Other Endpoints](#other)
+
+## Read in Data {#readdata}
+
+To start, all data frames needed for the creation of `ADRS` should be read into
+the environment. This will be a company specific process. Some of the data
+frames needed may be `ADSL`, `RS` and `TU`.
+For this vignette we assume that `RS` provides the response values `"sCR"`, `"CR"`, `"VGPR"`, `"PR"`,`"MR"`, `"SD"`, `"PD"`, and `"NE"`.
+`"MR"` does not occur in all studies. If `RS` does not contain `"MR"`, it will
+not affect performance of functions and we will get the proper results.
+
+For example purpose, the SDTM and ADaM datasets (based on CDISC Pilot
+test data)---which are included in `{pharmaversesdtm}` and `{pharmaverseadam}`---are used.
+
+```{r message=FALSE}
+library(admiraldev)
+library(admiral)
+library(admiralonco)
+library(dplyr)
+library(pharmaverseadam)
+library(remotes)
+install_git("https://github.com/pharmaverse/pharmaversesdtm/", ref = "86_rs_imwg")
+library(pharmaversesdtm)
+library(lubridate)
+library(stringr)
+data("adsl")
+# IMWG sdtm data
+data("rs_onco_imwg")
+data("supprs_onco_imwg")
+
+rs <- rs_onco_imwg
+```
+
+Now we will join `SUPPRS` with `RS` domain.
+
+```{r eval=TRUE}
+supprs <- supprs_onco_imwg %>%
+  select(USUBJID, IDVARVAL, QNAM, QVAL)
+
+supprs <- transform(supprs, IDVARVAL = as.numeric(IDVARVAL))
+
+rs <- rs %>%
+  derive_vars_transposed(
+    dataset_merge = supprs,
+    by_vars = exprs(USUBJID, RSSEQ = IDVARVAL),
+    key_var = QNAM,
+    value_var = QVAL
+  )
+
+rs <- convert_blanks_to_na(rs)
+```
+
+At this step, it may be useful to join `ADSL` to your `RS` domain. Only
+the `ADSL` variables used for derivations are selected at this step. The
+rest of the relevant `ADSL` would be added later.
+
+```{r eval=TRUE}
+adsl_vars <- exprs(RANDDT, TRTSDT)
+adrs <- derive_vars_merged(
+  rs,
+  dataset_add = adsl,
+  new_vars = adsl_vars,
+  by_vars = exprs(STUDYID, USUBJID)
+)
+```
+
+```{r, eval=TRUE, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = exprs(USUBJID, RSTESTCD, VISIT, RSDTC, RANDDT, TRTSDT)
+)
+```
+
+## Pre-processing of Input Records {#input}
+
+The first step involves company-specific pre-processing of records for
+the required input to the downstream parameter functions. Note that this
+could be needed multiple times (e.g. once for investigator and once for
+Independent Review Facility (IRF)/Blinded Independent Central Review
+(BICR) records). It could even involve merging input data from other
+sources besides `RS`, such as `ADTR`.
+
+This step would include any required selection/derivation of `ADT` or applying
+any necessary partial date imputations and updating `AVAL` (e.g. this should be
+ordered from worst to best response).
+
+The below shows an example of a possible company-specific implementation
+of this step.
+
+### Select Overall Response Records and Set Parameter Details
+
+In this case we use the overall response records from `RS` from the
+investigator as our starting point. 
+It is worth emphasizing again that responses are not confirmed. 
+Confirmed values will be derived after further pre-processing.
+
+The parameter details such as
+`PARAMCD`, `PARAM` etc will always be company-specific, but an example
+is shown below so that you can trace through how these records feed into
+the other parameter derivations.
+
+```{r}
+adrs <- adrs %>%
+  filter(RSEVAL == "INVESTIGATOR" & RSTESTCD == "OVRLRESP") %>%
+  mutate(
+    PARAMCD = "OVR",
+    PARAM = "Overall Response by Investigator",
+    PARCAT1 = "Investigator",
+    PARCAT2 = "IMWG"
+  )
+```
+
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = exprs(USUBJID, VISIT, RSTESTCD, RSEVAL, PARAMCD, PARAM, PARCAT1, PARCAT2)
+)
+```
+
+### Partial Date Imputation and Deriving `ADT`, `ADTF`, `AVISIT` etc
+
+If your data collection allows for partial dates, you could apply a
+company-specific imputation rule at this stage when deriving `ADT`. For
+this example, here we impute missing day to last possible date.
+
+```{r}
+adrs <- adrs %>%
+  derive_vars_dt(
+    dtc = RSDTC,
+    new_vars_prefix = "A",
+    highest_imputation = "D",
+    date_imputation = "last"
+  ) %>%
+  derive_vars_dy(
+    reference_date = TRTSDT,
+    source_vars = exprs(ADT)
+  )%>%
+  mutate(AVISIT = VISIT)
+```
+
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = exprs(USUBJID, PARAMCD, VISIT, AVISIT, RSDTC, ADT, ADTF, ADY)
+)
+```
+
+### Derive `AVALC` and `AVAL`
+
+Here we populate `AVALC` and create the numeric version as `AVAL`
+(ordered from worst to best response, followed by `NE`). The `AVAL` values are not considered in
+the parameter derivations below, and so changing `AVAL` here would not change
+the result of those derivations. However, please note that the ordering of `AVAL` 
+will be used to determine `ANL01FL` in the subsequent step, ensure that the appropriate 
+`mode` is being set in the `admiral::derive_var_extreme_flag()`.
+
+IMWG ordering will be used or if you'd like to provide your own company-specific ordering here you
+could do this as follows:
+
+```{r}
+aval_resp_new <- function(arg) {
+  case_when(
+    arg == "NE" ~ 8,
+    arg == "sCR" ~ 7,
+    arg == "CR" ~ 6,
+    arg == "VGPR" ~ 5,
+    arg == "PR" ~ 4,
+    arg == "MR" ~ 3,
+    arg == "SD" ~ 2,
+    arg == "PD" ~ 1,
+    TRUE ~ NA_real_
+  )
+}
+
+adrs <- adrs %>%
+  mutate(
+    AVALC = RSSTRESC,
+    AVAL = aval_resp_new(AVALC)
+  )
+```
+
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = exprs(USUBJID, PARAMCD, AVISIT, ADT, AVAL, AVALC)
+)
+```
+
+## Derive Confirmed Overall Response Parameter {#covr}
+
+Confirmation of response require two consecutive readings of applicable disease 
+parameters (biochemical analyses). These need to be two distinct samples and 
+usually is performed on the same day or at next scheduled visit.  
+Bone marrow assessments and imaging do not need to be confirmed. 
+
+If `RS` contains unconfirmed response and confirmation is performed at 
+next scheduled visit we can derive Confirmed Overall Response based on 
+response at subsequent visit.
+
+While deriving confirmed response, there are some rules to follow:
+
+* Until any response category has been confirmed, response = stable disease (`SD`).  
+* Patients will continue in the last confirmed response category until 
+there is confirmation of progression or improvement to a higher response status.  
+* If the result is not confirmed by a second evaluation, the status is `NE`
+and the prior confirmed disease status remains valid.  
+* Once confirmed: date of the initial test is considered as date of response.
+
+Below table provides a summary of the confirmed response status calculation at 
+each time point.
+
+```{r echo=FALSE}
+list_resp <- tribble(
+  ~"Response 1 time point",   ~"Response 2 time point",
+  ~"Confirmed response 1 time point",
+  "sCR", "sCR", "sCR",
+  "CR", "sCR/CR", "max (CR, last confirmed status)",
+  "VGPR", "sCR/CR/VGPR", "max(VGPR, last confirmed status)",
+  "PR", "sCR/CR/VGPR/PR", "max(PR, last confirmed status)",
+  "MR", "sCR/CR/VGPR/PR/MR", "max(MR, last confirmed status)",
+  "sCR", "CR", "last confirmed status",
+  "sCR/CR", "VGPR", "last confirmed status",
+  "sCR/CR/VGPR", "PR", "last confirmed status", 
+  "sCR/CR/VGPR/PR", "MR", "last confirmed status",
+  "sCR/CR/VGPR/PR/MR", "SD/PD/NE/NA", "last confirmed status",
+  "SD", "any", "last confirmed status",
+  "NE", "any", "last confirmed status",
+  "PD reason imaging", "any", "PD",
+  "PD reason serum/urine", "PD/death", "PD",
+  "PD reason serum/urine", "sCR/CR/VGPR/PR/MR/SD/NE/NA", "last confirmed status",
+)
+
+knitr::kable(list_resp)
+```
+
+At the next step we join records with subsequent responses. If response requires confirmation and consecutive assessment does not confirm previous results, we reassign response to `NE`.
+
+```{r}
+adrs_joined <- 
+  derive_vars_joined(
+    adrs,
+    adrs,
+    by_vars = exprs(USUBJID),
+    order = exprs(ADY),
+    new_vars = exprs(AVALC.next = AVALC, AVAL.next = AVAL),
+    tmp_obs_nr_var = ASEQ,
+    join_type = "after",
+    filter_join = ASEQ + 1 == ASEQ.join,
+    mode = "first",
+  )  %>%
+  mutate(AVALC.confirmed = case_when(
+    #better response
+    AVALC %in% c("sCR", "CR", "VGPR", "PR", "MR") & 
+      AVALC.next %in% c("sCR", "CR", "VGPR", "PR", "MR") & 
+      AVAL.next >= AVAL ~ AVALC,
+    #worse response
+    AVALC %in% c("sCR", "CR", "VGPR", "PR", "MR") & 
+      AVALC.next %in% c("sCR", "CR", "VGPR", "PR", "MR", "SD", "PD") & 
+      AVAL.next < AVAL ~ "NE",
+    #next assessment NE or NA
+    AVALC %in% c("sCR", "CR", "VGPR", "PR", "MR") & 
+      (AVALC.next == "NE" | is.na(AVALC.next)) ~ "NE",
+    #no need to confirm SD and NE
+    AVALC %in% c("SD", "NE")  ~ AVALC,
+    #confirmed progression
+    AVALC == "PD" & 
+      (PDIFL == "Y" | DTHPDFL == "Y" | PDOFL == "Y" & AVALC.next == "PD") ~ AVALC,
+    #unconfirmed progression
+    AVALC == "PD" & is.na(DTHPDFL) & PDOFL == "Y" &
+      (AVALC.next %in% c("sCR", "CR", "VGPR", "PR", "MR", "SD", "NE") | is.na(AVALC.next))
+       ~ "NE"
+  ))
+```
+
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs_joined,
+  display_vars = exprs(USUBJID, PARAMCD, AVISIT, ADT, AVALC, AVALC.next, AVALC.confirmed)
+)
+```
+
+Until any response is confirmed, we need to assign a value of `SD`. 
+To do this, we will use the function `admiral::filter_extreme()` to identify 
+the date of the first response, which is not `NE` (`FRSTDT`). 
+Then we will append this variable and change `NE` to `SD`until any response is 
+confirmed. 
+
+```{r}
+adrs_frstdt <- adrs_joined %>%
+  filter(AVALC.confirmed != "NE") %>%
+  filter_extreme(
+    by_vars = exprs(USUBJID),
+    order = exprs(ADT),
+    mode = "first"
+  )%>%
+  select(USUBJID, ADT) %>%
+  rename(FRSTDT = ADT)
+
+adrs_joined <- 
+  derive_vars_merged(
+  adrs_joined,
+  dataset_add = adrs_frstdt,
+  by_vars = exprs(USUBJID),
+  new_vars = exprs(FRSTDT),
+  ) %>%
+  mutate(AVALC.confirmed = case_when(
+      AVALC.confirmed == "NE" & (ADT < FRSTDT | is.na(FRSTDT)) ~ "SD",
+      TRUE ~ AVALC.confirmed
+  ))
+```
+
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs_joined,
+  display_vars = exprs(USUBJID, PARAMCD, AVISIT, ADT, AVALC, AVALC.next, 
+                       AVALC.confirmed, FRSTDT)
+)
+```
+
+Finally, we will assign best confirmed response before the current observation. 
+To do this, we will again use the `admiral::derive_vars_joined()` function, 
+but in order to sort the responses correctly, it will be necessary to define 
+`AVAL` for the confirmed responses so that if `PD` occurs, the function will 
+prioritize this value.
+
+```{r}
+aval_resp_new2 <- function(arg) {
+  case_when(
+    arg == "PD" ~ 8,
+    arg == "sCR" ~ 7,
+    arg == "CR" ~ 6,
+    arg == "VGPR" ~ 5,
+    arg == "PR" ~ 4,
+    arg == "MR" ~ 3,
+    arg == "SD" ~ 2,
+    arg == "NE" ~ 1,
+    TRUE ~ NA_real_
+  )
+}
+
+adrs_joined <- adrs_joined %>%
+  mutate(
+    AVAL.confirmed = aval_resp_new2(AVALC.confirmed)
+  )
+
+adrs_imwg <- 
+  derive_vars_joined(
+    adrs_joined,
+    dataset_add = adrs_joined,
+    by_vars = exprs(USUBJID),
+    order = exprs(desc(AVAL.confirmed)),
+    new_vars = exprs(AVALC.best = AVALC.confirmed),
+    join_vars = exprs(ADT),
+    join_type = "all",
+    filter_join = ADT.join <= ADT,
+    mode = "first",
+    check_type = "none"
+  ) 
+```
+
+We will then make `AVAL` assignment using the previously defined `aval_resp_new()` function (so it is consistent with `OVR` parameter) remove unnecessary variables and define parameter details.
+
+```{r}
+adrs_imwg <- adrs_imwg %>%
+  mutate(
+    AVAL.best = aval_resp_new(AVALC.confirmed)
+  ) %>%
+  select (-AVAL, -AVALC, -AVAL.next, -AVALC.next, -AVAL.confirmed,
+          -AVALC.confirmed, -FRSTDT) %>%
+  rename(AVALC = AVALC.best, AVAL = AVAL.best) %>%
+  mutate(
+    PARAMCD = "BOVR",
+    PARAM = "Best Overall Response at Time Point by Investigator",
+    PARCAT1 = "Investigator",
+    PARCAT2 = "IMWG"
+  )
+```
+
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs_imwg,
+  display_vars = exprs(USUBJID, PARAMCD, AVISIT, ADT, AVALC)
+)
+```
+
+## Analysis flag derivation {#anlfl}
+
+### Flag One Assessment at Each Analysis Visit (`ANL01FL`)  {#anl01fl}
+
+To confirm responses, we took into account all assessments - 
+including those that took place after a new therapy was started 
+or after progression.
+
+When deriving `ANL01FL` this is an opportunity to exclude any records
+that should not contribute to any downstream parameter derivations.
+
+Common options for `ANL01FL` would be to set null for invalid assessments or
+those occurring after new anti-cancer therapy, or to only flag assessments on or
+after date of first treatment/randomization, or rules to cover the case when a
+patient has multiple observations per visit/date (e.g. by selecting the worst value).
+Another consideration could be extra potential protocol-specific sources of
+Progressive Disease such as radiological assessments, which could be
+pre-processed here to create a PD record to feed downstream derivations.
+
+For the derivation of the parameters it is expected that the subject
+identifier variables (usually `STUDYID` and `USUBJID`) and `ADT` are a
+unique key. 
+
+In the below example we consider only valid assessments and
+those occurring on or after randomization date. If there is more than
+one assessment at a date, the worst one is flagged.
+
+```{r}
+adrs_imwg <- adrs_imwg %>%
+  restrict_derivation(
+    derivation = derive_var_extreme_flag,
+    args = params(
+      by_vars = exprs(STUDYID, USUBJID, ADT),
+      order = exprs(AVAL, RSSEQ),
+      new_var = ANL01FL,
+      mode = "first"
+    ),
+    filter = !is.na(AVAL) & AVALC != "MISSING" & ADT >= RANDDT
+  )
+```
+
+### Exclude Assessments After New Anti-Cancer Therapy (`ANL02FL`) {#anl02fl}
+
+Here is an alternative example where those records occurring after new
+anti-cancer therapy are additionally excluded (where `NACTDT` would be
+pre-derived as first date of new anti-cancer therapy.   
+In our example `NACTDT` is present in `SUPPRS` domain. If not available,
+see `{admiralonco}`
+[Creating and Using New Anti-Cancer Start Date](nactdt.html) for deriving this
+variable).
+
+```{r, eval=TRUE}
+adrs_imwg <- adrs_imwg %>%
+  mutate(
+    ANL02FL = case_when(
+      !is.na(AVAL) & ADT >= RANDDT & ADT < NACTDT ~ "Y",
+      is.na(NACTDT) ~ "Y",
+      TRUE ~ NA_character_
+    )
+  )
+```
+
+### Flag Assessments up to First PD (`ANL03FL`)  {#anl03fl}
+
+To restrict response data up to and including first reported progressive disease
+`ANL03FL` flag could be created by using `{admiral}` function
+`admiral::derive_var_relative_flag()`.
+
+```{r}
+adrs_imwg <- adrs_imwg %>%
+  derive_var_relative_flag(
+    by_vars = exprs(STUDYID, USUBJID),
+    order = exprs(ADT, RSSEQ),
+    new_var = ANL03FL,
+    condition = AVALC == "PD",
+    mode = "first",
+    selection = "before",
+    inclusive = TRUE
+  )
+```
+
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs_imwg,
+  display_vars = exprs(USUBJID, AVISIT, PARAMCD, AVALC, ADT, ANL01FL, ANL02FL, ANL03FL)
+)
+```
+
+### Select Source Assessments for Parameter derivations
+
+For most parameter derivations the post-baseline overall response assessments up
+to and including first PD and before start of new anti-cancer therapy are considered.
+```{r}
+ovr <- filter(adrs_imwg, PARAMCD == "BOVR" & ANL01FL == "Y" & ANL02FL == "Y" & ANL03FL == "Y")
+
+adrs <- bind_rows(adrs,adrs_imwg)
+```
+
+```{r, echo=FALSE}
+dataset_vignette(
+  ovr,
+  display_vars = exprs(USUBJID, AVISIT, AVALC, ADT, RANDDT)
+)
+```
+
+## Derive Progressive Disease Parameter {#pd}
+
+Now that we have the input records prepared above with any
+company-specific requirements, we can start to derive new parameter
+records. For the parameter derivations, all values except those
+overwritten by `set_values_to` argument are kept from the earliest
+occurring input record fulfilling the required criteria.
+
+The function `admiral::derive_extreme_records()` can be used to find the date of
+first PD.
+
+```{r}
+adrs <- adrs %>%
+  derive_extreme_records(
+    dataset_ref = adsl,
+    dataset_add = ovr,
+    by_vars = exprs(STUDYID, USUBJID),
+    filter_add = PARAMCD == "BOVR" & AVALC == "PD",
+    order = exprs(ADT),
+    mode = "first",
+    exist_flag = AVALC,
+    false_value = "N",
+    set_values_to = exprs(
+      PARAMCD = "PD",
+      PARAM = "Disease Progression by Investigator",
+      PARCAT1 = "Investigator",
+      PARCAT2 = "IMWG",
+      AVAL = yn_to_numeric(AVALC)
+    )
+  )
+```
+
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = exprs(USUBJID, AVISIT, PARAMCD, AVALC, ADT),
+  filter = PARAMCD == "PD"
+)
+```
+
+For progressive disease and response shown in steps here and below, in our 
+examples we show these as `ADRS` parameters, but they could equally be 
+achieved via `ADSL` dates or `ADEVENT` parameters. If you prefer to store 
+as an ADSL date, then the function `admiral::derive_var_extreme_dt()` 
+could be used to find the date of first `PD` as a variable, rather than 
+as a new parameter record.
+
+## Define Events {#ev}
+
+The building blocks for the events that contribute to deriving common endpoints
+like what constitutes a responder, or a Best Overall Response of complete
+response (CR), ... are predefined in admiralonco for RECIST 1.1 (see [Pre-Defined
+Response Event Objects](../reference/event_objects.html)). 
+
+New events need to be defined for the IMWG criteria.  
+Below are definitions of non-response events used in the derivations of all parameters.   
+Parameter-specific events are defined right before the parameter derivation.
+
+```{r}
+no_data_n <- event(
+  description = "Define no response for all patients in adsl (should be used as last event)",
+  dataset_name = "adsl",
+  condition = TRUE,
+  set_values_to = exprs(AVALC = "N"),
+  keep_source_vars = adsl_vars
+)
+
+no_data_missing <- event(
+  description = paste(
+    "Define missing response (MISSING) for all patients in adsl (should be used",
+    "as last event)"
+  ),
+  dataset_name = "adsl",
+  condition = TRUE,
+  set_values_to = exprs(AVALC = "MISSING"),
+  keep_source_vars = adsl_vars
+)
+```
+
+## Derive Response Parameter {#rsp}
+
+The function `admiral::derive_extreme_event()` can then be used to find the date
+of first response. In the below example, the response condition has been defined
+as `PR` or better via the event `rsp_y_imwg` that was created for IMWG.
+
+```{r}
+rsp_y_imwg <- event(
+  description = "Define sCR, CR, VGPR or PR as response",
+  dataset_name = "ovr",
+  condition = AVALC %in% c("sCR", "CR", "VGPR", "PR"),
+  set_values_to = exprs(AVALC = "Y")
+)
+
+adrs <- adrs %>%
+  derive_extreme_event(
+    by_vars = exprs(STUDYID, USUBJID),
+    order = exprs(ADT),
+    mode = "first",
+    events = list(rsp_y_imwg, no_data_n),
+    source_datasets = list(
+      ovr = ovr,
+      adsl = adsl
+    ),
+    set_values_to = exprs(
+      PARAMCD = "RSP",
+      PARAM = "IMWG Response by Investigator (confirmation not required)",
+      PARCAT1 = "Investigator",
+      PARCAT2 = "IMWG",
+      AVAL = yn_to_numeric(AVALC)
+    )
+  )
+```
+
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = exprs(USUBJID, RSORRES, AVISIT, PARAMCD, AVALC, ADT),
+  filter = PARAMCD == "RSP" & AVALC == "Y"
+)
+```
+
+## Derive Clinical Benefit Parameter {#cb}
+
+The function `admiral::derive_extreme_event()` can then be used to derive the
+clinical benefit parameter, which we define as a patient having had a response
+or a sustained period of time before first `PD`. This could also be known as
+disease control. In this example the "sustained period" has been defined as 42
+days after randomization date via the created `cb_y_imwg` event.
+
+```{r}
+cb_y_imwg <- event(
+  description = paste(
+    "Define sCR, CR, VGPR, PR or SD occuring at least 42 days after",
+    "randomization as clinical benefit"
+  ),
+  dataset_name = "ovr",
+  condition = AVALC %in% c("sCR", "CR", "VGPR", "PR", "SD") &
+    ADT >= RANDDT + 42,
+  set_values_to = exprs(AVALC = "Y")
+)
+```
+
+Please note that the result `AVALC = "Y"` is defined by the first _two_ events
+specified for `events`. For subjects with observations fulfilling both events
+the one with the earlier date should be selected (and not the first one in the
+list). Thus `ignore_event_order` and `tmp_event_nr_var` are not specified.
+
+```{r}
+adrs <- adrs %>%
+  derive_extreme_event(
+    by_vars = exprs(STUDYID, USUBJID),
+    order = exprs(desc(AVALC), ADT),
+    mode = "first",
+    events = list(rsp_y_imwg, cb_y_imwg, no_data_n),
+    source_datasets = list(
+      ovr = ovr,
+      adsl = adsl
+    ),
+    set_values_to = exprs(
+      PARAMCD = "CB",
+      PARAM = "IMWG Clinical Benefit by Investigator (confirmation not required)",
+      PARCAT1 = "Investigator",
+      PARCAT2 = "IMWG",
+      AVAL = yn_to_numeric(AVALC)
+    ),
+    check_type = "none"
+  )
+```
+
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = exprs(USUBJID, RSORRES, AVISIT, PARAMCD, AVALC, ADT),
+  filter = PARAMCD == "CB" & AVALC == "Y"
+)
+```
+
+Similarly, we can define the parameters:
+
+* CR or better response (`PARAMCD` = `CR`),  
+* VGPR or better response (`PARAMCD` =`VGPR`).
+
+```{r}
+cr_y_imwg <- event(
+  description = "Define sCR or CR as response",
+  dataset_name = "ovr",
+  condition = AVALC %in% c("sCR", "CR"),
+  set_values_to = exprs(AVALC = "Y")
+)
+
+adrs <- adrs %>%
+  derive_extreme_event(
+    by_vars = exprs(STUDYID, USUBJID),
+    order = exprs(desc(AVALC), ADT),
+    mode = "first",
+    events = list(cr_y_imwg, no_data_n),
+    source_datasets = list(
+      ovr = ovr,
+      adsl = adsl
+    ),
+    set_values_to = exprs(
+      PARAMCD = "CRRSP",
+      PARAM = "IMWG Complete Response by Investigator (confirmation not required)",
+      PARCAT1 = "Investigator",
+      PARCAT2 = "IMWG",
+      AVAL = yn_to_numeric(AVALC)
+    ),
+    check_type = "none"
+  )
+
+vgpr_y_imwg <- event(
+  description = "Define sCR, CR or VGPR as response",
+  dataset_name = "ovr",
+  condition = AVALC %in% c("sCR", "CR", "VGPR"),
+  set_values_to = exprs(AVALC = "Y")
+)
+
+adrs <- adrs %>%
+  derive_extreme_event(
+    by_vars = exprs(STUDYID, USUBJID),
+    order = exprs(desc(AVALC), ADT),
+    mode = "first",
+    events = list(vgpr_y_imwg, no_data_n),
+    source_datasets = list(
+      ovr = ovr,
+      adsl = adsl
+    ),
+    set_values_to = exprs(
+      PARAMCD = "VGPRRSP",
+      PARAM = "IMWG VGPR Rate by Investigator (confirmation not required)",
+      PARCAT1 = "Investigator",
+      PARCAT2 = "IMWG",
+      AVAL = yn_to_numeric(AVALC)
+    ),
+    check_type = "none"
+  )
+```
+
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = exprs(USUBJID, RSORRES, AVISIT, PARAMCD, AVALC, ADT),
+  filter = PARAMCD %in% c("CRRSP", "VGPRRSP") & AVALC == "Y"
+)
+```
+
+## Derive Best Overall Response Parameter {#bor}
+
+The function `admiral::derive_extreme_event()` can be used to derive the best
+overall response (without confirmation required) parameter.
+
+Please note that the order of the events specified for `events` is important.
+For example, a subject with `PR`, `PR`, `CR` qualifies for both `bor_cr` and
+`bor_pr`. As `bor_cr` is listed before `bor_pr`, `CR` is selected as best overall
+response for this subject.
+
+Some events such as `bor_cr`, `bor_pr` have been defined in {admiralonco} for
+RECIST 1.1. Missing events specific to IMWG criteria are defined below.  
+**Note**: *For `SD`, it is not required as for RECIST1.1 that the response occurs after a protocol-defined number of days.*
+
+```{r}
+bor_scr <- event(
+  description = "Define stringent complete response (sCR) for best overall response
+  (BOR)",
+  dataset_name = "ovr",
+  condition = AVALC == "sCR",
+  set_values_to = exprs(AVALC = "sCR")
+)
+
+bor_vgpr <- event(
+  description = "Define very good partial response (VGPR) for best overall response
+  (BOR)",
+  dataset_name = "ovr",
+  condition = AVALC == "VGPR",
+  set_values_to = exprs(AVALC = "VGPR")
+)
+
+bor_mr <- event(
+  description = "Define minimal response (MR) for best overall response (BOR)",
+  dataset_name = "ovr",
+  condition = AVALC == "MR",
+  set_values_to = exprs(AVALC = "MR")
+)
+
+bor_sd_imwg <- event(
+  description = "Define stable disease (SD) for best overall response (BOR)",
+  dataset_name = "ovr",
+  condition = AVALC == "SD",
+  set_values_to = exprs(AVALC = "SD")
+)
+
+adrs <- adrs %>%
+  derive_extreme_event(
+    by_vars = exprs(STUDYID, USUBJID),
+    tmp_event_nr_var = event_nr,
+    order = exprs(event_nr, ADT),
+    mode = "first",
+    source_datasets = list(
+      ovr = ovr,
+      adsl = adsl
+    ),
+    events = list(bor_scr, bor_cr, bor_vgpr, bor_pr, bor_mr, bor_sd_imwg, bor_pd,
+                  no_data_missing),
+    set_values_to = exprs(
+      PARAMCD = "BOR",
+      PARAM = "IMWG Best Overall Response by Investigator (confirmation not required)",
+      PARCAT1 = "Investigator",
+      PARCAT2 = "IMWG",
+      AVAL = aval_resp_new(AVALC)
+    )
+  )
+```
+
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = exprs(USUBJID, AVISIT, PARAMCD, AVALC, ADT),
+  filter = PARAMCD == "BOR" & AVALC != "MISSING"
+)
+```
+
+## Other Endpoints {#other}
+
+For examples on the additional endpoints, please see [Creating ADRS (Including Non-standard Endpoints)](adrs.html).
