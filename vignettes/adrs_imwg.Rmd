@@ -13,7 +13,6 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-
 ```
 
 # Introduction
@@ -217,7 +216,7 @@ adrs <- adrs %>%
   derive_vars_dy(
     reference_date = TRTSDT,
     source_vars = exprs(ADT)
-  )%>%
+  ) %>%
   mutate(AVISIT = VISIT)
 ```
 
@@ -294,7 +293,7 @@ each time point.
 
 ```{r echo=FALSE}
 list_resp <- tribble(
-  ~"Response 1 time point",   ~"Response 2 time point",
+  ~"Response 1 time point", ~"Response 2 time point",
   ~"Confirmed response 1 time point",
   "sCR", "sCR", "sCR",
   "CR", "sCR/CR", "max (CR, last confirmed status)",
@@ -303,7 +302,7 @@ list_resp <- tribble(
   "MR", "sCR/CR/VGPR/PR/MR", "max(MR, last confirmed status)",
   "sCR", "CR", "last confirmed status",
   "sCR/CR", "VGPR", "last confirmed status",
-  "sCR/CR/VGPR", "PR", "last confirmed status", 
+  "sCR/CR/VGPR", "PR", "last confirmed status",
   "sCR/CR/VGPR/PR", "MR", "last confirmed status",
   "sCR/CR/VGPR/PR/MR", "SD/PD/NE/NA", "last confirmed status",
   "SD", "any", "last confirmed status",
@@ -319,7 +318,7 @@ knitr::kable(list_resp)
 At the next step we join records with subsequent responses. If response requires confirmation and consecutive assessment does not confirm previous results, we reassign response to `NE`.
 
 ```{r}
-adrs_joined <- 
+adrs_joined <-
   derive_vars_joined(
     adrs,
     adrs,
@@ -330,28 +329,28 @@ adrs_joined <-
     join_type = "after",
     filter_join = ASEQ + 1 == ASEQ.join,
     mode = "first",
-  )  %>%
+  ) %>%
   mutate(AVALC.confirmed = case_when(
-    #better response
-    AVALC %in% c("sCR", "CR", "VGPR", "PR", "MR") & 
-      AVALC.next %in% c("sCR", "CR", "VGPR", "PR", "MR") & 
+    # better response
+    AVALC %in% c("sCR", "CR", "VGPR", "PR", "MR") &
+      AVALC.next %in% c("sCR", "CR", "VGPR", "PR", "MR") &
       AVAL.next >= AVAL ~ AVALC,
-    #worse response
-    AVALC %in% c("sCR", "CR", "VGPR", "PR", "MR") & 
-      AVALC.next %in% c("sCR", "CR", "VGPR", "PR", "MR", "SD", "PD") & 
+    # worse response
+    AVALC %in% c("sCR", "CR", "VGPR", "PR", "MR") &
+      AVALC.next %in% c("sCR", "CR", "VGPR", "PR", "MR", "SD", "PD") &
       AVAL.next < AVAL ~ "NE",
-    #next assessment NE or NA
-    AVALC %in% c("sCR", "CR", "VGPR", "PR", "MR") & 
+    # next assessment NE or NA
+    AVALC %in% c("sCR", "CR", "VGPR", "PR", "MR") &
       (AVALC.next == "NE" | is.na(AVALC.next)) ~ "NE",
-    #no need to confirm SD and NE
-    AVALC %in% c("SD", "NE")  ~ AVALC,
-    #confirmed progression
-    AVALC == "PD" & 
+    # no need to confirm SD and NE
+    AVALC %in% c("SD", "NE") ~ AVALC,
+    # confirmed progression
+    AVALC == "PD" &
       (PDIFL == "Y" | DTHPDFL == "Y" | PDOFL == "Y" & AVALC.next == "PD") ~ AVALC,
-    #unconfirmed progression
+    # unconfirmed progression
     AVALC == "PD" & is.na(DTHPDFL) & PDOFL == "Y" &
       (AVALC.next %in% c("sCR", "CR", "VGPR", "PR", "MR", "SD", "NE") | is.na(AVALC.next))
-       ~ "NE"
+    ~ "NE"
   ))
 ```
 
@@ -375,28 +374,30 @@ adrs_frstdt <- adrs_joined %>%
     by_vars = exprs(USUBJID),
     order = exprs(ADT),
     mode = "first"
-  )%>%
+  ) %>%
   select(USUBJID, ADT) %>%
   rename(FRSTDT = ADT)
 
-adrs_joined <- 
+adrs_joined <-
   derive_vars_merged(
-  adrs_joined,
-  dataset_add = adrs_frstdt,
-  by_vars = exprs(USUBJID),
-  new_vars = exprs(FRSTDT),
+    adrs_joined,
+    dataset_add = adrs_frstdt,
+    by_vars = exprs(USUBJID),
+    new_vars = exprs(FRSTDT),
   ) %>%
   mutate(AVALC.confirmed = case_when(
-      AVALC.confirmed == "NE" & (ADT < FRSTDT | is.na(FRSTDT)) ~ "SD",
-      TRUE ~ AVALC.confirmed
+    AVALC.confirmed == "NE" & (ADT < FRSTDT | is.na(FRSTDT)) ~ "SD",
+    TRUE ~ AVALC.confirmed
   ))
 ```
 
 ```{r, echo=FALSE}
 dataset_vignette(
   adrs_joined,
-  display_vars = exprs(USUBJID, PARAMCD, AVISIT, ADT, AVALC, AVALC.next, 
-                       AVALC.confirmed, FRSTDT)
+  display_vars = exprs(
+    USUBJID, PARAMCD, AVISIT, ADT, AVALC, AVALC.next,
+    AVALC.confirmed, FRSTDT
+  )
 )
 ```
 
@@ -426,7 +427,7 @@ adrs_joined <- adrs_joined %>%
     AVAL.confirmed = aval_resp_new2(AVALC.confirmed)
   )
 
-adrs_imwg <- 
+adrs_imwg <-
   derive_vars_joined(
     adrs_joined,
     dataset_add = adrs_joined,
@@ -438,7 +439,7 @@ adrs_imwg <-
     filter_join = ADT.join <= ADT,
     mode = "first",
     check_type = "none"
-  ) 
+  )
 ```
 
 We will then make `AVAL` assignment using the previously defined `aval_resp_new()` function (so it is consistent with `OVR` parameter) remove unnecessary variables and define parameter details.
@@ -448,8 +449,10 @@ adrs_imwg <- adrs_imwg %>%
   mutate(
     AVAL.best = aval_resp_new(AVALC.confirmed)
   ) %>%
-  select (-AVAL, -AVALC, -AVAL.next, -AVALC.next, -AVAL.confirmed,
-          -AVALC.confirmed, -FRSTDT) %>%
+  select(
+    -AVAL, -AVALC, -AVAL.next, -AVALC.next, -AVAL.confirmed,
+    -AVALC.confirmed, -FRSTDT
+  ) %>%
   rename(AVALC = AVALC.best, AVAL = AVAL.best) %>%
   mutate(
     PARAMCD = "BOVR",
@@ -561,7 +564,7 @@ to and including first PD and before start of new anti-cancer therapy are consid
 ```{r}
 ovr <- filter(adrs_imwg, PARAMCD == "BOVR" & ANL01FL == "Y" & ANL02FL == "Y" & ANL03FL == "Y")
 
-adrs <- bind_rows(adrs,adrs_imwg)
+adrs <- bind_rows(adrs, adrs_imwg)
 ```
 
 ```{r, echo=FALSE}
@@ -872,8 +875,10 @@ adrs <- adrs %>%
       ovr = ovr,
       adsl = adsl
     ),
-    events = list(bor_scr, bor_cr, bor_vgpr, bor_pr, bor_mr, bor_sd_imwg, bor_pd,
-                  no_data_missing),
+    events = list(
+      bor_scr, bor_cr, bor_vgpr, bor_pr, bor_mr, bor_sd_imwg, bor_pd,
+      no_data_missing
+    ),
     set_values_to = exprs(
       PARAMCD = "BOR",
       PARAM = "IMWG Best Overall Response by Investigator (confirmation not required)",
