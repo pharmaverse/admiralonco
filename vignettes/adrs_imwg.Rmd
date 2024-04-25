@@ -13,6 +13,7 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
+library(admiraldev)
 ```
 
 # Introduction
@@ -20,12 +21,12 @@ knitr::opts_chunk$set(
 There are currently 2 commonly used sets of international criteria to assess
 multiple myeloma (MM):
 
-* IMWG criteria incorporating the FLC test,
-* EBMT/Center for International Blood and Marrow Transplant Research criteria.
+* International Myeloma Working Group (IMWG) criteria incorporating the FLC test,
+* European Group for Blood and Marrow Transplantation (EBMT) criteria.
 
 A specific trial may arbitrarily use either of them or a modified version.
 
-This article describes creating an `ADRS` ADaM in multiple myeloma studies
+This article describes creating an `ADRS` ADaM dataset in multiple myeloma studies
 based on IMWG criteria. It shows a similar way of deriving the endpoints 
 presented in [Creating ADRS (Including Non-standard Endpoints)](adrs.html). 
 Most of the endpoints are derived by calling `admiral::derive_extreme_event()`.
@@ -59,12 +60,12 @@ In IMWG criteria each status should be confirmed by second tests giving consiste
 results. Confirmation should be obtained for biochemical markers but is not 
 necessary for bone marrow or imaging studies.
 
-Two scenarios are possible:
+Two scenarios of response data collection in a clinical trial are possible:
 
 - `RS` contains a confirmed response,  
 - `RS` contains an unconfirmed response and the confirmed response should be derived.
 
-In our example will consider the second scenario.
+In our example we will consider the second scenario.
 
 **Note**: *All examples assume CDISC SDTM and/or ADaM format as input
 unless otherwise specified.*
@@ -95,46 +96,38 @@ For example purpose, the SDTM and ADaM datasets (based on CDISC Pilot
 test data)---which are included in `{pharmaversesdtm}` and `{pharmaverseadam}`---are used.
 
 ```{r message=FALSE}
-library(admiraldev)
 library(admiral)
 library(admiralonco)
 library(dplyr)
 library(pharmaverseadam)
 library(remotes)
-install_git("https://github.com/pharmaverse/pharmaversesdtm/", ref = "86_rs_imwg")
 library(pharmaversesdtm)
 library(lubridate)
 library(stringr)
+library(metatools)
 data("adsl")
 # IMWG sdtm data
 data("rs_onco_imwg")
 data("supprs_onco_imwg")
 
 rs <- rs_onco_imwg
-```
+supprs <- supprs_onco_imwg
 
-Now we will join `SUPPRS` with `RS` domain.
-
-```{r eval=TRUE}
-supprs <- supprs_onco_imwg %>%
-  select(USUBJID, IDVARVAL, QNAM, QVAL)
-
-supprs <- transform(supprs, IDVARVAL = as.numeric(IDVARVAL))
-
-rs <- rs %>%
-  derive_vars_transposed(
-    dataset_merge = supprs,
-    by_vars = exprs(USUBJID, RSSEQ = IDVARVAL),
-    key_var = QNAM,
-    value_var = QVAL
-  )
+rs <- combine_supp(rs, supprs)
 
 rs <- convert_blanks_to_na(rs)
 ```
 
+```{r, eval=TRUE, echo=FALSE}
+dataset_vignette(
+  rs,
+  display_vars = exprs(USUBJID, RSTESTCD, RSSTRESC, VISIT, RSDTC, RSDY,  PDOFL, DTHPDFL, NACTDT, PDIFL)
+)
+```
+
 At this step, it may be useful to join `ADSL` to your `RS` domain. Only
 the `ADSL` variables used for derivations are selected at this step. The
-rest of the relevant `ADSL` would be added later.
+rest of the relevant `ADSL` variables would be added later.
 
 ```{r eval=TRUE}
 adsl_vars <- exprs(RANDDT, TRTSDT)
@@ -142,7 +135,7 @@ adrs <- derive_vars_merged(
   rs,
   dataset_add = adsl,
   new_vars = adsl_vars,
-  by_vars = exprs(STUDYID, USUBJID)
+  by_vars = get_admiral_option("subject_keys")
 )
 ```
 
@@ -217,6 +210,13 @@ adrs <- adrs %>%
     reference_date = TRTSDT,
     source_vars = exprs(ADT)
   ) %>%
+  derive_vars_dtm(
+    dtc = RSDTC,
+    new_vars_prefix = "A",
+    highest_imputation = "D",
+    date_imputation = "last",
+    flag_imputation = "time"
+  ) %>%
   mutate(AVISIT = VISIT)
 ```
 
@@ -240,24 +240,25 @@ IMWG ordering will be used or if you'd like to provide your own company-specific
 could do this as follows:
 
 ```{r}
-aval_resp_new <- function(arg) {
-  case_when(
-    arg == "NE" ~ 8,
-    arg == "sCR" ~ 7,
-    arg == "CR" ~ 6,
-    arg == "VGPR" ~ 5,
-    arg == "PR" ~ 4,
-    arg == "MR" ~ 3,
-    arg == "SD" ~ 2,
-    arg == "PD" ~ 1,
-    TRUE ~ NA_real_
+aval_resp_imwg <- function(arg) {
+  case_match(
+    arg,
+    "NE" ~ 8,
+    "sCR" ~ 7,
+    "CR" ~ 6,
+    "VGPR" ~ 5,
+    "PR" ~ 4,
+    "MR" ~ 3,
+    "SD" ~ 2,
+    "PD" ~ 1,
+    NA ~ NA_real_
   )
 }
 
 adrs <- adrs %>%
   mutate(
     AVALC = RSSTRESC,
-    AVAL = aval_resp_new(AVALC)
+    AVAL = aval_resp_imwg(AVALC)
   )
 ```
 
@@ -321,9 +322,9 @@ At the next step we join records with subsequent responses. If response requires
 adrs_joined <-
   derive_vars_joined(
     adrs,
-    adrs,
-    by_vars = exprs(USUBJID),
-    order = exprs(ADY),
+    dataset_add = adrs,
+    by_vars = get_admiral_option("subject_keys"),
+    order = exprs(ADTM),
     new_vars = exprs(AVALC.next = AVALC, AVAL.next = AVAL),
     tmp_obs_nr_var = ASEQ,
     join_type = "after",
@@ -371,18 +372,18 @@ confirmed.
 adrs_frstdt <- adrs_joined %>%
   filter(AVALC.confirmed != "NE") %>%
   filter_extreme(
-    by_vars = exprs(USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     order = exprs(ADT),
     mode = "first"
   ) %>%
-  select(USUBJID, ADT) %>%
+  select(STUDYID, USUBJID, ADT) %>%
   rename(FRSTDT = ADT)
 
 adrs_joined <-
   derive_vars_merged(
     adrs_joined,
     dataset_add = adrs_frstdt,
-    by_vars = exprs(USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     new_vars = exprs(FRSTDT),
   ) %>%
   mutate(AVALC.confirmed = case_when(
@@ -408,30 +409,31 @@ but in order to sort the responses correctly, it will be necessary to define
 prioritize this value.
 
 ```{r}
-aval_resp_new2 <- function(arg) {
-  case_when(
-    arg == "PD" ~ 8,
-    arg == "sCR" ~ 7,
-    arg == "CR" ~ 6,
-    arg == "VGPR" ~ 5,
-    arg == "PR" ~ 4,
-    arg == "MR" ~ 3,
-    arg == "SD" ~ 2,
-    arg == "NE" ~ 1,
-    TRUE ~ NA_real_
+aval_resp_conf <- function(arg) {
+  case_match(
+    arg,
+    "PD" ~ 8,
+    "sCR" ~ 7,
+    "CR" ~ 6,
+    "VGPR" ~ 5,
+    "PR" ~ 4,
+    "MR" ~ 3,
+    "SD" ~ 2,
+    "NE" ~ 1,
+    NA ~ NA_real_
   )
 }
 
 adrs_joined <- adrs_joined %>%
   mutate(
-    AVAL.confirmed = aval_resp_new2(AVALC.confirmed)
+    AVAL.confirmed = aval_resp_conf(AVALC.confirmed)
   )
 
 adrs_imwg <-
   derive_vars_joined(
     adrs_joined,
     dataset_add = adrs_joined,
-    by_vars = exprs(USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     order = exprs(desc(AVAL.confirmed)),
     new_vars = exprs(AVALC.best = AVALC.confirmed),
     join_vars = exprs(ADT),
@@ -442,12 +444,12 @@ adrs_imwg <-
   )
 ```
 
-We will then make `AVAL` assignment using the previously defined `aval_resp_new()` function (so it is consistent with `OVR` parameter) remove unnecessary variables and define parameter details.
+We will then make `AVAL` assignment using the previously defined `aval_resp_imwg()` function (so it is consistent with `OVR` parameter) remove unnecessary variables and define parameter details.
 
 ```{r}
 adrs_imwg <- adrs_imwg %>%
   mutate(
-    AVAL.best = aval_resp_new(AVALC.confirmed)
+    AVAL.best = aval_resp_imwg(AVALC.confirmed)
   ) %>%
   select(
     -AVAL, -AVALC, -AVAL.next, -AVALC.next, -AVAL.confirmed,
@@ -501,7 +503,7 @@ adrs_imwg <- adrs_imwg %>%
   restrict_derivation(
     derivation = derive_var_extreme_flag,
     args = params(
-      by_vars = exprs(STUDYID, USUBJID, ADT),
+      by_vars = exprs(!!!get_admiral_option("subject_keys"), ADT),
       order = exprs(AVAL, RSSEQ),
       new_var = ANL01FL,
       mode = "first"
@@ -540,7 +542,7 @@ To restrict response data up to and including first reported progressive disease
 ```{r}
 adrs_imwg <- adrs_imwg %>%
   derive_var_relative_flag(
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     order = exprs(ADT, RSSEQ),
     new_var = ANL03FL,
     condition = AVALC == "PD",
@@ -590,7 +592,7 @@ adrs <- adrs %>%
   derive_extreme_records(
     dataset_ref = adsl,
     dataset_add = ovr,
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     filter_add = PARAMCD == "BOVR" & AVALC == "PD",
     order = exprs(ADT),
     mode = "first",
@@ -601,7 +603,10 @@ adrs <- adrs %>%
       PARAM = "Disease Progression by Investigator",
       PARCAT1 = "Investigator",
       PARCAT2 = "IMWG",
-      AVAL = yn_to_numeric(AVALC)
+      AVAL = yn_to_numeric(AVALC),
+      ANL01FL = "Y",
+      ANL02FL = "Y",
+      ANL03FL = "Y"
     )
   )
 ```
@@ -669,7 +674,7 @@ rsp_y_imwg <- event(
 
 adrs <- adrs %>%
   derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     order = exprs(ADT),
     mode = "first",
     events = list(rsp_y_imwg, no_data_n),
@@ -679,10 +684,13 @@ adrs <- adrs %>%
     ),
     set_values_to = exprs(
       PARAMCD = "RSP",
-      PARAM = "IMWG Response by Investigator (confirmation not required)",
+      PARAM = "IMWG Response by Investigator",
       PARCAT1 = "Investigator",
       PARCAT2 = "IMWG",
-      AVAL = yn_to_numeric(AVALC)
+      AVAL = yn_to_numeric(AVALC),
+      ANL01FL = "Y",
+      ANL02FL = "Y",
+      ANL03FL = "Y"
     )
   )
 ```
@@ -704,14 +712,17 @@ disease control. In this example the "sustained period" has been defined as 42
 days after randomization date via the created `cb_y_imwg` event.
 
 ```{r}
+sustained_period <- 42
+
 cb_y_imwg <- event(
   description = paste(
-    "Define sCR, CR, VGPR, PR or SD occuring at least 42 days after",
-    "randomization as clinical benefit"
+    "Define sCR, CR, VGPR, PR, MR or SD occuring at least",
+    sustained_period,
+    "days after randomization as clinical benefit"
   ),
   dataset_name = "ovr",
-  condition = AVALC %in% c("sCR", "CR", "VGPR", "PR", "SD") &
-    ADT >= RANDDT + 42,
+  condition = AVALC %in% c("sCR", "CR", "VGPR", "PR", "MR", "SD") &
+    ADT >= RANDDT + days(sustained_period),
   set_values_to = exprs(AVALC = "Y")
 )
 ```
@@ -724,7 +735,7 @@ list). Thus `ignore_event_order` and `tmp_event_nr_var` are not specified.
 ```{r}
 adrs <- adrs %>%
   derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     order = exprs(desc(AVALC), ADT),
     mode = "first",
     events = list(rsp_y_imwg, cb_y_imwg, no_data_n),
@@ -734,10 +745,13 @@ adrs <- adrs %>%
     ),
     set_values_to = exprs(
       PARAMCD = "CB",
-      PARAM = "IMWG Clinical Benefit by Investigator (confirmation not required)",
+      PARAM = "IMWG Clinical Benefit by Investigator",
       PARCAT1 = "Investigator",
       PARCAT2 = "IMWG",
-      AVAL = yn_to_numeric(AVALC)
+      AVAL = yn_to_numeric(AVALC),
+      ANL01FL = "Y",
+      ANL02FL = "Y",
+      ANL03FL = "Y"
     ),
     check_type = "none"
   )
@@ -753,8 +767,8 @@ dataset_vignette(
 
 Similarly, we can define the parameters:
 
-* CR or better response (`PARAMCD` = `CR`),  
-* VGPR or better response (`PARAMCD` =`VGPR`).
+* CR or better response (`PARAMCD` = `CRRSP`),  
+* VGPR or better response (`PARAMCD` =`VGPRRSP`).
 
 ```{r}
 cr_y_imwg <- event(
@@ -766,7 +780,7 @@ cr_y_imwg <- event(
 
 adrs <- adrs %>%
   derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     order = exprs(desc(AVALC), ADT),
     mode = "first",
     events = list(cr_y_imwg, no_data_n),
@@ -776,10 +790,13 @@ adrs <- adrs %>%
     ),
     set_values_to = exprs(
       PARAMCD = "CRRSP",
-      PARAM = "IMWG Complete Response by Investigator (confirmation not required)",
+      PARAM = "IMWG Complete Response by Investigator",
       PARCAT1 = "Investigator",
       PARCAT2 = "IMWG",
-      AVAL = yn_to_numeric(AVALC)
+      AVAL = yn_to_numeric(AVALC),
+      ANL01FL = "Y",
+      ANL02FL = "Y",
+      ANL03FL = "Y"
     ),
     check_type = "none"
   )
@@ -793,7 +810,7 @@ vgpr_y_imwg <- event(
 
 adrs <- adrs %>%
   derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     order = exprs(desc(AVALC), ADT),
     mode = "first",
     events = list(vgpr_y_imwg, no_data_n),
@@ -803,10 +820,13 @@ adrs <- adrs %>%
     ),
     set_values_to = exprs(
       PARAMCD = "VGPRRSP",
-      PARAM = "IMWG VGPR Rate by Investigator (confirmation not required)",
+      PARAM = "IMWG VGPR Rate by Investigator",
       PARCAT1 = "Investigator",
       PARCAT2 = "IMWG",
-      AVAL = yn_to_numeric(AVALC)
+      AVAL = yn_to_numeric(AVALC),
+      ANL01FL = "Y",
+      ANL02FL = "Y",
+      ANL03FL = "Y"
     ),
     check_type = "none"
   )
@@ -867,7 +887,7 @@ bor_sd_imwg <- event(
 
 adrs <- adrs %>%
   derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     tmp_event_nr_var = event_nr,
     order = exprs(event_nr, ADT),
     mode = "first",
@@ -881,10 +901,13 @@ adrs <- adrs %>%
     ),
     set_values_to = exprs(
       PARAMCD = "BOR",
-      PARAM = "IMWG Best Overall Response by Investigator (confirmation not required)",
+      PARAM = "IMWG Best Overall Response by Investigator",
       PARCAT1 = "Investigator",
       PARCAT2 = "IMWG",
-      AVAL = aval_resp_new(AVALC)
+      AVAL = aval_resp_imwg(AVALC),
+      ANL01FL = "Y",
+      ANL02FL = "Y",
+      ANL03FL = "Y"
     )
   )
 ```
