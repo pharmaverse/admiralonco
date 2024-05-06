@@ -116,7 +116,7 @@ jobs:
     needs: get_r_version
     with:
       r-version: "${{ needs.get_r_version.outputs.r-version }}"
-man-pages:
+  man-pages:
     name: Man Pages
     uses: pharmaverse/admiralci/.github/workflows/man-pages.yml@main
     if: github.event_name == 'pull_request'
