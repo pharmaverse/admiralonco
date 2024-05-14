@@ -18,16 +18,9 @@ library(admiraldev)
 
 # Introduction
 
-There are currently 2 commonly used sets of international criteria to assess
-multiple myeloma (MM):
-
-* International Myeloma Working Group (IMWG) criteria incorporating the FLC test,
-* European Group for Blood and Marrow Transplantation (EBMT) criteria.
-
-A specific trial may arbitrarily use either of them or a modified version.
-
-This article describes creating an `ADRS` ADaM dataset in multiple myeloma studies
-based on IMWG criteria. It shows a similar way of deriving the endpoints 
+This article describes creating an `ADRS` ADaM dataset in multiple myeloma (MM) studies
+based on International Myeloma Working Group (IMWG) criteria. 
+It shows a similar way of deriving the endpoints 
 presented in [Creating ADRS (Including Non-standard Endpoints)](adrs.html). 
 Most of the endpoints are derived by calling `admiral::derive_extreme_event()`.
 
@@ -74,13 +67,13 @@ unless otherwise specified.*
 
 -   [Read in Data](#readdata)
 -   [Pre-processing of Input Records](#input)
--   [Derive Confirmed Overall Response Parameter](#covr)
+-   [Derive Confirmed Response Parameter](#covr)
 -   [Analysis flag derivation](#anlfl)
 -   [Derive Progressive Disease Parameter](#pd)
 -   [Define Events](#ev)
 -   [Derive Response Parameter](#rsp)
 -   [Derive Clinical Benefit Parameter](#cb)
--   [Derive Best Overall Response Parameter](#bor)
+-   [Derive Best Confirmed Overall Response Parameter](#cbor)
 -   [Other Endpoints](#other)
 
 ## Read in Data {#readdata}
@@ -217,7 +210,8 @@ adrs <- adrs %>%
     date_imputation = "last",
     flag_imputation = "time"
   ) %>%
-  mutate(AVISIT = VISIT)
+  mutate(AVISIT = VISIT) %>%
+  arrange(USUBJID,ADTM)
 ```
 
 ```{r, echo=FALSE}
@@ -269,144 +263,22 @@ dataset_vignette(
 )
 ```
 
-## Derive Confirmed Overall Response Parameter {#covr}
+## Derive Confirmed Response Parameter {#covr}
 
 Confirmation of response require two consecutive readings of applicable disease 
-parameters (biochemical analyses). These need to be two distinct samples and 
-usually is performed on the same day or at next scheduled visit.  
-Bone marrow assessments and imaging do not need to be confirmed. 
+parameters (biochemical analyses). No minimal time interval, but a different sample
+is required for the confirmation assessment. Bone marrow assessments and imaging do not need to be confirmed. 
 
 If `RS` contains unconfirmed response and confirmation is performed at 
-next scheduled visit we can derive Confirmed Overall Response based on 
+next scheduled visit we can derive Confirmed Response based on 
 response at subsequent visit.
 
-While deriving confirmed response, there are some rules to follow:
+While deriving confirmed response, the two points below should be taken into consideration:
 
-* Until any response category has been confirmed, response = stable disease (`SD`).  
-* Patients will continue in the last confirmed response category until 
-there is confirmation of progression or improvement to a higher response status.  
-* If the result is not confirmed by a second evaluation, the status is `NE`
-and the prior confirmed disease status remains valid.  
-* Once confirmed: date of the initial test is considered as date of response.
+* Patients will continue in the last Confirmed Response category until there is confirmation of progression or improvement to a higher response status. 
+* Until any response category has been confirmed, Confirmed Response = stable disease (`SD`). 
 
-Below table provides a summary of the confirmed response status calculation at 
-each time point.
-
-```{r echo=FALSE}
-list_resp <- tribble(
-  ~"Response 1 time point", ~"Response 2 time point",
-  ~"Confirmed response 1 time point",
-  "sCR", "sCR", "sCR",
-  "CR", "sCR/CR", "max (CR, last confirmed status)",
-  "VGPR", "sCR/CR/VGPR", "max(VGPR, last confirmed status)",
-  "PR", "sCR/CR/VGPR/PR", "max(PR, last confirmed status)",
-  "MR", "sCR/CR/VGPR/PR/MR", "max(MR, last confirmed status)",
-  "sCR", "CR", "last confirmed status",
-  "sCR/CR", "VGPR", "last confirmed status",
-  "sCR/CR/VGPR", "PR", "last confirmed status",
-  "sCR/CR/VGPR/PR", "MR", "last confirmed status",
-  "sCR/CR/VGPR/PR/MR", "SD/PD/NE/NA", "last confirmed status",
-  "SD", "any", "last confirmed status",
-  "NE", "any", "last confirmed status",
-  "PD reason imaging", "any", "PD",
-  "PD reason serum/urine", "PD/death", "PD",
-  "PD reason serum/urine", "sCR/CR/VGPR/PR/MR/SD/NE/NA", "last confirmed status",
-)
-
-knitr::kable(list_resp)
-```
-
-At the next step we join records with subsequent responses. If response requires confirmation and consecutive assessment does not confirm previous results, we reassign response to `NE`.
-
-```{r}
-adrs_joined <-
-  derive_vars_joined(
-    adrs,
-    dataset_add = adrs,
-    by_vars = get_admiral_option("subject_keys"),
-    order = exprs(ADTM),
-    new_vars = exprs(AVALC.next = AVALC, AVAL.next = AVAL),
-    tmp_obs_nr_var = ASEQ,
-    join_type = "after",
-    filter_join = ASEQ + 1 == ASEQ.join,
-    mode = "first",
-  ) %>%
-  mutate(AVALC.confirmed = case_when(
-    # better response
-    AVALC %in% c("sCR", "CR", "VGPR", "PR", "MR") &
-      AVALC.next %in% c("sCR", "CR", "VGPR", "PR", "MR") &
-      AVAL.next >= AVAL ~ AVALC,
-    # worse response
-    AVALC %in% c("sCR", "CR", "VGPR", "PR", "MR") &
-      AVALC.next %in% c("sCR", "CR", "VGPR", "PR", "MR", "SD", "PD") &
-      AVAL.next < AVAL ~ "NE",
-    # next assessment NE or NA
-    AVALC %in% c("sCR", "CR", "VGPR", "PR", "MR") &
-      (AVALC.next == "NE" | is.na(AVALC.next)) ~ "NE",
-    # no need to confirm SD and NE
-    AVALC %in% c("SD", "NE") ~ AVALC,
-    # confirmed progression
-    AVALC == "PD" &
-      (PDIFL == "Y" | DTHPDFL == "Y" | PDOFL == "Y" & AVALC.next == "PD") ~ AVALC,
-    # unconfirmed progression
-    AVALC == "PD" & is.na(DTHPDFL) & PDOFL == "Y" &
-      (AVALC.next %in% c("sCR", "CR", "VGPR", "PR", "MR", "SD", "NE") | is.na(AVALC.next))
-    ~ "NE"
-  ))
-```
-
-```{r, echo=FALSE}
-dataset_vignette(
-  adrs_joined,
-  display_vars = exprs(USUBJID, PARAMCD, AVISIT, ADT, AVALC, AVALC.next, AVALC.confirmed)
-)
-```
-
-Until any response is confirmed, we need to assign a value of `SD`. 
-To do this, we will use the function `admiral::filter_extreme()` to identify 
-the date of the first response, which is not `NE` (`FRSTDT`). 
-Then we will append this variable and change `NE` to `SD`until any response is 
-confirmed. 
-
-```{r}
-adrs_frstdt <- adrs_joined %>%
-  filter(AVALC.confirmed != "NE") %>%
-  filter_extreme(
-    by_vars = get_admiral_option("subject_keys"),
-    order = exprs(ADT),
-    mode = "first"
-  ) %>%
-  select(STUDYID, USUBJID, ADT) %>%
-  rename(FRSTDT = ADT)
-
-adrs_joined <-
-  derive_vars_merged(
-    adrs_joined,
-    dataset_add = adrs_frstdt,
-    by_vars = get_admiral_option("subject_keys"),
-    new_vars = exprs(FRSTDT),
-  ) %>%
-  mutate(AVALC.confirmed = case_when(
-    AVALC.confirmed == "NE" & (ADT < FRSTDT | is.na(FRSTDT)) ~ "SD",
-    TRUE ~ AVALC.confirmed
-  ))
-```
-
-```{r, echo=FALSE}
-dataset_vignette(
-  adrs_joined,
-  display_vars = exprs(
-    USUBJID, PARAMCD, AVISIT, ADT, AVALC, AVALC.next,
-    AVALC.confirmed, FRSTDT
-  )
-)
-```
-
-Finally, we will assign best confirmed response before the current observation. 
-To do this, we will again use the `admiral::derive_vars_joined()` function, 
-but in order to sort the responses correctly, it will be necessary to define 
-`AVAL` for the confirmed responses so that if `PD` occurs, the function will 
-prioritize this value.
+Let's define a function `aval_resp_conf` that maps numerical values to the responses, so that `PD` is prioritized and concept of "higher response status" is understandable:
 
 ```{r}
 aval_resp_conf <- function(arg) {
@@ -423,45 +295,110 @@ aval_resp_conf <- function(arg) {
     NA ~ NA_real_
   )
 }
-
-adrs_joined <- adrs_joined %>%
-  mutate(
-    AVAL.confirmed = aval_resp_conf(AVALC.confirmed)
-  )
-
-adrs_imwg <-
-  derive_vars_joined(
-    adrs_joined,
-    dataset_add = adrs_joined,
-    by_vars = get_admiral_option("subject_keys"),
-    order = exprs(desc(AVAL.confirmed)),
-    new_vars = exprs(AVALC.best = AVALC.confirmed),
-    join_vars = exprs(ADT),
-    join_type = "all",
-    filter_join = ADT.join <= ADT,
-    mode = "first",
-    check_type = "none"
-  )
 ```
 
-We will then make `AVAL` assignment using the previously defined `aval_resp_imwg()` function (so it is consistent with `OVR` parameter) remove unnecessary variables and define parameter details.
+Below table provides a summary of the Confirmed Response status calculation at 
+each time point. The maximum refers to numeric values previously defined in `aval_resp_conf` function.
+
+```{r echo=FALSE}
+list_resp <- tribble(
+  ~"Response at 1st time point", ~"Response at 2nd time point",
+  ~"Confirmed response at 1st time point",
+  "sCR", "sCR", "sCR",
+  "CR", "sCR/CR", "max(CR, last confirmed status)",
+  "VGPR", "sCR/CR/VGPR", "max(VGPR, last confirmed status)",
+  "PR", "sCR/CR/VGPR/PR", "max(PR, last confirmed status)",
+  "MR", "sCR/CR/VGPR/PR/MR", "max(MR, last confirmed status)",
+  "sCR", "CR", "max(CR, last confirmed status)",
+  "sCR/CR", "VGPR", "max(VGPR, last confirmed status)",
+  "sCR/CR/VGPR", "PR", "max(PR, last confirmed status)",
+  "sCR/CR/VGPR/PR", "MR", "max(MR, last confirmed status)",
+  "sCR/CR/VGPR/PR/MR", "SD/PD/NE/NA", "last confirmed status",
+  "SD", "any", "last confirmed status",
+  "NE", "any", "last confirmed status",
+  "PD reason imaging", "any", "PD",
+  "PD reason serum/urine", "PD/death", "PD",
+  "PD reason serum/urine", "sCR/CR/VGPR/PR/MR/SD/NE/NA", "last confirmed status",
+)
+
+knitr::kable(list_resp)
+```
+
+`confirmed_response` function defined below takes as an argument data set with Overall Responses and returns data set with Confirmed Responses. 
 
 ```{r}
-adrs_imwg <- adrs_imwg %>%
-  mutate(
-    AVAL.best = aval_resp_imwg(AVALC.confirmed)
-  ) %>%
-  select(
-    -AVAL, -AVALC, -AVAL.next, -AVALC.next, -AVAL.confirmed,
-    -AVALC.confirmed, -FRSTDT
-  ) %>%
-  rename(AVALC = AVALC.best, AVAL = AVAL.best) %>%
-  mutate(
-    PARAMCD = "BOVR",
-    PARAM = "Best Overall Response at Time Point by Investigator",
-    PARCAT1 = "Investigator",
-    PARCAT2 = "IMWG"
-  )
+confirmed_response <- function(datain) {
+
+  data_adrs <- datain %>%
+    group_by(USUBJID) %>%
+    mutate(AVALC.next = lead(AVALC),
+           AVAL.next = lead(AVAL),
+           ADT.next = lead(ADT)) %>%
+    mutate(AVALC.confirmed = case_when(
+      # better response
+      AVALC %in% c("sCR", "CR", "VGPR", "PR", "MR") &
+        AVALC.next %in% c("sCR", "CR", "VGPR", "PR", "MR") &
+        (is.na(NACTDT) | ADT.next <= NACTDT) &
+        AVAL.next >= AVAL ~ AVALC,
+      # worse response
+      AVALC %in% c("sCR", "CR", "VGPR", "PR", "MR") &
+        AVALC.next %in% c("sCR", "CR", "VGPR", "PR", "MR", "SD") &
+        (is.na(NACTDT) | ADT.next <= NACTDT) &
+        AVAL.next < AVAL ~ AVALC.next,
+      # next assessment PD, NE, NA or after subsequent therapy
+      AVALC %in% c("sCR", "CR", "VGPR", "PR", "MR") &
+        (AVALC.next == "PD" | AVALC.next == "NE" | is.na(AVALC.next) |
+           !is.na(NACTDT) & ADT.next > NACTDT) ~ "SD",
+      # no need to confirm SD and NE
+      AVALC %in% c("SD", "NE") ~ AVALC,
+      # confirmed progression
+      AVALC == "PD" &
+        (PDIFL == "Y" | DTHPDFL == "Y" | PDOFL == "Y" & AVALC.next == "PD") ~
+        AVALC,
+      # unconfirmed progression
+      AVALC == "PD" & is.na(DTHPDFL) & PDOFL == "Y" &
+        (AVALC.next %in% c("sCR", "CR", "VGPR", "PR", "MR", "SD", "NE") |
+           is.na(AVALC.next)) ~ "NE")) %>%
+      mutate(AVAL.confirmed = aval_resp_conf(AVALC.confirmed)) %>%
+      # best Confirmed Response so far
+      mutate(AVAL.confirmed = cummax(AVAL.confirmed)) %>%
+      ungroup(USUBJID)
+
+  # char mapping to go back to AVALC values
+  avalc_resp_conf <- function(arg) {
+    case_match(
+      arg,
+      8 ~ "PD",
+      7 ~ "sCR",
+      6 ~ "CR",
+      5 ~ "VGPR",
+      4 ~ "PR",
+      3 ~ "MR",
+      2 ~ "SD",
+      1 ~ "NE",
+      NA_real_ ~ NA
+    )
+  }
+
+  data_adrs <- data_adrs %>%
+      mutate(AVALC.confirmed = avalc_resp_conf(AVAL.confirmed)) %>%
+      # if no Confirmed Response, assign SD
+      mutate(AVALC.confirmed = case_when(
+        AVALC.confirmed == "NE" ~ "SD",
+        TRUE ~ AVALC.confirmed
+      ))%>%
+      select(-AVAL, -AVALC, -AVAL.next, -AVALC.next, -ADT.next, 
+             -AVAL.confirmed) %>%
+      rename(AVALC = AVALC.confirmed) %>%
+      mutate(AVAL = aval_resp_imwg(AVALC)) %>%
+      mutate(
+        PARAMCD = "COVR",
+        PARAM = "Confirmed Response at Time Point by Investigator",
+        PARCAT1 = "Investigator",
+        PARCAT2 = "IMWG"
+      )
+}
+adrs_imwg <- confirmed_response(adrs) 
 ```
 
 ```{r, echo=FALSE}
@@ -561,10 +498,10 @@ dataset_vignette(
 
 ### Select Source Assessments for Parameter derivations
 
-For most parameter derivations the post-baseline overall response assessments up
-to and including first PD and before start of new anti-cancer therapy are considered.
+For next parameter derivations we consider only Confirmed Responses (PARAMCD = "COVR"). 
+We take post-baseline records (ANL01FL = "Y") up to and including first PD (ANL02FL = "Y") and before start of new anti-cancer therapy (ANL03FL = "Y").
 ```{r}
-ovr <- filter(adrs_imwg, PARAMCD == "BOVR" & ANL01FL == "Y" & ANL02FL == "Y" & ANL03FL == "Y")
+ovr <- filter(adrs_imwg, PARAMCD == "COVR" & ANL01FL == "Y" & ANL02FL == "Y" & ANL03FL == "Y")
 
 adrs <- bind_rows(adrs, adrs_imwg)
 ```
@@ -593,7 +530,7 @@ adrs <- adrs %>%
     dataset_ref = adsl,
     dataset_add = ovr,
     by_vars = get_admiral_option("subject_keys"),
-    filter_add = PARAMCD == "BOVR" & AVALC == "PD",
+    filter_add = PARAMCD == "COVR" & AVALC == "PD",
     order = exprs(ADT),
     mode = "first",
     exist_flag = AVALC,
@@ -820,7 +757,7 @@ adrs <- adrs %>%
     ),
     set_values_to = exprs(
       PARAMCD = "VGPRRSP",
-      PARAM = "IMWG VGPR Rate by Investigator",
+      PARAM = "IMWG VGPR Response by Investigator",
       PARCAT1 = "Investigator",
       PARCAT2 = "IMWG",
       AVAL = yn_to_numeric(AVALC),
@@ -840,18 +777,18 @@ dataset_vignette(
 )
 ```
 
-## Derive Best Overall Response Parameter {#bor}
+## Derive Best Confirmed Overall Response Parameter {#cbor}
 
 The function `admiral::derive_extreme_event()` can be used to derive the best
-overall response (without confirmation required) parameter.
+confirmed overall response parameter.
 
 Please note that the order of the events specified for `events` is important.
 For example, a subject with `PR`, `PR`, `CR` qualifies for both `bor_cr` and
 `bor_pr`. As `bor_cr` is listed before `bor_pr`, `CR` is selected as best overall
 response for this subject.
 
-Some events such as `bor_cr`, `bor_pr` have been defined in {admiralonco} for
-RECIST 1.1. Missing events specific to IMWG criteria are defined below.  
+Some events such as `bor_cr`, `bor_pr` have been defined in {admiralonco}.
+Missing events specific to IMWG criteria are defined below.  
 **Note**: *For `SD`, it is not required as for RECIST1.1 that the response occurs after a protocol-defined number of days.*
 
 ```{r}
@@ -900,8 +837,8 @@ adrs <- adrs %>%
       no_data_missing
     ),
     set_values_to = exprs(
-      PARAMCD = "BOR",
-      PARAM = "IMWG Best Overall Response by Investigator",
+      PARAMCD = "CBOR",
+      PARAM = "IMWG Best Confirmed Overall Response by Investigator",
       PARCAT1 = "Investigator",
       PARCAT2 = "IMWG",
       AVAL = aval_resp_imwg(AVALC),
@@ -916,7 +853,7 @@ adrs <- adrs %>%
 dataset_vignette(
   adrs,
   display_vars = exprs(USUBJID, AVISIT, PARAMCD, AVALC, ADT),
-  filter = PARAMCD == "BOR" & AVALC != "MISSING"
+  filter = PARAMCD == "CBOR" & AVALC != "MISSING"
 )
 ```
 
