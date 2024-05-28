@@ -1,9 +1,9 @@
 ---
-title: "Creating ADRS with IMWG criteria"
+title: "Creating ADRS with IMWG Criteria"
 output: 
   rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Creating ADRS with IMWG criteria}
+  %\VignetteIndexEntry{Creating ADRS with IMWG Criteria}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 ---
@@ -431,7 +431,7 @@ dataset_vignette(
 )
 ```
 
-## Analysis flag derivation {#anlfl}
+## Analysis Flag Derivation {#anlfl}
 
 ### Flag One Assessment at Each Analysis Visit (`ANL01FL`)  {#anl01fl}
 
