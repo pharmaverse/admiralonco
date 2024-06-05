@@ -129,7 +129,7 @@ tr <- derive_vars_merged(
   tr,
   dataset_add = tu,
   new_vars = exprs(TULOC),
-  by_vars = c(get_admiral_option("subject_keys"), exprs(TRLNKID = TULNKID)) 
+  by_vars = c(get_admiral_option("subject_keys"), exprs(TRLNKID = TULNKID))
 ) %>% mutate(
   TULOCGR1 = if_else(
     TULOC == "LYMPH NODE",
