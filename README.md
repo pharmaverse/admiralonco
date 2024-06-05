@@ -84,7 +84,7 @@ Here’s a summary of our strategy for this package related to R versions:
 We use the following for support and communications between user and
 developer community:
 
--   [Slack](https://app.slack.com/client/T028PB489D3/C02M8KN8269) - for
+-   [Slack](https://pharmaverse.slack.com/) - for
     informal discussions, Q&A and building our user community. If you
     don’t have access, use this
     [link](https://join.slack.com/t/pharmaverse/shared_invite/zt-yv5atkr4-Np2ytJ6W_QKz_4Olo7Jo9A)

@@ -58,4 +58,4 @@ list_all_templates(package = "admiralonco")
 # Support
 
 Support is provided via the [admiral Slack
-channel](https://app.slack.com/client/T028PB489D3/C02M8KN8269).
+channel](https://pharmaverse.slack.com/).
