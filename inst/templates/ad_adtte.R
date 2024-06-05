@@ -29,7 +29,7 @@ adsl <- adsl %>%
   derive_vars_merged(
     dataset_add = adrs,
     filter_add = PARAMCD == "RSP" & AVALC == "Y" & ANL01FL == "Y",
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     new_vars = exprs(TEMP_RESPDT = ADT)
   )
 
@@ -68,7 +68,7 @@ adtte <- adtte %>%
     end_date = ADT
   ) %>%
   derive_var_obs_number(
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     order = exprs(PARAMCD),
     check_type = "error"
   )
@@ -78,7 +78,7 @@ adtte <- adtte %>%
   derive_vars_merged(
     dataset_add = adsl,
     new_vars = exprs(ARMCD, ARM, ACTARMCD, ACTARM, AGE, SEX),
-    by_vars = exprs(STUDYID, USUBJID)
+    by_vars = get_admiral_option("subject_keys")
   )
 
 # Save output ----

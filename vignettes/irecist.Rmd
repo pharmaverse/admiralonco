@@ -99,7 +99,7 @@ adrs <- derive_vars_merged(
   rs,
   dataset_add = adsl,
   new_vars = adsl_vars,
-  by_vars = exprs(STUDYID, USUBJID)
+  by_vars = get_admiral_option("subject_keys")
 )
 ```
 
@@ -244,7 +244,7 @@ adrs <- adrs %>%
   restrict_derivation(
     derivation = derive_var_extreme_flag,
     args = params(
-      by_vars = exprs(STUDYID, USUBJID, ADT),
+      by_vars = c(get_admiral_option("subject_keys"), exprs(ADT)),
       order = exprs(AVAL, RSSEQ),
       new_var = ANL01FL,
       mode = "first"
@@ -285,7 +285,7 @@ To restrict response data up to and including first reported progressive disease
 ```{r}
 adrs <- adrs %>%
   derive_var_relative_flag(
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     order = exprs(ADT, RSSEQ),
     new_var = ANL02FL,
     condition = AVALC == "iCPD",
@@ -378,14 +378,14 @@ and `event_joined()` can be adjusted to cover this scenario. For example, if
 RECIST responses (`"CR"`, `"PR"`, `"SD"`, ...) are collected up to first PD and
 iRECIST responses (`"iCR"`, `"iPR"`, `"iSD"`, ...) thereafter, the `event()`
 object defining unconfirmed response can be adjusted in the following way.
-```
+
+```{r}
 irsp_y <- event(
   description = "Define CR, iCR, PR, or iPR as (unconfirmed) response",
   dataset_name = "ovr",
   condition = AVALC %in% c("CR", "iCR", "PR", "iPR"),
   set_values_to = exprs(AVALC = "Y")
 )
-
 ```
 
 ## Derive Confirmed and Unconfirmed Progressive Disease Parameter {#pd}
@@ -410,7 +410,7 @@ never been confirmed and no subsequent `iSD`, `iPR` or `iCR` has been observed.
 ```{r}
 adrs <- adrs %>%
   derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     order = exprs(ADT),
     mode = "first",
     source_datasets = list(
@@ -431,13 +431,13 @@ adrs <- adrs %>%
 
 ovr_orig <- ovr
 ovr <- ovr %>%
-  group_by(USUBJID) %>%
+  group_by(!!!get_admiral_option("subject_keys")) %>%
   filter(ADT >= max_cond(var = ADT, cond = AVALC == "iUPD")) %>%
-  ungroup(USUBJID)
+  ungroup(!!!get_admiral_option("subject_keys"))
 
 adrs <- adrs %>%
   derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     order = exprs(ADT),
     mode = "first",
     source_datasets = list(
@@ -489,7 +489,7 @@ irsp_y <- event(
 
 adrs <- adrs %>%
   derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     order = exprs(ADT),
     mode = "first",
     events = list(irsp_y, no_data_n),
@@ -546,7 +546,7 @@ list). Thus `ignore_event_order` and `tmp_event_nr_var` are not specified.
 ```{r}
 adrs <- adrs %>%
   derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     order = exprs(desc(AVALC), ADT),
     mode = "first",
     events = list(irsp_y, icb_y, no_data_n),
@@ -658,7 +658,7 @@ ibor_ne <- event(
 
 adrs <- adrs %>%
   derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     tmp_event_nr_var = event_nr,
     order = exprs(event_nr, ADT),
     mode = "first",
@@ -700,7 +700,7 @@ this calculation of days between visits)*, using the `icrsp_y_cr`,
 and the `keep_source_vars` argument is updated, as well as the `first_cond_upper` and 
 `condition` for the iRECIST values.
 
-```{r }
+```{r}
 confirmation_period <- 28
 
 icrsp_y_icr <- event_joined(
@@ -800,7 +800,7 @@ selected (and not the first one in the list).
 ```{r}
 adrs <- adrs %>%
   derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     order = exprs(desc(AVALC), ADT),
     mode = "first",
     source_datasets = list(
@@ -821,7 +821,7 @@ adrs <- adrs %>%
 
 adrs <- adrs %>%
   derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     order = exprs(desc(AVALC), ADT),
     mode = "first",
     events = list(icrsp_y_icr, icrsp_y_ipr, icb_y, no_data_n),
@@ -843,7 +843,7 @@ adrs <- adrs %>%
 
 adrs <- adrs %>%
   derive_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     tmp_event_nr_var = event_nr,
     order = exprs(event_nr, ADT),
     mode = "first",

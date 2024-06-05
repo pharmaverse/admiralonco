@@ -76,7 +76,7 @@ To derive the New Anti-Cancer Therapy start date with data from a single source,
 adsl <- derive_vars_merged(
   adsl_onco,
   dataset_add = cm,
-  by_vars = exprs(STUDYID, USUBJID),
+  by_vars = get_admiral_option("subject_keys"),
   order = exprs(NACTDT),
   mode = "first",
   new_vars = exprs(NACTDT = convert_dtc_to_dt(CMSTDTC)),
@@ -127,7 +127,7 @@ After completion of the prerequisite step, the new anti-cancer date can be deriv
 ```{r message=FALSE}
 adsl <- adsl_onco %>%
   derive_vars_extreme_event(
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     order = exprs(NACTDT),
     new_vars = exprs(NACTDT),
     events = list(cm_date, pr_date),
@@ -185,7 +185,7 @@ adrs <- derive_extreme_event(
     )
   ),
   source_datasets = list(cm = cm, pr = pr),
-  by_vars = exprs(STUDYID, USUBJID),
+  by_vars = get_admiral_option("subject_keys"),
   order = exprs(ADT),
   mode = "first",
   set_values_to = exprs(
