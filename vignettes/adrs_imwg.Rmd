@@ -44,7 +44,7 @@ assigned level of response is determined by the lowest level of response.*
 *If a critical data point to establish a level of response is missing, 
 the evaluation is downgraded to the next lower level.*
 
-For more information user may visit [International Myeloma Working Group consensus criteria for response and minimal residual disease assessment in multiple myeloma](https://www.sciencedirect.com/science/article/abs/pii/S1470204516302066?via%3Dihub)
+For more information user may visit [International Myeloma Working Group consensus criteria for response and minimal residual disease assessment in multiple myeloma](https://www.myeloma.org/resource-library/international-myeloma-working-group-consensus-criteria-response-minimal-residual)
 
 Examples are currently presented and tested using `ADSL` (ADaM), 
 `RS` and `SUPPRS` (SDTM) inputs. However, other domains could be used. 
@@ -81,9 +81,10 @@ unless otherwise specified.*
 To start, all data frames needed for the creation of `ADRS` should be read into
 the environment. This will be a company specific process. Some of the data
 frames needed may be `ADSL`, `RS` and `TU`.
-For this vignette we assume that `RS` provides the response values `"sCR"`, `"CR"`, `"VGPR"`, `"PR"`,`"MR"`, `"SD"`, `"PD"`, and `"NE"`.
-`"MR"` does not occur in all studies. If `RS` does not contain `"MR"`, it will
-not affect performance of functions and we will get the proper results.
+For this vignette we assume that `RS` provides the response values `sCR`, `CR`, `VGPR`, `PR`,`MR`, `SD`, `PD`, and `NE`.
+
+Label for non-evaluable response can vary between studies, i.e. it can be `NE`, `NA`, `UTD`, etc.
+In further considerations for non-evaluable responses, we use label `NE`. User will overwrite this value if necessary.
 
 For example purpose, the SDTM and ADaM datasets (based on CDISC Pilot
 test data)---which are included in `{pharmaversesdtm}` and `{pharmaverseadam}`---are used.
@@ -93,7 +94,6 @@ library(admiral)
 library(admiralonco)
 library(dplyr)
 library(pharmaverseadam)
-library(remotes)
 library(pharmaversesdtm)
 library(lubridate)
 library(stringr)
@@ -115,7 +115,7 @@ rs <- convert_blanks_to_na(rs)
 ```{r, eval=TRUE, echo=FALSE}
 dataset_vignette(
   rs,
-  display_vars = exprs(USUBJID, RSTESTCD, RSSTRESC, VISIT, RSDTC, RSDY,  PDOFL, DTHPDFL, NACTDT, PDIFL)
+  display_vars = exprs(USUBJID, RSTESTCD, RSSTRESC, VISIT, RSDTC, RSDY, PDOFL, DTHPDFL, NACTDT, PDIFL)
 )
 ```
 
@@ -147,7 +147,7 @@ the required input to the downstream parameter functions. Note that this
 could be needed multiple times (e.g. once for investigator and once for
 Independent Review Facility (IRF)/Blinded Independent Central Review
 (BICR) records). It could even involve merging input data from other
-sources besides `RS`, such as `ADTR`.
+sources besides `RS`, such as `ADTR`/`TR`/`TU`.
 
 This step would include any required selection/derivation of `ADT` or applying
 any necessary partial date imputations and updating `AVAL` (e.g. this should be
@@ -212,7 +212,7 @@ adrs <- adrs %>%
     flag_imputation = "time"
   ) %>%
   mutate(AVISIT = VISIT) %>%
-  arrange(USUBJID,ADTM)
+  arrange(USUBJID, ADTM)
 ```
 
 ```{r, echo=FALSE}
@@ -276,7 +276,7 @@ response at subsequent visit.
 
 While deriving Confirmed Response, the following should be taken into consideration:
 
-* Patients will continue in the last Confirmed Response category until there is confirmation of progression or improvement to a higher response status. 
+**Note**: *Patients will continue in the last Confirmed Response category until there is confirmation of progression or improvement to a higher response status.*
 
 Let's define a function `aval_resp_conf` that maps numerical values to the responses, so that `PD` is prioritized and concept of "higher response status" is understandable:
 
@@ -305,45 +305,77 @@ list_resp <- tribble(
   ~"Response at 1st time point", ~"Response at 2nd time point",
   ~"Confirmed Response at 1st time point",
   "sCR", "sCR", "sCR",
-  "CR", "sCR/CR", "max(CR, last confirmed status)",
-  "VGPR", "sCR/CR/VGPR", "max(VGPR, last confirmed status)",
-  "PR", "sCR/CR/VGPR/PR", "max(PR, last confirmed status)",
-  "MR", "sCR/CR/VGPR/PR/MR", "max(MR, last confirmed status)",
-  "sCR", "CR", "max(CR, last confirmed status)",
-  "sCR/CR", "VGPR", "max(VGPR, last confirmed status)",
-  "sCR/CR/VGPR", "PR", "max(PR, last confirmed status)",
-  "sCR/CR/VGPR/PR", "MR", "max(MR, last confirmed status)",
-  "sCR/CR/VGPR/PR/MR", "SD/PD/NE/NA", "max(SD, last confirmed status)",
-  "SD", "any", "max(SD, last confirmed status)",
-  "NE", "any", "max(NE, last confirmed status)",
+  "CR", "sCR/CR", "max(CR, last Confirmed Response)",
+  "VGPR", "sCR/CR/VGPR", "max(VGPR, last Confirmed Response)",
+  "PR", "sCR/CR/VGPR/PR", "max(PR, last Confirmed Response)",
+  "MR", "sCR/CR/VGPR/PR/MR", "max(MR, last Confirmed Response)",
+  "sCR", "CR", "max(CR, last Confirmed Response)",
+  "sCR/CR", "VGPR", "max(VGPR, last Confirmed Response)",
+  "sCR/CR/VGPR", "PR", "max(PR, last Confirmed Response)",
+  "sCR/CR/VGPR/PR", "MR", "max(MR, last Confirmed Response)",
+  "sCR/CR/VGPR/PR/MR", "SD/PD/NE/NA", "max(SD, last Confirmed Response)",
+  "SD", "any", "max(SD, last Confirmed Response)",
+  "NE", "any", "max(NE, last Confirmed Response)",
   "PD reason imaging", "any", "PD",
   "PD reason serum/urine", "PD/death", "PD",
-  "PD reason serum/urine", "sCR/CR/VGPR/PR/MR/SD/NE/NA", "max(NE, last confirmed status)",
+  "PD reason serum/urine", "sCR/CR/VGPR/PR/MR/SD/NE/NA", "max(NE, last Confirmed Response)",
 )
 
 knitr::kable(list_resp)
 ```
 
-`derive_confirmed_response` function defined below takes as an argument data set with Overall Responses and returns data set with Confirmed Responses. 
+### Handling Non-Evaluable Responses {#ne}
+
+IMWG criteria article does not define exactly what is the time interval needed to confirm a response and whether non-evaluable (`NE`) records can be ignored when confirming a response. Detailed guidelines on this topic should be specified in SAP.
+
+We assumed in our next steps that non-evaluable records are ignored when deriving Confirmed Response. That is, to confirm response at a visit we use the response from the first subsequent visit, which had an answer other than `NE`.
+
+### Additional Variables {#suppfl}
+
+To derive Confirmed Response we are using variables from `SUPPRS` dataset included in  {pharmaversesdtm} package.
+
+```{r echo=FALSE}
+list_suppfl <- tribble(
+  ~"Variable Name", ~"Variable Label",
+  "PDOFL", "Progressive Disease: Other",
+  "PDIFL", "Progressive Disease: Imaging",
+  "DTHPDFL", "Death Due to Progressive Disease",
+  "NACTDT", "New Anti-Cancer Therapy Date"
+)
+
+knitr::kable(list_suppfl)
+```
+User will overwrite variable names if necessary.
+
+1. `PDOFL`, `PDIFL`, `DTHPDFL` variables are used in derivation of `PD` as Confirmed Response.
+If `PD` comes from imaging assessment (`PDIFL = "Y"`) or participant died due to disease under study before further adequate assessment could be performed (`DTHPDFL = "Y"`) or `PD` comes from biochemical markers and is followed by another `PD` (`PDOFL = "Y" and AVALC.next = "PD"`), we report `PD` as Confirmed Progression.
+
+2. `NACTDT` variable is used to [exclude]{.underline} assessments after start day of subsequent therapy while confirming responses (`sCR`, `CR`, `VGPR`. `PR`, `MR`). However, testing during subsequent therapy can be used to confirm `PD`.
+
+### Definition of `derive_confirmed_response` Function {#dcrdef}
+
+`derive_confirmed_response` function defined below takes as an argument dataset with Overall Responses and returns dataset with Confirmed Responses.
 
 In brief, the function performs the following steps:
 
-- Remove records with response of `NE` and derive intermediate response. 
-- Display a warning if responses used for confirmation are more than `confirmed_period`
-apart. 
-- Add records with response of `NE`. 
-- Derive best Confirmed Response so far. 
-- Assign `AVAL` and `AVALC`, remove unnecessary variables. 
+1. Remove records with response of `NE` and derive intermediate response. 
+2. Display a warning if responses used for confirmation are more than `confirmed_period` apart. User can set `confirmed_period` freely - there is no time limit on the sample we use to confirm the response. 
+3. Add records with response of `NE`. 
+4. Derive best Confirmed Response so far. 
+5. Assign `AVAL` and `AVALC`, remove unnecessary variables.
 
 ```{r}
-derive_confirmed_response <- function(datain) {
+confirmation_period <- 84
 
+derive_confirmed_response <- function(datain) {
   data_adrs <- datain %>%
     filter(AVALC != "NE") %>%
     group_by(USUBJID) %>%
-    mutate(AVALC.next = lead(AVALC),
-           AVAL.next = lead(AVAL),
-           ADT.next = lead(ADT)) %>%
+    mutate(
+      AVALC.next = lead(AVALC),
+      AVAL.next = lead(AVAL),
+      ADT.next = lead(ADT)
+    ) %>%
     ungroup() %>%
     mutate(AVALC.confirmed = case_when(
       # better response
@@ -359,7 +391,7 @@ derive_confirmed_response <- function(datain) {
       # next assessment PD, NA or after subsequent therapy
       AVALC %in% c("sCR", "CR", "VGPR", "PR", "MR") &
         (AVALC.next == "PD" | is.na(AVALC.next) |
-           !is.na(NACTDT) & ADT.next > NACTDT) ~ "SD",
+          !is.na(NACTDT) & ADT.next > NACTDT) ~ "SD",
       # no need to confirm SD
       AVALC %in% c("SD") ~ AVALC,
       # confirmed progression
@@ -369,29 +401,34 @@ derive_confirmed_response <- function(datain) {
       # unconfirmed progression
       AVALC == "PD" & is.na(DTHPDFL) & PDOFL == "Y" &
         (AVALC.next %in% c("sCR", "CR", "VGPR", "PR", "MR", "SD") |
-           is.na(AVALC.next)) ~ "NE"))
-    
-  confirmation_period <- 84
-  data_adrs_check <- data_adrs %>% 
+          is.na(AVALC.next)) ~ "NE"
+    ))
+
+  data_adrs_check <- data_adrs %>%
     mutate(diff_days = as.numeric(difftime(ADT.next, ADT, units = "days"))) %>%
     filter(diff_days > confirmation_period) %>%
-    mutate(warn = paste("For USUBJID", USUBJID, "to confirm", AVISIT, 
-                        "visit, a visit that took place", diff_days, "days later was used.")) %>%
-    pull(warn) %>%
+    mutate(warn = paste(
+      "For USUBJID", USUBJID, "to confirm", AVISIT,
+      "visit, a visit that took place", diff_days, "days later was used."
+    )) %>%
+    pull(warn)
+
+  if (length(data_adrs_check) > 0) {
     cli_warn("{data_adrs_check}")
-    
+  }
+
   data_adrs_ne <- datain %>%
     filter(AVALC == "NE") %>%
     mutate(AVALC.confirmed = AVALC)
-    
+
   data_adrs_all <- bind_rows(data_adrs, data_adrs_ne) %>%
-    arrange(USUBJID,ADTM) %>%
+    arrange(USUBJID, ADTM) %>%
     mutate(AVAL.confirmed = aval_resp_conf(AVALC.confirmed)) %>%
     group_by(USUBJID) %>%
     # best Confirmed Response so far
     mutate(AVAL.confirmed = cummax(AVAL.confirmed)) %>%
     ungroup(USUBJID)
-  
+
   # char mapping to go back to AVALC values
   avalc_resp_conf <- function(arg) {
     case_match(
@@ -409,19 +446,21 @@ derive_confirmed_response <- function(datain) {
   }
 
   data_adrs_all <- data_adrs_all %>%
-      mutate(AVALC.confirmed = avalc_resp_conf(AVAL.confirmed)) %>%
-      select(-AVAL, -AVALC, -AVAL.next, -AVALC.next, -ADT.next,
-             -AVAL.confirmed) %>%
-      rename(AVALC = AVALC.confirmed) %>%
-      mutate(AVAL = aval_resp_imwg(AVALC)) %>%
-      mutate(
-        PARAMCD = "COVR",
-        PARAM = "Confirmed Response at Time Point by Investigator",
-        PARCAT1 = "Investigator",
-        PARCAT2 = "IMWG"
-      )
+    mutate(AVALC.confirmed = avalc_resp_conf(AVAL.confirmed)) %>%
+    select(
+      -AVAL, -AVALC, -AVAL.next, -AVALC.next, -ADT.next,
+      -AVAL.confirmed
+    ) %>%
+    rename(AVALC = AVALC.confirmed) %>%
+    mutate(AVAL = aval_resp_imwg(AVALC)) %>%
+    mutate(
+      PARAMCD = "COVR",
+      PARAM = "Confirmed Response at Time Point by Investigator",
+      PARCAT1 = "Investigator",
+      PARCAT2 = "IMWG"
+    )
 }
-adrs_imwg <- derive_confirmed_response(adrs) 
+adrs_imwg <- derive_confirmed_response(adrs)
 ```
 
 ```{r, echo=FALSE}
@@ -429,6 +468,63 @@ dataset_vignette(
   adrs_imwg,
   display_vars = exprs(USUBJID, PARAMCD, AVISIT, ADT, AVALC)
 )
+```
+
+### Check Number of `NE` Values Between Responses {#nenum}
+
+If user would like to receive a warning that there is a certain number of `NE`s between responses, this can be done using `filter_consecutive_vals` function defined below.
+
+```{r}
+filter_consecutive_vals <- function(dataset, by_vars, order, var, val, n) {
+  var <- enexpr(var)
+  var_join <- sym(paste0(as.character(var), ".join"))
+  data <- derive_var_obs_number(dataset, by_vars = by_vars, order = order, new_var = temp_seq)
+
+  left_join(
+    data, select(data, !!!by_vars, temp_seq, !!var),
+    by = admiraldev::vars2chr(by_vars),
+    suffix = c("", ".join"),
+    relationship = "many-to-many"
+  ) %>%
+    filter(temp_seq <= temp_seq.join & !!var == !!val) %>%
+    filter_relative(
+      by_vars = c(by_vars, expr(temp_seq)),
+      order = exprs(temp_seq.join),
+      condition = !!var_join != !!val,
+      mode = "first",
+      selection = "before",
+      keep_no_ref_groups = TRUE,
+      inclusive = FALSE
+    ) %>%
+    derive_var_merged_summary(
+      dataset = .,
+      dataset_add = .,
+      by_vars = c(by_vars, expr(temp_seq)),
+      new_vars = exprs(nr_vals = n())
+    ) %>%
+    filter(nr_vals >= n) %>%
+    filter_extreme(
+      by_vars = c(by_vars, expr(temp_seq)),
+      order = exprs(temp_seq.join),
+      mode = "first",
+      check_type = "none"
+    ) %>%
+    select(-temp_seq, -temp_seq.join, -!!var_join, -nr_vals)
+}
+
+# filter on three or more NEs in a row
+many_nes <- filter_consecutive_vals(
+  adrs,
+  by_vars = get_admiral_option("subject_keys"),
+  order = exprs(ADTM),
+  var = AVALC,
+  val = "NE",
+  n = 3
+)
+
+if (nrow(many_nes) > 0) {
+  cli_warn("There are subjects with more than three NEs in a row.")
+}
 ```
 
 ## Analysis Flag Derivation {#anlfl}

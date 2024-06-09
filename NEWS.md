@@ -1,3 +1,9 @@
+# admiralonco (development version)
+
+## Documentation
+
+- New vignette "Creating ADRS with IMWG Criteria". (#277)
+
 # admiralonco 1.0.0
 
 ## Updates of Existing Functions
