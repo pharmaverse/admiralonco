@@ -562,7 +562,8 @@ adrs <- adrs %>%
       PARCAT3 = "iRECIST",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
-    )
+    ),
+    check_type = "none"
   )
 ```
 
@@ -836,7 +837,8 @@ adrs <- adrs %>%
       PARCAT3 = "iRECIST",
       AVAL = yn_to_numeric(AVALC),
       ANL01FL = "Y"
-    )
+    ),
+    check_type = "none"
   )
 
 adrs <- adrs %>%
