@@ -44,7 +44,7 @@ assigned level of response is determined by the lowest level of response.*
 *If a critical data point to establish a level of response is missing, 
 the evaluation is downgraded to the next lower level.*
 
-For more information user may visit [International Myeloma Working Group consensus criteria for response and minimal residual disease assessment in multiple myeloma] (https://www.sciencedirect.com/science/article/abs/pii/S1470204516302066)
+For more information user may visit [International Myeloma Working Group consensus criteria for response and minimal residual disease assessment in multiple myeloma](https://www.sciencedirect.com/science/article/abs/pii/S1470204516302066)
 
 Examples are currently presented and tested using `ADSL` (ADaM), 
 `RS` and `SUPPRS` (SDTM) inputs. However, other domains could be used. 
