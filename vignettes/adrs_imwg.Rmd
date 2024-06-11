@@ -44,7 +44,7 @@ assigned level of response is determined by the lowest level of response.*
 *If a critical data point to establish a level of response is missing, 
 the evaluation is downgraded to the next lower level.*
 
-For more information user may visit [International Myeloma Working Group consensus criteria for response and minimal residual disease assessment in multiple myeloma](https://www.myeloma.org/resource-library/international-myeloma-working-group-consensus-criteria-response-minimal-residual)
+For more information user may visit [International Myeloma Working Group consensus criteria for response and minimal residual disease assessment in multiple myeloma] (https://www.sciencedirect.com/science/article/abs/pii/S1470204516302066)
 
 Examples are currently presented and tested using `ADSL` (ADaM), 
 `RS` and `SUPPRS` (SDTM) inputs. However, other domains could be used. 
@@ -332,7 +332,7 @@ We assumed in our next steps that non-evaluable records are ignored when derivin
 
 ### Additional Variables {#suppfl}
 
-To derive Confirmed Response we are using variables from `SUPPRS` dataset included in  {pharmaversesdtm} package.
+To derive Confirmed Response we are using variables from `SUPPRS` dataset included in  `{pharmaversesdtm}` package.
 
 ```{r echo=FALSE}
 list_suppfl <- tribble(
@@ -617,8 +617,8 @@ dataset_vignette(
 
 ### Select Source Assessments for Parameter derivations
 
-For next parameter derivations we consider only Confirmed Responses (PARAMCD = "COVR"). 
-We take post-baseline records (ANL01FL = "Y")  before start of new anti-cancer therapy (ANL02FL = "Y") and up to and including first PD (ANL03FL = "Y").
+For next parameter derivations we consider only Confirmed Responses (`PARAMCD = "COVR"`). 
+We take post-baseline records (`ANL01FL = "Y"`)  before start of new anti-cancer therapy (`ANL02FL = "Y"`) and up to and including first PD (`ANL03FL = "Y"`).
 ```{r}
 ovr <- filter(adrs_imwg, PARAMCD == "COVR" & ANL01FL == "Y" & ANL02FL == "Y" & ANL03FL == "Y")
 

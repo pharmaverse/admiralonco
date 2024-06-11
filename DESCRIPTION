@@ -73,7 +73,9 @@ Suggests:
     tibble,
     usethis,
     covr,
-    DT
+    DT,
+    metatools,
+    cli
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Config/Needs/website: gert
