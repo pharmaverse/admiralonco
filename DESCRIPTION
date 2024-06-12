@@ -12,7 +12,7 @@ Authors@R: c(
     person("Stephen", "Gormley", role = "aut"),
     person("Hinal", "Patel", role = "aut"),
     person("Vinh", "Nguyen", role = "aut"),
-    person("Olga", "Starostecka", role = "ctb"),
+    person("Olga", "Starostecka", role = "aut"),
     person("Uwe", "Bader", role = "ctb"),
     person("Karl", "Kennedy", role = "ctb"),
     person("Edoardo", "Mancini", role = "ctb"),
