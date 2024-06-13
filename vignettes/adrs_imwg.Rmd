@@ -211,8 +211,7 @@ adrs <- adrs %>%
     date_imputation = "last",
     flag_imputation = "time"
   ) %>%
-  mutate(AVISIT = VISIT) %>%
-  arrange(USUBJID, ADTM)
+  mutate(AVISIT = VISIT)
 ```
 
 ```{r, echo=FALSE}
@@ -369,6 +368,7 @@ confirmation_period <- 84
 
 derive_confirmed_response <- function(datain) {
   data_adrs <- datain %>%
+    arrange(USUBJID, ADTM) %>%
     filter(AVALC != "NE") %>%
     group_by(USUBJID) %>%
     mutate(
