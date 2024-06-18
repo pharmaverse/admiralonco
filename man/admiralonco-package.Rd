@@ -32,11 +32,11 @@ Authors:
   \item Stephen Gormley
   \item Hinal Patel
   \item Vinh Nguyen
+  \item Olga Starostecka
 }
 
 Other contributors:
 \itemize{
-  \item Olga Starostecka [contributor]
   \item Uwe Bader [contributor]
   \item Karl Kennedy [contributor]
   \item Edoardo Mancini [contributor]
