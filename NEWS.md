@@ -4,6 +4,12 @@
 
 - New vignette "Creating ADRS with IMWG Criteria". (#277)
 
+## Updates of Existing Functions
+
+- Replaced hard coding of `exprs(USUBJID, STUDYID)` and `exprs(USUBJID)` with
+`get_admiral_option("subject_keys")` so the argument is flexible and can be
+changed from the default by the user. (#281)
+
 # admiralonco 1.0.0
 
 ## Updates of Existing Functions

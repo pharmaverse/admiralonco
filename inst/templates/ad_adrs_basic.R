@@ -47,7 +47,7 @@ adrs <- rs %>%
   derive_vars_merged(
     dataset_add = adsl,
     new_vars = adsl_vars,
-    by_vars = exprs(STUDYID, USUBJID)
+    by_vars = get_admiral_option("subject_keys")
   )
 
 # ---- Company-specific pre-processing ----
@@ -101,7 +101,7 @@ adrs <- adrs %>%
   restrict_derivation(
     derivation = derive_var_extreme_flag,
     args = params(
-      by_vars = exprs(STUDYID, USUBJID, ADT),
+      by_vars = c(get_admiral_option("subject_keys"), exprs(ADT)),
       order = exprs(worst_resp(AVALC), RSSEQ),
       new_var = ANL01FL,
       mode = "last"
@@ -116,7 +116,7 @@ adrs <- adrs %>%
   derive_extreme_records(
     dataset_ref = adsl,
     dataset_add = adrs,
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     filter_add = PARAMCD == "OVR" & AVALC == "PD" & ANL01FL == "Y",
     order = exprs(ADT, RSSEQ),
     mode = "first",
@@ -211,7 +211,7 @@ adrs <- adrs %>%
   derive_extreme_records(
     dataset_ref = adsl,
     dataset_add = adrs,
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     filter_add = PARAMCD == "BOR" & AVALC %in% c("CR", "PR"),
     order = exprs(ADT, RSSEQ),
     mode = "first",
@@ -293,7 +293,7 @@ adrs <- adrs %>%
   derive_extreme_records(
     dataset_ref = adsl,
     dataset_add = adrs,
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     filter_add = PARAMCD == "CBOR" & AVALC %in% c("CR", "PR"),
     order = exprs(ADT, RSSEQ),
     mode = "first",
@@ -312,13 +312,13 @@ adrs <- adrs %>%
 
 # Death
 adsldth <- adsl %>%
-  select(STUDYID, USUBJID, DTHDT, !!!adsl_vars)
+  select(!!!get_admiral_option("subject_keys"), DTHDT, !!!adsl_vars)
 
 adrs <- adrs %>%
   derive_extreme_records(
     dataset_ref = adsldth,
     dataset_add = adsldth,
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     filter_add = !is.na(DTHDT),
     exist_flag = AVALC,
     false_value = "N",
@@ -338,7 +338,7 @@ adrs <- adrs %>%
   derive_extreme_records(
     dataset_ref = adsl,
     dataset_add = adrs,
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     filter_add = PARAMCD == "OVR" & ANL01FL == "Y",
     order = exprs(ADT, RSSEQ),
     mode = "last",
@@ -354,7 +354,7 @@ adrs <- adrs %>%
 
 # Measurable disease at baseline
 adslmdis <- adsl %>%
-  select(STUDYID, USUBJID, !!!adsl_vars)
+  select(!!!get_admiral_option("subject_keys"), !!!adsl_vars)
 
 adrs <- adrs %>%
   derive_param_exist_flag(
@@ -376,7 +376,7 @@ adrs <- adrs %>%
 # Derive analysis sequence
 adrs <- adrs %>%
   derive_var_obs_number(
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     order = exprs(PARAMCD, ADT, VISITNUM, RSSEQ),
     check_type = "error"
   )
@@ -385,7 +385,7 @@ adrs <- adrs %>%
 adrs <- adrs %>%
   derive_vars_merged(
     dataset_add = select(adsl, !!!negate_vars(adsl_vars)),
-    by_vars = exprs(STUDYID, USUBJID)
+    by_vars = get_admiral_option("subject_keys")
   )
 
 # ---- Save output ----
