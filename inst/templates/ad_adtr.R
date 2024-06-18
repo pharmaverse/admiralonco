@@ -42,7 +42,7 @@ tr <- derive_vars_merged(
   tr,
   dataset_add = adsl,
   new_vars = adsl_vars,
-  by_vars = exprs(STUDYID, USUBJID)
+  by_vars = get_admiral_option("subject_keys")
 )
 
 # Add variables from TU (location of tumor) ----
@@ -50,7 +50,7 @@ tr <- derive_vars_merged(
   tr,
   dataset_add = tu,
   new_vars = exprs(TULOC),
-  by_vars = exprs(STUDYID, USUBJID, TRLNKID = TULNKID)
+  by_vars = c(get_admiral_option("subject_keys"), exprs(TRLNKID = TULNKID))
 ) %>% mutate(
   TULOCGR1 = if_else(
     TULOC == "LYMPH NODE",
@@ -118,7 +118,7 @@ adtr <- bind_rows(
 # Derive parameter for sum of diameter (SDIAM) ----
 adtr_sum <- derive_summary_records(
   dataset_add = adtr,
-  by_vars = exprs(STUDYID, USUBJID, !!!adsl_vars, AVISIT, AVISITN),
+  by_vars = exprs(!!!get_admiral_option("subject_keys"), !!!adsl_vars, AVISIT, AVISITN),
   filter_add = (str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
     (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL"),
   set_values_to = exprs(
@@ -137,7 +137,7 @@ adtr_sum <- derive_summary_records(
 adtr_sum <- adtr_sum %>%
   derive_var_merged_summary(
     dataset_add = adtr,
-    by_vars = exprs(USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     filter_add = AVISIT == "BASELINE" &
       ((str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
         (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")),
@@ -145,7 +145,7 @@ adtr_sum <- adtr_sum %>%
   ) %>%
   derive_var_merged_summary(
     dataset_add = adtr,
-    by_vars = exprs(USUBJID, AVISIT),
+    by_vars = c(get_admiral_option("subject_keys"), exprs(AVISIT)),
     filter_add = ((str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
       (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")) & ANL01FL == "Y",
     new_vars = exprs(LSASS = paste(sort(TRLNKID), collapse = ", "))
@@ -159,7 +159,7 @@ adtr_sum <- adtr_sum %>%
   restrict_derivation(
     derivation = derive_var_extreme_flag,
     args = params(
-      by_vars = exprs(USUBJID),
+      by_vars = get_admiral_option("subject_keys"),
       order = exprs(ADY),
       new_var = ABLFL,
       mode = "last"
@@ -167,14 +167,14 @@ adtr_sum <- adtr_sum %>%
     filter = ADY <= 1
   ) %>%
   derive_var_base(
-    by_vars = exprs(USUBJID)
+    by_vars = get_admiral_option("subject_keys")
   )
 
 # Derive nadir (NADIR) ----
 adtr_sum <- adtr_sum %>%
   derive_vars_joined(
     dataset_add = adtr_sum,
-    by_vars = exprs(USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     order = exprs(AVAL),
     new_vars = exprs(NADIR = AVAL),
     join_vars = exprs(ADY),
@@ -205,7 +205,7 @@ adtr_sum <- adtr_sum %>%
       flag_imputation = "none"
     ),
     filter_add = RSTESTCD == "OVRLRESP" & RSEVAL == "INVESTIGATOR",
-    by_vars = exprs(USUBJID, ADT),
+    by_vars = c(get_admiral_option("subject_keys"), exprs(ADT)),
     new_var = PDFL,
     condition = RSSTRESC == "PD"
   )
@@ -213,7 +213,7 @@ adtr_sum <- adtr_sum %>%
 # Derive analysis flags (ANLzzFL) ----
 adtr_sum <- adtr_sum %>%
   derive_var_relative_flag(
-    by_vars = exprs(USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     order = exprs(ADT),
     new_var = POSTRNDFL,
     condition = ADT > RANDDT,
@@ -225,7 +225,7 @@ adtr_sum <- adtr_sum %>%
   restrict_derivation(
     derivation = derive_var_extreme_flag,
     args = params(
-      by_vars = exprs(USUBJID),
+      by_vars = get_admiral_option("subject_keys"),
       new_var = ANL02FL,
       order = exprs(PCHG),
       mode = "first",
@@ -237,7 +237,7 @@ adtr_sum <- adtr_sum %>%
   restrict_derivation(
     derivation = derive_var_relative_flag,
     args = params(
-      by_vars = exprs(USUBJID),
+      by_vars = get_admiral_option("subject_keys"),
       new_var = ANL03FL,
       condition = PDFL == "Y",
       order = exprs(ADY),
@@ -255,7 +255,7 @@ adtr_sum <- adtr_sum %>%
 adtr <- adtr %>%
   bind_rows(adtr_sum) %>%
   derive_var_obs_number(
-    by_vars = exprs(STUDYID, USUBJID),
+    by_vars = get_admiral_option("subject_keys"),
     order = exprs(PARAMCD, AVISITN, TRSEQ),
     check_type = "error"
   )
@@ -264,7 +264,7 @@ adtr <- adtr %>%
 adtr <- adtr %>%
   derive_vars_merged(
     dataset_add = select(adsl, !!!negate_vars(adsl_vars)),
-    by_vars = exprs(STUDYID, USUBJID)
+    by_vars = get_admiral_option("subject_keys")
   )
 
 # Change to whichever directory you want to save the dataset in

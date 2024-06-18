@@ -1,3 +1,9 @@
+# admiralonco (development version)
+
+## Updates of Existing Functions
+
+- Replaced hard coding of `expr(USUBJID, STUDYID)` and `expr(USUBJID)` with `get_admiral_option("subject_keys")` so the argument is flexible and can be changed from the default by the user. (#281)
+
 # admiralonco 1.0.0
 
 ## Updates of Existing Functions
