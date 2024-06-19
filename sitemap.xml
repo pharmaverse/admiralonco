@@ -16,13 +16,13 @@
     <loc>https://pharmaverse.github.io/admiralonco/articles/adrs_basic.html</loc>
   </url>
   <url>
+    <loc>https://pharmaverse.github.io/admiralonco/articles/adrs_imwg.html</loc>
+  </url>
+  <url>
     <loc>https://pharmaverse.github.io/admiralonco/articles/adtr.html</loc>
   </url>
   <url>
     <loc>https://pharmaverse.github.io/admiralonco/articles/adtte.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/articles/articles/website-versions.html</loc>
   </url>
   <url>
     <loc>https://pharmaverse.github.io/admiralonco/articles/index.html</loc>
@@ -46,9 +46,6 @@
     <loc>https://pharmaverse.github.io/admiralonco/news/index.html</loc>
   </url>
   <url>
-    <loc>https://pharmaverse.github.io/admiralonco/pull_request_template.html</loc>
-  </url>
-  <url>
     <loc>https://pharmaverse.github.io/admiralonco/reference/admiral_adrs.html</loc>
   </url>
   <url>
@@ -56,9 +53,6 @@
   </url>
   <url>
     <loc>https://pharmaverse.github.io/admiralonco/reference/aval_resp.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/reference/call_aval_fun.html</loc>
   </url>
   <url>
     <loc>https://pharmaverse.github.io/admiralonco/reference/derive_param_bor.html</loc>
@@ -92,89 +86,5 @@
   </url>
   <url>
     <loc>https://pharmaverse.github.io/admiralonco/reference/tte_source_objects.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/404.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/LICENSE.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/articles/admiralonco.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/articles/adrs.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/articles/adrs_basic.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/articles/adtr.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/articles/adtte.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/articles/index.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/articles/nactdt.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/authors.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/index.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/news/index.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/pull_request_template.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/reference/admiral_adrs.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/reference/admiralonco-package.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/reference/aval_resp.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/reference/call_aval_fun.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/reference/derive_param_bor.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/reference/derive_param_clinbenefit.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/reference/derive_param_confirmed_bor.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/reference/derive_param_confirmed_resp.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/reference/derive_param_response.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/reference/event_objects.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/reference/filter_pd.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/reference/get_crpr_dataset.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/reference/index.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/reference/signal_crpr.html</loc>
-  </url>
-  <url>
-    <loc>https://pharmaverse.github.io/admiralonco/v0.5.0/reference/tte_source_objects.html</loc>
   </url>
 </urlset>
