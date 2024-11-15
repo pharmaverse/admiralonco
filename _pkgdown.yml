@@ -71,6 +71,8 @@ navbar:
         href: articles/irecist.html
       - text: Creating ADRS with IMWG Criteria
         href: articles/adrs_imwg.html
+      - text: Creating ADRS with GCIG Criteria
+        href: articles/adrs_gcig.html
       - text: Creating ADTTE
         href: articles/adtte.html
       - text: Creating ADTR
