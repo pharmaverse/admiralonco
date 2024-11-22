@@ -34,10 +34,13 @@ list_cases <- tibble::tribble(
   "Relapse trials", "CA-125 response and progression", "", ""
 )
 
+library(magrittr)
+
 list_cases %>% 
-  gt::gt() %>% 
+  gt::gt() %>%
+  gt::cols_label_with(fn = ~gt::md(paste0("**", .x, "**"))) %>% 
   gt::tab_header(
-    title = "GCIG recommendations for CA-125 criteria for response and progression in various clinical situations "
+    title = "GCIG recommendations for CA-125 criteria for response and progression in various clinical situations"
   )
 ```
 
@@ -87,8 +90,8 @@ For this vignette we made assumptions that following information is collected on
 1.	CA-125 confirmed responses are collected on the CRF and mapped to `SDTM RS` domain. Please note that we are not programmatically confirming the CA-125 response.
 2.	The date of CA-125 response is assigned to the date of the first measurement when the CA-125 level is reduced by 50%. The date of CA-125 progression is assigned to the date of the first measurement that meets progression criteria. This is assumed to be collected on the CRF CA-125 response page.
 3.	CA-125 responses are mapped to `CR`, `PR`, `SD`, `PD`, `NE` as shown below.
-```{r echo=FALSE}
-list_resp <- tribble(
+    ```{r echo=FALSE}
+list_resp <- tibble::tribble(
   ~"CA-125 response per GCIG", 
   ~"CA-125 response mapped",
   "Response within Normal Range", "CR",
@@ -99,12 +102,12 @@ list_resp <- tribble(
 )
 
 knitr::kable(list_resp)
-```
+    ```
 
 4.	Combined CA-125 and RECIST 1.1 response per visit where both RECIST 1.1 and CA-125 is evaluated is also collected on the CRF. The investigator should already consider CA-125 confirmed response and each visit RECIST 1.1 response based on GCIG document.
 5. In `SUPPRS` there are records with below `QNAM` and `QLABEL` values:
 
-```{r echo=FALSE}
+    ```{r echo=FALSE}
 list_supp <- tibble::tribble(
   ~"QNAM", ~"QLABEL", ~"QVAL", ~"Purpose", ~"Use case",
   "CA125EFL", "CA-125 response evaluable",  "Y/N", "Indicates population evaluable for CA-125 response (baseline CA-125 >= 2 * ULRR and no mouse antibodies)", "CA125EFL variable",
@@ -143,7 +146,7 @@ library(tibble)
 -   [CA-125 Progression Category](#pdcacat)
 -   [CA-125 Best Confirmed Overall Response](#cborca)
 -   [Combined Best Unconfirmed Overall Response](#combubor)
--   [Confimred RECIST1.1 Overall Response](#covrr11)
+-   [Confirmed RECIST 1.1 Overall Response](#covrr11)
 -   [Combined Best Confirmed Overall Response](#combcbor)
 -   [Derive Confirmed Response Parameter](#cborca125)
 
@@ -269,7 +272,7 @@ dataset_vignette(
 
 ### Derive `AVALC` and `AVAL`
 
-Since the set of CA-125 response categories is a subset of the Recist 1.1 response categories and the set of combined response categories overlaps with the set of Recist 1.1 response categories, we can use the `admiralonco::aval_resp()` function to assign `AVAL` (ordered from best to worst response).
+Since the set of CA-125 response categories is a subset of the RECIST 1.1 response categories and the set of combined response categories overlaps with the set of RECIST 1.1 response categories, we can use the `admiralonco::aval_resp()` function to assign `AVAL` (ordered from best to worst response).
 
 ```{r}
 adrs <- adrs %>%
@@ -344,7 +347,7 @@ adrs <- adrs %>%
   )
 ```
 
-### CA-125 Response Evaluable Flag (#eflca)
+### CA-125 Response Evaluable Flag {#eflca}
 
 Patients can only be evaluable for a CA-125 response if they have pre-treatment sample that is at least twice the
 upper limit of the reference range and within 2 weeks before starting the treatment. 
@@ -476,7 +479,7 @@ Derivation of the progression category may be more complex if the data is collec
 - CA-125 level normalizes over the course of the study,
 - CA-125 level > 2 * ULRR (if CA-125 level normalizes) or CA-125 level > 2 * nadir (if CA-125 level never normalizes).
 
-If criterion to find PD category draws from multiple rows (different parameters or multiple rows for a single parameter) this will require the creation of a new PARAM.
+If criterion to find PD category draws from multiple rows (different parameters or multiple rows for a single parameter) this will require the creation of a new parameter.
 
 ## CA-125 Best Confirmed Overall Response {#cborca}
 
@@ -583,11 +586,11 @@ dataset_vignette(
 )
 ```
 
-## Confimred RECIST1.1 Overall Response {#covrr11}
+## Confirmed RECIST 1.1 Overall Response {#covrr11}
 
-For studies where ORR is one of the primary endpoints there is a need to derive combined response based on confirmed RECIST1.1 and confirmed CA-125 overall responses. To perform this step, there is a need to confirm `CR` and `PR` RECIST1.1 responses by deriving Confimred RECIST1.1 Overall Response parameter.
+For studies where ORR is one of the primary endpoints there is a need to derive combined response based on confirmed RECIST 1.1 and confirmed CA-125 overall responses. To perform this step, there is a need to confirm `CR` and `PR` RECIST 1.1 responses by deriving Confirmed RECIST 1.1 Overall Response parameter.
 
-Following table provides a summary of the `Confimred RECIST1.1 Overall Response` calculation at each time point.
+Following table provides a summary of the `Confirmed RECIST 1.1 Overall Response` calculation at each time point.
 
 ```{r echo=FALSE}
 list_resp <- tribble(
