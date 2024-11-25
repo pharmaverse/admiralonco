@@ -26,7 +26,7 @@ Carcinoma antigen-125 (CA-125) is the most commonly used biomarker in ovarian ca
 ```{r echo=FALSE}
 list_cases <- tibble::tribble(
   ~"Use case",
-  ~"Use Recommended by GCIG", 
+  ~"Use Recommended by GCIG",
   ~"Not Standard and Needs Further Validation",
   ~"Not Recommended by GCIG",
   "First-line trials", "CA-125 progression", "", "CA-125 response",
@@ -36,9 +36,9 @@ list_cases <- tibble::tribble(
 
 library(magrittr)
 
-list_cases %>% 
+list_cases %>%
   gt::gt() %>%
-  gt::cols_label_with(fn = ~gt::md(paste0("**", .x, "**"))) %>% 
+  gt::cols_label_with(fn = ~ gt::md(paste0("**", .x, "**"))) %>%
   gt::tab_header(
     title = "GCIG recommendations for CA-125 criteria for response and progression in various clinical situations"
   )
@@ -62,9 +62,9 @@ In further considerations, ULRR stands for Upper Limit of Reference Range. The C
 
 4. **Progression**: This is defined as CA-125 >= 2 * ULRR  or CA-125 >= 2 * nadir on 2 occasions at least 1 week apart.
 
-- category A: **CA-125 elevated at baseline returning to normal after treatment**: CA-125 >= 2 * ULRR on 2 occasions at least 1 week apart.
-- category B: **CA-125 elevated at baseline not returning to normal after treatment**: CA-125 >= 2 * nadir value (lowest level reached by CA-125) on 2 occasions at least 1 week apart.
-- category C: **CA-125 within reference range at baseline**: CA-125 >= 2 * ULRR on 2 occasions at least 1 week apart.
+    - category A: **CA-125 elevated at baseline returning to normal after treatment**: CA-125 >= 2 * ULRR on 2 occasions at least 1 week apart.
+    - category B: **CA-125 elevated at baseline not returning to normal after treatment**: CA-125 >= 2 * nadir value (lowest level reached by CA-125) on 2 occasions at least 1 week apart.
+    - category C: **CA-125 within reference range at baseline**: CA-125 >= 2 * ULRR on 2 occasions at least 1 week apart.
 
 5. **Not Evaluable**: This is when the patient's response cannot be evaluated due to various reasons such as receiving mouse antibodies or having medical/surgical interference with their peritoneum or pleura during the previous 28 days.
 
@@ -91,37 +91,36 @@ For this vignette we made assumptions that following information is collected on
 2.	The date of CA-125 response is assigned to the date of the first measurement when the CA-125 level is reduced by 50%. The date of CA-125 progression is assigned to the date of the first measurement that meets progression criteria. This is assumed to be collected on the CRF CA-125 response page.
 3.	CA-125 responses are mapped to `CR`, `PR`, `SD`, `PD`, `NE` as shown below.
     ```{r echo=FALSE}
-list_resp <- tibble::tribble(
-  ~"CA-125 response per GCIG", 
-  ~"CA-125 response mapped",
-  "Response within Normal Range", "CR",
-  "Response but not within Normal Range", "PR",
-  "Non-Response/Non-PD", "SD",
-  "PD", "PD",
-  "NE", "NE"
-)
+    list_resp <- tibble::tribble(
+      ~"CA-125 response per GCIG",            ~"CA-125 response mapped",
+      "Response within Normal Range",         "CR",
+      "Response but not within Normal Range", "PR",
+      "Non-Response/Non-PD",                  "SD",
+      "PD",                                   "PD",
+      "NE",                                   "NE"
+    )
 
-knitr::kable(list_resp)
+    knitr::kable(list_resp)
     ```
 
 4.	Combined CA-125 and RECIST 1.1 response per visit where both RECIST 1.1 and CA-125 is evaluated is also collected on the CRF. The investigator should already consider CA-125 confirmed response and each visit RECIST 1.1 response based on GCIG document.
 5. In `SUPPRS` there are records with below `QNAM` and `QLABEL` values:
 
     ```{r echo=FALSE}
-list_supp <- tibble::tribble(
-  ~"QNAM", ~"QLABEL", ~"QVAL", ~"Purpose", ~"Use case",
-  "CA125EFL", "CA-125 response evaluable",  "Y/N", "Indicates population evaluable for CA-125 response (baseline CA-125 >= 2 * ULRR and no mouse antibodies)", "CA125EFL variable",
-  "CA2XULRR", "CA-125 pre-treatment 2x ULRR", "Y/N", "Indicates CA-125 level at baseline (Y - elevated, N - not elevated)", "Derivation of PD category (MCRIT1/MCRIT1ML/MCRIT1MN)",
-  "MOUSEANT", "Received mouse antibodies", "Y/N", "Indicates if a prohibited therapy was received", "Derivation of ANL02FL",
-  "CA50RED", ">50% reduction from baseline", "Y/N", "Indicates response, but does not distinguish between CR and PR", "Not used in further derivations",
-  "CANORM2X", "CA125 normal, lab increased >=2x ULRR", "Y/N", "Indicates PD category A or C", "Derivation of PD category (MCRIT1/MCRIT1ML/MCRIT1MN)",
-  "CNOTNORM", "CA125 not norm, lab increased >=2x nadir", "Y/N", "Indicates PD category B", "Derivation of PD category (MCRIT1/MCRIT1ML/MCRIT1MN)"
+    list_supp <- tibble::tribble(
+      ~"QNAM", ~"QLABEL", ~"QVAL", ~"Purpose", ~"Use case",
+      "`CA125EFL`", "CA-125 response evaluable", "Y/N", "Indicates population evaluable for CA-125 response (baseline CA-125 >= 2 * ULRR and no mouse antibodies)", "`CA125EFL` variable",
+      "`CA2XULRR`", "CA-125 pre-treatment 2x ULRR", "Y/N", "Indicates CA-125 level at baseline (Y - elevated, N - not elevated)", "Derivation of PD category (`MCRIT1`/`MCRIT1ML`/`MCRIT1MN`)",
+      "`MOUSEANT`", "Received mouse antibodies", "Y/N", "Indicates if a prohibited therapy was received", "Derivation of `ANL02FL`",
+      "`CA50RED`", ">50% reduction from baseline", "Y/N", "Indicates response, but does not distinguish between CR and PR", "Not used in further derivations",
+      "`CANORM2X`", "CA125 normal, lab increased >=2x ULRR", "Y/N", "Indicates PD category A or C", "Derivation of PD category (`MCRIT1`/`MCRIT1ML`/`MCRIT1MN`)",
+      "`CNOTNORM`", "CA125 not norm, lab increased >=2x nadir", "Y/N", "Indicates PD category B", "Derivation of PD category (`MCRIT1`/`MCRIT1ML`/`MCRIT1MN`)"
 )
 
-knitr::kable(list_supp)
-```
+    knitr::kable(list_supp)
+    ```
 
-If the data are collected by other ways and similar information from `SUPPRS` dataset are not available, they should be derived in advance from `LB` CA-125 measurements records. Information on whether the patient has received mouse antibodies should also be taken into account.
+    If the data are collected by other ways and similar information from `SUPPRS` dataset are not available, they should be derived in advance from `LB` CA-125 measurements records. Information on whether the patient has received mouse antibodies should also be taken into account.
 
 # Required Packages
 
@@ -198,20 +197,20 @@ For this, a lookup can be created based on the SDTM `RSCAT`, `RSTESTCD` and `RSE
 ```{r, echo=TRUE, message=FALSE}
 param_lookup <- tribble(
   ~RSCAT, ~RSTESTCD, ~RSEVAL,
-  ~PARAMCD, ~PARAM, ~PARAMN, 
-  ~PARCAT1, ~PARCAT1N,~PARCAT2, ~PARCAT2N,
-  
-  #CA-125
+  ~PARAMCD, ~PARAM, ~PARAMN,
+  ~PARCAT1, ~PARCAT1N, ~PARCAT2, ~PARCAT2N,
+
+  # CA-125
   "CA125", "OVRLRESP", "INVESTIGATOR",
   "OVRCA125", "CA-125 Overall Response by Investigator", 1,
   "CA-125", 1, "Investigator", 1,
-  
-  #RECIST 1.1
+
+  # RECIST 1.1
   "RECIST 1.1", "OVRLRESP", "INVESTIGATOR",
   "OVRR11", "RECIST 1.1 Overall Response by Investigator", 2,
   "RECIST 1.1", 2, "Investigator", 1,
-  
-  #Combined
+
+  # Combined
   "RECIST 1.1 - CA125", "OVRLRESP", "INVESTIGATOR",
   "OVRR11CA", "Combined Overall Response by Investigator", 3,
   "Combined", 3, "Investigator", 1
@@ -226,7 +225,7 @@ adrs <- derive_vars_merged_lookup(
   dataset_add = param_lookup,
   new_vars = exprs(PARAMCD, PARAM, PARAMN, PARCAT1, PARCAT1N, PARCAT2, PARCAT2N),
   by_vars = exprs(RSCAT, RSTESTCD, RSEVAL)
-) %>%  
+) %>%
   arrange(!!!get_admiral_option("subject_keys"), PARAMN, RSSEQ)
 ```
 
@@ -357,8 +356,8 @@ CA-125 Response Evaluable Flag can easily be derived using `derive_var_merged_ex
 ```{r}
 adrs <- adrs %>%
   rename(CA125EFL_ = CA125EFL)
-  
- adrs <- adrs %>% 
+
+adrs <- adrs %>%
   derive_var_merged_exist_flag(
     dataset_add = adrs,
     by_vars = get_admiral_option("subject_keys"),
@@ -383,16 +382,16 @@ For next parameter derivations we consider:
 - CA-125 Response Evaluable population (not for derivation of CA-125 progression),
 
 ```{r}
-#used for derivation of CA-125 PD
+# used for derivation of CA-125 PD
 ovr_pd <- filter(adrs, PARAMCD == "OVRCA125" & ANL01FL == "Y" & ANL02FL == "Y")
 
-#used for derivation of CA-125 response parameters
+# used for derivation of CA-125 response parameters
 ovr_ca125 <- filter(adrs, PARAMCD == "OVRCA125" & CA125EFL == "Y" & ANL01FL == "Y" & ANL02FL == "Y")
 
-#used for derivation of unconfirmed best overall response from RECIST1.1 and confirmed CA-125 together
+# used for derivation of unconfirmed best overall response from RECIST1.1 and confirmed CA-125 together
 ovr_ubor <- filter(adrs, PARAMCD == "OVRR11CA" & CA125EFL == "Y" & ANL01FL == "Y" & ANL02FL == "Y")
 
-#used for derivation of confirmed best overall response from RECIST1.1 and confirmed CA-125 together
+# used for derivation of confirmed best overall response from RECIST1.1 and confirmed CA-125 together
 ovr_r11 <- filter(adrs, PARAMCD == "OVRR11" & CA125EFL == "Y" & ANL01FL == "Y" & ANL02FL == "Y")
 ```
 
@@ -423,7 +422,7 @@ adrs <- adrs %>%
       ANL01FL = "Y",
       ANL02FL = "Y"
     )
-  )  %>%
+  ) %>%
   arrange(!!!get_admiral_option("subject_keys"), PARAMN, ADT)
 ```
 
@@ -437,7 +436,7 @@ dataset_vignette(
 
 ## CA-125 Progression Category {#pdcacat}
 
-To obtain additional variables that store the progression category for participants who have progressed, we will create `MCRITy/MCRITyML/MCRITyMN` variables according to the ADAM IG guidelines.
+To obtain additional variables that store the progression category for participants who have progressed, we will create `MCRITy/MCRITyML/MCRITyMN` variables according to the ADaMIG guidelines.
 
 In our consideration we assume that the `SUPPRS` dataset contains `QNAM` values to uniquely classify a progression into one of the `A`, `B` or `C` categories as per `GCIG` criteria.
 
@@ -447,13 +446,13 @@ For this purpose `{admiral}` provides [`derive_vars_cat()`](https://pharmaverse.
 
 ```{r}
 definition_mcrit <- exprs(
-  ~PARAMCD, ~condition, 
+  ~PARAMCD, ~condition,
   ~MCRIT1ML, ~MCRIT1MN,
-  "PDCA125", CA2XULRR == "Y" & CANORM2X == "Y", 
+  "PDCA125", CA2XULRR == "Y" & CANORM2X == "Y",
   "Patients with elevated CA-125 before treatment and normalization of CA-125 (A)", 1,
-  "PDCA125", CA2XULRR == "Y" & CNOTNORM == "Y", 
+  "PDCA125", CA2XULRR == "Y" & CNOTNORM == "Y",
   "Patients with elevated CA-125 before treatment, which never normalizes (B)", 2,
-  "PDCA125", CA2XULRR == "N" & CANORM2X == "Y", 
+  "PDCA125", CA2XULRR == "N" & CANORM2X == "Y",
   "Patients with CA-125 in the reference range before treatment (C)", 3
 )
 
@@ -619,28 +618,28 @@ In brief, the following steps are described below:
 confirmation_period <- 21
 
 covr_r11 <- ovr_r11 %>%
-    arrange(USUBJID, ADTM) %>%
-    group_by(USUBJID) %>%
-    mutate(
-      AVALC.next = lead(AVALC),
-      AVAL.next = lead(AVAL),
-      ADT.next = lead(ADT)
-    ) %>%
-    ungroup() %>%
-    mutate(AVALC.confirmed = case_when(
-      # CR
-      AVALC == "CR" & AVALC.next == "CR" ~ "CR",
-      AVALC == "CR" & AVALC.next %in% c("PR", "SD", "PD") ~ "PD",
-      AVALC == "CR" & AVALC.next == "NE" ~ "NE",
-      # PR
-      AVALC == "PR" & AVALC.next %in% c("CR", "PR") ~ "PR",
-      AVALC == "PR" & AVALC.next %in% c("SD", "PD", "NE") ~ AVALC.next,
-      # next assessment NA
-      AVALC %in% c("CR", "PR") & is.na(AVALC.next) ~ "SD",
-      # no need to confirm SD, PD, NE
-      AVALC %in% c("SD", "PD", "NE") ~ AVALC,
-      !is.na(AVALC) ~ AVALC
-    ))
+  arrange(USUBJID, ADTM) %>%
+  group_by(USUBJID) %>%
+  mutate(
+    AVALC.next = lead(AVALC),
+    AVAL.next = lead(AVAL),
+    ADT.next = lead(ADT)
+  ) %>%
+  ungroup() %>%
+  mutate(AVALC.confirmed = case_when(
+    # CR
+    AVALC == "CR" & AVALC.next == "CR" ~ "CR",
+    AVALC == "CR" & AVALC.next %in% c("PR", "SD", "PD") ~ "PD",
+    AVALC == "CR" & AVALC.next == "NE" ~ "NE",
+    # PR
+    AVALC == "PR" & AVALC.next %in% c("CR", "PR") ~ "PR",
+    AVALC == "PR" & AVALC.next %in% c("SD", "PD", "NE") ~ AVALC.next,
+    # next assessment NA
+    AVALC %in% c("CR", "PR") & is.na(AVALC.next) ~ "SD",
+    # no need to confirm SD, PD, NE
+    AVALC %in% c("SD", "PD", "NE") ~ AVALC,
+    !is.na(AVALC) ~ AVALC
+  ))
 
 covr_r11_check <- covr_r11 %>%
   mutate(diff_days = as.numeric(difftime(ADT.next, ADT, units = "days"))) %>%
@@ -648,7 +647,8 @@ covr_r11_check <- covr_r11 %>%
   mutate(warn = paste(
     "For USUBJID", USUBJID, "to confirm", AVISIT,
     "visit, a visit that took place", diff_days, "days later was used."
-)) %>% pull(warn)
+  )) %>%
+  pull(warn)
 
 if (length(covr_r11_check) > 0) {
   cli::cli_warn("{covr_r11_check}")
@@ -666,8 +666,8 @@ covr_r11 <- covr_r11 %>%
     PARCAT1N = 2,
     PARCAT2 = "Investigator",
     PARCAT2N = 1,
-)
-  
+  )
+
 adrs <- bind_rows(adrs, covr_r11)
 ```
 
@@ -713,29 +713,29 @@ ovr_cbor <- covr_r11 %>%
     by_vars = exprs(!!!get_admiral_option("subject_keys"), AVISIT, ADT, ANL01FL, ANL02FL),
     key_var = PARAMCD,
     value_var = AVALC
-  ) %>% 
+  ) %>%
   select(-AVAL) %>%
   rename(OVRR11 = AVALC) %>%
   mutate(AVALC = case_when(
-      # CR
-      OVRR11 == "CR" & OVRCA125 == "CR" ~ "CR",
-      OVRR11 == "CR" & OVRCA125 %in% c("PR", "SD", "NE") ~ "PR",
-      OVRCA125 == "CR" & OVRR11 %in% c("PR", "SD", "NE") ~ "PR",
-      # PR
-      OVRR11 == "PR" & OVRCA125 %in% c("CR", "PR", "SD", "NE") ~ "PR",
-      OVRCA125 == "PR" & OVRR11 %in% c("CR", "PR", "SD", "NE") ~ "PR",
-      # SD, NE
-      OVRR11 %in% c("SD", "NE") & OVRCA125 %in% c("SD", "NE") &  OVRR11 == OVRCA125 ~ OVRR11,
-      OVRR11 %in% c("SD", "NE") & OVRCA125 %in% c("SD", "NE") &  OVRR11 != OVRCA125 ~ "SD",
-      # PD
-      OVRR11 == "PD" | OVRCA125 == "PD" ~ "PD",
-      # next assessment NA
-      is.na(OVRR11) | is.na(OVRCA125) ~ "NE",
-      TRUE ~ "MISSING"
-    ))
+    # CR
+    OVRR11 == "CR" & OVRCA125 == "CR" ~ "CR",
+    OVRR11 == "CR" & OVRCA125 %in% c("PR", "SD", "NE") ~ "PR",
+    OVRCA125 == "CR" & OVRR11 %in% c("PR", "SD", "NE") ~ "PR",
+    # PR
+    OVRR11 == "PR" & OVRCA125 %in% c("CR", "PR", "SD", "NE") ~ "PR",
+    OVRCA125 == "PR" & OVRR11 %in% c("CR", "PR", "SD", "NE") ~ "PR",
+    # SD, NE
+    OVRR11 %in% c("SD", "NE") & OVRCA125 %in% c("SD", "NE") & OVRR11 == OVRCA125 ~ OVRR11,
+    OVRR11 %in% c("SD", "NE") & OVRCA125 %in% c("SD", "NE") & OVRR11 != OVRCA125 ~ "SD",
+    # PD
+    OVRR11 == "PD" | OVRCA125 == "PD" ~ "PD",
+    # next assessment NA
+    is.na(OVRR11) | is.na(OVRCA125) ~ "NE",
+    TRUE ~ "MISSING"
+  ))
 
 ovr_cbor <- ovr_cbor %>%
-  #select(-OVRR11, -OVRCA125) %>%
+  # select(-OVRR11, -OVRCA125) %>%
   mutate(
     PARAMCD = "COVR11CA",
     PARAM = "Combined Overall Response by Investigator (Confirmation of RECIST1.1 Reqired)",
@@ -745,8 +745,8 @@ ovr_cbor <- ovr_cbor %>%
     PARCAT2 = "Investigator",
     PARCAT2N = 1,
     AVAL = aval_resp(AVALC)
-)
-  
+  )
+
 adrs <- bind_rows(adrs, ovr_cbor)
 ```
 
