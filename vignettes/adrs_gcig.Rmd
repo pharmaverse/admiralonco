@@ -114,15 +114,18 @@ For this vignette we made assumptions that following information is collected on
       ~"QNAM", ~"QLABEL", ~"QVAL", ~"Purpose", ~"Use case",
       "`CA125EFL`", "CA-125 response evaluable", "Y/N", "Indicates population evaluable for CA-125 response (baseline CA-125 >= 2 * ULRR and no mouse antibodies)", "`CA125EFL` variable",
       "`CA2XULRR`", "CA-125 pre-treatment 2x ULRR", "Y/N", "Indicates CA-125 level at baseline (Y - elevated, N - not elevated)", "Derivation of PD category (`MCRIT1`/`MCRIT1ML`/`MCRIT1MN`)",
-      "`MOUSEANT`", "Received mouse antibodies", "Y/N", "Indicates if a prohibited therapy was received", "Derivation of `ANL02FL`",
-      "`CA50RED`", ">50% reduction from baseline", "Y/N", "Indicates response, but does not distinguish between CR and PR", "Not used in further derivations",
-      "`CANORM2X`", "CA125 normal, lab increased >=2x ULRR", "Y/N", "Indicates PD category A or C", "Derivation of PD category (`MCRIT1`/`MCRIT1ML`/`MCRIT1MN`)",
-      "`CNOTNORM`", "CA125 not norm, lab increased >=2x nadir", "Y/N", "Indicates PD category B", "Derivation of PD category (`MCRIT1`/`MCRIT1ML`/`MCRIT1MN`)"
+      "`MOUSEANT`", "Received mouse antibodies", "Y", "Indicates if a prohibited therapy was received", "Derivation of `ANL02FL`",
+      "`CA50RED`", ">50% reduction from baseline", "Y", "Indicates response, but does not distinguish between CR and PR", "Not used in further derivations",
+      "`CANORM2X`", "CA125 normal, lab increased >=2x ULRR", "Y", "Indicates PD category A or C", "Derivation of PD category (`MCRIT1`/`MCRIT1ML`/`MCRIT1MN`)",
+      "`CNOTNORM`", "CA125 not norm, lab increased >=2x nadir", "Y", "Indicates PD category B", "Derivation of PD category (`MCRIT1`/`MCRIT1ML`/`MCRIT1MN`)"
 )
 
     knitr::kable(list_supp)
 # styler: on
     ```
+
+The above `SUPPRS` records refer only to records with `RS.RSCAT = "CA125"`.
+The exception is `QNAM = "MOUSEANT"`, which appears for both `RS.RSCAT = "CA125"` and `RS.RSCAT = "RECIST 1.1 - CA125"` (for the same visits).
 
     If the data are collected by other ways and similar information from `SUPPRS` dataset are not available, they should be derived in advance from `LB` CA-125 measurements records. Information on whether the patient has received mouse antibodies should also be taken into account.
 
