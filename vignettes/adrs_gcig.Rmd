@@ -73,7 +73,7 @@ In further considerations, ULRR stands for Upper Limit of Reference Range. The C
 ### Required:
 
 - Serum CA-125 results as per protocol and mapped in `LB` SDTM domain.
-- RECIST1.1 tumor size and response as per protocol and mapped in `RS`/`TR`/`TU` SDTM domain.
+- RECIST 1.1 tumor size and response as per protocol and mapped in `RS`/`TR`/`TU` SDTM domain.
 
 **Note**: collection of CA-125 and RECIST 1.1 tumor assessment may not be always same visit. CA-125 can be collected more frequently than tumor assessment.
 
@@ -127,7 +127,10 @@ For this vignette we made assumptions that following information is collected on
 The above `SUPPRS` records refer only to records with `RS.RSCAT = "CA125"`.
 The exception is `QNAM = "MOUSEANT"`, which appears for both `RS.RSCAT = "CA125"` and `RS.RSCAT = "RECIST 1.1 - CA125"` (for the same visits).
 
-    If the data are collected by other ways and similar information from `SUPPRS` dataset are not available, they should be derived in advance from `LB` CA-125 measurements records. Information on whether the patient has received mouse antibodies should also be taken into account.
+If the data are collected by other ways and similar information from `SUPPRS`
+dataset are not available, they should be derived in advance from `LB` CA-125
+measurements records. Information on whether the patient has received mouse
+antibodies should also be taken into account.
 
 # Required Packages
 
@@ -395,10 +398,10 @@ ovr_pd <- filter(adrs, PARAMCD == "OVRCA125" & ANL01FL == "Y" & ANL02FL == "Y")
 # used for derivation of CA-125 response parameters
 ovr_ca125 <- filter(adrs, PARAMCD == "OVRCA125" & CA125EFL == "Y" & ANL01FL == "Y" & ANL02FL == "Y")
 
-# used for derivation of unconfirmed best overall response from RECIST1.1 and confirmed CA-125 together
+# used for derivation of unconfirmed best overall response from RECIST 1.1 and confirmed CA-125 together
 ovr_ubor <- filter(adrs, PARAMCD == "OVRR11CA" & CA125EFL == "Y" & ANL01FL == "Y" & ANL02FL == "Y")
 
-# used for derivation of confirmed best overall response from RECIST1.1 and confirmed CA-125 together
+# used for derivation of confirmed best overall response from RECIST 1.1 and confirmed CA-125 together
 ovr_r11 <- filter(adrs, PARAMCD == "OVRR11" & CA125EFL == "Y" & ANL01FL == "Y" & ANL02FL == "Y")
 ```
 
@@ -464,7 +467,7 @@ definition_mcrit <- exprs(
 )
 
 adrs <- adrs %>%
-  mutate(MCRIT1 = ifelse(PARAMCD == "PDCA125", "PD  Category Group", NA_character_)) %>%
+  mutate(MCRIT1 = if_else(PARAMCD == "PDCA125", "PD Category Group", NA_character_)) %>%
   derive_vars_cat(
     definition = definition_mcrit,
     by_vars = exprs(PARAMCD)
@@ -492,7 +495,7 @@ If criterion to find PD category draws from multiple rows (different parameters 
 The function `admiral::derive_extreme_event()` can be used to derive the CA-125 Best Confirmed Overall Response Parameter.
 
 Some events such as `bor_cr`, `bor_pr` have been defined in {admiralonco}. Missing events specific to GCIG criteria are defined below.  
-**Note**: *For `SD`, it is not required as for RECIST1.1 that the response occurs after a protocol-defined number of days.*
+**Note**: *For `SD`, it is not required as for RECIST 1.1 that the response occurs after a protocol-defined number of days.*
 
 ```{r}
 ovr <- ovr_ca125
@@ -549,7 +552,7 @@ dataset_vignette(
 
 ## Combined Best Unconfirmed Overall Response {#combubor}
 
-For patients who are measurable by both RECIST1.1 and CA-125 the concept of Combined Best Overall Response is used. In our assumptions, RECIST1.1 response is unconfirmed, and the combined response from `RS` domain is based on that unconfirmed RECIST1.1.
+For patients who are measurable by both RECIST 1.1 and CA-125 the concept of Combined Best Overall Response is used. In our assumptions, RECIST 1.1 response is unconfirmed, and the combined response from `RS` domain is based on that unconfirmed RECIST 1.1.
 
 In this part of the vignette, we will derive Combined Best Unconfirmed Overall Response based on combined response (`PARAMCD = "OVRR11CA"`) as collected on the CRF.
 
@@ -600,8 +603,8 @@ Following table provides a summary of the `Confirmed RECIST 1.1 Overall Response
 
 ```{r echo=FALSE}
 list_resp <- tribble(
-  ~"RECIST1.1 response at 1st time point", ~"RECIST1.1 response at 2nd time point",
-  ~"Confirmed RECIST1.1 response at 1st time point",
+  ~"RECIST 1.1 response at 1st time point", ~"RECIST 1.1 response at 2nd time point",
+  ~"Confirmed RECIST 1.1 response at 1st time point",
   "CR", "CR", "CR",
   "CR", "PR/SD/PD", "PD",
   "CR", "NE", "NE",
@@ -617,7 +620,7 @@ knitr::kable(list_resp)
 In brief, the following steps are described below:
 
 1. Derive confirmed overall response based on the response from next consecutive assessment.
-2. Display a warning if responses used for confirmation are less than confirmed_period apart.
+2. Display a warning if responses used for confirmation are less than `confirmed_period` apart.
 3. Remove unnecessary variables, assign `AVAL`, `AVALC` and other parameter details.
 
 
@@ -690,11 +693,11 @@ dataset_vignette(
 
 Now that we have both components of the combined response as confirmed responses, we can derive the combined response and at a later step Combined Best Confirmed Overall Response parameter.
 
-Following table provides a summary of the `Combined Overall Response by Investigator (Confirmation of RECIST1.1 Reqired)` calculation at each time point as per GCIG guidelines.
+Following table provides a summary of the `Combined Overall Response by Investigator (Confirmation of RECIST 1.1 Required)` calculation at each time point as per GCIG guidelines.
 
 ```{r echo=FALSE}
 list_resp <- tribble(
-  ~"Confirmed RECIST1.1 response", ~"Confirmed CA-125 response", ~"Combined response",
+  ~"Confirmed RECIST 1.1 response", ~"Confirmed CA-125 response", ~"Combined response",
   "CR", "CR", "CR",
   "CR", "PR/SD/NE", "PR",
   "PR/SD/NE", "CR", "PR",
@@ -745,7 +748,7 @@ ovr_cbor <- ovr_cbor %>%
   # select(-OVRR11, -OVRCA125) %>%
   mutate(
     PARAMCD = "COVR11CA",
-    PARAM = "Combined Overall Response by Investigator (Confirmation of RECIST1.1 Reqired)",
+    PARAM = "Combined Overall Response by Investigator (Confirmation of RECIST 1.1 Required)",
     PARAMN = 8,
     PARCAT1 = "Combined",
     PARCAT1N = 3,
