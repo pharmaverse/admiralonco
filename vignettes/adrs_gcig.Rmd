@@ -381,14 +381,12 @@ CA-125 Response Evaluable Flag can easily be derived using `derive_var_merged_ex
 
 ```{r}
 adrs <- adrs %>%
-  rename(CA125EFL_ = CA125EFL)
-
-adrs <- adrs %>%
+  select(-CA125EFL) %>%
   derive_var_merged_exist_flag(
     dataset_add = adrs,
     by_vars = get_admiral_option("subject_keys"),
     new_var = CA125EFL,
-    condition = (CA125EFL_ == "Y")
+    condition = (CA125EFL == "Y")
   )
 ```
 
@@ -514,8 +512,6 @@ Some events such as `bor_cr`, `bor_pr` have been defined in {admiralonco}. Missi
 **Note**: *For `SD`, it is not required as for RECIST 1.1 that the response occurs after a protocol-defined number of days.*
 
 ```{r}
-ovr <- ovr_ca125
-
 bor_sd_gcig <- event(
   description = "Define stable disease (SD) for best overall response (BOR)",
   dataset_name = "ovr",
@@ -537,7 +533,7 @@ adrs <- adrs %>%
     order = exprs(event_nr, ADT),
     mode = "first",
     source_datasets = list(
-      ovr = ovr,
+      ovr = ovr_ca125,
       adsl = adsl
     ),
     events = list(
@@ -573,8 +569,6 @@ For patients who are measurable by both RECIST 1.1 and CA-125 the concept of Com
 In this part of the vignette, we will derive Combined Best Unconfirmed Overall Response based on combined response (`PARAMCD = "OVRR11CA"`) as collected on the CRF.
 
 ```{r}
-ovr <- ovr_ubor
-
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = get_admiral_option("subject_keys"),
@@ -582,7 +576,7 @@ adrs <- adrs %>%
     order = exprs(event_nr, ADT),
     mode = "first",
     source_datasets = list(
-      ovr = ovr,
+      ovr = ovr_ubor,
       adsl = adsl
     ),
     events = list(
