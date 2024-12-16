@@ -113,9 +113,10 @@ For this vignette we made assumptions that following information is collected on
     list_supp <- tibble::tribble(
       ~"QNAM", ~"QLABEL", ~"QVAL", ~"Purpose", ~"Use case",
       "`CA125EFL`", "CA-125 response evaluable", "Y/N", "Indicates population evaluable for CA-125 response (baseline CA-125 >= 2 * ULRR and no mouse antibodies)", "`CA125EFL` variable",
-      "`CA2XULRR`", "CA-125 pre-treatment 2x ULRR", "Y/N", "Indicates CA-125 level at baseline (Y - elevated, N - not elevated)", "Derivation of PD category (`MCRIT1`/`MCRIT1ML`/`MCRIT1MN`)",
+      "`CA2XULRR`", "CA-125 pre-treatment 2x ULRR", "Y", "Indicates CA-125 level at baseline (Y - >= 2 * ULRR)", "",
+      "`CAELEPRE`", "Elevated pre-treatment CA-125", "Y/N", "Indicates CA-125 level at baseline (Y - elevated, N - not elevated)", "Derivation of PD category (`MCRIT1`/`MCRIT1ML`/`MCRIT1MN`)",
       "`MOUSEANT`", "Received mouse antibodies", "Y", "Indicates if a prohibited therapy was received", "Derivation of `ANL02FL`",
-      "`CA50RED`", ">50% reduction from baseline", "Y", "Indicates response, but does not distinguish between CR and PR", "Not used in further derivations",
+      "`CA50RED`", ">=50% reduction from baseline", "Y", "Indicates response, but does not distinguish between CR and PR", "Not used in further derivations",
       "`CANORM2X`", "CA125 normal, lab increased >=2x ULRR", "Y", "Indicates PD category A or C", "Derivation of PD category (`MCRIT1`/`MCRIT1ML`/`MCRIT1MN`)",
       "`CNOTNORM`", "CA125 not norm, lab increased >=2x nadir", "Y", "Indicates PD category B", "Derivation of PD category (`MCRIT1`/`MCRIT1ML`/`MCRIT1MN`)"
 )
@@ -170,7 +171,6 @@ test data)---which are included in `{pharmaversesdtm}` and `{pharmaverseadam}`--
 ```{r message=FALSE}
 adsl <- pharmaverseadam::adsl
 # GCIG sdtm data
-devtools::install_git("https://github.com/pharmaverse/pharmaversesdtm/", ref = "123_rs_ca125")
 rs <- pharmaversesdtm::rs_onco_ca125
 supprs <- pharmaversesdtm::supprs_onco_ca125
 
@@ -181,11 +181,21 @@ rs <- convert_blanks_to_na(rs)
 ```{r, eval=TRUE, echo=FALSE}
 dataset_vignette(
   rs,
-  display_vars = exprs(USUBJID, RSTESTCD, RSCAT, RSSTRESC, VISIT, CA125EFL, CA2XULRR, CA50RED, CANORM2X, CNOTNORM, MOUSEANT)
+  display_vars = exprs(USUBJID, RSTESTCD, RSCAT, RSSTRESC, VISIT, CA125EFL, CA2XULRR, CAELEPRE, CA50RED, CANORM2X, CNOTNORM, MOUSEANT)
 )
 ```
 
 At this step, it may be useful to join `ADSL` to your `RS` domain. Only the `ADSL` variables used for derivations are selected at this step.
+
+```{r echo=FALSE}
+# select subjects from adsl such that there is one subject without RS data
+rs_subjects <- unique(rs$USUBJID)
+adsl_subjects <- unique(adsl$USUBJID)
+adsl <- filter(
+  adsl,
+  USUBJID %in% union(rs_subjects, setdiff(adsl_subjects, rs_subjects)[1])
+)
+```
 
 ```{r eval=TRUE}
 adsl_vars <- exprs(RANDDT, TRTSDT)
@@ -233,15 +243,14 @@ This lookup may now be joined to the source data and this is how the parameters 
 adrs <- derive_vars_merged_lookup(
   adrs,
   dataset_add = param_lookup,
-  new_vars = exprs(PARAMCD, PARAM, PARAMN, PARCAT1, PARCAT1N, PARCAT2, PARCAT2N),
   by_vars = exprs(RSCAT, RSTESTCD, RSEVAL)
-) %>%
-  arrange(!!!get_admiral_option("subject_keys"), PARAMN, RSSEQ)
+) 
 ```
 
 ```{r, echo=FALSE}
 dataset_vignette(
-  adrs,
+  adrs %>%
+    arrange(!!!get_admiral_option("subject_keys"), PARAMN, RSSEQ),
   display_vars = exprs(USUBJID, VISIT, RSCAT, RSTESTCD, RSEVAL, PARAMCD, PARAM, PARCAT1, PARCAT2)
 )
 ```
@@ -341,7 +350,13 @@ adrs <- adrs %>%
 
 To restrict response data up to and including first reported progressive disease `ANL02FL` flag could be created by using `{admiral}` function `admiral::derive_var_relative_flag()`.
 
-According to GCIG guidelines, assessments after patients have received mouse antibodies should not be considered.
+According to GCIG guidelines, assessments after patients received mouse antibodies 
+or if there has been medical and/or surgical interference with their peritoneum or pleura during the previous 28 days
+**should not be considered**.
+
+**Note**: In our vignette, we will use the variable `MOUSEANT`, which indicates whether mouse antibodies have been received. 
+The user can similarly include a variable that indicates whether there has been medical and/or surgical interference 
+with the patient's peritoneum or pleura in the past 28 days.
 
 ```{r}
 adrs <- adrs %>%
@@ -360,6 +375,7 @@ adrs <- adrs %>%
 
 Patients can only be evaluable for a CA-125 response if they have pre-treatment sample that is at least twice the
 upper limit of the reference range and within 2 weeks before starting the treatment. 
+In our case, this information is collected only for CA-125 records while a flag is needed at the patient level.
 
 CA-125 Response Evaluable Flag can easily be derived using `derive_var_merged_exist_flag()` function.
 
@@ -432,15 +448,15 @@ adrs <- adrs %>%
       ANL01FL = "Y",
       ANL02FL = "Y"
     )
-  ) %>%
-  arrange(!!!get_admiral_option("subject_keys"), PARAMN, ADT)
+  ) 
 ```
 
 ```{r, echo=FALSE}
 dataset_vignette(
-  adrs,
+  adrs %>%
+    arrange(!!!get_admiral_option("subject_keys"), PARAMN, ADT),
   display_vars = exprs(USUBJID, PARAMCD, AVISIT, ADT, AVALC),
-  filter = (PARAMCD == "PDCA125" & !is.na(AVALC))
+  filter = PARAMCD == "PDCA125"
 )
 ```
 
@@ -458,11 +474,11 @@ For this purpose `{admiral}` provides [`derive_vars_cat()`](https://pharmaverse.
 definition_mcrit <- exprs(
   ~PARAMCD, ~condition,
   ~MCRIT1ML, ~MCRIT1MN,
-  "PDCA125", CA2XULRR == "Y" & CANORM2X == "Y",
+  "PDCA125", CAELEPRE == "Y" & CANORM2X == "Y",
   "Patients with elevated CA-125 before treatment and normalization of CA-125 (A)", 1,
-  "PDCA125", CA2XULRR == "Y" & CNOTNORM == "Y",
+  "PDCA125", CAELEPRE == "Y" & CNOTNORM == "Y",
   "Patients with elevated CA-125 before treatment, which never normalizes (B)", 2,
-  "PDCA125", CA2XULRR == "N" & CANORM2X == "Y",
+  "PDCA125", CAELEPRE == "N" & CANORM2X == "Y",
   "Patients with CA-125 in the reference range before treatment (C)", 3
 )
 
@@ -478,7 +494,7 @@ adrs <- adrs %>%
 dataset_vignette(
   adrs,
   display_vars = exprs(USUBJID, PARAMCD, AVISIT, ADT, AVALC, MCRIT1, MCRIT1ML, MCRIT1MN),
-  filter = (PARAMCD == "PDCA125" & !is.na(AVALC))
+  filter = PARAMCD == "PDCA125"
 )
 ```
 
@@ -546,7 +562,7 @@ adrs <- adrs %>%
 dataset_vignette(
   adrs,
   display_vars = exprs(USUBJID, AVISIT, PARAMCD, AVALC, ADT),
-  filter = PARAMCD == "CBORCA" & AVALC != "MISSING"
+  filter = PARAMCD == "CBORCA"
 )
 ```
 
@@ -591,7 +607,7 @@ adrs <- adrs %>%
 dataset_vignette(
   adrs,
   display_vars = exprs(USUBJID, AVISIT, PARAMCD, AVALC, ADT),
-  filter = PARAMCD == "BORCA11" & AVALC != "MISSING"
+  filter = PARAMCD == "BORCA11"
 )
 ```
 
@@ -685,7 +701,7 @@ adrs <- bind_rows(adrs, covr_r11)
 dataset_vignette(
   adrs,
   display_vars = exprs(USUBJID, AVISIT, PARAMCD, AVALC, ADT),
-  filter = PARAMCD == "COVRR11" & AVALC != "MISSING"
+  filter = PARAMCD == "COVRR11"
 )
 ```
 
@@ -764,7 +780,7 @@ adrs <- bind_rows(adrs, ovr_cbor)
 dataset_vignette(
   adrs,
   display_vars = exprs(USUBJID, AVISIT, PARAMCD, AVALC, ADT),
-  filter = PARAMCD == "COVR11CA" & AVALC != "MISSING"
+  filter = PARAMCD == "COVR11CA"
 )
 ```
 
@@ -805,7 +821,7 @@ adrs <- adrs %>%
 dataset_vignette(
   adrs,
   display_vars = exprs(USUBJID, AVISIT, PARAMCD, AVALC, ADT),
-  filter = PARAMCD == "CBORCA11" & AVALC != "MISSING"
+  filter = PARAMCD == "CBORCA11"
 )
 ```
 
