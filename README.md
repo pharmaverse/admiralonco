@@ -1,8 +1,7 @@
 # admiralonco <img src="man/figures/logo.png" align="right" width="200" style="margin-left:50px;"/>
 
 <!-- badges: start -->
-
-[<img src="http://pharmaverse.org/shields/admiralonco.svg">](https://pharmaverse.org)
+[![pharmaverse admiralonco badge](http://pharmaverse.org/shields/admiralonco.svg)](https://pharmaverse.org)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/admiralonco)](https://CRAN.R-project.org/package=admiralonco)
 <!-- badges: end -->
