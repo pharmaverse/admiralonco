@@ -240,7 +240,7 @@ adrs <- derive_vars_merged_lookup(
   adrs,
   dataset_add = param_lookup,
   by_vars = exprs(RSCAT, RSTESTCD, RSEVAL)
-) 
+)
 ```
 
 ```{r, echo=FALSE}
@@ -442,7 +442,7 @@ adrs <- adrs %>%
       ANL01FL = "Y",
       ANL02FL = "Y"
     )
-  ) 
+  )
 ```
 
 ```{r, echo=FALSE}
