@@ -23,13 +23,15 @@ This article describes creating an `ADRS` ADaM with common oncology endpoint
 parameters based on RECIST v1.1. Therefore response values are expected as
 either `CR`, `PR`, `SD`, `NON-CR/NON-PD`, `PD` or `NE`.
 
-The case that `CR` is followed by `PR` (or `SD`) is considered as a data issue
-and the derivations of the parameters don't handle this case specially. The
-`{admiralonco}` functions don't provide functionality to handle this case. It is
-recommended to fix the issue in the source data, e.g., by changing the `PR` to
-`PD` rather than handling it in the parameter derivations. This ensures
-consistency across parameters. The functions `derive_param_confirmed_bor()` and
-`derive_param_confirmed_resp()` issue a warning if `CR` is followed by `PR`.
+For confirmation of response particularly, `CR`, the case that `CR` is followed
+by `PR` (or `SD`) is considered as a data issue and the derivations of the
+parameters don't handle this case specially. The `{admiralonco}` functions don't
+provide functionality to handle this case. It is recommended to fix the issue in
+the source data, e.g., by changing the `PR` to `PD` rather than handling it in
+the parameter derivations. This ensures consistency across parameters. The
+functions `derive_param_confirmed_bor()` and `derive_param_confirmed_resp()`
+issue a warning if `CR` is followed by `PR` (the warning does not display if
+`CR` is followed by `SD`).
 
 Please note that this vignette describes the endpoints which were considered by
 the admiralonco team as the most common ones. The admiralonco functions used to
