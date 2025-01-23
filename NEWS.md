@@ -1,3 +1,9 @@
+# admiralonco (development version)
+
+## Documentation
+
+- New vignette "Creating ADRS with GCIG Criteria". (#294)
+
 # admiralonco 1.1.0
 
 ## Documentation
