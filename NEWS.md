@@ -8,6 +8,8 @@
 Non-standard Endpoints)" were updated to describe how the case `CR` followed by
 `PR` is handled. (#276)
 
+- The documentation of the time-to-event source objects was fixed. (#293)
+
 # admiralonco 1.1.0
 
 ## Documentation
