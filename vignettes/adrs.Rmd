@@ -30,6 +30,15 @@ implementing other response criteria than RECIST 1.1, e.g., iRECIST or
 International Myeloma Working Group (IMWG) criteria for the diagnosis of
 multiple myeloma.
 
+For confirmation of response particularly, `CR`, the case that `CR` is followed
+by `PR` (or `SD`) is considered as a data issue and the derivations of the
+parameters don't handle this case specially. It is recommended to fix the issue
+in the source data, e.g., by changing the `PR` to `PD` rather than handling it
+in the parameter derivations. This ensures consistency across parameters.
+However, `admiral::derive_extreme_event()` is so flexible that it is possible to
+handle it in the parameter derivations, for example, by redefining the `bor_pr`
+event and adding an additional `PD` event.
+
 Examples are currently presented and tested using `ADSL` (ADaM) and
 `RS`, `TU` (SDTM) inputs. However, other domains could be used. The
 functions and workflow could similarly be used to create an intermediary
