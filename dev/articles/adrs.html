@@ -105,6 +105,17 @@ the examples in this vignette can also be used as a starting point for
 implementing other response criteria than RECIST 1.1, e.g., iRECIST or
 International Myeloma Working Group (IMWG) criteria for the diagnosis of
 multiple myeloma.</p>
+<p>For confirmation of response particularly, <code>CR</code>, the case
+that <code>CR</code> is followed by <code>PR</code> (or <code>SD</code>)
+is considered as a data issue and the derivations of the parameters
+don’t handle this case specially. It is recommended to fix the issue in
+the source data, e.g., by changing the <code>PR</code> to
+<code>PD</code> rather than handling it in the parameter derivations.
+This ensures consistency across parameters. However,
+<code><a href="https://pharmaverse.github.io/admiral/reference/derive_extreme_event.html" class="external-link">admiral::derive_extreme_event()</a></code> is so flexible that it is
+possible to handle it in the parameter derivations, for example, by
+redefining the <code>bor_pr</code> event and adding an additional
+<code>PD</code> event.</p>
 <p>Examples are currently presented and tested using <code>ADSL</code>
 (ADaM) and <code>RS</code>, <code>TU</code> (SDTM) inputs. However,
 other domains could be used. The functions and workflow could similarly

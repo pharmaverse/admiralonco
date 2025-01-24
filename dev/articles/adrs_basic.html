@@ -99,6 +99,18 @@ oncology endpoint parameters based on RECIST v1.1. Therefore response
 values are expected as either <code>CR</code>, <code>PR</code>,
 <code>SD</code>, <code>NON-CR/NON-PD</code>, <code>PD</code> or
 <code>NE</code>.</p>
+<p>For confirmation of response particularly, <code>CR</code>, the case
+that <code>CR</code> is followed by <code>PR</code> (or <code>SD</code>)
+is considered as a data issue and the derivations of the parameters
+don’t handle this case specially. The <a href="https://pharmaverse.github.io/admiralonco/">admiralonco</a>
+functions don’t provide functionality to handle this case. It is
+recommended to fix the issue in the source data, e.g., by changing the
+<code>PR</code> to <code>PD</code> rather than handling it in the
+parameter derivations. This ensures consistency across parameters. The
+functions <code><a href="../reference/derive_param_confirmed_bor.html">derive_param_confirmed_bor()</a></code> and
+<code><a href="../reference/derive_param_confirmed_resp.html">derive_param_confirmed_resp()</a></code> issue a warning if
+<code>CR</code> is followed by <code>PR</code> (the warning does not
+display if <code>CR</code> is followed by <code>SD</code>).</p>
 <p>Please note that this vignette describes the endpoints which were
 considered by the admiralonco team as the most common ones. The
 admiralonco functions used to derive these endpoints provide a certain
@@ -398,7 +410,12 @@ newly derived <code>PD</code> date.</p>
 <span>  dataset_name <span class="op">=</span> <span class="st">"adrs"</span>,</span>
 <span>  date <span class="op">=</span> <span class="va">ADT</span>,</span>
 <span>  filter <span class="op">=</span> <span class="va">PARAMCD</span> <span class="op">==</span> <span class="st">"PD"</span> <span class="op">&amp;</span> <span class="va">AVALC</span> <span class="op">==</span> <span class="st">"Y"</span></span>
-<span><span class="op">)</span></span></code></pre></div>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; `date_source()` was deprecated in admiral 1.2.0.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> Please use `event()` instead.</span></span>
+<span><span class="co">#&gt; <span style="color: #BB0000;">✖</span> This message will turn into a warning at the beginning of 2026.</span></span>
+<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> See admiral's deprecation guidance:</span></span>
+<span><span class="co">#&gt;   https://pharmaverse.github.io/admiraldev/dev/articles/programming_strategy.html#deprecation</span></span></code></pre></div>
 <p>An equivalent example if using <code>ADSL</code> instead could be as
 follows (where <code>PDDT</code> would be pre-derived as first date of
 progressive disease).</p>
