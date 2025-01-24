@@ -4,6 +4,10 @@
 
 - New vignette "Creating ADRS with GCIG Criteria". (#294)
 
+- The vignettes "Creating a Basic ADRS" and "Creating ADRS (Including
+Non-standard Endpoints)" were updated to describe how the case `CR` followed by
+`PR` is handled. (#276)
+
 # admiralonco 1.1.0
 
 ## Documentation
