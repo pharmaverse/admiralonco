@@ -38,7 +38,7 @@ and appropriate values for \code{EVNTDESC}, \code{CNSDTDSC}, \code{SRCDOM}, \cod
 # with {admiralonco}
 for (obj in admiral::list_tte_source_objects(package = "admiralonco")$object) {
   cat(obj, "\n")
-  print(get(obj))
+  print(get(obj, envir = getNamespace("admiralonco")))
   cat("\n")
 }
 }

@@ -27,7 +27,7 @@
 #' # with {admiralonco}
 #' for (obj in admiral::list_tte_source_objects(package = "admiralonco")$object) {
 #'   cat(obj, "\n")
-#'   print(get(obj))
+#'   print(get(obj, envir = getNamespace("admiralonco")))
 #'   cat("\n")
 #' }
 death_event <- event_source(
