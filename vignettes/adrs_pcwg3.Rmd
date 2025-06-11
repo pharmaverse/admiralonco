@@ -18,7 +18,7 @@ This article describes creating an `ADRS` ADaM dataset for prostate cancer studi
 
 Note that only the PCWG3-specific steps are covered in this vignette. For extended guidance on all steps in ADRS creation, refer to the examples in [Creating ADRS (Including Non-standard Endpoints)](adrs.html).
 
-Metastatic prostate cancer progression often includes measurements not fully captured by RECIST 1.1 criteria alone. Therefore, the PCWG3 guidelines extend these criteria to include **bone metastases progression**, **PSA progression**, and composite measures combining RECIST 1.1 and PCWG3 rules.
+Metastatic prostate cancer progression often includes measurements not fully captured by RECIST 1.1 criteria alone. Therefore, the PCWG3 guidelines extend these criteria to include composite measures combining RECIST 1.1 and PCWG3 rules.
 
 
 # Introduction
@@ -55,6 +55,7 @@ The examples of this vignette require the following packages.
 ```{r, warning=FALSE, message=FALSE}
 library(admiral)
 library(admiralonco)
+library(admiraldev)
 library(pharmaversesdtm)
 library(pharmaverseadam)
 library(metatools)
@@ -80,12 +81,14 @@ To start, all data frames needed for the creation of `ADRS` should be read into 
             
  For example purpose, the SDTM and ADaM datasets (based on CDISC Pilot test data)---which are included in `{pharmaversesdtm}` and `{pharmaverseadam}`---are used.
               
-The dataset `rs_onco_pcwg3` is expected to already be available, containing soft tissue (`RECIST 1.1`), PSA progression, and bone lesion details. This vignette assumes the full dataset is preprocessed and ready for analysis.
+The dataset `rs_onco_pcwg3` is expected to already be available, containing soft tissue (`RECIST 1.1`) bone response etc. This vignette assumes the full dataset is preprocessed and ready for analysis.
             
 ```{r message=FALSE}
 adsl <- pharmaverseadam::adsl
 
 # PCWG3 sdtm data
+#rs <- pharmaversesdtm::rs_onco_pcwg3
+
 rs <- rs_onco_pcwg3
 rs <- convert_blanks_to_na(rs)
 ```
@@ -93,7 +96,7 @@ rs <- convert_blanks_to_na(rs)
 ```{r, eval=TRUE, echo=FALSE}
 dataset_vignette(
   rs,
-   display_vars = exprs(USUBJID, RSTESTCD, RSSTRESC, VISIT, RSDTC)
+   display_vars = exprs(USUBJID, RSTESTCD, RSSTRESC, VISIT,VISITNUM,RSDTC)
 )
 ```
 
@@ -268,7 +271,7 @@ dataset_vignette(
 )
 ```
 
-### Partial Date Imputation and Deriving `ADT`, `ADTF`, `AVISIT` etc.
+### Partial Date Imputation and Deriving `ADT`, `ADTF`, `AVISIT`, `AVISITN` etc.
 
 If your data collection allows for partial dates, you could apply a company-specific imputation rule at this stage when deriving `ADT`. For this example, here we impute missing day to last possible date.
 
@@ -291,13 +294,26 @@ adrs <- adrs %>%
     date_imputation = "last",
     flag_imputation = "time"
   ) %>%
-  mutate(AVISIT = VISIT)
+  mutate(AVISIT = VISIT,
+         AVISITN=VISITNUM)
+```
+
+#Derive ASEQ
+```{r}
+
+adrs <- derive_var_obs_number(
+  dataset = adrs,
+  by_vars = exprs(STUDYID, USUBJID),
+  order = exprs(PARAMCD, AVISITN,ADT,AVALC),
+  new_var = ASEQ
+)
+
 ```
 
 ```{r, echo=FALSE}
 dataset_vignette(
   adrs,
-  display_vars = exprs(USUBJID, PARAMCD, VISIT, AVISIT, RSDTC, ADT, ADTF, ADY)
+  display_vars = exprs(USUBJID, PARAMCD, ASEQ, AVISIT,AVISITN,ADT)
 )
 ```
 ###Bone Lesion Confirmation (`The 2+2 flare Rule in PCWG3`)
@@ -318,14 +334,14 @@ By requiring confirmation through a second scan, the 2+2 rule avoids misinterpre
 # Define Events 
 bor_cr <- event(
   description = "Complete Response (CR) for Best Overall Response",
-  dataset_name = "adrs",  # Reference your dataset explicitly
-  condition = AVALC == "CR",  # Complete Response condition
+  dataset_name = "adrs",  
+  condition = AVALC == "CR", 
   set_values_to = exprs(AVALC = "CR")
 )
 
 bor_pr <- event(
   description = "Partial Response (PR) for Best Overall Response",
-  dataset_name = "adrs",  # Reference `adrs` for Partial Response
+  dataset_name = "adrs", 
   condition = AVALC == "PR",
   set_values_to = exprs(AVALC = "PR")
 )
@@ -352,10 +368,9 @@ bor_ne <- event(
 )
 
 
-
-
 ```
 #Derive Unconfirmed BOR (UBOR)
+
 Use the defined events to derive UBOR based on the first occurrence in the adrs dataset, 
 prioritizing responses hierarchically (CR > PR > SD > PD > NE).In this part of the vignette, we will derive Combined Best Unconfirmed Overall Response based on combined response (PARAMCD = "OVRLRESPC") as Derived above.
 
@@ -363,19 +378,19 @@ prioritizing responses hierarchically (CR > PR > SD > PD > NE).In this part of t
 ```{r, eval=TRUE, include=TRUE, message=FALSE}
 adrs <- adrs %>%
   derive_extreme_event(
-    by_vars = exprs(USUBJID),    # Derive UBOR per subject
-    order = exprs(PARAMCD == "OVRLRESPC",ADT,RSSEQ),  # Sort by overall response and chronological date
-    mode = "first",              # Select first occurrence for UBOR
+    by_vars = exprs(USUBJID),                                # Derive UBOR per subject
+    order = exprs(PARAMCD == "OVRLRESPC",ASEQ,AVISITN,ADT),  # Sort by overall response and chronological date
+    mode = "first",                                          # Select first occurrence for UBOR
     source_datasets = list(
-      adrs = adrs  # Reference your dataset directly
+      adrs = adrs 
     ),
     events = list(
       bor_cr, bor_pr, bor_sd, bor_pd, bor_ne  # Event list defined above
     ),
     set_values_to = exprs(
-      PARAMCD = "UBOR",  # Parameter code for UBOR
-      PARAM = "Unconfirmed Best Overall Response by Investigator",  # Parameter name for UBOR
-      PARAMN = 10        # Parameter hierarchy
+      PARAMCD = "UBOR", 
+      PARAM = "Unconfirmed Best Overall Response by Investigator", 
+      PARAMN = 10       
     )
   )
 ```
@@ -383,19 +398,13 @@ adrs <- adrs %>%
 dataset_vignette(
   adrs%>%
     filter(PARAMCD== "UBOR"),
-  display_vars = exprs(USUBJID, PARAMCD, VISIT, AVISIT, RSDTC, ADT, ADY,AVALC,AVAL)
+  display_vars = exprs(USUBJID, PARAMCD, VISIT, AVISIT, AVISITN, ADT, ADY,AVALC,AVAL)
 )
 ```
 
-
-```{r, eval=TRUE, include=TRUE, message=FALSE}
-
-
-```  
-
 #Derive Confirmed BOR (CBOR)
 
-Both RECIST 1.1 and PCWG3 prescribe the use of a 28-day confirmation period for responses like Complete Response (CR) or Partial Response (PR)
+For Confirmation ,both RECIST 1.1 and PCWG3 Guidelines Suggests the use of a 28-day confirmation period for responses like Complete Response (CR) or Partial Response (PR).
 
 ```{r, eval=TRUE, include=TRUE, message=FALSE}
 cbor_cr <- event(
@@ -417,17 +426,17 @@ cbor_pr <- event(
 
 ```{r, eval=TRUE, include=TRUE, message=FALSE}
 adrs <- adrs %>%
-  arrange(USUBJID, ADT) %>% # Ensure data is sorted chronologically within subject
+  arrange(USUBJID,AVISITN,ADT) %>%   # Ensure data is sorted chronologically within subject
   derive_extreme_event(
-    by_vars = exprs(USUBJID),             # Calculate CBOR per subject
-    order = exprs(ADT,RSSEQ),                   # Chronological ordering using ADT
+    by_vars = exprs(USUBJID),             
+    order = exprs(ADT,ASEQ),              
     mode = "first",                       # Select the first occurrence for CBOR
-    source_datasets = list(adrs = adrs),  # Reference the `adrs` dataset containing the AVALC responses
-    events = list(cbor_cr, cbor_pr),  # Defined CBOR-related events
+    source_datasets = list(adrs = adrs),  
+    events = list(cbor_cr, cbor_pr),  
     set_values_to = exprs(
-      PARAMCD = "CBOR",  # Parameter code for CBOR
-      PARAM = "Confirmed Best Overall Response by Investigator",  # Parameter name for CBOR
-      PARAMN = 11        # Parameter hierarchy number
+      PARAMCD = "CBOR", 
+      PARAM = "Confirmed Best Overall Response by Investigator", 
+      PARAMN = 11  
     )
   )
 ```
@@ -436,7 +445,7 @@ adrs <- adrs %>%
 dataset_vignette(
   adrs%>%
     filter(PARAMCD== "CBOR"),
-  display_vars = exprs(USUBJID, PARAMCD, VISIT, AVISIT, RSDTC, ADT, ADY,AVALC,AVAL)
+  display_vars = exprs(USUBJID, PARAMCD,ASEQ,AVISIT,AVISITN,ADT,ADY,AVALC,AVAL)
 )
 ```
 
