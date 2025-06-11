@@ -1,0 +1,445 @@
+---
+title: "Creating ADRS Using PCWG3 Guidelines"
+output: 
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Creating ADRS with GCIG Criteria}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+This article describes creating an `ADRS` ADaM dataset for prostate cancer studies based on **Prostate Cancer Working Group 3 (PCWG3)** criteria. 
+
+Note that only the PCWG3-specific steps are covered in this vignette. For extended guidance on all steps in ADRS creation, refer to the examples in [Creating ADRS (Including Non-standard Endpoints)](adrs.html).
+
+Metastatic prostate cancer progression often includes measurements not fully captured by RECIST 1.1 criteria alone. Therefore, the PCWG3 guidelines extend these criteria to include **bone metastases progression**, **PSA progression**, and composite measures combining RECIST 1.1 and PCWG3 rules.
+
+
+# Introduction
+
+#PCWG3 Guidelines for Prostate Cancer Progression
+
+**Response Categories Based on PCWG3 Guidelines Ordered from Best to Worst:**
+1. **Complete Response (CR)**  
+- Disappearance of all known lesions.  
+- No new lesions.  
+- PSA normalized.  
+
+2. **Partial Response (PR)**  
+- ≥30% reduction in soft tissue targets.  
+- ≥50% PSA decline from baseline.  
+
+3. **Stable Disease (SD)**  
+- Neither sufficient shrinkage to qualify for PR nor sufficient progression to qualify for PD. Indicates no significant change i.e      Insufficient change for CR, PR, or PD.  
+
+4. **Progressive Disease (PD)**  
+- Appearance of ≥2 new lesions confirmed on subsequent imaging scans (2+2 flare rule).  
+- ≥25% PSA increase from nadir with an absolute increase of ≥2 ng/mL.  
+
+5. **Not Evaluable (NE)**  
+- Insufficient data for evaluation.  
+
+This ordering reflects both RECIST 1.1 and PCWG3 priority interpretations for clinical analysis and 
+this vignette demonstrates how to derive key analysis-ready parameters from response criteria.
+
+# Required Packages
+
+The examples of this vignette require the following packages.
+
+```{r, warning=FALSE, message=FALSE}
+library(admiral)
+library(admiralonco)
+library(pharmaversesdtm)
+library(pharmaverseadam)
+library(metatools)
+library(dplyr)
+library(tibble)
+library(gt)
+```
+
+
+# Programming Workflow
+  
+-   [Read in Data](#readdata)
+-   [Pre-processing of Input Records](#input)
+-   [Soft Tissue and Bone Lesion Responses](#assessments)
+-   [Bone Lesion Confirmation (`2+2 Flare Rule`)](#boneconfirmation)
+-   [Unconfirmed BOR](#ubor)
+-   [Confirmed BOR](#cbor)
+            
+              
+## Read in Data {#readdata}
+
+To start, all data frames needed for the creation of `ADRS` should be read into the environment. This will be a company specific process. Some of the data frames needed are `ADSL` and `RS`.
+            
+ For example purpose, the SDTM and ADaM datasets (based on CDISC Pilot test data)---which are included in `{pharmaversesdtm}` and `{pharmaverseadam}`---are used.
+              
+The dataset `rs_onco_pcwg3` is expected to already be available, containing soft tissue (`RECIST 1.1`), PSA progression, and bone lesion details. This vignette assumes the full dataset is preprocessed and ready for analysis.
+            
+```{r message=FALSE}
+adsl <- pharmaverseadam::adsl
+
+# PCWG3 sdtm data
+rs <- rs_onco_pcwg3
+rs <- convert_blanks_to_na(rs)
+```
+
+```{r, eval=TRUE, echo=FALSE}
+dataset_vignette(
+  rs,
+   display_vars = exprs(USUBJID, RSTESTCD, RSSTRESC, VISIT, RSDTC)
+)
+```
+
+At this step, it may be useful to join `ADSL` to your `RS` domain. Only the `ADSL` variables used for derivations are selected 
+at this step.
+
+```{r eval=TRUE}
+adsl_vars <- exprs(RANDDT, TRTSDT)
+adrs <- derive_vars_merged(
+  rs,
+  dataset_add = adsl,
+  new_vars = adsl_vars,
+  by_vars = get_admiral_option("subject_keys")
+)
+```
+
+## Pre-processing of Input Records {#input}
+
+The next step is to assign parameter level values such as PARAMCD, PARAM,PARAMN, PARCAT1, etc. 
+For this, a lookup can be created based on the SDTM RSCAT, RSTESTCD and RSEVAL values to join to the source data.
+
+```{r, eval=TRUE, include=TRUE, message=FALSE}
+param_lookup <- tribble(
+  ~RSCAT, ~RSTESTCD, ~PARAMCD, ~PARAM, ~PARAMN, ~PARCAT1, ~PARCAT1N,
+  
+  # Soft Tissue Response (RECIST 1.1)
+  "RECIST 1.1", "SFTSRESP", "SFTSRESP", "Soft Tissue Response by Investigator", 1, "RECIST 1.1", 1,
+  
+  # Bone Response (PCWG3)
+  "PCWG SCHER PROSTATE CANCER 2016", "BONERESP", "BONERESP", "Bone Response by Investigator", 2, "PCWG3", 2,
+  
+  # Combined Overall Tumor Response
+  "PCWG3 and RECIST 1.1 Modified", "OVRLRESPC", "OVRLRESPC", "Combined Overall Tumor Response by Investigator-Derived", 3, "PCWG3 and RECIST 1.1 Modified", 3,
+  
+  # Tumor Marker Response (PCWG3)
+  "PCWG SCHER PROSTATE CANCER 2016", "TMRESP", "TMRESP", "Tumor Marker Response by Investigator", 4, "PCWG3", 4,
+  
+  # Overall Tumor Response (PCWG3)
+  "PCWG SCHER PROSTATE CANCER 2016", "OVRLRESP", "OVRLRESP", "Overall Tumor Response by Investigator CRF", 5, "PCWG3 Collected", 5
+)
+
+```  
+
+### Table : Overall Time Point Response
+
+```{r, eval=TRUE, include=TRUE, message=FALSE}
+
+
+overall_tpr_table <- tribble(
+  ~`Soft Tissue (RECIST 1.1) TPR`, ~`Bone Lesion (PCWG3) TPR`, ~`Overall PCWG TPR`,
+  "PD", "Any", "PD",
+  "Any", "PD", "PD",
+  "NE", "Non-PD, PDu, NED, or NE", "NE",
+  "NED", "Non-PD", "Non-CR/Non-PD",
+  "NED", "PDu", "PDu",
+  "NED", "NED", "NE",
+  "NED", "NE", "NE",
+  "SD", "Non-PD, PDu, NED, or NE", "SD",
+  "Non-CR/Non-PD", "Non-PD, PDu, NED, or NE", "Non-CR/Non-PD",
+  "PR", "Non-PD, PDu, NED, or NE", "PR",
+  "CR", "Non-PD, PDu, or NE", "PR (1)",
+  "CR", "NED", "CR"
+)
+
+# Render Colorful Table with Fixed Footnotes
+overall_tpr_table %>%
+  gt() %>%
+  tab_header(
+    title = "Table 1: Overall Time Point Response",
+    subtitle = "Soft Tissue (RECIST 1.1) TPR, Bone Lesion (PCWG3) TPR, and PCWG Combined TPR"
+  ) %>%
+  cols_label(
+    `Soft Tissue (RECIST 1.1) TPR` = "Soft Tissue (RECIST 1.1)",
+    `Bone Lesion (PCWG3) TPR` = "Bone Lesion (PCWG3)",
+    `Overall PCWG TPR` = "Overall PCWG"
+  ) %>%
+  tab_footnote(
+    footnote = "When no target and non-target lesions are identified at baseline, and no new lesions are identified on-study, the response will be No Evidence of Disease (NED).",
+    locations = cells_column_labels(columns = `Overall PCWG TPR`)  # Correct column name
+  ) %>%
+  tab_footnote(
+    footnote = "Progressive Disease Unconfirmed (PDu): Temporary marker of possible PD where at least 2 new bone lesions are present, but an additional scan is required for confirmation.",
+    locations = cells_column_labels(columns = `Bone Lesion (PCWG3) TPR`)  # Correct column name
+  ) %>%
+  tab_footnote(
+    footnote = "(1) The overall TPR will be PR if target lesions were present at screening.",
+    locations = cells_body(columns = `Overall PCWG TPR`, rows = 11)  # Correct column name
+  ) %>%
+  tab_footnote(
+    footnote = "(2) The overall TPR will be Non-CR/Non-PD if no target lesions were present at screening.",
+    locations = cells_body(columns = `Overall PCWG TPR`, rows = 12)  # Correct column name
+  )
+```
+
+
+
+### Derive Combined Overall Response Records per PCWG3 Guidelines as per above table.
+
+
+```{r, eval=TRUE, include=TRUE, message=FALSE}
+soft_tpr <- adrs %>%
+  filter(RSTESTCD == "SFTSRESP") %>%
+  mutate(AVALC = RSSTRESC
+  )
+  
+``` 
+
+```{r, eval=TRUE, include=TRUE, message=FALSE}
+bone_tpr <- adrs %>%
+  filter(RSTESTCD == "BONERESP") %>%
+  mutate(AVALC = RSSTRESC
+  )
+```  
+
+```{r, eval=TRUE, include=TRUE, message=FALSE}
+overall_tpr <- soft_tpr %>%
+  full_join(
+    bone_tpr %>% select(USUBJID, VISIT, BONE_AVALC = AVALC),
+    by = c("USUBJID", "VISIT")
+  ) %>%
+  mutate(
+    AVALC = case_when(
+      AVALC == "PD" | BONE_AVALC == "PD" ~ "PD",      # Progressive Disease
+      AVALC == "CR" & BONE_AVALC == "NED" ~ "CR",     # Complete Response
+      AVALC == "PR" & BONE_AVALC %in% c("NON-PD", "PDu") ~ "PR",  # Partial Response
+      AVALC == "SD" & BONE_AVALC %in% c("NON-PD", "PDu", "NED") ~ "SD",  # Stable Disease
+      AVALC %in% c("NE") & BONE_AVALC %in% c("NE") ~ "NE",        # Not Evaluable
+      TRUE ~ NA_character_
+    ),
+    RSCAT="PCWG3 and RECIST 1.1 Modified",
+    RSTESTCD="OVRLRESPC",
+    RSTEST="Combined Overall Tumor Response by Investigator-Derived",
+    RSSTRESC=AVALC
+
+  ) %>%
+  derive_vars_merged_lookup(
+    dataset_add = param_lookup,
+    by_vars = exprs(RSCAT, RSTESTCD)  # Match on RSCAT and RSTESTCD
+  )
+
+```
+
+#Append  overall_tpr as rows into the primary analysis dataset adrs
+```{r, eval=TRUE, include=TRUE, message=FALSE}
+adrs <- bind_rows(
+  adrs %>% mutate(AVALC=RSSTRESC) %>%
+    derive_vars_merged_lookup(
+      dataset_add = param_lookup,
+      by_vars = exprs(RSCAT, RSTESTCD)  # Match on RSCAT and RSTESTCD
+    ),
+  overall_tpr %>% select(everything())  # Keep all variables
+)
+```
+
+### Derive `AVAL`
+
+Since the Prostate Cancer Working Group 3 (PCWG3) guidelines align closely with RECIST 1.1 categories for evaluating soft tissue, bone lesions, and overall disease progression, we can use the admiralonco::aval_resp() function to assign AVAL (numeric values ordered from best to worst response)
+
+
+```{r}
+adrs <- adrs %>%
+  mutate(
+    AVAL = aval_resp(AVALC)
+  )
+```
+
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs %>%
+    arrange(!!!get_admiral_option("subject_keys"), PARAMN, RSSEQ),
+  display_vars = exprs(USUBJID, VISIT, RSCAT, RSTESTCD, RSEVAL, PARAMCD, PARAM, PARCAT1,AVALC,AVAL)
+)
+```
+
+### Partial Date Imputation and Deriving `ADT`, `ADTF`, `AVISIT` etc.
+
+If your data collection allows for partial dates, you could apply a company-specific imputation rule at this stage when deriving `ADT`. For this example, here we impute missing day to last possible date.
+
+```{r}
+adrs <- adrs %>%
+  derive_vars_dt(
+    dtc = RSDTC,
+    new_vars_prefix = "A",
+    highest_imputation = "D",
+    date_imputation = "last"
+  ) %>%
+  derive_vars_dy(
+    reference_date = TRTSDT,
+    source_vars = exprs(ADT)
+  ) %>%
+  derive_vars_dtm(
+    dtc = RSDTC,
+    new_vars_prefix = "A",
+    highest_imputation = "D",
+    date_imputation = "last",
+    flag_imputation = "time"
+  ) %>%
+  mutate(AVISIT = VISIT)
+```
+
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = exprs(USUBJID, PARAMCD, VISIT, AVISIT, RSDTC, ADT, ADTF, ADY)
+)
+```
+###Bone Lesion Confirmation (`The 2+2 flare Rule in PCWG3`)
+
+The "2+2 rule" is a critical concept used to assess disease progression in metastatic prostate cancer, particularly when evaluating bone scans. It helps differentiate true progression from a temporary treatment-related flare reaction.
+
+#Under the 2+2 rule:
+
+If 2 or more new lesions appear on a bone scan after starting treatment, this might suggest disease progression—but these lesions could also result from a flare reaction, a temporary effect caused by the treatment.
+
+To confirm progression, a follow-up scan must show 2 additional new lesions. Only then is progression definitively confirmed.
+
+By requiring confirmation through a second scan, the 2+2 rule avoids misinterpretation of temporary changes and ensures doctors make accurate decisions about continuing or modifying treatment.
+
+
+```{r, eval=TRUE, include=TRUE, message=FALSE}
+
+# Define Events 
+bor_cr <- event(
+  description = "Complete Response (CR) for Best Overall Response",
+  dataset_name = "adrs",  # Reference your dataset explicitly
+  condition = AVALC == "CR",  # Complete Response condition
+  set_values_to = exprs(AVALC = "CR")
+)
+
+bor_pr <- event(
+  description = "Partial Response (PR) for Best Overall Response",
+  dataset_name = "adrs",  # Reference `adrs` for Partial Response
+  condition = AVALC == "PR",
+  set_values_to = exprs(AVALC = "PR")
+)
+
+bor_sd <- event(
+  description = "Stable Disease (SD) for Best Overall Response",
+  dataset_name = "adrs",
+  condition = AVALC == "SD",
+  set_values_to = exprs(AVALC = "SD")
+)
+
+bor_pd <- event(
+  description = "Progressive Disease (PD) for Best Overall Response",
+  dataset_name = "adrs",
+  condition = AVALC == "PD",
+  set_values_to = exprs(AVALC = "PD")
+)
+
+bor_ne <- event(
+  description = "Not Evaluable (NE) for Best Overall Response",
+  dataset_name = "adrs",
+  condition = AVALC == "NE",
+  set_values_to = exprs(AVALC = "NE")
+)
+
+
+
+
+```
+#Derive Unconfirmed BOR (UBOR)
+Use the defined events to derive UBOR based on the first occurrence in the adrs dataset, 
+prioritizing responses hierarchically (CR > PR > SD > PD > NE).In this part of the vignette, we will derive Combined Best Unconfirmed Overall Response based on combined response (PARAMCD = "OVRLRESPC") as Derived above.
+
+
+```{r, eval=TRUE, include=TRUE, message=FALSE}
+adrs <- adrs %>%
+  derive_extreme_event(
+    by_vars = exprs(USUBJID),    # Derive UBOR per subject
+    order = exprs(PARAMCD == "OVRLRESPC",ADT,RSSEQ),  # Sort by overall response and chronological date
+    mode = "first",              # Select first occurrence for UBOR
+    source_datasets = list(
+      adrs = adrs  # Reference your dataset directly
+    ),
+    events = list(
+      bor_cr, bor_pr, bor_sd, bor_pd, bor_ne  # Event list defined above
+    ),
+    set_values_to = exprs(
+      PARAMCD = "UBOR",  # Parameter code for UBOR
+      PARAM = "Unconfirmed Best Overall Response by Investigator",  # Parameter name for UBOR
+      PARAMN = 10        # Parameter hierarchy
+    )
+  )
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs%>%
+    filter(PARAMCD== "UBOR"),
+  display_vars = exprs(USUBJID, PARAMCD, VISIT, AVISIT, RSDTC, ADT, ADY,AVALC,AVAL)
+)
+```
+
+
+```{r, eval=TRUE, include=TRUE, message=FALSE}
+
+
+```  
+
+#Derive Confirmed BOR (CBOR)
+
+Both RECIST 1.1 and PCWG3 prescribe the use of a 28-day confirmation period for responses like Complete Response (CR) or Partial Response (PR)
+
+```{r, eval=TRUE, include=TRUE, message=FALSE}
+cbor_cr <- event(
+  description = "Confirmed Complete Response (CR)",
+  dataset_name = "adrs",
+  condition = AVALC == "CR" & lag(AVALC) == "CR" & (ADT - lag(ADT)) >= 28,
+  set_values_to = exprs(AVALC = "CR")
+)
+
+cbor_pr <- event(
+  description = "Confirmed Partial Response (PR)",
+  dataset_name = "adrs",
+  condition = AVALC == "PR" & lag(AVALC) == "PR" & (ADT - lag(ADT)) >= 28,
+  set_values_to = exprs(AVALC = "PR")
+)
+
+```  
+
+
+```{r, eval=TRUE, include=TRUE, message=FALSE}
+adrs <- adrs %>%
+  arrange(USUBJID, ADT) %>% # Ensure data is sorted chronologically within subject
+  derive_extreme_event(
+    by_vars = exprs(USUBJID),             # Calculate CBOR per subject
+    order = exprs(ADT,RSSEQ),                   # Chronological ordering using ADT
+    mode = "first",                       # Select the first occurrence for CBOR
+    source_datasets = list(adrs = adrs),  # Reference the `adrs` dataset containing the AVALC responses
+    events = list(cbor_cr, cbor_pr),  # Defined CBOR-related events
+    set_values_to = exprs(
+      PARAMCD = "CBOR",  # Parameter code for CBOR
+      PARAM = "Confirmed Best Overall Response by Investigator",  # Parameter name for CBOR
+      PARAMN = 11        # Parameter hierarchy number
+    )
+  )
+```
+
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs%>%
+    filter(PARAMCD== "CBOR"),
+  display_vars = exprs(USUBJID, PARAMCD, VISIT, AVISIT, RSDTC, ADT, ADY,AVALC,AVAL)
+)
+```
+
+## Other Endpoints {#other}
+
+For examples on the additional endpoints, please see [Creating ADRS (Including Non-standard Endpoints)](adrs.html).
