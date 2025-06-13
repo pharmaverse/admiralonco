@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">admiralonco</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.1.0.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -122,7 +122,7 @@ to be considered while assessing response:</p>
 overall assigned level of response is determined by the lowest level of
 response.</em><br><em>If a critical data point to establish a level of response is
 missing, the evaluation is downgraded to the next lower level.</em></p>
-<p>For more information user may visit <a href="https://www.sciencedirect.com/science/article/abs/pii/S1470204516302066" class="external-link">International
+<p>For more information user may visit <a href="https://doi.org/10.1016/S1470-2045(16)30206-6" class="external-link">International
 Myeloma Working Group consensus criteria for response and minimal
 residual disease assessment in multiple myeloma</a>.</p>
 <p>Examples are currently presented and tested using <code>ADSL</code>
@@ -181,7 +181,7 @@ further considerations for non-evaluable responses, we use label
 test data)—which are included in <a href="https://pharmaverse.github.io/pharmaversesdtm/" class="external-link">pharmaversesdtm</a> and
 <a href="https://pharmaverse.github.io/pharmaverseadam/" class="external-link">pharmaverseadam</a>—are used.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pharmaverse.github.io/admiral/" class="external-link">admiral</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pharmaverse.github.io/admiral/cran-release/" class="external-link">admiral</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pharmaverse.github.io/admiralonco/">admiralonco</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pharmaverse.github.io/pharmaverseadam/" class="external-link">pharmaverseadam</a></span><span class="op">)</span></span>
@@ -364,6 +364,12 @@ understandable:</p>
 <p>Below table provides a summary of the Confirmed Response status
 calculation at each time point. The maximum refers to numeric values
 previously defined in <code>aval_resp_conf</code> function.</p>
+<pre><code><span><span class="co">#&gt; Warning in attr(x, "align"): 'xfun::attr()' is deprecated.</span></span>
+<span><span class="co">#&gt; Use 'xfun::attr2()' instead.</span></span>
+<span><span class="co">#&gt; See help("Deprecated")</span></span>
+<span><span class="co">#&gt; Warning in attr(x, "format"): 'xfun::attr()' is deprecated.</span></span>
+<span><span class="co">#&gt; Use 'xfun::attr2()' instead.</span></span>
+<span><span class="co">#&gt; See help("Deprecated")</span></span></code></pre>
 <table class="table">
 <colgroup>
 <col width="29%">
@@ -471,6 +477,12 @@ answer other than <code>NE</code>.</p>
 <p>To derive Confirmed Response we are using variables from
 <code>SUPPRS</code> dataset included in <a href="https://pharmaverse.github.io/pharmaversesdtm/" class="external-link">pharmaversesdtm</a>
 package.</p>
+<pre><code><span><span class="co">#&gt; Warning in attr(x, "align"): 'xfun::attr()' is deprecated.</span></span>
+<span><span class="co">#&gt; Use 'xfun::attr2()' instead.</span></span>
+<span><span class="co">#&gt; See help("Deprecated")</span></span>
+<span><span class="co">#&gt; Warning in attr(x, "format"): 'xfun::attr()' is deprecated.</span></span>
+<span><span class="co">#&gt; Use 'xfun::attr2()' instead.</span></span>
+<span><span class="co">#&gt; See help("Deprecated")</span></span></code></pre>
 <table class="table">
 <thead><tr class="header">
 <th align="left">Variable Name</th>
@@ -532,7 +544,7 @@ sample we use to confirm the response.</li>
 <li>Assign <code>AVAL</code> and <code>AVALC</code>, remove unnecessary
 variables.</li>
 </ol>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">confirmation_period</span> <span class="op">&lt;-</span> <span class="fl">84</span></span>
 <span></span>
 <span><span class="va">derive_confirmed_response</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">datain</span><span class="op">)</span> <span class="op">{</span></span>
@@ -639,7 +651,7 @@ variables.</li>
 <p>If user would like to receive a warning that there is a certain
 number of <code>NE</code>s between responses, this can be done using
 <code>filter_consecutive_vals</code> function defined below.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">filter_consecutive_vals</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dataset</span>, <span class="va">by_vars</span>, <span class="va">order</span>, <span class="va">var</span>, <span class="va">val</span>, <span class="va">n</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">var</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">enexpr</a></span><span class="op">(</span><span class="va">var</span><span class="op">)</span></span>
 <span>  <span class="va">var_join</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/sym.html" class="external-link">sym</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">var</span><span class="op">)</span>, <span class="st">".join"</span><span class="op">)</span><span class="op">)</span></span>
@@ -720,7 +732,7 @@ identifier variables (usually <code>STUDYID</code> and
 <p>In the below example we consider only valid assessments and those
 occurring on or after randomization date. If there is more than one
 assessment at a date, the worst one is flagged.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adrs_imwg</span> <span class="op">&lt;-</span> <span class="va">adrs_imwg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/restrict_derivation.html" class="external-link">restrict_derivation</a></span><span class="op">(</span></span>
 <span>    derivation <span class="op">=</span> <span class="va">derive_var_extreme_flag</span>,</span>
@@ -744,7 +756,7 @@ anti-cancer therapy.<br>
 In our example <code>NACTDT</code> is present in <code>SUPPRS</code>
 domain. If not available, see <a href="https://pharmaverse.github.io/admiralonco/">admiralonco</a> <a href="nactdt.html">Creating and Using New Anti-Cancer Start Date</a> for
 deriving this variable).</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adrs_imwg</span> <span class="op">&lt;-</span> <span class="va">adrs_imwg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    ANL02FL <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/case_when.html" class="external-link">case_when</a></span><span class="op">(</span></span>
@@ -759,9 +771,9 @@ deriving this variable).</p>
 </h4>
 <p>To restrict response data up to and including first reported
 progressive disease <code>ANL03FL</code> flag could be created by using
-<a href="https://pharmaverse.github.io/admiral/" class="external-link">admiral</a> function
+<a href="https://pharmaverse.github.io/admiral/cran-release/" class="external-link">admiral</a> function
 <code><a href="https://pharmaverse.github.io/admiral/reference/derive_var_relative_flag.html" class="external-link">admiral::derive_var_relative_flag()</a></code>.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adrs_imwg</span> <span class="op">&lt;-</span> <span class="va">adrs_imwg</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_relative_flag.html" class="external-link">derive_var_relative_flag</a></span><span class="op">(</span></span>
 <span>    by_vars <span class="op">=</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/get_admiral_option.html" class="external-link">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span>,</span>
@@ -783,7 +795,7 @@ progressive disease <code>ANL03FL</code> flag could be created by using
 (<code>ANL01FL = "Y"</code>) before start of new anti-cancer therapy
 (<code>ANL02FL = "Y"</code>) and up to and including first PD
 (<code>ANL03FL = "Y"</code>).</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">ovr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">adrs_imwg</span>, <span class="va">PARAMCD</span> <span class="op">==</span> <span class="st">"COVR"</span> <span class="op">&amp;</span> <span class="va">ANL01FL</span> <span class="op">==</span> <span class="st">"Y"</span> <span class="op">&amp;</span> <span class="va">ANL02FL</span> <span class="op">==</span> <span class="st">"Y"</span> <span class="op">&amp;</span> <span class="va">ANL03FL</span> <span class="op">==</span> <span class="st">"Y"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">adrs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="va">adrs</span>, <span class="va">adrs_imwg</span><span class="op">)</span></span></code></pre></div>
@@ -801,7 +813,7 @@ overwritten by <code>set_values_to</code> argument are kept from the
 earliest occurring input record fulfilling the required criteria.</p>
 <p>The function <code><a href="https://pharmaverse.github.io/admiral/reference/derive_extreme_records.html" class="external-link">admiral::derive_extreme_records()</a></code> can be
 used to find the date of first PD.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adrs</span> <span class="op">&lt;-</span> <span class="va">adrs</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/derive_extreme_records.html" class="external-link">derive_extreme_records</a></span><span class="op">(</span></span>
 <span>    dataset_ref <span class="op">=</span> <span class="va">adsl</span>,</span>
@@ -845,7 +857,7 @@ Below are definitions of non-response events used in the derivations of
 all parameters.<br>
 Parameter-specific events are defined right before the parameter
 derivation.</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">no_data_n</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/event.html" class="external-link">event</a></span><span class="op">(</span></span>
 <span>  description <span class="op">=</span> <span class="st">"Define no response for all patients in adsl (should be used as last event)"</span>,</span>
 <span>  dataset_name <span class="op">=</span> <span class="st">"adsl"</span>,</span>
@@ -872,7 +884,7 @@ derivation.</p>
 used to find the date of first response. In the below example, the
 response condition has been defined as <code>PR</code> or better via the
 event <code>rsp_y_imwg</code> that was created for IMWG.</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">rsp_y_imwg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/event.html" class="external-link">event</a></span><span class="op">(</span></span>
 <span>  description <span class="op">=</span> <span class="st">"Define sCR, CR, VGPR or PR as response"</span>,</span>
 <span>  dataset_name <span class="op">=</span> <span class="st">"ovr"</span>,</span>
@@ -913,7 +925,7 @@ patient having had a response or a sustained period of time before first
 <code>PD</code>. This could also be known as disease control. In this
 example the “sustained period” has been defined as 42 days after
 randomization date via the created <code>cb_y_imwg</code> event.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">sustained_period</span> <span class="op">&lt;-</span> <span class="fl">42</span></span>
 <span></span>
 <span><span class="va">cb_y_imwg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/event.html" class="external-link">event</a></span><span class="op">(</span></span>
@@ -933,7 +945,7 @@ subjects with observations fulfilling both events the one with the
 earlier date should be selected (and not the first one in the list).
 Thus <code>ignore_event_order</code> and <code>tmp_event_nr_var</code>
 are not specified.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adrs</span> <span class="op">&lt;-</span> <span class="va">adrs</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/derive_extreme_event.html" class="external-link">derive_extreme_event</a></span><span class="op">(</span></span>
 <span>    by_vars <span class="op">=</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/get_admiral_option.html" class="external-link">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span>,</span>
@@ -965,7 +977,7 @@ are not specified.</p>
 <li>VGPR or better response (<code>PARAMCD</code>
 =<code>VGPRRSP</code>).</li>
 </ul>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">cr_y_imwg</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/event.html" class="external-link">event</a></span><span class="op">(</span></span>
 <span>  description <span class="op">=</span> <span class="st">"Define sCR or CR as response"</span>,</span>
 <span>  dataset_name <span class="op">=</span> <span class="st">"ovr"</span>,</span>
@@ -1044,7 +1056,7 @@ been defined in {admiralonco}. Missing events specific to IMWG criteria
 are defined below.<br><strong>Note</strong>: <em>For <code>SD</code>, it is not required as
 for RECIST1.1 that the response occurs after a protocol-defined number
 of days.</em></p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">bor_scr</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/event.html" class="external-link">event</a></span><span class="op">(</span></span>
 <span>  description <span class="op">=</span> <span class="st">"Define stringent complete response (sCR) for best overall response</span></span>
 <span><span class="st">  (BOR)"</span>,</span>

@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">admiralonco</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.1.0.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.2.0.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -99,13 +99,13 @@
 ADaM with common oncology endpoint parameters.</p>
 <p>The main part in programming a time-to-event dataset is the
 definition of the events and censoring times.
-<a href="https://pharmaverse.github.io/admiral/" class="external-link">admiral</a>/<a href="https://pharmaverse.github.io/admiralonco/">admiralonco</a> supports single events
+<a href="https://pharmaverse.github.io/admiral/cran-release/" class="external-link">admiral</a>/<a href="https://pharmaverse.github.io/admiralonco/">admiralonco</a> supports single events
 like death (Overall Survival) or composite events like disease
 progression or death (Progression Free Survival). More than one source
 dataset can be used for the definition of the event and censoring
 times.</p>
 <p>The majority of the functions used here exist from
-<a href="https://pharmaverse.github.io/admiral/" class="external-link">admiral</a>, except for the <code>tte_sources</code> helper
+<a href="https://pharmaverse.github.io/admiral/cran-release/" class="external-link">admiral</a>, except for the <code>tte_sources</code> helper
 object, provided as an example from <a href="https://pharmaverse.github.io/admiralonco/">admiralonco</a>. In
 practice, each company would create their own version of this, as likely
 the exact specifications such as filtering condition or description
@@ -117,7 +117,7 @@ format as input unless otherwise specified.</em></p>
 </h3>
 <p>The examples of this vignette require the following packages.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pharmaverse.github.io/admiral/" class="external-link">admiral</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pharmaverse.github.io/admiral/cran-release/" class="external-link">admiral</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pharmaverse.github.io/admiralonco/">admiralonco</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pharmaverse.github.io/pharmaverseadam/" class="external-link">pharmaverseadam</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
@@ -180,7 +180,7 @@ datetime (<code>--DTM</code> variable), or character ISO-8601 date
 (<code>--DTC</code> variable).</p>
 <p>CDISC strongly recommends <code>CNSR = 0</code> for events and
 positive integers for censorings.
-<a href="https://pharmaverse.github.io/admiral/" class="external-link">admiral</a>/<a href="https://pharmaverse.github.io/admiralonco/">admiralonco</a> enforce this
+<a href="https://pharmaverse.github.io/admiral/cran-release/" class="external-link">admiral</a>/<a href="https://pharmaverse.github.io/admiralonco/">admiralonco</a> enforce this
 recommendation. Therefore the <code>censor</code> parameter is available
 for <code><a href="https://pharmaverse.github.io/admiral/reference/censor_source.html" class="external-link">admiral::censor_source()</a></code> only. It is defaulted to
 <code>1</code>.</p>
@@ -197,6 +197,12 @@ censoring independent of the data.</p>
 </h4>
 <p>The table below shows all pre-defined <code>tte_source</code> objects
 which should cover the most common oncology use cases.</p>
+<pre><code><span><span class="co">#&gt; Warning in attr(x, "align"): 'xfun::attr()' is deprecated.</span></span>
+<span><span class="co">#&gt; Use 'xfun::attr2()' instead.</span></span>
+<span><span class="co">#&gt; See help("Deprecated")</span></span>
+<span><span class="co">#&gt; Warning in attr(x, "format"): 'xfun::attr()' is deprecated.</span></span>
+<span><span class="co">#&gt; Use 'xfun::attr2()' instead.</span></span>
+<span><span class="co">#&gt; See help("Deprecated")</span></span></code></pre>
 <table class="table">
 <colgroup>
 <col width="7%">
@@ -280,7 +286,7 @@ per your company approach. An example of a possible different approach
 could be as follows, where death is sourced from <code>ADSL</code>,
 instead of <code>ADRS</code>, and the given <code>EVNTDESC</code> is
 different.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adsl_death_event</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/event_source.html" class="external-link">event_source</a></span><span class="op">(</span></span>
 <span>  dataset_name <span class="op">=</span> <span class="st">"adsl"</span>,</span>
 <span>  date <span class="op">=</span> <span class="va">DTHDT</span>,</span>
@@ -301,7 +307,7 @@ would also need to use this to filter the source <code>ADSL</code>
 dataset so as to only derive the records for responders. This could also
 be repeated as needed for IRF/BICR and confirmed responses.</p>
 <p>Here is an example of the code needed.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adsl</span> <span class="op">&lt;-</span> <span class="va">adsl</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_merged.html" class="external-link">derive_vars_merged</a></span><span class="op">(</span></span>
 <span>    dataset_add <span class="op">=</span> <span class="va">adrs</span>,</span>
@@ -317,7 +323,7 @@ this is only derived for responder patients so we have to filter source
 <code>ADSL</code> dataset). Note that the reason for including a
 randomization date censor is to catch those patients that never have a
 tumor assessment.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adtte</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/derive_param_tte.html" class="external-link">derive_param_tte</a></span><span class="op">(</span></span>
 <span>  dataset_adsl <span class="op">=</span> <span class="va">adsl</span>,</span>
 <span>  start_date <span class="op">=</span> <span class="va">RANDDT</span>,</span>
@@ -348,7 +354,7 @@ tumor assessment.</p>
 <div class="section level4">
 <h4 id="tteobj">Creating Your Own Time-to-Event Source Objects<a class="anchor" aria-label="anchor" href="#tteobj"></a>
 </h4>
-<p>We advise you consult the <a href="https://pharmaverse.github.io/admiral/" class="external-link">admiral</a> <a href="https://pharmaverse.github.io/admiral/articles/bds_tte.html" class="external-link">Creating
+<p>We advise you consult the <a href="https://pharmaverse.github.io/admiral/cran-release/" class="external-link">admiral</a> <a href="https://pharmaverse.github.io/admiral/articles/bds_tte.html" class="external-link">Creating
 a BDS Time-to-Event ADaM vignette</a> for further guidance on the
 different options available and more examples.</p>
 <p>One extra common oncology case we include here is around PFS when
@@ -380,7 +386,7 @@ anti-cancer therapy, and <code>LASTANDT</code> as the single tumor
 assessment censor date as described above. See
 <a href="https://pharmaverse.github.io/admiralonco/">admiralonco</a> <a href="nactdt.html">Creating and Using New
 Anti-Cancer Start Date</a> for deriving <code>NACTDT</code>).</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">pd_nact_event</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/event_source.html" class="external-link">event_source</a></span><span class="op">(</span></span>
 <span>  dataset_name <span class="op">=</span> <span class="st">"adsl"</span>,</span>
 <span>  filter <span class="op">=</span> <span class="va">PDDT</span> <span class="op">&lt;</span> <span class="va">NACTDT</span> <span class="op">|</span> <span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">NACTDT</span><span class="op">)</span>,</span>
@@ -430,7 +436,7 @@ Anti-Cancer Start Date</a> for deriving <code>NACTDT</code>).</p>
 <p>The analysis value (<code>AVAL</code>) can be derived by calling
 <code><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_duration.html" class="external-link">admiral::derive_vars_duration()</a></code>.</p>
 <p>This example derives the time to event in days.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adtte</span> <span class="op">&lt;-</span> <span class="va">adtte</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_duration.html" class="external-link">derive_vars_duration</a></span><span class="op">(</span></span>
 <span>    new_var <span class="op">=</span> <span class="va">AVAL</span>,</span>
@@ -453,7 +459,7 @@ convention. The difference would only be noticed for small durations,
 but if the user prefers an alternative approach they could calculate in
 the default days and then add extra processing to convert to months with
 their company-specific convention.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adtte_months</span> <span class="op">&lt;-</span> <span class="va">adtte</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_duration.html" class="external-link">derive_vars_duration</a></span><span class="op">(</span></span>
 <span>    new_var <span class="op">=</span> <span class="va">AVAL</span>,</span>
@@ -465,10 +471,10 @@ their company-specific convention.</p>
 <div class="section level3">
 <h3 id="aseq">Derive Analysis Sequence Number (<code>ASEQ</code>)<a class="anchor" aria-label="anchor" href="#aseq"></a>
 </h3>
-<p>The <a href="https://pharmaverse.github.io/admiral/" class="external-link">admiral</a> function
+<p>The <a href="https://pharmaverse.github.io/admiral/cran-release/" class="external-link">admiral</a> function
 <code><a href="https://pharmaverse.github.io/admiral/reference/derive_var_obs_number.html" class="external-link">admiral::derive_var_obs_number()</a></code> can be used to derive
 <code>ASEQ</code>:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adtte</span> <span class="op">&lt;-</span> <span class="va">adtte</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/derive_var_obs_number.html" class="external-link">derive_var_obs_number</a></span><span class="op">(</span></span>
 <span>    by_vars <span class="op">=</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/get_admiral_option.html" class="external-link">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span>,</span>
@@ -484,7 +490,7 @@ their company-specific convention.</p>
 <p>Variables from ADSL which are required for time-to-event analyses,
 e.g., treatment variables or covariates can be added using
 <code><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_merged.html" class="external-link">admiral::derive_vars_merged()</a></code>.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adtte</span> <span class="op">&lt;-</span> <span class="va">adtte</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_merged.html" class="external-link">derive_vars_merged</a></span><span class="op">(</span></span>
 <span>    dataset_add <span class="op">=</span> <span class="va">adsl</span>,</span>
