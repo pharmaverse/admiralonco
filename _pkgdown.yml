@@ -19,12 +19,15 @@ development:
   mode: auto
 
 authors:
-  before: "We define *authors* as those who are actively maintaining the code base, and *contributors* as those who made a significant contribution in the past. For all acknowledgements, see the eponymous section in the [Home Page](https://pharmaverse.github.io/admiral/cran-release/)."
+  before: "We define *authors* as those who are actively maintaining the code
+  base, and *contributors* as those who made a significant contribution in the
+  past. For all acknowledgements, see the eponymous section in the
+  [Home Page](https://pharmaverse.github.io/admiralonco)."
   footer:
     roles: [aut, ctb, cre]
     text: "Developed by F. Hoffmann-La Roche AG, GlaxoSmithKline LLC, Amgen Inc., Bristol Myers Squibb,"
   sidebar:
-    roles: [aut, fnd]
+    roles: [aut, ctb, fnd]
   F. Hoffmann-La Roche AG:
     html: "<a href='https://www.roche.com/'><img src='man/figures/roche_logo.png' height='34' alt='Roche logo' /></a>"
     href: https://roche.com/
