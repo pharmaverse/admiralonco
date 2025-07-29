@@ -372,7 +372,7 @@ adtr_sum <- adtr_sum %>%
 
 Once we have Sum of Target Lesions Diameters parameter (`SDIAM`), the `NADIR` is
 set to the lowest sum of diameters in Analysis Value (`AVAL`) before the current
-observation, where all lesions were assessed (i.e. `ANL01F == "Y"`).  The first
+observation, where all lesions were assessed (i.e. `ANL01FL == "Y"`).  The first
 observations after baseline (depending on how you have defined baseline earlier)
 is set to the baseline value.
 
@@ -396,8 +396,8 @@ adtr_sum <- adtr_sum %>%
 dataset_vignette(
   adtr_sum %>%
     arrange(USUBJID, AVISITN) %>%
-    select(USUBJID, PARAMCD, AVISIT, ADY, AVAL, NADIR, everything()),
-  display_vars = exprs(USUBJID, PARAMCD, AVISIT, ADY, AVAL, NADIR)
+    select(USUBJID, PARAMCD, AVISIT, ADY, AVAL, ANL01FL, NADIR, everything()),
+  display_vars = exprs(USUBJID, PARAMCD, AVISIT, ADY, AVAL, ANL01FL, NADIR)
 )
 ```  
 

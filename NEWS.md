@@ -1,5 +1,9 @@
 # admiralonco (development version)
 
+## Documentation
+
+- Display `ANL01FL` in the `NADIR` derivation in the `ADTR` vignette. (#305)
+
 # admiralonco 1.2.0
 
 ## Documentation
