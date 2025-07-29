@@ -1,10 +1,11 @@
 # admiralonco <img src="man/figures/logo.png" align="right" width="200" style="margin-left:50px;"/>
 
-<!-- badges: start -->
+<!-- start badges -->
 [![pharmaverse admiralonco badge](http://pharmaverse.org/shields/admiralonco.svg)](https://pharmaverse.org)
-[![CRAN
-status](https://www.r-pkg.org/badges/version/admiralonco)](https://CRAN.R-project.org/package=admiralonco)
-<!-- badges: end -->
+[![CRAN status](https://www.r-pkg.org/badges/version/admiralonco)](https://CRAN.R-project.org/package=admiralonco)
+![Test Coverage](https://raw.githubusercontent.com/pharmaverse/admiralonco/badges/main/test-coverage.svg)
+[![Total Downloads](http://cranlogs.r-pkg.org/badges/grand-total/admiralonco?color=green)](https://cran.r-project.org/package=admiralonco)
+<!-- end badges -->
 
 Oncology extension package for ADaM in R Asset Library `{admiral}`
 
@@ -90,3 +91,13 @@ developer community:
     to join the pharmaverse Slack workspace
 -   [GitHub Issues](https://github.com/pharmaverse/admiralonco/issues) -
     for direct feedback, enhancement requests or raising bugs
+
+## Acknowledgments
+
+Along with the authors and contributors, thanks to the following people for
+their work on the package:
+
+Teckla Akinyi, Uwe Bader, Stephen Gormley, Liming Jin, Samia Kabi, Zhang
+Kangjie, Karl Kennedy, Konstantina Koukourikou, Pavan Kumar, Edoardo Mancini,
+Matt Marino, Thomas Neitmann, Hinal Patel, Andrew Smith, Gopi Vegesna, Annie
+Yang
