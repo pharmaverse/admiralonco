@@ -53,7 +53,7 @@ Adds a parameter for clinical benefit/disease control"><meta property="og:image"
 
     <div class="ref-description section level2">
     <p><a href="https://lifecycle.r-lib.org/articles/stages.html#superseded" class="external-link"><img src="figures/lifecycle-superseded.svg" alt="[Superseded]"></a> The <code>derive_param_clinbenefit()</code> function
-has been superseded in favor of <code><a href="https://pharmaverse.github.io/admiral/reference/derive_extreme_event.html" class="external-link">derive_extreme_event()</a></code>.</p>
+has been superseded in favor of <code><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/derive_extreme_event.html">derive_extreme_event()</a></code>.</p>
 <p>Adds a parameter for clinical benefit/disease control</p>
     </div>
 
@@ -71,7 +71,7 @@ has been superseded in favor of <code><a href="https://pharmaverse.github.io/adm
 <span>  <span class="va">aval_fun</span>,</span>
 <span>  clinben_vals <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"CR"</span>, <span class="st">"PR"</span>, <span class="st">"SD"</span>, <span class="st">"NON-CR/NON-PD"</span><span class="op">)</span>,</span>
 <span>  <span class="va">set_values_to</span>,</span>
-<span>  subject_keys <span class="op">=</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/get_admiral_option.html" class="external-link">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span></span>
+<span>  subject_keys <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/get_admiral_option.html">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -115,7 +115,7 @@ and filter condition used to identify disease progression.</p></dd>
 <dt id="arg-source-datasets">source_datasets<a class="anchor" aria-label="anchor" href="#arg-source-datasets"></a></dt>
 <dd><p>A named list of data sets is expected.</p>
 <p>The list must contain the names provided by the <code>dataset_name</code> field of the
-<code><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">date_source()</a></code> objects specified for <code>source_pd</code> and <code>source_resp</code>.</p></dd>
+<code><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/date_source.html">date_source()</a></code> objects specified for <code>source_pd</code> and <code>source_resp</code>.</p></dd>
 
 
 <dt id="arg-reference-date">reference_date<a class="anchor" aria-label="anchor" href="#arg-reference-date"></a></dt>
@@ -216,7 +216,7 @@ are populated with their values from <code>dataset_adsl</code>.</p></li>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://lubridate.tidyverse.org" class="external-link">lubridate</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pharmaverse.github.io/admiral/cran-release/" class="external-link">admiral</a></span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pharmaverse.github.io/admiral/" class="external-link">admiral</a></span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">adsl</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  <span class="op">~</span><span class="va">USUBJID</span>, <span class="op">~</span><span class="va">TRTSDT</span>,</span></span>
@@ -249,19 +249,19 @@ are populated with their values from <code>dataset_adsl</code>.</p></li>
 <span class="r-in"><span>  <span class="st">"04"</span>,     <span class="st">"OVR"</span>,    <span class="st">"ND"</span>,   <span class="fu"><a href="https://lubridate.tidyverse.org/reference/ymd.html" class="external-link">ymd</a></span><span class="op">(</span><span class="st">"2021-09-04"</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>STUDYID <span class="op">=</span> <span class="st">"AB42"</span>, ANL01FL <span class="op">=</span> <span class="st">"Y"</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/derive_vars_merged.html" class="external-link">derive_vars_merged</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/derive_vars_merged.html">derive_vars_merged</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>    dataset_add <span class="op">=</span> <span class="va">adsl</span>,</span></span>
 <span class="r-in"><span>    by_vars <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">STUDYID</span>, <span class="va">USUBJID</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    new_vars <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">TRTSDT</span><span class="op">)</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">pd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">date_source</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="va">pd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/date_source.html">date_source</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  dataset_name <span class="op">=</span> <span class="st">"adrs"</span>,</span></span>
 <span class="r-in"><span>  date <span class="op">=</span> <span class="va">ADT</span>,</span></span>
 <span class="r-in"><span>  filter <span class="op">=</span> <span class="va">PARAMCD</span> <span class="op">==</span> <span class="st">"PD"</span> <span class="op">&amp;</span> <span class="va">AVALC</span> <span class="op">==</span> <span class="st">"Y"</span> <span class="op">&amp;</span> <span class="va">ANL01FL</span> <span class="op">==</span> <span class="st">"Y"</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://pharmaverse.github.io/admiral/reference/date_source.html" class="external-link">date_source</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/date_source.html">date_source</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span>  dataset_name <span class="op">=</span> <span class="st">"adrs"</span>,</span></span>
 <span class="r-in"><span>  date <span class="op">=</span> <span class="va">ADT</span>,</span></span>
 <span class="r-in"><span>  filter <span class="op">=</span> <span class="va">PARAMCD</span> <span class="op">==</span> <span class="st">"RSP"</span> <span class="op">&amp;</span> <span class="va">AVALC</span> <span class="op">==</span> <span class="st">"Y"</span> <span class="op">&amp;</span> <span class="va">ANL01FL</span> <span class="op">==</span> <span class="st">"Y"</span></span></span>

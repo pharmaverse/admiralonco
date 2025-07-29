@@ -48,6 +48,10 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="admiralonco-development-version">admiralonco (development version)<a class="anchor" aria-label="anchor" href="#admiralonco-development-version"></a></h2>
+<div class="section level3">
+<h3 id="documentation-development-version">Documentation<a class="anchor" aria-label="anchor" href="#documentation-development-version"></a></h3>
+<ul><li>Display <code>ANL01FL</code> in the <code>NADIR</code> derivation in the <code>ADTR</code> vignette. (<a href="https://github.com/pharmaverse/admiralonco/issues/305" class="external-link">#305</a>)</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.2.0" id="admiralonco-120">admiralonco 1.2.0<a class="anchor" aria-label="anchor" href="#admiralonco-120"></a></h2><p class="text-muted">CRAN release: 2025-01-27</p>
@@ -78,12 +82,12 @@
 <div class="section level3">
 <h3 id="documentation-1-0-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-1-0-0"></a></h3>
 <ul><li><p>New vignette “Creating ADRS with iRECIST endpoints”. (<a href="https://github.com/pharmaverse/admiralonco/issues/233" class="external-link">#233</a>)</p></li>
-<li><p>All vignettes and templates were updated to be in line with the changes in <a href="https://pharmaverse.github.io/admiral/cran-release/" class="external-link">admiral</a> (see <a href="https://pharmaverse.github.io/admiral/news/index.html#breaking-changes-1-0-0" class="external-link">Breaking Changes</a> for details)(<a href="https://github.com/pharmaverse/admiralonco/issues/256" class="external-link">#256</a>).</p></li>
+<li><p>All vignettes and templates were updated to be in line with the changes in <a href="https://pharmaverse.github.io/admiral/" class="external-link">admiral</a> (see <a href="https://pharmaverse.github.io/admiral/news/index.html#breaking-changes-1-0-0" class="external-link">Breaking Changes</a> for details)(<a href="https://github.com/pharmaverse/admiralonco/issues/256" class="external-link">#256</a>).</p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="breaking-changes-1-0-0">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-1-0-0"></a></h3>
-<ul><li><p>The <code>derive_*()</code> functions were superseded in favor of <code><a href="https://pharmaverse.github.io/admiral/reference/derive_extreme_event.html" class="external-link">derive_extreme_event()</a></code>. Any superseded functions can continue to be used as demonstrated via the “Basic ADRS” vignette, as they will remain supported and won’t be deprecated in the near future. (<a href="https://github.com/pharmaverse/admiralonco/issues/256" class="external-link">#256</a>)</p></li>
-<li><p>The <code><a href="../reference/filter_pd.html">filter_pd()</a></code> function was superseded in favor of <code><a href="https://pharmaverse.github.io/admiral/reference/filter_relative.html" class="external-link">filter_relative()</a></code>. (<a href="https://github.com/pharmaverse/admiralonco/issues/256" class="external-link">#256</a>)</p></li>
+<ul><li><p>The <code>derive_*()</code> functions were superseded in favor of <code><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/derive_extreme_event.html">derive_extreme_event()</a></code>. Any superseded functions can continue to be used as demonstrated via the “Basic ADRS” vignette, as they will remain supported and won’t be deprecated in the near future. (<a href="https://github.com/pharmaverse/admiralonco/issues/256" class="external-link">#256</a>)</p></li>
+<li><p>The <code><a href="../reference/filter_pd.html">filter_pd()</a></code> function was superseded in favor of <code><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/filter_relative.html">filter_relative()</a></code>. (<a href="https://github.com/pharmaverse/admiralonco/issues/256" class="external-link">#256</a>)</p></li>
 <li><p>The function <code>call_aval_fun()</code>, which was deprecated in admiralonco 0.4.0, has been removed. (<a href="https://github.com/pharmaverse/admiralonco/issues/256" class="external-link">#256</a>)</p></li>
 </ul></div>
 <div class="section level3">
@@ -95,14 +99,14 @@
 <h2 class="pkg-version" data-toc-text="0.5.0" id="admiralonco-050">admiralonco 0.5.0<a class="anchor" aria-label="anchor" href="#admiralonco-050"></a></h2><p class="text-muted">CRAN release: 2023-09-14</p>
 <div class="section level3">
 <h3 id="new-features-0-5-0">New Features<a class="anchor" aria-label="anchor" href="#new-features-0-5-0"></a></h3>
-<ul><li>Oncology specific events are provided for deriving oncology parameters with <code><a href="https://pharmaverse.github.io/admiral/reference/derive_extreme_event.html" class="external-link">admiral::derive_extreme_event()</a></code>. (<a href="https://github.com/pharmaverse/admiralonco/issues/234" class="external-link">#234</a>)</li>
+<ul><li>Oncology specific events are provided for deriving oncology parameters with <code><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/derive_extreme_event.html">admiral::derive_extreme_event()</a></code>. (<a href="https://github.com/pharmaverse/admiralonco/issues/234" class="external-link">#234</a>)</li>
 </ul></div>
 <div class="section level3">
 <h3 id="documentation-0-5-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-5-0"></a></h3>
 <ul><li>
 <p>The <code>ADRS</code> vignette and template were split into two (<a href="https://github.com/pharmaverse/admiralonco/issues/234" class="external-link">#234</a>):</p>
 <ul><li>A basic version which uses the <a href="https://pharmaverse.github.io/admiralonco/">admiralonco</a> functions to cover standard RECIST 1.1.</li>
-<li>A more flexible version which uses <code><a href="https://pharmaverse.github.io/admiral/reference/derive_extreme_event.html" class="external-link">admiral::derive_extreme_event()</a></code>. This should be used if non-standard <code>ADRS</code> parameters should be implemented or non-standard response values should be considered. This version can also be used as a starting point for implementing other response criteria than RECIST 1.1, e.g., iRECIST or International Myeloma Working Group (IMWG) criteria for the diagnosis of multiple myeloma.</li>
+<li>A more flexible version which uses <code><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/derive_extreme_event.html">admiral::derive_extreme_event()</a></code>. This should be used if non-standard <code>ADRS</code> parameters should be implemented or non-standard response values should be considered. This version can also be used as a starting point for implementing other response criteria than RECIST 1.1, e.g., iRECIST or International Myeloma Working Group (IMWG) criteria for the diagnosis of multiple myeloma.</li>
 </ul></li>
 <li><p>The <code>ADRS</code> vignette and template were updated such that test data from <a href="https://pharmaverse.github.io/pharmaversesdtm/" class="external-link">pharmaversesdtm</a> instead of <code>{admiral.test}</code> is used. (<a href="https://github.com/pharmaverse/admiralonco/issues/226" class="external-link">#226</a>)</p></li>
 <li><p>The “Create <code>ADTR</code>” vignette and the <code>ADTR</code> template were updated such that test data from <a href="https://pharmaverse.github.io/pharmaversesdtm/" class="external-link">pharmaversesdtm</a> instead of <code>{admiral.test}</code> is used. (<a href="https://github.com/pharmaverse/admiralonco/issues/247" class="external-link">#247</a>)</p></li>
@@ -124,9 +128,9 @@
 <p>Vignettes and templates were updated due to changes in admiral and admiralonco: (<a href="https://github.com/pharmaverse/admiralonco/issues/216" class="external-link">#216</a>)</p>
 <ul><li>The <code>AVAL</code> variable is now populated via the <code>set_values_to</code> argument as the <code>aval_fun</code> argument was deprecated.</li>
 <li>
-<code>admiral::derive_param_extreme_event()</code> calls were replaced by <code><a href="https://pharmaverse.github.io/admiral/reference/derive_extreme_records.html" class="external-link">admiral::derive_extreme_records()</a></code> calls due to deprecation of <code>admiral::derive_param_extreme_event()</code>.</li>
+<code>admiral::derive_param_extreme_event()</code> calls were replaced by <code><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/derive_extreme_records.html">admiral::derive_extreme_records()</a></code> calls due to deprecation of <code>admiral::derive_param_extreme_event()</code>.</li>
 <li>
-<code><a href="https://pharmaverse.github.io/admiral/reference/derive_param_exist_flag.html" class="external-link">admiral::derive_param_exist_flag()</a></code> calls were updated as the <code>dataset_adsl</code> argument was renamed to <code>dataset_ref</code>.</li>
+<code><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/derive_param_exist_flag.html">admiral::derive_param_exist_flag()</a></code> calls were updated as the <code>dataset_adsl</code> argument was renamed to <code>dataset_ref</code>.</li>
 </ul></li>
 </ul></div>
 <div class="section level3">
@@ -148,14 +152,14 @@
 </ul></div>
 <div class="section level3">
 <h3 id="various-0-3-0">Various<a class="anchor" aria-label="anchor" href="#various-0-3-0"></a></h3>
-<ul><li>ADTTE template simplified for duration of response in line with <code><a href="https://pharmaverse.github.io/admiral/reference/derive_param_tte.html" class="external-link">admiral::derive_param_tte()</a></code> enhancement (<a href="https://github.com/pharmaverse/admiralonco/issues/203" class="external-link">#203</a>)</li>
+<ul><li>ADTTE template simplified for duration of response in line with <code><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/derive_param_tte.html">admiral::derive_param_tte()</a></code> enhancement (<a href="https://github.com/pharmaverse/admiralonco/issues/203" class="external-link">#203</a>)</li>
 </ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="admiralonco-020">admiralonco 0.2.0<a class="anchor" aria-label="anchor" href="#admiralonco-020"></a></h2><p class="text-muted">CRAN release: 2022-12-07</p>
 <div class="section level3">
 <h3 id="updates-of-existing-functions-0-2-0">Updates of Existing Functions<a class="anchor" aria-label="anchor" href="#updates-of-existing-functions-0-2-0"></a></h3>
-<ul><li>Functions that use <code>subject_keys</code> as a function argument now default to <code>get_admiral_option("subject_keys")</code>instead of <code>vars(STUDYID, USUBJID)</code> to allow users to change the variables that uniquely identify a subject once using <code><a href="https://pharmaverse.github.io/admiral/reference/set_admiral_options.html" class="external-link">set_admiral_options()</a></code> to avoid several instances of find + replace in a script. (<a href="https://github.com/pharmaverse/admiralonco/issues/175" class="external-link">#175</a>)</li>
+<ul><li>Functions that use <code>subject_keys</code> as a function argument now default to <code>get_admiral_option("subject_keys")</code>instead of <code>vars(STUDYID, USUBJID)</code> to allow users to change the variables that uniquely identify a subject once using <code><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/set_admiral_options.html">set_admiral_options()</a></code> to avoid several instances of find + replace in a script. (<a href="https://github.com/pharmaverse/admiralonco/issues/175" class="external-link">#175</a>)</li>
 </ul></div>
 <div class="section level3">
 <h3 id="breaking-changes-0-2-0">Breaking Changes<a class="anchor" aria-label="anchor" href="#breaking-changes-0-2-0"></a></h3>
