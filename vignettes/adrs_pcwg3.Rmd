@@ -112,6 +112,7 @@ library(tibble)
 -   [Pre-processing of Input Records](#input)
 -   [Derive Best Overall Response (BOR)](#bor)
 -   [Derive Confirmed Best Overall Response (CBOR)](#cbor)
+-   [Other Endpoints](#other)
             
               
 ## Read in Data {#readdata}
@@ -412,21 +413,28 @@ pdu_to_pd_event <- event_joined(
 
 # Define events for Best Overall Response (BOR)
 bor_cr <- event(
-  description = "Complete Response (CR) for Best Overall Response",
+  description = "Complete Response (CR) ",
   dataset_name = "adrs",  
   condition = AVALC == "CR", 
   set_values_to = exprs(AVALC = "CR")
 )
 
 bor_pr <- event(
-  description = "Partial Response (PR) for Best Overall Response",
+  description = "Partial Response (PR) ",
   dataset_name = "adrs", 
   condition = AVALC == "PR",
   set_values_to = exprs(AVALC = "PR")
 )
 
+bor_non_cr_non_pd <- event(
+  description = "Non-CR/Non-PD ",
+  dataset_name = "adrs", 
+  condition = AVALC == "Non-CR/Non-PD",
+  set_values_to = exprs(AVALC = "Non-CR/Non-PD")
+)
+
 bor_sd <- event(
-  description = "Stable Disease (SD) for Best Overall Response",
+  description = "Stable Disease (SD) ",
   dataset_name = "adrs",
   condition = AVALC == "SD",
   set_values_to = exprs(AVALC = "SD")
@@ -434,31 +442,35 @@ bor_sd <- event(
 
 
 bor_pd <- event(
-  description = "Progressive Disease (PD) for Best Overall Response",
+  description = "Progressive Disease (PD) ",
   dataset_name = "adrs",
   condition = AVALC == "PD",
   set_values_to = exprs(AVALC = "PD")
 )
 
 bor_ne <- event(
-  description = "Not Evaluable (NE) for Best Overall Response",
+  description = "Not Evaluable (NE) ",
   dataset_name = "adrs",
   condition = AVALC == "NE",
   set_values_to = exprs(AVALC = "NE")
 )
 
-
+no_assessment_event <- event(
+  description = "No assessment data available for subject",
+  dataset_name = "adrs",
+  condition = is.na(AVALC),  # Condition where AVALC is missing
+  set_values_to = exprs(AVALC = "NE")  # Assign default value as NE
+)
 ```
-## Derive Best Overall Response (BOR)
+
+
+## Derive Best Overall Response (BOR){#cbor}
 
 Use the defined events to derive BOR based on the first occurrence in the adrs dataset, prioritizing 
 responses hierarchically (CR > PR > SD > PD > NE).
 
-**Progressive Disease Unconfirmed (PDu)** is excluded as it represents a provisional status and 
-can only be escalated to **Progressive Disease (PD)** if confirmed by the "2+2 flare rule."
-
 In this part of the vignette, we will derive Best Overall Response based on combined response 
-(PARAMCD = "OVRLRESC") as derived above.
+(`PARAMCD = "OVRLRESC"`) as derived above.
 
 ```{r, eval=TRUE, include=TRUE, message=FALSE} 
 
@@ -466,7 +478,7 @@ In this part of the vignette, we will derive Best Overall Response based on comb
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(USUBJID), 
-    events = list(bor_cr, bor_pr, bor_sd, bor_pd, bor_ne,pdu_to_sd_event,pdu_to_pd_event), # Hierarchical order
+    events = list(bor_cr, bor_pr, bor_sd,pdu_to_sd_event, bor_pd,pdu_to_pd_event,bor_ne,no_assessment_event), # Hierarchical order
     source_datasets = list(adrs = adrs %>%filter(PARAMCD == "OVRLRESC")), # Use derived responses (OVRLRESC)
     order = exprs(event_nr, ADT), # Prioritize earliest valid event
     tmp_event_nr_var = event_nr,                            
@@ -488,7 +500,7 @@ dataset_vignette(
 )
 ```
 
-## Derive Confirmed BOR (CBOR)
+## Derive Confirmed BOR (CBOR){#cbor}
 
 As per RECIST 1.1 and PCWG3 guidelines, Complete Response (CR) and Partial Response (PR) require confirmation within a **28-day period** to ensure their validity.
 
@@ -522,7 +534,7 @@ cbor_pr <- event_joined(
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(USUBJID),                 
-    events = list(cbor_cr, cbor_pr,bor_sd, bor_pd, bor_ne,pdu_to_pd_event,pdu_to_sd_event),         
+    events = list(cbor_cr, cbor_pr,bor_non_cr_non_pd, bor_sd,pdu_to_sd_event, bor_pd,pdu_to_pd_event,bor_ne,no_assessment_event),         
     source_datasets = list(adrs = adrs %>% filter(PARAMCD == "OVRLRESC")),
     tmp_event_nr_var = event_nr,             
     order = exprs(event_nr, ADT),            
