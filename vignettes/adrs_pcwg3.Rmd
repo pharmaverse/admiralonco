@@ -19,60 +19,77 @@ library(gt)
 
 # Introduction
 
-This article describes creating an `ADRS` ADaM dataset for prostate cancer studies based on [**Prostate Cancer Working Group 3 (PCWG3)** criteria](https://ascopubs.org/doi/pdf/10.1200/JCO.2015.64.2702).Most of the endpoints are derived by calling admiral::derive_extreme_event().
+This article describes creating an `ADRS` ADaM dataset for prostate cancer studies based on [**Prostate Cancer Working Group 3 (PCWG3)** criteria](https://ascopubs.org/doi/pdf/10.1200/JCO.2015.64.2702). Most of the endpoints are derived by calling `admiral::derive_extreme_event()`.
 
-Metastatic prostate cancer response cannot be fully captured by RECIST 1.1 criteria alone. Therefore, the PCWG3 guidelines extend these criteria to include composite response combining RECIST 1.1 criteria on soft tissue lesions and PCWG3 rules on bone scans.
+Metastatic prostate cancer response cannot be fully captured by RECIST 1.1 criteria alone. Therefore, the PCWG3 guidelines extend these criteria to include composite response combining RECIST 1.1 criteria on soft tissue lesions and PCWG3 rules on bone bone lesions.
 
 Note that only the PCWG3-specific steps are covered in this vignette. For extended guidance on all steps in ADRS creation, refer to the examples in [Creating ADRS (Including Non-standard Endpoints)](adrs.html).
 
 
 ## PCWG3 Guidelines for Prostate Cancer Progression
 
-In metastatic prostate cancer clinical trials, efficacy is assessed using PCWG3-modified RECIST 1.1 response and PSA tumor marker results.
+In metastatic prostate cancer clinical trials, efficacy is assessed using PCWG3-modified RECIST 1.1 response, PSA tumor marker results, and bone lesion assessments. Bone lesions are particularly critical for evaluating progressive disease (PD) using 2+2 rule.
 
-## General Response Categories Based on PCWG3 Guidelines and RECIST 1.1:
 
-### 1.Complete Response (CR)  
-       Disappearance of all known lesions (soft tissue and bone).  
-       PSA normalized. 
-       No new lesions.
+## Response Categories Based on PCWG3 Guidelines:
 
-### 2.Partial Response (PR)  
-       ≥30% reduction in soft tissue target lesion size.  
-       ≥50% PSA decline from baseline.  
+In this vignette, we have not included RECIST 1.1 responses (soft tissue responses), as they are well-documented and widely known, and have focused solely on PCWG3 guidelines for evaluating bone scan responses in prostate cancer. PCWG3 provides specific criteria for assessing bone lesions, including categories like PDu, NED, and PD, along with the 2+2 rule for confirming progression.
 
-### 3.Stable Disease (SD)  
-       Insufficient regression for CR/PR and no sufficient progression for PD.  
+
+### 1. Complete Response (CR)  
+- All known bone lesions disappear.  
+- No new bone lesions are observed.
+
+Based on **PCWG3 guidelines**, the most appropriate and widely used word for "complete resolution of lesions" would be **"disappearance of lesions."** This aligns with PCWG3’s standardized terminology for Complete Response (CR), which is defined as the **disappearance of all lesions**.
+
+
+### 2. Partial Response (PR)  
+- Improvement in bone scan findings without disappearance of lesions.  
+- Note: For subjects classified as PR, progression (PD) cannot be confirmed using the 2+2 rule, as PR excludes the presence of new lesions. Refer to study documentation for further clarification if needed.
+
+### 3. Stable Disease (SD)  
+- No progression or insufficient change observed in bone scan findings to meet criteria for PR or PD.  
+- Note: PD cannot be confirmed using the 2+2 rule for subjects classified as SD unless new lesions are observed on follow-up imaging.
 
 ### 4.Progressive Disease Unconfirmed (PDu)  
-       Temporary status indicating suspected progression requiring follow-up confirmation.  
-       Progression confirmed only with ≥2 additional new lesions on subsequent imaging ("2+2 flare rule").
+-Temporary provisional status indicating suspected progression requiring follow-up confirmation.
 
 ### 5.Progressive Disease (PD)  
-       Appearance of ≥2 new lesions confirmed on subsequent imaging (`2+2 flare rule`).  
-       PSA increase ≥25% from nadir with ≥2 ng/mL absolute increase.  
+- Confirmed progression based on two or more new lesions and persistence over subsequent scans .See [**Bone Lesion Confirmation Guidance (The 2+2 Rule)**](#2+2rule) for further details.
 
 ### 6.Not Evaluable (NE)  
-       Insufficient or missing data prevents evaluation.
+-Insufficient or missing data for response evaluation.
   
 ### 7.No Evidence of Disease (NED)
-       No measurable lesions detected at baseline and no new lesions identified during the study.  
-       No target or non-target lesions recorded in screening.  
-       No new lesions observed on-study.
-       
-
-### Bone Lesion Confirmation Guidance (The 2+2 Flare Rule)
-
-The **2+2 flare rule**, part of the PCWG3 guidelines, enhances RECIST 1.1 by providing a unique approach to assessing metastatic prostate cancer. When **two or more new lesions** are observed on the first post-treatment bone scan, this may indicate either true progression or a **flare phenomenon** which is a temporary effect caused by treatment-induced bone remodeling and repair. To confirm progression, a second scan is needed to detect **at least two additional new lesions** (totaling four or more). If no further new lesions appear, the findings are classified as a **flare response**, not progression. This systematic approach ensures accurate differentiation between treatment-related changes and true progression, enabling a more comprehensive assessment of soft tissue and bone lesions as outlined in PCWG3.
-
-
-### Example of the 2+2 Flare Rule
-
-A patient with metastatic prostate cancer undergoes a baseline bone scan prior to starting treatment, which shows 10 lesions. After three months of therapy, a follow-up bone scan identifies **two new lesions**, increasing the total count to 12. At this stage, the findings are labeled as possible progression i.e., **Progressive Disease Unconfirmed (PDu)**, but the progression is not yet confirmed. A second follow-up scan performed six weeks later shows no further new lesions. Based on the **2+2 rule**, this is determined to be a **flare phenomenon**, not true progression.
-
+-When no target and non-target lesions are identified at Baseline, and no new lesions are identified on-study.
 
 ### PSA Exclusion
 Prostate-specific antigen (PSA) tumor marker assessments are a key component of the PCWG3 criteria for evaluating prostate cancer progression. However, they are excluded in this vignette to focus solely on deriving PCWG3-modified RECIST 1.1 endpoints related to soft tissue and bone lesions.
+
+
+### Bone Lesion Confirmation Guidance (The 2+2 Flare Rule){2+2rule}
+
+**Progression on a Bone Scan:**
+
+Please note: The flare period is generally considered to be the first 8–12 weeks post-baseline, primarily involving the initial post-baseline assessment. Please refer to your study documentation to confirm how the flare period is defined.
+
+1. **Flare Period: Bone Scan Progression Criteria for the First Post-Baseline Scan:**
+   - If two or more new bone lesions are identified at the first post-baseline assessment compared to the baseline scan, and then at the second assessment (conducted at least 6 weeks later), two or more additional new lesions are observed (resulting in a cumulative total of four or more new lesions since the baseline scan), the progression date is set as the date of the initial scan. This process is referred to as the "2+2 rule."
+
+2. **After Flare Period: If No Progression is Detected at the First Assessment:**
+   - The initial post-baseline scan becomes the new reference point for subsequent scans.
+   - If two or more new lesions appear relative to this new baseline, and their persistence or increase in number is confirmed by a follow-up scan at least 6 weeks later, the progression date is recorded as the date of the first scan that noted the appearance of the two new lesions.
+
+#### Examples of the 2+2 Rule
+
+**Flare Period Progression**  
+A patient with metastatic prostate cancer has a baseline bone scan showing 10 lesions. At the first post-baseline scan (within the flare period), 2 new lesions are identified, increasing the total count to 12. This finding is labeled as Progressive Disease Unconfirmed (PDu). A follow-up scan conducted at least 6 weeks later reveals 2 additional new lesions (totaling 4 new lesions compared to baseline). Progression is confirmed based on the 2+2 rule, and the progression date is set as the date of the first post-baseline scan.
+
+**Flare Phenomenon**  
+In another scenario, the same patient has a baseline bone scan showing 10 lesions. The first post-baseline scan during the flare period identifies 2 new lesions, increasing the count to 12. However, a follow-up scan conducted 6 weeks later reveals no additional new lesions. According to the 2+2 rule, this is classified as a flare phenomenon, not true progression.
+
+**After Flare Period Progression**  
+A patient has a baseline scan showing 8 lesions, and the initial post-baseline scan (outside the flare period) shows no additional lesions. This scan becomes the new reference point for subsequent assessments. At a later scan, conducted 12 weeks post-baseline, 2 new lesions are observed relative to the new reference point, and a follow-up scan performed 6 weeks later confirms their persistence with 2 additional new lesions, totaling 4 new lesions since the new reference point. Progression is confirmed with the progression date recorded as the date of the first scan noting the 2 new lesions.
 
 
 # Required Packages
@@ -93,7 +110,6 @@ library(tibble)
   
 -   [Read in Data](#readdata)
 -   [Pre-processing of Input Records](#input)
--   [Soft Tissue and Bone Lesion Responses](#assessments)
 -   [Derive Best Overall Response (BOR)](#bor)
 -   [Derive Confirmed Best Overall Response (CBOR)](#cbor)
             
@@ -105,16 +121,17 @@ To begin, all data frames needed for the creation of `ADRS` should be read into 
 For demonstration purpose, the SDTM and ADaM datasets (based on CDISC Pilot test data) from `{pharmaversesdtm}` and `{pharmaverseadam}` are used.
               
 In this vignette, the `RS` SDTM dataset is expected to contain:
+
 -Soft tissue lesion responses evaluated using RECIST 1.1 criteria at each timepoint.
 -Bone lesion responses assessed across visits using PCWG3 rules.
--Combined responses derived from both RECIST 1.1 (soft tissue) and PCWG3 (bone lesion) guidelines.
+-Combined responses derived from both RECIST 1.1 (soft tissue) and PCWG3 (bone lesion) guidelines as collected at source.
 
 It is assumed that all datasets used in the example have been preprocessed and are "ready for analysis".
             
 ```{r message=FALSE}
 
 # PCWG3 SDTM data
-rs <- pharmaversesdtm::rs_onco_pcwg3
+rs <- pharmaversesdtm::rs_onco_pcwg3 
 rs <- convert_blanks_to_na(rs)
 
 #Exclude PSA records
@@ -138,7 +155,7 @@ At this step, it may be useful to join `ADSL` to your `RS` domain. Only the `ADS
 at this step.
 
 ```{r eval=TRUE}
-adsl_vars <- exprs(RANDDT, TRTSDT)
+adsl_vars <- exprs(TRTSDT)
 adrs <- derive_vars_merged(
   rs,
   dataset_add = adsl,
@@ -166,33 +183,6 @@ adrs <- adrs %>%
   )  %>%
   mutate(AVISIT = VISIT,
          AVISITN=VISITNUM)
-```
-
-## Soft Tissue and Bone Lesion Responses
-
-## PDu to PD Based on Follow-Up
-
-The PCWG3 guidelines define **Progressive Disease Unconfirmed (PDu)** as a provisional status indicating suspected disease progression. Confirmation of **PDu to PD** relies on follow-up scans providing evidence of further progression.
-
-In this vignette, the dataset does not include explicit new lesion counts, which are typically used to confirm progression. 
-Therefore, we have adapted the derivation logic so that **PDu is escalated to PD if the next scan confirms progression**. This approach aligns with the intent of PCWG3 principles while addressing data limitations to ensure programmatic consistency.
-
-```{r, eval=TRUE, include=TRUE, message=FALSE}
-adrs <- adrs %>%
-  derive_extreme_event(
-    by_vars = exprs(USUBJID),  # Group by Subject
-    events = list(
-      event_joined(
-        description = "Update PDu to PD Based on Follow-Up Rules",
-        dataset_name = "adrs",
-        join_vars = exprs(AVALC, ADT, VISITNUM),  # Join on assessment variables
-        join_type = "after",  # Look at follow-up visits
-        first_cond_upper = AVALC.join == "PD" & ADT.join > ADT,  # Confirm PD
-        condition = AVALC == "PDu",  # Current status is PDu
-        set_values_to = exprs(AVALC = "PD")  # Escalate to PD
-      )
-    )
-  )
 ```
 
 
@@ -229,19 +219,19 @@ overall_tpr_table <- tribble(
   ~`Soft Tissue (RECIST 1.1) TPR`, ~`Bone Lesion (PCWG3) TPR`, ~`Overall PCWG TPR`,
   "PD", "Any", "PD",
   "Any", "PD", "PD",
-  "NE", "Non-PD, PDu, NED, or NE", "NE",
+  "NE", "Non-PD, PDu, NED or NE", "NE",
   "NED", "Non-PD", "Non-CR/Non-PD",
   "NED", "PDu", "PDu",
   "NED", "NED", "NE",
   "NED", "NE", "NE",
-  "SD", "Non-PD, PDu, NED, or NE", "SD",
-  "Non-CR/Non-PD", "Non-PD, PDu, NED, or NE", "Non-CR/Non-PD",
-  "PR", "Non-PD, PDu, NED, or NE", "PR",
+  "SD", "Non-PD, PDu, NED or NE", "SD",
+  "Non-CR/Non-PD", "Non-PD, PDu, NED or NE", "Non-CR/Non-PD",
+  "PR", "Non-PD, PDu, NED or NE", "PR",
   "CR", "Non-PD, PDu, or NE", "PR (1)",
+  "CR", "Non-PD, PDu, or NE", "Non-CR/Non-PD (2)",
   "CR", "NED", "CR"
 )
 
-# Render Colorful Table with Fixed Footnotes
 overall_tpr_table %>%
   gt() %>%
   tab_header(
@@ -254,27 +244,20 @@ overall_tpr_table %>%
     `Overall PCWG TPR` = "Overall PCWG"
   ) %>%
   tab_footnote(
-    footnote = "When no target and non-target lesions are identified at baseline, and no new lesions are identified on-study, the response will be No Evidence of Disease (NED).",
-    locations = cells_column_labels(columns = `Overall PCWG TPR`)  # Correct column name
-  ) %>%
+    footnote = "* When no target and non-target lesions are identified at baseline, and no new lesions are identified on-study, the response will be No Evidence of Disease (NED).") %>%
   tab_footnote(
-    footnote = "Progressive Disease Unconfirmed (PDu): Temporary marker of possible PD where at least 2 new bone lesions are present, but an additional scan is required for confirmation.",
-    locations = cells_column_labels(columns = `Bone Lesion (PCWG3) TPR`)  # Correct column name
-  ) %>%
+    footnote = "** Progressive Disease Unconfirmed (PDu): Temporary marker of possible PD where at least 2 new bone lesions are present, but an additional scan is required for confirmation.") %>%
   tab_footnote(
-    footnote = "(1) The overall TPR will be PR if target lesions were present at screening.",
-    locations = cells_body(columns = `Overall PCWG TPR`, rows = 11)  # Correct column name
-  ) %>%
+    footnote = "(1) The overall TPR will be PR if target lesions were present at screening.") %>%
   tab_footnote(
-    footnote = "(2) The overall TPR will be Non-CR/Non-PD if no target lesions were present at screening.",
-    locations = cells_body(columns = `Overall PCWG TPR`, rows = 12)  # Correct column name
-  )
+    footnote = "(2) The overall TPR will be Non-CR/Non-PD if no target lesions were present at screening.")
 ```
 
 
 
 #### Derive Combined Overall Time Point Response by Investigator (`OVRLRESC`) Records referenced from above table.
 
+ Note:`Non-PD` is changed to `NON_PD` at programming level to match with data
 
 ```{r, eval=TRUE, include=TRUE, message=FALSE}
 
@@ -285,37 +268,42 @@ adrs <- derive_param_computed(
   set_values_to = exprs(
     AVALC = case_when(
       
-      # Scenario 1: Soft Tissue PD or Bone Lesion PD -> Overall response = PD
+# Scenario 1 & 2: Soft Tissue PD or Bone Lesion PD -> Overall response = PD
       AVALC.SFTSRESP == "PD" | AVALC.BONERESP == "PD" ~ "PD",
 
-      # Scenario 2: Soft Tissue = NE + Bone Lesion = Non-PD, PDu, NED, or NE -> Overall response = NE
-      AVALC.SFTSRESP == "NE" & AVALC.BONERESP %in% c("Non-PD", "PDu", "NED", "NE") ~ "NE",
+# Scenario 3: Soft Tissue = NE + Bone Lesion = NON-PD, PDu, NED, or NE -> Overall response = NE
+      AVALC.SFTSRESP == "NE" & AVALC.BONERESP %in% c("NON-PD", "PDu", "NED", "NE") ~ "NE",
 
-      # Scenario 3: Soft Tissue = NED + Bone Lesion = Non-PD -> Overall response = Non-CR/Non-PD
-      AVALC.SFTSRESP == "NED" & AVALC.BONERESP == "Non-PD" ~ "Non-CR/Non-PD",
+# Scenario 4: Soft Tissue = NED + Bone Lesion = NON-PD -> Overall response = Non-CR/NON-PD
+      AVALC.SFTSRESP == "NED" & AVALC.BONERESP == "NON-PD" ~ "Non-CR/NON-PD",
 
-      # Scenario 4: Soft Tissue = NED + Bone Lesion = PDu -> Overall response = PDu
+# Scenario 5: Soft Tissue = NED + Bone Lesion = PDu -> Overall response = PDu
       AVALC.SFTSRESP == "NED" & AVALC.BONERESP == "PDu" ~ "PDu",
 
-      # Scenario 5: Soft Tissue = NED + Bone Lesion = NED -> Overall response = NE
+# Scenario 6: Soft Tissue = NED + Bone Lesion = NED -> Overall response = NE
       AVALC.SFTSRESP == "NED" & AVALC.BONERESP == "NED" ~ "NE",
 
-      # Scenario 6: Soft Tissue = NED + Bone Lesion = NE -> Overall response = NE
+# Scenario 7: Soft Tissue = NED + Bone Lesion = NE -> Overall response = NE
       AVALC.SFTSRESP == "NED" & AVALC.BONERESP == "NE" ~ "NE",
 
-      # Scenario 7: Soft Tissue = SD + Bone Lesion = Non-PD, PDu, NED, or NE -> Overall response = SD
-      AVALC.SFTSRESP == "SD" & AVALC.BONERESP %in% c("Non-PD", "PDu", "NED", "NE") ~ "SD",
+# Scenario 8: Soft Tissue = SD + Bone Lesion = NON-PD, PDu, NED, or NE -> Overall response = SD
+      AVALC.SFTSRESP == "SD" & AVALC.BONERESP %in% c("NON-PD", "PDu", "NED", "NE") ~ "SD",
 
-      # Scenario 8: Soft Tissue = Non-CR/Non-PD + Bone Lesion = Non-PD, PDu, NED, or NE -> Overall response = Non-CR/Non-PD
-      AVALC.SFTSRESP == "Non-CR/Non-PD" & AVALC.BONERESP %in% c("Non-PD", "PDu", "NED", "NE") ~ "Non-CR/Non-PD",
+# Scenario 9: Soft Tissue = Non-CR/NON-PD + Bone Lesion = NON-PD, PDu, NED, or NE -> Overall response = Non-CR/NON-PD
+      AVALC.SFTSRESP == "Non-CR/NON-PD" & AVALC.BONERESP %in% c("NON-PD", "PDu", "NED", "NE") ~ "Non-CR/NON-PD",
 
-      # Scenario 9: Soft Tissue = PR + Bone Lesion = Non-PD, PDu, NED, or NE -> Overall response = PR
-      AVALC.SFTSRESP == "PR" & AVALC.BONERESP %in% c("Non-PD", "PDu", "NED", "NE") ~ "PR",
+# Scenario 10: Soft Tissue = PR + Bone Lesion = NON-PD, PDu, NED, or NE -> Overall response = PR
+      AVALC.SFTSRESP == "PR" & AVALC.BONERESP %in% c("NON-PD", "PDu", "NED", "NE") ~ "PR",
 
-      # Scenario 10: Soft Tissue = CR + Bone Lesion = Non-PD, PDu, NE -> Overall response = PR (default to PR without screening info)
-      AVALC.SFTSRESP == "CR" & AVALC.BONERESP %in% c("Non-PD", "PDu", "NE") ~ "PR",
+# Scenario 11: Soft Tissue = CR + Bone Lesion = NON-PD, PDu, NE -> Overall response = PR 
+      #((1) The overall TPR will be PR if target lesions were present at screening.)
+      AVALC.SFTSRESP == "CR" & AVALC.BONERESP %in% c("NON-PD", "PDu", "NE") ~ "PR",
 
-      # Scenario 11: Soft Tissue = CR + Bone Lesion = NED -> Overall response = CR
+      #Soft Tissue = CR + Bone Lesion = NON-PD, PDu, NE -> Overall response =Non-CR/NON-PD 
+      #(2) The overall TPR will be Non-CR/NON-PD if no target lesions were present at screening.)
+      AVALC.SFTSRESP == "CR" & AVALC.BONERESP %in% c("NON-PD", "PDu", "NE") ~ "Non-CR/NON-PD",
+      
+# Scenario 12: Soft Tissue = CR + Bone Lesion = NED -> Overall response = CR
       AVALC.SFTSRESP == "CR" & AVALC.BONERESP == "NED" ~ "CR",
 
       # Default: If conditions are not met, assign NA
@@ -346,12 +334,13 @@ adrs <- adrs %>%
     AVAL = case_when(
       AVALC == "CR" ~ 1,            # Complete Response
       AVALC == "PR" ~ 2,            # Partial Response
-      AVALC == "SD" ~ 3,            # Stable Disease
-      AVALC == "NED" ~ 4,           # No Evidence of Disease
-      AVALC == "Non-CR/Non-PD" ~ 5, # Neither Complete Response nor Progressive Disease
-      AVALC == "NE" ~ 6,            # Not Evaluable
-      AVALC == "PDu" ~ 7,           # Progressive Disease Unconfirmed
-      AVALC == "PD" ~ 8,            # Progressive Disease
+      AVALC == "PD" ~ 3,            # Progressive Disease
+      AVALC == "PDu" ~ 4,           # Progressive Disease Unconfirmed
+      AVALC == "SD" ~ 5,            # Stable Disease
+      AVALC == "Non-CR/NON-PD" ~ 6, # Neither Complete Response nor Progressive Disease
+      AVALC == "NE" ~ 7,            # Not Evaluable
+      AVALC == "NED" ~ 8,           # No Evidence of Disease
+      AVALC == "NON-PD" ~ 9,        # Non-Progressive Disease (New Mapping for Consistency)
       TRUE ~ NA_real_               # Default for unexpected/missing AVALC values
     )
   )
@@ -365,20 +354,63 @@ dataset_vignette(
 )
 ```
 
+### Create last assesment flag for OVRLRESC for dealing with last recorded assessment `Pdu`
+```{r}
+adrs <- adrs %>%
+  restrict_derivation(
+    derivation = derive_var_extreme_flag,
+    args = params(
+      by_vars = exprs(USUBJID),                # Group records by Subject ID
+      order = exprs(ADT),                      # Sort records by Assessment Date
+      new_var = LAST_REC_FL,                   # Name of the derived flag for last record
+      mode = "last"                            # Flag only the last record per group
+    ),
+    filter = PARAMCD == "OVRLRESC"             # Restriction: Derive flag only for OVRLRESC records
+  )
+```
 
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs %>%
+    filter(PARAMCD== "OVRLRESC" & LAST_REC_FL=="Y"),
+  display_vars = exprs(USUBJID,PARAMCD,AVISIT,AVISITN,ADT,AVALC,AVAL,LAST_REC_FL)
+)
+```
 
 ### Best Overall Response (BOR) and Confirmed Best Overall Response (CBOR)
 
-BOR represents the Best Overall Responses observed during the study, reflecting valid tumor responses such as Complete Response (CR), Partial Response (PR), Stable Disease (SD), and Progressive Disease (PD). *Progressive Disease Unconfirmed (PDu)* is not included in BOR unless it is confirmed as PD based on the 2+2 flare rule, as per PCWG3 and RECIST 1.1 guidelines.
+BOR represents the Best Overall Responses observed during the study, reflecting valid tumor responses such as Complete Response (CR), Partial Response (PR), Stable Disease (SD), and Progressive Disease (PD). 
 
-CBOR, on the other hand, refers to the Confirmed Best Overall Response, requiring sustained responses like CR and PR to meet confirmation criteria (e.g., 28-day confirmation). If *PDu* is not confirmed due to missing follow-up data, CBOR excludes PDu. 
-This ensures CBOR includes only validated and confirmed tumor responses, maintaining compliance with clinical guidelines.
+CBOR, on the other hand, refers to the Confirmed Best Overall Response, requiring sustained responses like CR and PR to meet confirmation criteria, such as persistence over a predefined confirmation period (e.g., 28 days), based on PCWG3 guidelines.
 
 
+For both BOR and CBOR, *Progressive Disease Unconfirmed (PDu)* transitions to **PD** if confirmed as progression using the 2+2 rule. If **PDu remains the last recorded assessment** without follow-up confirmation, it is classified as **SD** in this vignette. However, as a more conservative approach, you may choose to classify it as **PD**. Please refer to your study documentation and protocol requirements to confirm the preferred approach to handling unresolved PDu.
+
+```{r}
+
+pdu_to_sd_event <- event(
+  description = "Transition PDu to SD if it is the last unresolved assessment",
+  dataset_name = "adrs",
+  condition = PARAMCD == "OVRLRESC" & AVALC == "PDu" & LAST_REC_FL =="Y", # PDu → SD
+  set_values_to = exprs(AVALC = "SD")
+)
+
+pdu_to_pd_event <- event_joined(
+  description = "Transition PDu to PD if progression is confirmed by subsequent PD",
+  dataset_name = "adrs",
+  join_vars = exprs(AVALC, ADT),            
+  join_type = "after",                      # Look at subsequent assessments after current record
+  first_cond_upper = AVALC.join == "PD" & ADT.join > ADT, # Next record confirms PD with later date
+  condition = PARAMCD == "OVRLRESC" & AVALC == "PDu",     # Current record is PDu
+  set_values_to = exprs(AVALC = "PD")                     # Transition PDu → PD
+)
+
+
+```
 
 ```{r, eval=TRUE, include=TRUE, message=FALSE}
 
-# Define events forBest Overall Response (BOR)
+# Define events for Best Overall Response (BOR)
 bor_cr <- event(
   description = "Complete Response (CR) for Best Overall Response",
   dataset_name = "adrs",  
@@ -434,8 +466,8 @@ In this part of the vignette, we will derive Best Overall Response based on comb
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(USUBJID), 
-    events = list(bor_cr, bor_pr, bor_sd, bor_pd, bor_ne), # Hierarchical order
-    source_datasets = list(adrs = adrs %>% filter(PARAMCD == "OVRLRESC")), # Use derived responses (OVRLRESC)
+    events = list(bor_cr, bor_pr, bor_sd, bor_pd, bor_ne,pdu_to_sd_event,pdu_to_pd_event), # Hierarchical order
+    source_datasets = list(adrs = adrs %>%filter(PARAMCD == "OVRLRESC")), # Use derived responses (OVRLRESC)
     order = exprs(event_nr, ADT), # Prioritize earliest valid event
     tmp_event_nr_var = event_nr,                            
     mode = "first",  # Retain the best response observed at the first occurrence
@@ -456,7 +488,7 @@ dataset_vignette(
 )
 ```
 
-## Derive Confirmed BOR (CBOR), i.e., CR and PR
+## Derive Confirmed BOR (CBOR)
 
 As per RECIST 1.1 and PCWG3 guidelines, Complete Response (CR) and Partial Response (PR) require confirmation within a **28-day period** to ensure their validity.
 
@@ -490,11 +522,11 @@ cbor_pr <- event_joined(
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(USUBJID),                 
-    events = list(cbor_cr, cbor_pr),         
+    events = list(cbor_cr, cbor_pr,bor_sd, bor_pd, bor_ne,pdu_to_pd_event,pdu_to_sd_event),         
     source_datasets = list(adrs = adrs %>% filter(PARAMCD == "OVRLRESC")),
     tmp_event_nr_var = event_nr,             
     order = exprs(event_nr, ADT),            
-    mode = "last",                     
+    mode = "first",                     
     set_values_to = exprs(
       PARAMCD = "CBOR",                         
       PARAM = "Confirmed Best Overall Response", 
