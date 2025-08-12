@@ -30,42 +30,39 @@ Note that only the PCWG3-specific steps are covered in this vignette. For extend
 
 In metastatic prostate cancer clinical trials, efficacy is assessed using PCWG3-modified RECIST 1.1 response, PSA tumor marker results, and bone lesion assessments. Bone lesions are particularly critical for evaluating progressive disease (PD) using 2+2 rule.
 
+### PSA Exclusion
+Prostate-specific antigen (PSA) tumor marker assessments are a key component of the PCWG3 criteria for evaluating prostate cancer progression. However, they are excluded in this vignette to focus solely on deriving PCWG3-modified RECIST 1.1 endpoints related to soft tissue and bone lesions.
+
 
 ## Response Categories Based on PCWG3 Guidelines:
 
 In this vignette, we have not included RECIST 1.1 responses (soft tissue responses), as they are well-documented and widely known, and have focused solely on PCWG3 guidelines for evaluating bone scan responses in prostate cancer. PCWG3 provides specific criteria for assessing bone lesions, including categories like PDu, NED, and PD, along with the 2+2 rule for confirming progression.
 
 
-### 1. Complete Response (CR)  
-- All known bone lesions disappear.  
-- No new bone lesions are observed.
+### 1.Progressive Disease Unconfirmed (PDu)  
+-2 new bone lesions have appeared within the flare window compared to baseline.
+                                       `OR`
+-2 new bone lesions have appeared outside the flare window compared to the first post-treatment scan.
+Note: if there is no following visit (final visit), the time point remains at PDu.
 
-Based on **PCWG3 guidelines**, the most appropriate and widely used word for "complete resolution of lesions" would be **"disappearance of lesions."** This aligns with PCWG3’s standardized terminology for Complete Response (CR), which is defined as the **disappearance of all lesions**.
+### 2.Progressive Disease (PD)  
+-If 2 new bone lesions had appeared within the flare window compared to baseline (PDu), and 2 additional new
+bone lesions have been found on the next scan confirming progression (PD).
+-The date of progression is the date of the scan showing the first 2 lesions.
+                                        `OR`
+-If 2 new bone lesions had appeared outside the flare window compared to the first post-treatment scan (PDu),
+and the 2 lesions are persistent on the next scan confirming progression (PD).
+-The date of progression is the data of the scan that first documents the second lesion.See [**Bone Lesion Confirmation Guidance (The 2+2 Rule)**](#2+2rule) for further details.
 
-
-### 2. Partial Response (PR)  
-- Improvement in bone scan findings without disappearance of lesions.  
-- Note: For subjects classified as PR, progression (PD) cannot be confirmed using the 2+2 rule, as PR excludes the presence of new lesions. Refer to study documentation for further clarification if needed.
-
-### 3. Stable Disease (SD)  
-- No progression or insufficient change observed in bone scan findings to meet criteria for PR or PD.  
-- Note: PD cannot be confirmed using the 2+2 rule for subjects classified as SD unless new lesions are observed on follow-up imaging.
-
-### 4.Progressive Disease Unconfirmed (PDu)  
--Temporary provisional status indicating suspected progression requiring follow-up confirmation.
-
-### 5.Progressive Disease (PD)  
-- Confirmed progression based on two or more new lesions and persistence over subsequent scans .See [**Bone Lesion Confirmation Guidance (The 2+2 Rule)**](#2+2rule) for further details.
-
-### 6.Not Evaluable (NE)  
--Insufficient or missing data for response evaluation.
+### 3.Not Evaluable (NE)  
+-When imaging is entirely missing or was not done, but bone lesions were present at baseline.
   
-### 7.No Evidence of Disease (NED)
--When no target and non-target lesions are identified at Baseline, and no new lesions are identified on-study.
+### 4.No Evidence of Disease (NED)
+-No bone lesions are present on the scan (whether some were present at baseline and have completely
+disappeared or whether there were no bone lesions from the start).
 
-### PSA Exclusion
-Prostate-specific antigen (PSA) tumor marker assessments are a key component of the PCWG3 criteria for evaluating prostate cancer progression. However, they are excluded in this vignette to focus solely on deriving PCWG3-modified RECIST 1.1 endpoints related to soft tissue and bone lesions.
-
+### 5.Non-Progressive Disease (Non-PD)
+-Neither PD, PDu, NED or NE.
 
 ### Bone Lesion Confirmation Guidance (The 2+2 Flare Rule){2+2rule}
 
@@ -74,11 +71,11 @@ Prostate-specific antigen (PSA) tumor marker assessments are a key component of 
 Please note: The flare period is generally considered to be the first 8–12 weeks post-baseline, primarily involving the initial post-baseline assessment. Please refer to your study documentation to confirm how the flare period is defined.
 
 1. **Flare Period: Bone Scan Progression Criteria for the First Post-Baseline Scan:**
-   - If two or more new bone lesions are identified at the first post-baseline assessment compared to the baseline scan, and then at the second assessment (conducted at least 6 weeks later), two or more additional new lesions are observed (resulting in a cumulative total of four or more new lesions since the baseline scan), the progression date is set as the date of the initial scan. This process is referred to as the "2+2 rule."
+If two or more new bone lesions are identified at the first post-baseline assessment compared to the baseline scan, and then at the second assessment (conducted at least 6 weeks later), two or more additional new lesions are observed (resulting in a cumulative total of four or more new lesions since the baseline scan), the progression date is set as the date of the initial scan. This process is referred to as the "2+2 rule."
 
 2. **After Flare Period: If No Progression is Detected at the First Assessment:**
-   - The initial post-baseline scan becomes the new reference point for subsequent scans.
-   - If two or more new lesions appear relative to this new baseline, and their persistence or increase in number is confirmed by a follow-up scan at least 6 weeks later, the progression date is recorded as the date of the first scan that noted the appearance of the two new lesions.
+The initial post-baseline scan becomes the new reference point for subsequent scans.
+If two or more new lesions appear relative to this new baseline, and their persistence or increase in number is confirmed by a follow-up scan at least 6 weeks later, the progression date is recorded as the date of the first scan that noted the appearance of the two new lesions.
 
 #### Examples of the 2+2 Rule
 
@@ -89,7 +86,13 @@ A patient with metastatic prostate cancer has a baseline bone scan showing 10 le
 In another scenario, the same patient has a baseline bone scan showing 10 lesions. The first post-baseline scan during the flare period identifies 2 new lesions, increasing the count to 12. However, a follow-up scan conducted 6 weeks later reveals no additional new lesions. According to the 2+2 rule, this is classified as a flare phenomenon, not true progression.
 
 **After Flare Period Progression**  
-A patient has a baseline scan showing 8 lesions, and the initial post-baseline scan (outside the flare period) shows no additional lesions. This scan becomes the new reference point for subsequent assessments. At a later scan, conducted 12 weeks post-baseline, 2 new lesions are observed relative to the new reference point, and a follow-up scan performed 6 weeks later confirms their persistence with 2 additional new lesions, totaling 4 new lesions since the new reference point. Progression is confirmed with the progression date recorded as the date of the first scan noting the 2 new lesions.
+A patient has a baseline scan showing 8 lesions. The initial post-baseline scan, conducted 12 weeks after baseline (outside the flare period), shows no new lesions, meaning progression is not detected. This scan becomes the new reference point for subsequent assessments.
+
+At a later scan conducted 6 weeks after the new reference point (18 weeks post-baseline), 2 new lesions are observed relative to the new reference point. A follow-up scan performed 6 weeks later (24 weeks post-baseline) confirms the persistence of the 2 new lesions.
+
+Progression is confirmed based on persistence of 2 new lesions, and the progression date is recorded as the date of the first scan noting the 2 new lesions (18 weeks post-baseline).
+
+Please check [Responses & Bone Lesion Confirmation Guidance (The 2+2 Flare Rule)](https://4870646.fs1.hubspotusercontent-na1.net/hubfs/4870646/KEO149_Info_PCWG3_03.2.pdf) for more details.
 
 
 # Required Packages
@@ -135,7 +138,7 @@ It is assumed that all datasets used in the example have been preprocessed and a
 rs <- pharmaversesdtm::rs_onco_pcwg3 
 rs <- convert_blanks_to_na(rs)
 
-#Exclude PSA records
+# Exclude PSA records
 rs <- rs %>% filter(RSTEST!="Tumor Marker Response")
 
 # ADaM data
@@ -259,6 +262,8 @@ overall_tpr_table %>%
 #### Derive Combined Overall Time Point Response by Investigator (`OVRLRESC`) Records referenced from above table.
 
  Note:`Non-PD` is changed to `NON_PD` at programming level to match with data
+ 
+Note: For Scenario 11, in this vignette, it is assumed that all subjects have target lesions identified at screening/baseline. If non-target lesions are also classified in the data, the overall response must be evaluated differently, as described in Scenario 11 and referenced in the commented code. Please review your study data to verify whether lesions are categorized as target or non-target, as this classification impacts the derivation of the overall response.
 
 ```{r, eval=TRUE, include=TRUE, message=FALSE}
 
@@ -302,7 +307,7 @@ adrs <- derive_param_computed(
 
       #Soft Tissue = CR + Bone Lesion = NON-PD, PDu, NE -> Overall response =Non-CR/NON-PD 
       #(2) The overall TPR will be Non-CR/NON-PD if no target lesions were present at screening.)
-      AVALC.SFTSRESP == "CR" & AVALC.BONERESP %in% c("NON-PD", "PDu", "NE") ~ "Non-CR/NON-PD",
+     # AVALC.SFTSRESP == "CR" & AVALC.BONERESP %in% c("NON-PD", "PDu", "NE") ~ "Non-CR/NON-PD",
       
 # Scenario 12: Soft Tissue = CR + Bone Lesion = NED -> Overall response = CR
       AVALC.SFTSRESP == "CR" & AVALC.BONERESP == "NED" ~ "CR",
@@ -333,15 +338,15 @@ dataset_vignette(
 adrs <- adrs %>%
   mutate(
     AVAL = case_when(
-      AVALC == "CR" ~ 1,            # Complete Response
+      AVALC == "CR" ~ 1,            # Complete Response 
       AVALC == "PR" ~ 2,            # Partial Response
-      AVALC == "PD" ~ 3,            # Progressive Disease
-      AVALC == "PDu" ~ 4,           # Progressive Disease Unconfirmed
-      AVALC == "SD" ~ 5,            # Stable Disease
-      AVALC == "Non-CR/NON-PD" ~ 6, # Neither Complete Response nor Progressive Disease
-      AVALC == "NE" ~ 7,            # Not Evaluable
-      AVALC == "NED" ~ 8,           # No Evidence of Disease
-      AVALC == "NON-PD" ~ 9,        # Non-Progressive Disease (New Mapping for Consistency)
+      AVALC == "SD" ~ 3,            # Stable Disease
+      AVALC == "PD" ~ 4,            # Progressive Disease
+      AVALC == "Non-CR/NON-PD" ~ 5, # Neither Complete Response nor Progressive Disease
+      AVALC == "NON-PD" ~ 6,        # Non-Progressive Disease 
+      AVALC == "PDu" ~ 7,           # Progressive Disease Unconfirmed
+      AVALC == "NE" ~ 8,            # Not Evaluable
+      AVALC == "NED" ~ 9,           # No Evidence of Disease 
       TRUE ~ NA_real_               # Default for unexpected/missing AVALC values
     )
   )
@@ -350,7 +355,7 @@ adrs <- adrs %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   adrs %>%
-    arrange(!!!get_admiral_option("subject_keys"), PARAMN,),
+    arrange(!!!get_admiral_option("subject_keys"),AVISITN,PARAMN,),
   display_vars = exprs(USUBJID,PARCAT1,PARAMCD, PARAM,PARAMN,AVISIT,AVISITN,ADT,AVALC,AVAL)
 )
 ```
