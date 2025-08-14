@@ -1,7 +1,11 @@
 # admiralonco (development version)
 
+## Documentation
+
 - New vignette "Creating ADRS with Prostate Cancer Working Group 3 (PCWG3)
 Criteria". (#304)
+
+- Display `ANL01FL` in the `NADIR` derivation in the `ADTR` vignette. (#305)
 
 # admiralonco 1.2.0
 
