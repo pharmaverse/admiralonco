@@ -133,7 +133,6 @@ In this vignette, the `RS` SDTM dataset is expected to contain:
 It is assumed that all datasets used in the example have been preprocessed and are "ready for analysis".
             
 ```{r message=FALSE}
-
 # PCWG3 SDTM data
 rs <- pharmaversesdtm::rs_onco_pcwg3 
 rs <- convert_blanks_to_na(rs)
@@ -143,8 +142,6 @@ rs <- rs %>% filter(RSTEST!="Tumor Marker Response")
 
 # ADaM data
 adsl <- pharmaverseadam::adsl
-
-
 ```
 
 ```{r, eval=TRUE, echo=FALSE}
@@ -189,12 +186,12 @@ adrs <- adrs %>%
          AVISITN=VISITNUM)
 ```
 
+### Derive `PARAMCD`, `PARAM`, `PARAMN`
 
 The next step is to assign parameter level values such as `PARAMCD`, `PARAM`, `PARAMN` to values collected from source, etc. 
 For this, a lookup can be created based on the SDTM `RSTESTCD` values.
 
 ```{r, eval=TRUE, include=TRUE, message=FALSE}
-
 # Prepare param_lookup for SDTM RSTESTCD to add metadata
 param_lookup <- tibble::tribble(
   ~RSTESTCD,   ~PARAMCD,   ~PARAM,                            ~PARAMN,
@@ -203,7 +200,6 @@ param_lookup <- tibble::tribble(
   "OVRLRESP", "OVRLRESP", "Overall Tumor Response by Investigator", 3,
 )
 
-
 adrs <- adrs %>%
   left_join(param_lookup, by = "RSTESTCD") %>% 
   mutate(
@@ -211,14 +207,13 @@ adrs <- adrs %>%
     AVALC = RSSTRESC)
 ```
 
+## Derive Combined Overall Time Point Response by Investigator (`OVRLRESC`) Parameter
 
 Although `OVRLRESP`, representing the Overall Tumor Response by Investigator is available in the source data, we have re-derived the combined overall response by Investigator (`OVRLRESC`). This derivation follows the rules from the **PCWG3 and RECIST 1.1 combined response interpretation**, as described in the PharmaSUG 2024 publication on metastatic prostate cancer response criteria ([PharmaSUG 2024, DS-287](https://www.lexjansen.com/pharmasug/2024/DS/PharmaSUG-2024-DS-287.pdf)).
 
-
-#### Table : Combined Overall Time Point Response as per summarized PCWG3 guidelines
+### Table : Combined Overall Time Point Response as per summarized PCWG3 guidelines
 
 ```{r, eval=TRUE, include=TRUE, message=FALSE,echo=FALSE}
-
 overall_tpr_table <- tribble(
   ~`Soft Tissue (RECIST 1.1) TPR`, ~`Bone Lesion (PCWG3) TPR`, ~`Overall PCWG TPR`,
   "PD", "Any", "PD",
@@ -257,16 +252,11 @@ overall_tpr_table %>%
     footnote = "(2) The overall TPR will be Non-CR/Non-PD if no target lesions were present at screening.")
 ```
 
-
-
-#### Derive Combined Overall Time Point Response by Investigator (`OVRLRESC`) Records referenced from above table.
-
- Note:`Non-PD` is changed to `NON_PD` at programming level to match with data
+Note:`Non-PD` is changed to `NON-PD` at programming level to match with data
  
 Note: For Scenario 11, in this vignette, it is assumed that all subjects have target lesions identified at screening/baseline. If non-target lesions are also classified in the data, the overall response must be evaluated differently, as described in Scenario 11 and referenced in the commented code. Please review your study data to verify whether lesions are categorized as target or non-target, as this classification impacts the derivation of the overall response.
 
 ```{r, eval=TRUE, include=TRUE, message=FALSE}
-
 adrs <- derive_param_computed(
   dataset = adrs,
   by_vars = exprs(USUBJID, VISIT, ADT, ADTF, AVISIT, AVISITN),
@@ -383,17 +373,15 @@ dataset_vignette(
 )
 ```
 
-### Best Overall Response (BOR) and Confirmed Best Overall Response (CBOR)
+## Best Overall Response (BOR) and Confirmed Best Overall Response (CBOR)
 
 BOR represents the Best Overall Responses observed during the study, reflecting valid tumor responses such as Complete Response (CR), Partial Response (PR), Stable Disease (SD), and Progressive Disease (PD). 
 
 CBOR, on the other hand, refers to the Confirmed Best Overall Response, requiring sustained responses like CR and PR to meet confirmation criteria, such as persistence over a predefined confirmation period (e.g., 28 days), based on PCWG3 guidelines.
 
-
 For both BOR and CBOR, *Progressive Disease Unconfirmed (PDu)* transitions to **PD** if confirmed as progression using the 2+2 rule. If **PDu remains the last recorded assessment** without follow-up confirmation, it is classified as **SD** in this vignette. However, as a more conservative approach, you may choose to classify it as **PD**. Please refer to your study documentation and protocol requirements to confirm the preferred approach to handling unresolved PDu.
 
 ```{r}
-
 pdu_to_sd_event <- event(
   description = "Transition PDu to SD if it is the last unresolved assessment",
   dataset_name = "adrs",
@@ -410,12 +398,9 @@ pdu_to_pd_event <- event_joined(
   condition = PARAMCD == "OVRLRESC" & AVALC == "PDu",     # Current record is PDu
   set_values_to = exprs(AVALC = "PD")                     # Transition PDu → PD
 )
-
-
 ```
 
 ```{r, eval=TRUE, include=TRUE, message=FALSE}
-
 # Define events for Best Overall Response (BOR)
 bor_cr <- event(
   description = "Complete Response (CR) ",
@@ -444,7 +429,6 @@ bor_sd <- event(
   condition = AVALC == "SD",
   set_values_to = exprs(AVALC = "SD")
 )
-
 
 bor_pd <- event(
   description = "Progressive Disease (PD) ",
@@ -478,7 +462,6 @@ In this part of the vignette, we will derive Best Overall Response based on comb
 (`PARAMCD = "OVRLRESC"`) as derived above.
 
 ```{r, eval=TRUE, include=TRUE, message=FALSE} 
-
 # Derive BOR
 adrs <- adrs %>%
   derive_extreme_event(
@@ -531,7 +514,6 @@ cbor_pr <- event_joined(
   condition = AVALC == "PR" & all(AVALC.join %in% c("CR", "PR")),          # Ensure all events align
   set_values_to = exprs(AVALC = "PR")
 )
-
 ```  
 
 
