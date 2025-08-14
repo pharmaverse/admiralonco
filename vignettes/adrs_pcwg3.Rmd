@@ -329,7 +329,7 @@ dataset_vignette(
 ```
 
 
-## Derive `AVAL` (Numeric tumor response from AVALC values)
+## Derive `AVAL` (Numeric tumor response from `AVALC` values)
 
 ```{r}
 adrs <- adrs %>%
@@ -357,7 +357,7 @@ dataset_vignette(
 )
 ```
 
-### Create last assesment flag for OVRLRESC for dealing with last recorded assessment `Pdu`
+### Create last assessment flag for OVRLRESC for dealing with last recorded assessment `Pdu`
 ```{r}
 adrs <- adrs %>%
   restrict_derivation(
@@ -462,8 +462,8 @@ no_assessment_event <- event(
 
 ## Derive Best Overall Response (BOR){#bor}
 
-Use the defined events to derive BOR based on the first occurrence in the adrs dataset, prioritizing 
-responses hierarchically (CR > PR > SD > PD > NE).
+Use the defined events to derive BOR based on the first occurrence in the `adrs`
+dataset, prioritizing responses hierarchically (CR > PR > SD > PD > NE).
 
 In this part of the vignette, we will derive Best Overall Response based on combined response 
 (`PARAMCD = "OVRLRESC"`) as derived above.

@@ -9,9 +9,11 @@ BDS
 BICR
 BOR
 Biologics
+CBOR
 CDISC
 CRF
 CRFs
+DS
 Evaluable
 GCIG
 GlaxoSmithKline
@@ -26,7 +28,12 @@ IRF
 Intergroup
 LLC
 Myeloma
+OVRLRESC
+PCWG
+PDu
 PFS
+PSA
+PharmaSUG
 Plasmacytoma
 Pre
 RECIST
@@ -55,6 +62,7 @@ immunofixation
 myeloma
 pharmaverse
 pre
+preprocessed
 programmatically
 quosures
 radiological
