@@ -134,11 +134,11 @@ It is assumed that all datasets used in the example have been preprocessed and a
             
 ```{r message=FALSE}
 # PCWG3 SDTM data
-rs <- pharmaversesdtm::rs_onco_pcwg3 
+rs <- pharmaversesdtm::rs_onco_pcwg3
 rs <- convert_blanks_to_na(rs)
 
 # Exclude PSA records
-rs <- rs %>% filter(RSTEST!="Tumor Marker Response")
+rs <- rs %>% filter(RSTEST != "Tumor Marker Response")
 
 # ADaM data
 adsl <- pharmaverseadam::adsl
@@ -147,7 +147,7 @@ adsl <- pharmaverseadam::adsl
 ```{r, eval=TRUE, echo=FALSE}
 dataset_vignette(
   rs,
-   display_vars = exprs(USUBJID,RSCAT,RSTESTCD,RSSTRESC,VISIT,VISITNUM,RSDTC)
+  display_vars = exprs(USUBJID, RSCAT, RSTESTCD, RSSTRESC, VISIT, VISITNUM, RSDTC)
 )
 ```
 
@@ -171,7 +171,7 @@ If your data collection allows for partial dates, you could apply a company-spec
 
 ```{r}
 adrs <- adrs %>%
-   derive_vars_dtm(
+  derive_vars_dtm(
     dtc = RSDTC,
     new_vars_prefix = "A",
     highest_imputation = "D",
@@ -181,9 +181,11 @@ adrs <- adrs %>%
   derive_vars_dy(
     reference_date = TRTSDT,
     source_vars = exprs(ADT)
-  )  %>%
-  mutate(AVISIT = VISIT,
-         AVISITN=VISITNUM)
+  ) %>%
+  mutate(
+    AVISIT = VISIT,
+    AVISITN = VISITNUM
+  )
 ```
 
 ### Derive `PARAMCD`, `PARAM`, `PARAMN`
@@ -194,17 +196,18 @@ For this, a lookup can be created based on the SDTM `RSTESTCD` values.
 ```{r, eval=TRUE, include=TRUE, message=FALSE}
 # Prepare param_lookup for SDTM RSTESTCD to add metadata
 param_lookup <- tibble::tribble(
-  ~RSTESTCD,   ~PARAMCD,   ~PARAM,                            ~PARAMN,
-  "SFTSRESP", "SFTSRESP", "Soft Tissue Response by Investigator",   1,
-  "BONERESP", "BONERESP", "Bone Response by Investigator",          2,
-  "OVRLRESP", "OVRLRESP", "Overall Tumor Response by Investigator", 3,
+  ~RSTESTCD,  ~PARAMCD,   ~PARAM,                                   ~PARAMN,
+  "SFTSRESP", "SFTSRESP", "Soft Tissue Response by Investigator",         1,
+  "BONERESP", "BONERESP", "Bone Response by Investigator",                2,
+  "OVRLRESP", "OVRLRESP", "Overall Tumor Response by Investigator",       3
 )
 
 adrs <- adrs %>%
-  left_join(param_lookup, by = "RSTESTCD") %>% 
+  left_join(param_lookup, by = "RSTESTCD") %>%
   mutate(
-    PARCAT1=RSCAT,
-    AVALC = RSSTRESC)
+    PARCAT1 = RSCAT,
+    AVALC = RSSTRESC
+  )
 ```
 
 ## Derive Combined Overall Time Point Response by Investigator (`OVRLRESC`) Parameter
@@ -243,13 +246,17 @@ overall_tpr_table %>%
     `Overall PCWG TPR` = "Overall PCWG"
   ) %>%
   tab_footnote(
-    footnote = "* When no target and non-target lesions are identified at baseline, and no new lesions are identified on-study, the response will be No Evidence of Disease (NED).") %>%
+    footnote = "* When no target and non-target lesions are identified at baseline, and no new lesions are identified on-study, the response will be No Evidence of Disease (NED)."
+  ) %>%
   tab_footnote(
-    footnote = "** Progressive Disease Unconfirmed (PDu): Temporary marker of possible PD where at least 2 new bone lesions are present, but an additional scan is required for confirmation.") %>%
+    footnote = "** Progressive Disease Unconfirmed (PDu): Temporary marker of possible PD where at least 2 new bone lesions are present, but an additional scan is required for confirmation."
+  ) %>%
   tab_footnote(
-    footnote = "(1) The overall TPR will be PR if target lesions were present at screening.") %>%
+    footnote = "(1) The overall TPR will be PR if target lesions were present at screening."
+  ) %>%
   tab_footnote(
-    footnote = "(2) The overall TPR will be Non-CR/Non-PD if no target lesions were present at screening.")
+    footnote = "(2) The overall TPR will be Non-CR/Non-PD if no target lesions were present at screening."
+  )
 ```
 
 Note:`Non-PD` is changed to `NON-PD` at programming level to match with data
@@ -263,43 +270,43 @@ adrs <- derive_param_computed(
   parameters = c("SFTSRESP", "BONERESP"),
   set_values_to = exprs(
     AVALC = case_when(
-      
-# Scenario 1 & 2: Soft Tissue PD or Bone Lesion PD -> Overall response = PD
+
+      # Scenario 1 & 2: Soft Tissue PD or Bone Lesion PD -> Overall response = PD
       AVALC.SFTSRESP == "PD" | AVALC.BONERESP == "PD" ~ "PD",
 
-# Scenario 3: Soft Tissue = NE + Bone Lesion = NON-PD, PDu, NED, or NE -> Overall response = NE
+      # Scenario 3: Soft Tissue = NE + Bone Lesion = NON-PD, PDu, NED, or NE -> Overall response = NE
       AVALC.SFTSRESP == "NE" & AVALC.BONERESP %in% c("NON-PD", "PDu", "NED", "NE") ~ "NE",
 
-# Scenario 4: Soft Tissue = NED + Bone Lesion = NON-PD -> Overall response = Non-CR/NON-PD
+      # Scenario 4: Soft Tissue = NED + Bone Lesion = NON-PD -> Overall response = Non-CR/NON-PD
       AVALC.SFTSRESP == "NED" & AVALC.BONERESP == "NON-PD" ~ "Non-CR/NON-PD",
 
-# Scenario 5: Soft Tissue = NED + Bone Lesion = PDu -> Overall response = PDu
+      # Scenario 5: Soft Tissue = NED + Bone Lesion = PDu -> Overall response = PDu
       AVALC.SFTSRESP == "NED" & AVALC.BONERESP == "PDu" ~ "PDu",
 
-# Scenario 6: Soft Tissue = NED + Bone Lesion = NED -> Overall response = NE
+      # Scenario 6: Soft Tissue = NED + Bone Lesion = NED -> Overall response = NE
       AVALC.SFTSRESP == "NED" & AVALC.BONERESP == "NED" ~ "NE",
 
-# Scenario 7: Soft Tissue = NED + Bone Lesion = NE -> Overall response = NE
+      # Scenario 7: Soft Tissue = NED + Bone Lesion = NE -> Overall response = NE
       AVALC.SFTSRESP == "NED" & AVALC.BONERESP == "NE" ~ "NE",
 
-# Scenario 8: Soft Tissue = SD + Bone Lesion = NON-PD, PDu, NED, or NE -> Overall response = SD
+      # Scenario 8: Soft Tissue = SD + Bone Lesion = NON-PD, PDu, NED, or NE -> Overall response = SD
       AVALC.SFTSRESP == "SD" & AVALC.BONERESP %in% c("NON-PD", "PDu", "NED", "NE") ~ "SD",
 
-# Scenario 9: Soft Tissue = Non-CR/NON-PD + Bone Lesion = NON-PD, PDu, NED, or NE -> Overall response = Non-CR/NON-PD
+      # Scenario 9: Soft Tissue = Non-CR/NON-PD + Bone Lesion = NON-PD, PDu, NED, or NE -> Overall response = Non-CR/NON-PD
       AVALC.SFTSRESP == "Non-CR/NON-PD" & AVALC.BONERESP %in% c("NON-PD", "PDu", "NED", "NE") ~ "Non-CR/NON-PD",
 
-# Scenario 10: Soft Tissue = PR + Bone Lesion = NON-PD, PDu, NED, or NE -> Overall response = PR
+      # Scenario 10: Soft Tissue = PR + Bone Lesion = NON-PD, PDu, NED, or NE -> Overall response = PR
       AVALC.SFTSRESP == "PR" & AVALC.BONERESP %in% c("NON-PD", "PDu", "NED", "NE") ~ "PR",
 
-# Scenario 11: Soft Tissue = CR + Bone Lesion = NON-PD, PDu, NE -> Overall response = PR 
-      #((1) The overall TPR will be PR if target lesions were present at screening.)
+      # Scenario 11: Soft Tissue = CR + Bone Lesion = NON-PD, PDu, NE -> Overall response = PR
+      # ((1) The overall TPR will be PR if target lesions were present at screening.)
       AVALC.SFTSRESP == "CR" & AVALC.BONERESP %in% c("NON-PD", "PDu", "NE") ~ "PR",
 
-      #Soft Tissue = CR + Bone Lesion = NON-PD, PDu, NE -> Overall response =Non-CR/NON-PD 
-      #(2) The overall TPR will be Non-CR/NON-PD if no target lesions were present at screening.)
-     # AVALC.SFTSRESP == "CR" & AVALC.BONERESP %in% c("NON-PD", "PDu", "NE") ~ "Non-CR/NON-PD",
-      
-# Scenario 12: Soft Tissue = CR + Bone Lesion = NED -> Overall response = CR
+      # Soft Tissue = CR + Bone Lesion = NON-PD, PDu, NE -> Overall response =Non-CR/NON-PD
+      # (2) The overall TPR will be Non-CR/NON-PD if no target lesions were present at screening.)
+      # AVALC.SFTSRESP == "CR" & AVALC.BONERESP %in% c("NON-PD", "PDu", "NE") ~ "Non-CR/NON-PD",
+
+      # Scenario 12: Soft Tissue = CR + Bone Lesion = NED -> Overall response = CR
       AVALC.SFTSRESP == "CR" & AVALC.BONERESP == "NED" ~ "CR",
 
       # Default: If conditions are not met, assign NA
@@ -317,7 +324,7 @@ adrs <- derive_param_computed(
 ```{r, eval=TRUE, echo=FALSE}
 dataset_vignette(
   adrs,
-   display_vars = exprs(USUBJID,PARAM,PARAMCD,PARCAT1,AVALC,AVISIT,ADT)
+  display_vars = exprs(USUBJID, PARAM, PARAMCD, PARCAT1, AVALC, AVISIT, ADT)
 )
 ```
 
@@ -328,16 +335,16 @@ dataset_vignette(
 adrs <- adrs %>%
   mutate(
     AVAL = case_when(
-      AVALC == "CR" ~ 1,            # Complete Response 
-      AVALC == "PR" ~ 2,            # Partial Response
-      AVALC == "SD" ~ 3,            # Stable Disease
-      AVALC == "PD" ~ 4,            # Progressive Disease
+      AVALC == "CR" ~ 1, # Complete Response
+      AVALC == "PR" ~ 2, # Partial Response
+      AVALC == "SD" ~ 3, # Stable Disease
+      AVALC == "PD" ~ 4, # Progressive Disease
       AVALC == "Non-CR/NON-PD" ~ 5, # Neither Complete Response nor Progressive Disease
-      AVALC == "NON-PD" ~ 6,        # Non-Progressive Disease 
-      AVALC == "PDu" ~ 7,           # Progressive Disease Unconfirmed
-      AVALC == "NE" ~ 8,            # Not Evaluable
-      AVALC == "NED" ~ 9,           # No Evidence of Disease 
-      TRUE ~ NA_real_               # Default for unexpected/missing AVALC values
+      AVALC == "NON-PD" ~ 6, # Non-Progressive Disease
+      AVALC == "PDu" ~ 7, # Progressive Disease Unconfirmed
+      AVALC == "NE" ~ 8, # Not Evaluable
+      AVALC == "NED" ~ 9, # No Evidence of Disease
+      TRUE ~ NA_real_ # Default for unexpected/missing AVALC values
     )
   )
 ```
@@ -345,8 +352,8 @@ adrs <- adrs %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   adrs %>%
-    arrange(!!!get_admiral_option("subject_keys"),AVISITN,PARAMN,),
-  display_vars = exprs(USUBJID,PARCAT1,PARAMCD, PARAM,PARAMN,AVISIT,AVISITN,ADT,AVALC,AVAL)
+    arrange(!!!get_admiral_option("subject_keys"), AVISITN, PARAMN, ),
+  display_vars = exprs(USUBJID, PARCAT1, PARAMCD, PARAM, PARAMN, AVISIT, AVISITN, ADT, AVALC, AVAL)
 )
 ```
 
@@ -356,20 +363,20 @@ adrs <- adrs %>%
   restrict_derivation(
     derivation = derive_var_extreme_flag,
     args = params(
-      by_vars = exprs(USUBJID),                # Group records by Subject ID
-      order = exprs(ADT),                      # Sort records by Assessment Date
-      new_var = LAST_REC_FL,                   # Name of the derived flag for last record
-      mode = "last"                            # Flag only the last record per group
+      by_vars = exprs(USUBJID), # Group records by Subject ID
+      order = exprs(ADT), # Sort records by Assessment Date
+      new_var = LAST_REC_FL, # Name of the derived flag for last record
+      mode = "last" # Flag only the last record per group
     ),
-    filter = PARAMCD == "OVRLRESC"             # Restriction: Derive flag only for OVRLRESC records
+    filter = PARAMCD == "OVRLRESC" # Restriction: Derive flag only for OVRLRESC records
   )
 ```
 
 ```{r, echo=FALSE}
 dataset_vignette(
   adrs %>%
-    filter(PARAMCD== "OVRLRESC" & LAST_REC_FL=="Y"),
-  display_vars = exprs(USUBJID,PARAMCD,AVISIT,AVISITN,ADT,AVALC,AVAL,LAST_REC_FL)
+    filter(PARAMCD == "OVRLRESC" & LAST_REC_FL == "Y"),
+  display_vars = exprs(USUBJID, PARAMCD, AVISIT, AVISITN, ADT, AVALC, AVAL, LAST_REC_FL)
 )
 ```
 
@@ -385,18 +392,18 @@ For both BOR and CBOR, *Progressive Disease Unconfirmed (PDu)* transitions to **
 pdu_to_sd_event <- event(
   description = "Transition PDu to SD if it is the last unresolved assessment",
   dataset_name = "adrs",
-  condition = PARAMCD == "OVRLRESC" & AVALC == "PDu" & LAST_REC_FL =="Y", # PDu → SD
+  condition = PARAMCD == "OVRLRESC" & AVALC == "PDu" & LAST_REC_FL == "Y", # PDu → SD
   set_values_to = exprs(AVALC = "SD")
 )
 
 pdu_to_pd_event <- event_joined(
   description = "Transition PDu to PD if progression is confirmed by subsequent PD",
   dataset_name = "adrs",
-  join_vars = exprs(AVALC, ADT),            
-  join_type = "after",                      # Look at subsequent assessments after current record
+  join_vars = exprs(AVALC, ADT),
+  join_type = "after", # Look at subsequent assessments after current record
   first_cond_upper = AVALC.join == "PD" & ADT.join > ADT, # Next record confirms PD with later date
-  condition = PARAMCD == "OVRLRESC" & AVALC == "PDu",     # Current record is PDu
-  set_values_to = exprs(AVALC = "PD")                     # Transition PDu → PD
+  condition = PARAMCD == "OVRLRESC" & AVALC == "PDu", # Current record is PDu
+  set_values_to = exprs(AVALC = "PD") # Transition PDu → PD
 )
 ```
 
@@ -404,21 +411,21 @@ pdu_to_pd_event <- event_joined(
 # Define events for Best Overall Response (BOR)
 bor_cr <- event(
   description = "Complete Response (CR) ",
-  dataset_name = "adrs",  
-  condition = AVALC == "CR", 
+  dataset_name = "adrs",
+  condition = AVALC == "CR",
   set_values_to = exprs(AVALC = "CR")
 )
 
 bor_pr <- event(
   description = "Partial Response (PR) ",
-  dataset_name = "adrs", 
+  dataset_name = "adrs",
   condition = AVALC == "PR",
   set_values_to = exprs(AVALC = "PR")
 )
 
 bor_non_cr_non_pd <- event(
   description = "Non-CR/Non-PD ",
-  dataset_name = "adrs", 
+  dataset_name = "adrs",
   condition = AVALC == "Non-CR/Non-PD",
   set_values_to = exprs(AVALC = "Non-CR/Non-PD")
 )
@@ -447,8 +454,8 @@ bor_ne <- event(
 no_assessment_event <- event(
   description = "No assessment data available for subject",
   dataset_name = "adrs",
-  condition = is.na(AVALC),  # Condition where AVALC is missing
-  set_values_to = exprs(AVALC = "NE")  # Assign default value as NE
+  condition = is.na(AVALC), # Condition where AVALC is missing
+  set_values_to = exprs(AVALC = "NE") # Assign default value as NE
 )
 ```
 
@@ -465,12 +472,12 @@ In this part of the vignette, we will derive Best Overall Response based on comb
 # Derive BOR
 adrs <- adrs %>%
   derive_extreme_event(
-    by_vars = exprs(USUBJID), 
-    events = list(bor_cr, bor_pr, bor_sd,pdu_to_sd_event, bor_pd,pdu_to_pd_event,bor_ne,no_assessment_event), # Hierarchical order
-    source_datasets = list(adrs = adrs %>%filter(PARAMCD == "OVRLRESC")), # Use derived responses (OVRLRESC)
+    by_vars = exprs(USUBJID),
+    events = list(bor_cr, bor_pr, bor_sd, pdu_to_sd_event, bor_pd, pdu_to_pd_event, bor_ne, no_assessment_event), # Hierarchical order
+    source_datasets = list(adrs = adrs %>% filter(PARAMCD == "OVRLRESC")), # Use derived responses (OVRLRESC)
     order = exprs(event_nr, ADT), # Prioritize earliest valid event
-    tmp_event_nr_var = event_nr,                            
-    mode = "first",  # Retain the best response observed at the first occurrence
+    tmp_event_nr_var = event_nr,
+    mode = "first", # Retain the best response observed at the first occurrence
     set_values_to = exprs(
       PARAMCD = "BOR",
       PARAM = "Best Overall Response",
@@ -482,9 +489,9 @@ adrs <- adrs %>%
 
 ```{r, echo=FALSE}
 dataset_vignette(
-  adrs%>%
-  filter(PARAMCD== "BOR"),
-  display_vars = exprs(USUBJID,PARAM,PARAMCD,AVISIT, AVISITN,ADT,AVALC,AVAL)
+  adrs %>%
+    filter(PARAMCD == "BOR"),
+  display_vars = exprs(USUBJID, PARAM, PARAMCD, AVISIT, AVISITN, ADT, AVALC, AVAL)
 )
 ```
 
@@ -499,9 +506,9 @@ cbor_cr <- event_joined(
   dataset_name = "adrs",
   join_vars = exprs(AVALC, ADT),
   join_type = "after",
-  first_cond_upper = AVALC.join == "CR" & ADT.join >= ADT + 28,  # Follow-up within 28-day window
-  condition = AVALC == "CR" & all(AVALC.join == "CR"),           # All linked records must also be CR
-  set_values_to = exprs(AVALC = "CR")                            # Set response as Confirmed CR
+  first_cond_upper = AVALC.join == "CR" & ADT.join >= ADT + 28, # Follow-up within 28-day window
+  condition = AVALC == "CR" & all(AVALC.join == "CR"), # All linked records must also be CR
+  set_values_to = exprs(AVALC = "CR") # Set response as Confirmed CR
 )
 
 # Confirmed PR Event with 28-day persistence
@@ -511,7 +518,7 @@ cbor_pr <- event_joined(
   join_vars = exprs(AVALC, ADT),
   join_type = "after",
   first_cond_upper = AVALC.join %in% c("CR", "PR") & ADT.join >= ADT + 28, # Include CR as confirmation
-  condition = AVALC == "PR" & all(AVALC.join %in% c("CR", "PR")),          # Ensure all events align
+  condition = AVALC == "PR" & all(AVALC.join %in% c("CR", "PR")), # Ensure all events align
   set_values_to = exprs(AVALC = "PR")
 )
 ```  
@@ -520,25 +527,25 @@ cbor_pr <- event_joined(
 ```{r, eval=TRUE, include=TRUE, message=FALSE}
 adrs <- adrs %>%
   derive_extreme_event(
-    by_vars = exprs(USUBJID),                 
-    events = list(cbor_cr, cbor_pr,bor_non_cr_non_pd, bor_sd,pdu_to_sd_event, bor_pd,pdu_to_pd_event,bor_ne,no_assessment_event),         
+    by_vars = exprs(USUBJID),
+    events = list(cbor_cr, cbor_pr, bor_non_cr_non_pd, bor_sd, pdu_to_sd_event, bor_pd, pdu_to_pd_event, bor_ne, no_assessment_event),
     source_datasets = list(adrs = adrs %>% filter(PARAMCD == "OVRLRESC")),
-    tmp_event_nr_var = event_nr,             
-    order = exprs(event_nr, ADT),            
-    mode = "first",                     
+    tmp_event_nr_var = event_nr,
+    order = exprs(event_nr, ADT),
+    mode = "first",
     set_values_to = exprs(
-      PARAMCD = "CBOR",                         
-      PARAM = "Confirmed Best Overall Response", 
-      PARAMN = 6             
+      PARAMCD = "CBOR",
+      PARAM = "Confirmed Best Overall Response",
+      PARAMN = 6
     )
   )
 ```
 
 ```{r, echo=FALSE}
 dataset_vignette(
-  adrs%>%
-    filter(PARAMCD== "CBOR"),
-  display_vars = exprs(USUBJID,PARAM,PARAMCD,AVISIT,AVISITN,ADT,AVALC,AVAL)
+  adrs %>%
+    filter(PARAMCD == "CBOR"),
+  display_vars = exprs(USUBJID, PARAM, PARAMCD, AVISIT, AVISITN, ADT, AVALC, AVAL)
 )
 ```
 

@@ -1,5 +1,8 @@
 # admiralonco (development version)
 
+- New vignette "Creating ADRS with Prostate Cancer Working Group 3 (PCWG3)
+Criteria". (#304)
+
 # admiralonco 1.2.0
 
 ## Documentation
