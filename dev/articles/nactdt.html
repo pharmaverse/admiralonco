@@ -167,19 +167,19 @@ data.</p>
 <h3 id="input">Single Source<a class="anchor" aria-label="anchor" href="#input"></a>
 </h3>
 <p>To derive the New Anti-Cancer Therapy start date with data from a
-single source, the function <code><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/derive_vars_merged.html">admiral::derive_vars_merged()</a></code>
+single source, the function <code><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_vars_merged.html">admiral::derive_vars_merged()</a></code>
 can be used. If numeric date is required,
-<code><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/convert_dtc_to_dt.html">admiral::convert_dtc_to_dt</a></code> , or if time part is needed,
-<code><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/convert_dtc_to_dtm.html">admiral::convert_dtc_to_dtm()</a></code> can be used as part of an
+<code><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/convert_dtc_to_dt.html">admiral::convert_dtc_to_dt</a></code> , or if time part is needed,
+<code><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/convert_dtc_to_dtm.html">admiral::convert_dtc_to_dtm()</a></code> can be used as part of an
 expression for the <code>new_vars</code> argument.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">adsl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/derive_vars_merged.html">derive_vars_merged</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">adsl</span> <span class="op">&lt;-</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_vars_merged.html">derive_vars_merged</a></span><span class="op">(</span></span>
 <span>  <span class="va">adsl_onco</span>,</span>
 <span>  dataset_add <span class="op">=</span> <span class="va">cm</span>,</span>
-<span>  by_vars <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/get_admiral_option.html">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span>,</span>
+<span>  by_vars <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/get_admiral_option.html">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span>,</span>
 <span>  order <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">NACTDT</span><span class="op">)</span>,</span>
 <span>  mode <span class="op">=</span> <span class="st">"first"</span>,</span>
-<span>  new_vars <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs</a></span><span class="op">(</span>NACTDT <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/convert_dtc_to_dt.html">convert_dtc_to_dt</a></span><span class="op">(</span><span class="va">CMSTDTC</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>  new_vars <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs</a></span><span class="op">(</span>NACTDT <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/convert_dtc_to_dt.html">convert_dtc_to_dt</a></span><span class="op">(</span><span class="va">CMSTDTC</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>  filter_add <span class="op">=</span> <span class="va">CMSCAT</span> <span class="op">==</span> <span class="st">"CHEMOTHERAPY"</span> <span class="op">&amp;</span> <span class="va">CMCAT</span> <span class="op">==</span> <span class="st">"ON TREATMENT"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <div id="htmlwidget-ac96cb3ee4656e2e9ec3" style="width:auto;height:auto;" class="datatables html-widget"></div>
@@ -190,29 +190,29 @@ expression for the <code>new_vars</code> argument.</p>
 </h3>
 <p>To derive the New Anti-Cancer Therapy start date with data from
 multiple sources, the function
-<code><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/derive_vars_extreme_event.html">admiral::derive_vars_extreme_event()</a></code> can be used.</p>
+<code><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_vars_extreme_event.html">admiral::derive_vars_extreme_event()</a></code> can be used.</p>
 <div class="section level4">
 <h4 id="prerequisite">Prerequisite<a class="anchor" aria-label="anchor" href="#prerequisite"></a>
 </h4>
 <p>Prior to calling the function, an input <code>event</code> object
 must be created for each source dataset using
-<code><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/event.html">admiral::event()</a></code>. Within this function, any
+<code><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/event.html">admiral::event()</a></code>. Within this function, any
 company-specific subsetting can be passed to the <code>condition</code>
 argument. If numeric version of the dates will be needed,
-<code><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/convert_dtc_to_dt.html">admiral::convert_dtc_to_dt()</a></code>, or if time part is needed,
-<code><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/convert_dtc_to_dtm.html">admiral::convert_dtc_to_dtm()</a></code> can be used as part of an
+<code><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/convert_dtc_to_dt.html">admiral::convert_dtc_to_dt()</a></code>, or if time part is needed,
+<code><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/convert_dtc_to_dtm.html">admiral::convert_dtc_to_dtm()</a></code> can be used as part of an
 expression for the <code>set_values_to</code> argument.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">cm_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/event.html">event</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">cm_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/event.html">event</a></span><span class="op">(</span></span>
 <span>  dataset_name <span class="op">=</span> <span class="st">"cm"</span>,</span>
 <span>  condition <span class="op">=</span> <span class="va">CMSCAT</span> <span class="op">==</span> <span class="st">"CHEMOTHERAPY"</span> <span class="op">&amp;</span> <span class="va">CMCAT</span> <span class="op">==</span> <span class="st">"ON TREATMENT"</span> <span class="op">&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">CMSTDTC</span><span class="op">)</span>,</span>
-<span>  set_values_to <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs</a></span><span class="op">(</span>NACTDT <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/convert_dtc_to_dt.html">convert_dtc_to_dt</a></span><span class="op">(</span><span class="va">CMSTDTC</span><span class="op">)</span><span class="op">)</span></span>
+<span>  set_values_to <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs</a></span><span class="op">(</span>NACTDT <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/convert_dtc_to_dt.html">convert_dtc_to_dt</a></span><span class="op">(</span><span class="va">CMSTDTC</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">pr_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/event.html">event</a></span><span class="op">(</span></span>
+<span><span class="va">pr_date</span> <span class="op">&lt;-</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/event.html">event</a></span><span class="op">(</span></span>
 <span>  dataset_name <span class="op">=</span> <span class="st">"pr"</span>,</span>
 <span>  condition <span class="op">=</span> <span class="va">PRCAT</span> <span class="op">==</span> <span class="st">"CANCER RELATED"</span> <span class="op">&amp;</span> <span class="va">PRSCAT</span> <span class="op">==</span> <span class="st">"ON TREATMENT"</span> <span class="op">&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">PRSTDTC</span><span class="op">)</span>,</span>
-<span>  set_values_to <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs</a></span><span class="op">(</span>NACTDT <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/convert_dtc_to_dt.html">convert_dtc_to_dt</a></span><span class="op">(</span><span class="va">PRSTDTC</span><span class="op">)</span><span class="op">)</span></span>
+<span>  set_values_to <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs</a></span><span class="op">(</span>NACTDT <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/convert_dtc_to_dt.html">convert_dtc_to_dt</a></span><span class="op">(</span><span class="va">PRSTDTC</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
@@ -224,8 +224,8 @@ expression for the <code>set_values_to</code> argument.</p>
 can be derived while simultaneously adding it to <code>ADSL</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">adsl</span> <span class="op">&lt;-</span> <span class="va">adsl_onco</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>  <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/derive_vars_extreme_event.html">derive_vars_extreme_event</a></span><span class="op">(</span></span>
-<span>    by_vars <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/get_admiral_option.html">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_vars_extreme_event.html">derive_vars_extreme_event</a></span><span class="op">(</span></span>
+<span>    by_vars <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/get_admiral_option.html">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span>,</span>
 <span>    order <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">NACTDT</span><span class="op">)</span>,</span>
 <span>    new_vars <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">NACTDT</span><span class="op">)</span>,</span>
 <span>    events <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">cm_date</span>, <span class="va">pr_date</span><span class="op">)</span>,</span>
@@ -250,7 +250,7 @@ Time-to-Event Source Objects</a> may be referenced for case usage.</p>
 <h3 id="par">Derive Date Parameter<a class="anchor" aria-label="anchor" href="#par"></a>
 </h3>
 <p>The <a href="https://pharmaverse.github.io/admiral/" class="external-link">admiral</a> function
-<code><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/derive_extreme_event.html">admiral::derive_extreme_event()</a></code> can be used for deriving
+<code><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_extreme_event.html">admiral::derive_extreme_event()</a></code> can be used for deriving
 parameter based on the first or last observation from single and
 multiple sources.</p>
 <p>Based on individual company standards, this parameter may be added to
@@ -258,31 +258,31 @@ an event or date dataset such as <code>ADEVENT</code> or
 <code>ADDATES</code>, which are generally intermediate datasets to
 <code>ADTTE</code>. For demonstration purpose, a new anti-cancer date
 parameter will be merged into <code>ADRS</code>. A list of
-<code><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/event.html">event()</a></code> objects is expected and this will contain the
+<code><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/event.html">event()</a></code> objects is expected and this will contain the
 sources of the dates and any company specific filtering.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">adrs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/derive_extreme_event.html">derive_extreme_event</a></span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="va">adrs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_extreme_event.html">derive_extreme_event</a></span><span class="op">(</span></span>
 <span>  dataset <span class="op">=</span> <span class="va">adrs_onco</span>,</span>
 <span>  events <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/event.html">event</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/event.html">event</a></span><span class="op">(</span></span>
 <span>      dataset_name <span class="op">=</span> <span class="st">"cm"</span>,</span>
 <span>      condition <span class="op">=</span> <span class="va">CMSCAT</span> <span class="op">==</span> <span class="st">"CHEMOTHERAPY"</span> <span class="op">&amp;</span> <span class="va">CMCAT</span> <span class="op">==</span> <span class="st">"ON TREATMENT"</span> <span class="op">&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">CMSTDTC</span><span class="op">)</span>,</span>
 <span>      set_values_to <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs</a></span><span class="op">(</span></span>
-<span>        ADT <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/convert_dtc_to_dt.html">convert_dtc_to_dt</a></span><span class="op">(</span><span class="va">CMSTDTC</span><span class="op">)</span>,</span>
+<span>        ADT <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/convert_dtc_to_dt.html">convert_dtc_to_dt</a></span><span class="op">(</span><span class="va">CMSTDTC</span><span class="op">)</span>,</span>
 <span>        AVALC <span class="op">=</span> <span class="va">CMTRT</span></span>
 <span>      <span class="op">)</span></span>
 <span>    <span class="op">)</span>,</span>
-<span>    <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/event.html">event</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/event.html">event</a></span><span class="op">(</span></span>
 <span>      dataset_name <span class="op">=</span> <span class="st">"pr"</span>,</span>
 <span>      condition <span class="op">=</span> <span class="va">PRCAT</span> <span class="op">==</span> <span class="st">"CANCER RELATED"</span> <span class="op">&amp;</span> <span class="va">PRSCAT</span> <span class="op">==</span> <span class="st">"ON TREATMENT"</span> <span class="op">&amp;</span> <span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">PRSTDTC</span><span class="op">)</span>,</span>
 <span>      set_values_to <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs</a></span><span class="op">(</span></span>
-<span>        ADT <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/convert_dtc_to_dt.html">convert_dtc_to_dt</a></span><span class="op">(</span><span class="va">PRSTDTC</span><span class="op">)</span>,</span>
+<span>        ADT <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/convert_dtc_to_dt.html">convert_dtc_to_dt</a></span><span class="op">(</span><span class="va">PRSTDTC</span><span class="op">)</span>,</span>
 <span>        AVALC <span class="op">=</span> <span class="va">PRTRT</span></span>
 <span>      <span class="op">)</span></span>
 <span>    <span class="op">)</span></span>
 <span>  <span class="op">)</span>,</span>
 <span>  source_datasets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>cm <span class="op">=</span> <span class="va">cm</span>, pr <span class="op">=</span> <span class="va">pr</span><span class="op">)</span>,</span>
-<span>  by_vars <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.0/cran-release/reference/get_admiral_option.html">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span>,</span>
+<span>  by_vars <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/get_admiral_option.html">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span>,</span>
 <span>  order <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs</a></span><span class="op">(</span><span class="va">ADT</span><span class="op">)</span>,</span>
 <span>  mode <span class="op">=</span> <span class="st">"first"</span>,</span>
 <span>  set_values_to <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs</a></span><span class="op">(</span></span>
@@ -301,7 +301,7 @@ sources of the dates and any company specific filtering.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Stefan Bundfuss, Ross Farrugia, Amit Jain, Andrew Smith, Teckla Akinyi, Samia Kabi, Stephen Gormley, Hinal Patel, Vinh Nguyen, Olga Starostecka, F. Hoffmann-La Roche AG, GlaxoSmithKline LLC, Amgen Inc., Bristol Myers Squibb.</p>
+  <p>Developed by F. Hoffmann-La Roche AG, GlaxoSmithKline LLC, Amgen Inc., Bristol Myers Squibb, Stefan Bundfuss, Amit Jain, Vinh Nguyen, Olga Starostecka, Kiran Peddamudium, Tomoyuki Namai, Ross Farrugia, Yirong Cao, Ashwini Weber.</p>
 </div>
 
 <div class="pkgdown-footer-right">
