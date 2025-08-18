@@ -24,31 +24,18 @@ Useful links:
 
 Authors:
 \itemize{
-  \item Ross Farrugia
   \item Amit Jain
-  \item Andrew Smith
-  \item Teckla Akinyi
-  \item Samia Kabi
-  \item Stephen Gormley
-  \item Hinal Patel
   \item Vinh Nguyen
   \item Olga Starostecka
+  \item Kiran Peddamudium
+  \item Tomoyuki Namai
+  \item Ross Farrugia
 }
 
 Other contributors:
 \itemize{
-  \item Uwe Bader [contributor]
-  \item Karl Kennedy [contributor]
-  \item Edoardo Mancini [contributor]
-  \item Matt Marino [contributor]
-  \item Gopi Vegesna [contributor]
-  \item Thomas Neitmann [contributor]
-  \item Annie Yang [contributor]
-  \item Konstantina Koukourikou [contributor]
-  \item Pavan Kumar [contributor]
-  \item Liming Jin [contributor]
   \item Yirong Cao [contributor]
-  \item Zhang Kangjie [contributor]
+  \item Ashwini Weber [contributor]
   \item F. Hoffmann-La Roche AG [copyright holder, funder]
   \item GlaxoSmithKline LLC [copyright holder, funder]
   \item Amgen Inc. [copyright holder, funder]
