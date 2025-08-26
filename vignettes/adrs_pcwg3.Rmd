@@ -498,7 +498,7 @@ adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(USUBJID), 
     events = list(bor_cr, bor_pr,bor_sd,pdu_to_sd_event,bor_pd,bor_non_crpd,bor_ne,bor_ned,no_data_missing),
-     source_datasets = list(adls = adsl, adrs = adrs %>%filter(PARAMCD == "OVRLRESC")),# Use derived responses (OVRLRESC)
+     source_datasets = list(adsl = adsl, adrs = adrs %>%filter(PARAMCD == "OVRLRESC")),# Use derived responses (OVRLRESC)
     order = exprs(event_nr, ADT), # Prioritize earliest valid event
     tmp_event_nr_var = event_nr,
     mode = "first", # Retain the best response observed at the first occurrence
@@ -551,7 +551,7 @@ adrs <- adrs %>%
   derive_extreme_event(
     by_vars = exprs(USUBJID),                 
     events = list(cbor_cr, cbor_pr,bor_sd,pdu_to_sd_event,bor_pd,bor_non_crpd,bor_ne,bor_ned,no_data_missing),         
-    source_datasets = list(adls = adsl, adrs = adrs %>% filter(PARAMCD == "OVRLRESC")),
+    source_datasets = list(adsl = adsl, adrs = adrs %>% filter(PARAMCD == "OVRLRESC")),
     tmp_event_nr_var = event_nr,
     order = exprs(event_nr, ADT),
     mode = "first",
