@@ -27,7 +27,7 @@ Note that only the PCWG3-specific steps are covered in this vignette. For extend
 
 # PCWG3 Guidelines for Prostate Cancer Response
 
-In metastatic prostate cancer clinical trials, efficacy is assessed using PCWG3-modified RECIST 1.1 response, PSA tumor marker results.In this vignette, we have not included RECIST 1.1 responses (soft tissue responses), as they are well-documented and widely known, and have focused solely on PCWG3 guidelines for evaluating bone scan responses in prostate cancer.
+In metastatic prostate cancer clinical trials, efficacy is assessed using PCWG3-modified RECIST 1.1 response and PSA tumor marker results. In this vignette, we have not discussed RECIST 1.1 responses (soft tissue responses), as they are well-documented and widely known, and have focused solely on PCWG3 guidelines for evaluating bone scan responses in prostate cancer.
 
 ## PSA Exclusion
 
@@ -261,7 +261,7 @@ overall_tpr_table %>%
     footnote = "* When no target and non-target lesions are identified at baseline, and no new lesions are identified on-study, the response will be No Evidence of Disease (NED)."
   ) %>%
   tab_footnote(
-    footnote = "** Progressive Disease Unconfirmed (PDu): Temporary marker of possible PD where at least 2 new bone lesions are present, but an additional scan is required for confirmation."
+    footnote = "** Progressive Disease Unconfirmed (PDu): Temporary marker of possible PD where at least 2 new bone lesions are present, but an additional scan is required for confirmation. To be updated to PD or non-PD once a subsequent scan is available. If this is the final visit, the response remains as PDu."
   ) %>%
   tab_footnote(
     footnote = "(1) The overall TPR will be PR if target lesions were present at screening."
@@ -276,12 +276,13 @@ overall_tpr_table %>%
 
 Note:`Non-PD` is changed to `NON-PD` at programming level to match with existing data.
 
-For Scenario 11, in this vignette, it is assumed that all subjects have target lesions identified at screening. If there are subjects without target lesions identified at screening the overall response must be evaluated differently, as described in Scenario 11 and referenced in the commented code. Please review your study data to verify whether screening lesions are categorized as target or non-target, as this classification impacts the derivation of the overall response.
+For Scenario 11, in this vignette, it is assumed that all subjects have target lesions identified at screening. If there are subjects without target lesions identified at screening, the overall response must be evaluated differently, as described in Scenario 11 and referenced in the commented code. Please review your study data to verify whether screening lesions are categorized as target or non-target as this classification impacts the derivation of the overall response.
 
 ```{r eval=TRUE, message=FALSE, include=TRUE}
+
 adrs <- derive_param_computed(
   dataset = adrs,
-  by_vars = exprs(!!!get_admiral_option("subject_keys"), RSEVAL, ADT, ADTF, AVISIT, AVISITN),
+  by_vars = exprs(!!!get_admiral_option("subject_keys"),!!!adsl_vars,DOMAIN,RSEVAL, ADT,ADY,ADTM,ADTF,VISIT,VISITNUM, AVISIT, AVISITN),
   parameters = c("SFTSRESP", "BONERESP"),
   set_values_to = exprs(
     AVALC = case_when(
@@ -337,7 +338,8 @@ adrs <- derive_param_computed(
 
 ```{r, eval=TRUE, echo=FALSE}
 dataset_vignette(
-  adrs,
+  adrs %>%
+    arrange(!!!get_admiral_option("subject_keys"), AVISITN, PARAMN),
   display_vars = exprs(USUBJID, PARAM, PARAMCD, PARCAT1, AVALC, AVISIT, ADT)
 )
 ```
@@ -367,34 +369,11 @@ adrs <- adrs %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   adrs %>%
-    arrange(!!!get_admiral_option("subject_keys"), AVISITN, PARAMN, ),
+    arrange(!!!get_admiral_option("subject_keys"), AVISITN, PARAMN ),
   display_vars = exprs(USUBJID, PARCAT1, PARAMCD, PARAM, PARAMN, AVISIT, AVISITN, ADT, AVALC, AVAL)
 )
 ```
 
-### Create last assessment flag for OVRLRESC for dealing with last recorded assessment `Pdu`
-
-```{r}
-adrs <- adrs %>%
-  restrict_derivation(
-    derivation = derive_var_extreme_flag,
-    args = params(
-      by_vars = exprs(USUBJID), # Group records by Subject ID
-      order = exprs(ADT), # Sort records by Assessment Date
-      new_var = LAST_REC_FL, # Name of the derived flag for last record
-      mode = "last" # Flag only the last record per group
-    ),
-    filter = PARAMCD == "OVRLRESC" # Restriction: Derive flag only for OVRLRESC records
-  )
-```
-
-```{r, echo=FALSE}
-dataset_vignette(
-  adrs %>%
-    filter(PARAMCD == "OVRLRESC" & LAST_REC_FL == "Y"),
-  display_vars = exprs(USUBJID, PARAMCD, AVISIT, AVISITN, ADT, AVALC, AVAL, LAST_REC_FL)
-)
-```
 
 ## Best Overall Response (BOR) and Confirmed Best Overall Response (CBOR)
 
@@ -402,24 +381,15 @@ BOR represents the Best Overall Responses observed during the study, reflecting 
 
 CBOR, on the other hand, refers to the Confirmed Best Overall Response, requiring sustained responses like CR and PR to meet confirmation criteria, such as persistence over a predefined confirmation period (e.g., 28 days), based on PCWG3 guidelines.
 
-For both BOR and CBOR, if _PDu remains the last recorded assessment_ without follow-up confirmation, it is classified as _SD_ in this vignette. However, as a more conservative approach, you may choose to classify it as _PD_. Please refer to your study documentation and protocol requirements to confirm the preferred approach to handling unresolved PDu.
+For both BOR and CBOR, if _PDu remains the last recorded assessment_ without follow-up confirmation, it is classified as _SD_ in this vignette. However, as a more conservative approach, you may choose to classify it as _PD_. Please refer to your study documentation and protocol requirements to confirm the preferred approach to handling _unresolved PDu_. 
 
-```{r}
-pdu_to_sd_event <- event(
-  description = "Transition PDu to SD if it is the last unresolved assessment",
-  dataset_name = "adrs",
-  condition = PARAMCD == "OVRLRESC" & AVALC == "PDu" & LAST_REC_FL == "Y", # PDu → SD
-  set_values_to = exprs(AVALC = "SD")
-)
-
-```
+Additionally, for CBOR, if _CR_ or _PR_ cannot be confirmed, it is classified as _SD_ in this vignette. Please check the event **bor_sd** defined in the next section.
 
 ### Define Events for Best Overall Response (BOR)
 
 Please note:
-- Some of these events are already defined in `{admiralonco}` (see [Pre-Defined
-Response Event Objects](../reference/event_objects.html)). The definitions are
-repeated here to show the complete picture.
+
+- Some of these events are already defined in `{admiralonco}` (see [Pre-Defined Response Event Objects](../reference/event_objects.html)). The definitions are repeated here to show the complete picture.
 - Some of these events are also used for deriving confirmed best overall response.
 
 ```{r, eval=TRUE, include=TRUE, message=FALSE}
@@ -448,7 +418,9 @@ bor_non_crpd <- event(
 bor_sd <- event(
   description = "Stable Disease (SD) ",
   dataset_name = "adrs",
-  condition = AVALC == "SD",
+  # CR and PR are included for CBOR when CR or PR couldn't be confirmed
+  # PDu can occur only as last assessment and is considered as SD
+  condition = AVALC %in% c("CR", "PR", "SD", "PDu"),
   set_values_to = exprs(AVALC = "SD")
 )
 
@@ -496,7 +468,7 @@ In this part of the vignette, we will derive Best Overall Response based on comb
 # Derive BOR
 adrs <- adrs %>%
   derive_extreme_event(
-    by_vars = exprs(USUBJID), 
+    by_vars = get_admiral_option("subject_keys"), 
     events = list(bor_cr, bor_pr,bor_sd,pdu_to_sd_event,bor_pd,bor_non_crpd,bor_ne,bor_ned,no_data_missing),
      source_datasets = list(adsl = adsl, adrs = adrs %>%filter(PARAMCD == "OVRLRESC")),# Use derived responses (OVRLRESC)
     order = exprs(event_nr, ADT), # Prioritize earliest valid event
@@ -549,7 +521,7 @@ cbor_pr <- event_joined(
 ```{r, eval=TRUE, include=TRUE, message=FALSE}
 adrs <- adrs %>%
   derive_extreme_event(
-    by_vars = exprs(USUBJID),                 
+    by_vars = get_admiral_option("subject_keys"),                
     events = list(cbor_cr, cbor_pr,bor_sd,pdu_to_sd_event,bor_pd,bor_non_crpd,bor_ne,bor_ned,no_data_missing),         
     source_datasets = list(adsl = adsl, adrs = adrs %>% filter(PARAMCD == "OVRLRESC")),
     tmp_event_nr_var = event_nr,
