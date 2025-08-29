@@ -1,6 +1,6 @@
 ---
 title: "Creating ADRS with Prostate Cancer Working Group 3 (PCWG3) Criteria"
-output: 
+output:
   rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Creating ADRS with Prostate Cancer Working Group 3 (PCWG3) Criteria}
@@ -94,7 +94,7 @@ Please check [Responses & Bone Lesion Confirmation Guidance (The 2+2 Flare Rule)
 -   [Derive Confirmed Best Overall Response (CBOR)](#cbor)
 -   [Other Endpoints](#other)
 
-# Required Packages
+## Required Packages
 
 The examples of this vignette require the following packages.
 
@@ -145,15 +145,24 @@ rs <- rs %>% filter(RSTEST != "Tumor Marker Response")
 adsl <- pharmaverseadam::adsl
 ```
 
-```{r, eval=TRUE, echo=FALSE}
+```{r echo=FALSE}
+# select subjects from adsl such that there is one subject without RS data
+rs_subjects <- unique(rs$USUBJID)
+adsl_subjects <- unique(adsl$USUBJID)
+adsl <- filter(
+  adsl,
+  USUBJID %in% union(rs_subjects, setdiff(adsl_subjects, rs_subjects)[1])
+)
+```
 
+```{r, eval=TRUE, echo=FALSE}
 ################### To be Removed in next release ######
-rs <- rs%>%
+rs <- rs %>%
   mutate(
     RSSTRESC = case_when(
       USUBJID == "01-701-1275" & VISIT == "WEEK 8" & RSTESTCD %in% c("BONERESP", "OVRLRESP") ~ "PD",
       USUBJID == "01-701-1097" & VISIT == "WEEK 16" & RSTESTCD %in% c("BONERESP", "OVRLRESP") ~ "PD",
-      TRUE ~ RSSTRESC 
+      TRUE ~ RSSTRESC
     )
   )
 ########################
@@ -234,19 +243,19 @@ Although `OVRLRESP`, representing the Overall Tumor Response by Investigator is 
 ```{r, eval=TRUE, include=TRUE, message=FALSE,echo=FALSE}
 overall_tpr_table <- tribble(
   ~`Soft Tissue (RECIST 1.1) TPR`, ~`Bone Lesion (PCWG3) TPR`, ~`Overall PCWG TPR`,
-  "PD", "Any", "PD",
-  "Any", "PD", "PD",
-  "NE", "Non-PD, PDu, NED or NE", "NE",
-  "NED", "Non-PD", "Non-CR/Non-PD",
-  "NED", "PDu", "PDu",
-  "NED", "NED", "NE",
-  "NED", "NE", "NE",
-  "SD", "Non-PD, PDu, NED or NE", "SD",
-  "Non-CR/Non-PD", "Non-PD, PDu, NED or NE", "Non-CR/Non-PD",
-  "PR", "Non-PD, PDu, NED or NE", "PR",
-  "CR", "Non-PD, PDu, or NE", "PR (1)",
-  "CR", "Non-PD, PDu, or NE", "Non-CR/Non-PD (2)",
-  "CR", "NED", "CR"
+  "PD",                            "Any",                      "PD",
+  "Any",                           "PD",                       "PD",
+  "NE",                            "Non-PD, PDu, NED or NE",   "NE",
+  "NED",                           "Non-PD",                   "Non-CR/Non-PD",
+  "NED",                           "PDu",                      "PDu",
+  "NED",                           "NED",                      "NE",
+  "NED",                           "NE",                       "NE",
+  "SD",                            "Non-PD, PDu, NED or NE",   "SD",
+  "Non-CR/Non-PD",                 "Non-PD, PDu, NED or NE",   "Non-CR/Non-PD",
+  "PR",                            "Non-PD, PDu, NED or NE",   "PR",
+  "CR",                            "Non-PD, PDu, or NE",       "PR (1)",
+  "CR",                            "Non-PD, PDu, or NE",       "Non-CR/Non-PD (2)",
+  "CR",                            "NED",                      "CR"
 )
 
 overall_tpr_table %>%
@@ -264,7 +273,7 @@ overall_tpr_table %>%
     footnote = "* When no target and non-target lesions are identified at baseline, and no new lesions are identified on-study, the response will be No Evidence of Disease (NED)."
   ) %>%
   tab_footnote(
-    footnote = "** Progressive Disease Unconfirmed (PDu): Temporary marker of possible PD where at least 2 new bone lesions are present, but an additional scan is required for confirmation. To be updated to PD or non-PD once a subsequent scan is available. If this is the final visit, the response remains as PDu."
+    footnote = "** Progressive Disease Unconfirmed (PDu): Temporary marker of possible PD where at least 2 new bone lesions are present, but an additional scan is required for confirmation. To be updated to PD or Non-PD once a subsequent scan is available. If this is the final visit, the response remains as PDu."
   ) %>%
   tab_footnote(
     footnote = "(1) The overall TPR will be PR if target lesions were present at screening."
@@ -282,14 +291,15 @@ Note:`Non-PD` is changed to `NON-PD` at programming level to match with existing
 For Scenario 11, in this vignette, it is assumed that all subjects have target lesions identified at screening. If there are subjects without target lesions identified at screening, the overall response must be evaluated differently, as described in Scenario 11 and referenced in the commented code. Please review your study data to verify whether screening lesions are categorized as target or non-target as this classification impacts the derivation of the overall response.
 
 ```{r eval=TRUE, message=FALSE, include=TRUE}
-
 adrs <- derive_param_computed(
   dataset = adrs,
-  by_vars = exprs(!!!get_admiral_option("subject_keys"),!!!adsl_vars,DOMAIN,RSEVAL, ADT,ADY,ADTM,ADTF,VISIT,VISITNUM, AVISIT, AVISITN),
+  by_vars = exprs(
+    !!!get_admiral_option("subject_keys"), !!!adsl_vars, DOMAIN, RSEVAL, ADT,
+    ADY, ADTM, ADTF, VISIT, VISITNUM, AVISIT, AVISITN
+  ),
   parameters = c("SFTSRESP", "BONERESP"),
   set_values_to = exprs(
     AVALC = case_when(
-
       # Scenario 1 & 2: Soft Tissue PD or Bone Lesion PD -> Overall response = PD
       AVALC.SFTSRESP == "PD" | AVALC.BONERESP == "PD" ~ "PD",
 
@@ -372,8 +382,8 @@ adrs <- adrs %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   adrs %>%
-    arrange(!!!get_admiral_option("subject_keys"), AVISITN, PARAMN ),
-  display_vars = exprs(USUBJID, PARCAT1, PARAMCD, PARAM, PARAMN, AVISIT, AVISITN, ADT, AVALC, AVAL)
+    arrange(!!!get_admiral_option("subject_keys"), AVISITN, PARAMN),
+  display_vars = exprs(USUBJID, PARAMCD, PARAM, AVISIT, ADT, AVALC, AVAL)
 )
 ```
 
@@ -384,7 +394,7 @@ BOR represents the Best Overall Responses observed during the study, reflecting 
 
 CBOR, on the other hand, refers to the Confirmed Best Overall Response, requiring sustained responses like CR and PR to meet confirmation criteria, such as persistence over a predefined confirmation period (e.g., 28 days), based on PCWG3 guidelines.
 
-For both BOR and CBOR, if _PDu remains the last recorded assessment_ without follow-up confirmation, it is classified as _SD_ in this vignette. However, as a more conservative approach, you may choose to classify it as _PD_. Please refer to your study documentation and protocol requirements to confirm the preferred approach to handling _unresolved PDu_. 
+For both BOR and CBOR, if _PDu remains the last recorded assessment_ without follow-up confirmation, it is classified as _SD_ in this vignette. However, as a more conservative approach, you may choose to classify it as _PD_. Please refer to your study documentation and protocol requirements to confirm the preferred approach to handling _unresolved PDu_.
 
 Additionally, for CBOR, if _CR_ or _PR_ cannot be confirmed, it is classified as _SD_ as usually done for RECIST. Please check the event `bor_sd` defined in the next section.
 
@@ -396,30 +406,29 @@ Please note:
 - Some of these events are also used for deriving confirmed best overall response.
 
 ```{r, eval=TRUE, include=TRUE, message=FALSE}
-
 bor_cr <- event(
-  description = "Complete Response (CR) ",
+  description = "Complete Response (CR)",
   dataset_name = "adrs",
   condition = AVALC == "CR",
   set_values_to = exprs(AVALC = "CR")
 )
 
 bor_pr <- event(
-  description = "Partial Response (PR) ",
+  description = "Partial Response (PR)",
   dataset_name = "adrs",
   condition = AVALC == "PR",
   set_values_to = exprs(AVALC = "PR")
 )
 
 bor_non_crpd <- event(
-  description = "Non-CR/Non-PD ",
-  dataset_name = "adrs", 
+  description = "Non-CR/Non-PD",
+  dataset_name = "adrs",
   condition = AVALC == "Non-CR/NON-PD",
   set_values_to = exprs(AVALC = "Non-CR/Non-PD")
 )
 
 bor_sd <- event(
-  description = "Stable Disease (SD) ",
+  description = "Stable Disease (SD)",
   dataset_name = "adrs",
   # CR and PR are included for CBOR when CR or PR couldn't be confirmed
   # PDu can occur only as last assessment and is considered as SD
@@ -428,20 +437,21 @@ bor_sd <- event(
 )
 
 bor_pd <- event(
-  description = "Progressive Disease (PD) ",
+  description = "Progressive Disease (PD)",
   dataset_name = "adrs",
   condition = AVALC == "PD",
   set_values_to = exprs(AVALC = "PD")
 )
 
 bor_ne <- event(
-  description = "Not Evaluable (NE) ",
+  description = "Not Evaluable (NE)",
   dataset_name = "adrs",
   condition = AVALC == "NE",
   set_values_to = exprs(AVALC = "NE")
 )
+
 bor_ned <- event(
-  description = "No Evidence of Disease (NED) ",
+  description = "No Evidence of Disease (NED)",
   dataset_name = "adrs",
   condition = AVALC == "NED",
   set_values_to = exprs(AVALC = "NED")
@@ -457,7 +467,6 @@ no_data_missing <- event(
   set_values_to = exprs(AVALC = "MISSING"),
   keep_source_vars = adsl_vars
 )
-
 ```
 
 ## Derive Best Overall Response (BOR) {#bor}
@@ -467,20 +476,24 @@ Use the defined events to derive BOR based on the first occurrence in the `adrs`
 In this part of the vignette, we will derive Best Overall Response based on combined response (`PARAMCD = "OVRLRESC"`) as derived above.
 
 ```{r, eval=TRUE, include=TRUE, message=FALSE}
-
-# Derive BOR
 adrs <- adrs %>%
   derive_extreme_event(
-    by_vars = get_admiral_option("subject_keys"), 
-    events = list(bor_cr, bor_pr, bor_sd, bor_non_crpd,bor_pd, bor_ne, bor_ned, no_data_missing),
-    source_datasets = list(adsl = adsl, adrs = adrs %>%filter(PARAMCD == "OVRLRESC")),# Use derived responses (OVRLRESC)
+    by_vars = get_admiral_option("subject_keys"),
+    events = list(
+      bor_cr, bor_pr, bor_sd, bor_non_crpd, bor_pd, bor_ne, bor_ned, no_data_missing
+    ),
+    source_datasets = list(
+      adsl = adsl,
+      adrs = adrs %>% filter(PARAMCD == "OVRLRESC") # Use derived responses (OVRLRESC)
+    ),
     order = exprs(event_nr, ADT), # Prioritize earliest valid event
     tmp_event_nr_var = event_nr,
     mode = "first", # Retain the best response observed at the first occurrence
     set_values_to = exprs(
       PARAMCD = "BOR",
       PARAM = "Best Overall Response",
-      PARAMN = 5
+      PARAMN = 5,
+      PARCAT1 = "PCWG3 and RECIST 1.1"
     )
   )
 ```
@@ -488,7 +501,7 @@ adrs <- adrs %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   adrs %>%
-    filter(PARAMCD == "BOR" & AVALC !="MISSING"),
+    filter(PARAMCD == "BOR"),
   display_vars = exprs(USUBJID, PARAM, PARAMCD, AVISIT, AVISITN, ADT, AVALC, AVAL)
 )
 ```
@@ -519,21 +532,25 @@ cbor_pr <- event_joined(
   condition = AVALC == "PR" & all(AVALC.join %in% c("CR", "PR")), # Ensure no events other than CR or PR in between
   set_values_to = exprs(AVALC = "PR")
 )
-```
 
-```{r, eval=TRUE, include=TRUE, message=FALSE}
 adrs <- adrs %>%
   derive_extreme_event(
-    by_vars = get_admiral_option("subject_keys"),                
-    events = list(cbor_cr, cbor_pr, bor_sd, bor_non_crpd, bor_pd, bor_ne, bor_ned, no_data_missing),        
-    source_datasets = list(adsl = adsl, adrs = adrs %>% filter(PARAMCD == "OVRLRESC")),
+    by_vars = get_admiral_option("subject_keys"),
+    events = list(
+      cbor_cr, cbor_pr, bor_sd, bor_non_crpd, bor_pd, bor_ne, bor_ned, no_data_missing
+    ),
+    source_datasets = list(
+      adsl = adsl,
+      adrs = adrs %>% filter(PARAMCD == "OVRLRESC")
+    ),
     tmp_event_nr_var = event_nr,
     order = exprs(event_nr, ADT),
     mode = "first",
     set_values_to = exprs(
       PARAMCD = "CBOR",
       PARAM = "Confirmed Best Overall Response",
-      PARAMN = 6
+      PARAMN = 6,
+      PARCAT1 = "PCWG3 and RECIST 1.1"
     )
   )
 ```
@@ -541,7 +558,7 @@ adrs <- adrs %>%
 ```{r, echo=FALSE}
 dataset_vignette(
   adrs %>%
-    filter(PARAMCD == "CBOR" & AVALC !="MISSING"),
+    filter(PARAMCD == "CBOR"),
   display_vars = exprs(USUBJID, PARAM, PARAMCD, AVISIT, AVISITN, ADT, AVALC, AVAL)
 )
 ```
