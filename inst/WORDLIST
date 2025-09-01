@@ -11,9 +11,11 @@ BICR
 BOR
 Bader
 Biologics
+CBOR
 CDISC
 CRF
 CRFs
+DS
 Edoardo
 Evaluable
 GCIG
@@ -40,8 +42,13 @@ LLC
 Marino
 Myeloma
 Neitmann
+OVRLRESC
+PCWG
+PDu
 PFS
+PSA
 Pavan
+PharmaSUG
 Plasmacytoma
 Pre
 RECIST
@@ -75,6 +82,7 @@ immunofixation
 myeloma
 pharmaverse
 pre
+preprocessed
 programmatically
 quosures
 radiological

@@ -96,6 +96,8 @@ navbar:
         href: articles/adrs_imwg.html
       - text: Creating ADRS with GCIG Criteria
         href: articles/adrs_gcig.html
+      - text: Creating ADRS with PCWG3 Criteria
+        href: articles/adrs_pcwg3.html
       - text: Creating ADTTE
         href: articles/adtte.html
       - text: Creating ADTR
