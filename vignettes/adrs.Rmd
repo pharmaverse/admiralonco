@@ -15,6 +15,14 @@ knitr::opts_chunk$set(
 )
 
 library(admiraldev)
+
+# remove objects which may have been created in other vignette to ensure that
+# the ones defined in admiralonco are used
+for (obj in c("bor_cr", "bor_pr", "bor_sd", "bor_non_crpd", "bor_pd", "bor_ne")) {
+  if (exists(obj, inherits = FALSE)) {
+    rm(obj)
+  }
+}
 ```
 
 # Introduction
