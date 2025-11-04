@@ -9,6 +9,9 @@
 
 Oncology extension package for ADaM in R Asset Library `{admiral}`
 
+*Explore all the other packages in the [{admiral} ecosystem](https://pharmaverse.org/e2eclinical/adam/)
+to learn more about ADaM programming in R.*
+
 ## Purpose
 
 To provide a complementary (to `{admiral}`) toolbox that enables users
@@ -26,13 +29,11 @@ To install the latest development version of the package directly from
 GitHub use the following code:
 
 ```r
-if (!requireNamespace("remotes", quietly = TRUE)) {
-  install.packages("remotes")
+if (!requireNamespace("pak", quietly = TRUE)) {
+  install.packages("pak")
 }
 
-remotes::install_github("pharmaverse/admiraldev") # This is a required dependency of {admiralonco}
-remotes::install_github("pharmaverse/admiral") # This is a required dependency of {admiralonco}
-remotes::install_github("pharmaverse/admiralonco")
+pak::pkg_install("pharmaverse/admiralonco", dependencies = TRUE)
 ```
 
 ### Dependencies

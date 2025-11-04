@@ -1,3 +1,10 @@
+# admiralonco (development version)
+
+## Documentation
+
+- A link to the [{admiral} ecosystem](https://pharmaverse.org/e2eclinical/adam/)
+page was added to the home page sidebar and main text. (#318)
+
 # admiralonco 1.3.0
 
 ## Documentation

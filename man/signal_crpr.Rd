@@ -61,7 +61,7 @@ signal_crpr(adrs, order = exprs(ADT))
 \seealso{
 \code{\link[=get_crpr_dataset]{get_crpr_dataset()}}
 
-Utilities for Dataset Checking: 
+Utilities for Dataset Checking:
 \code{\link{get_crpr_dataset}()}
 }
 \author{
