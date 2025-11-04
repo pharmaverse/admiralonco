@@ -15,9 +15,6 @@ repo:
 news:
     cran_dates: true
 
-development:
-  mode: auto
-
 home:
   links:
   - text: 🌍 {admiral} ecosytem 🌍
