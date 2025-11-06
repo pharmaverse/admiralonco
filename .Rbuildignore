@@ -4,7 +4,7 @@
 ^\.Rproj\.user$
 ^.github$
 ^docs$
-^.lintr$
+^.lintr.R$
 ^admiralonco\.Rcheck$
 ^admiralonco.*\.tar\.gz$
 ^admiralonco.*\.tgz$
