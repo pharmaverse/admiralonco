@@ -63,6 +63,7 @@ Suggests:
     DT,
     metatools,
     cli,
-    gt
+    gt,
+    withr
 VignetteBuilder: knitr
 Config/testthat/edition: 3

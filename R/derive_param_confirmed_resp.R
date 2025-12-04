@@ -150,6 +150,10 @@
 #'
 #' library(dplyr)
 #' library(admiral)
+#' # ensure that `date_source()` from admiralonco is used to avoid deprecation
+#' # warning
+#' unloadNamespace("admiralonco")
+#' library(admiralonco)
 #'
 #' # Create ADSL dataset
 #' adsl <- tibble::tribble(
@@ -325,12 +329,12 @@ derive_param_confirmed_resp <- function(dataset,
   valid_vals <- c("CR", "PR", "SD", "NON-CR/NON-PD", "PD", "NE", "ND")
   invalid_vals <- unique(resp_vals[!resp_vals %in% valid_vals])
   if (length(invalid_vals) > 0) {
-    abort(
+    cli_abort(
       paste0(
         "The function is considering only the following response values:\n",
-        enumerate(valid_vals),
+        "{.val {valid_vals}}",
         "\nThe following invalid values were found:\n",
-        enumerate(invalid_vals)
+        "{.val {invalid_vals}}"
       )
     )
   }

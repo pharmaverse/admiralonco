@@ -253,7 +253,10 @@ test_that("derive_param_bor Test 1: No source_pd", {
 
 ## Test 2: With source_pd ----
 test_that("derive_param_bor Test 2: With source_pd", {
-  pd_date <- admiral::date_source(
+  # Suppress lifecycle messages within the test environment
+  withr::local_options(list(lifecycle_verbosity = "quiet"))
+
+  pd_date <- date_source(
     dataset_name = "adrs_pd",
     date         = ADT,
     filter       = PARAMCD == "PD"
@@ -325,7 +328,7 @@ test_that("derive_param_bor Test 2: With source_pd", {
 
 ## Test 3: Error if missing records for filter_source ----
 test_that("derive_param_bor Test 3: Error if missing records for filter_source", {
-  expect_error(
+  expect_snapshot(
     derive_param_bor(
       dataset = adrs,
       dataset_adsl = adsl,
@@ -339,16 +342,18 @@ test_that("derive_param_bor Test 3: Error if missing records for filter_source",
         PARAM = "Best Overall Response"
       )
     ),
-    'PARAMCD == "MISSING RECORDS" has 0 records'
+    error = TRUE
   )
 })
 
 ## Test 4: Deprecation warning for aval_fun ----
 test_that("derive_param_bor Test 4: Deprecation warning for aval_fun", {
-  pd_date <- admiral::date_source(
-    dataset_name = "adrs_pd",
-    date         = ADT,
-    filter       = PARAMCD == "PD"
+  suppressMessages(
+    pd_date <- date_source(
+      dataset_name = "adrs_pd",
+      date         = ADT,
+      filter       = PARAMCD == "PD"
+    )
   )
 
   # Add PD rows to input ADRS dataset

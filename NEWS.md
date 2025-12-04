@@ -1,5 +1,12 @@
 # admiralonco (development version)
 
+## New Features
+
+- The deprecated function `date_source()` was copied to `{admiralonco}` to
+provide a deprecation _message_ rather than a deprecation _warning_. For this to
+have an effect the `{admiralonco}` package must be loaded _before_ the
+`{admiral}` package. (#319)
+
 ## Documentation
 
 - A link to the [{admiral} ecosystem](https://pharmaverse.org/e2eclinical/adam/)
