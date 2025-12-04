@@ -128,6 +128,10 @@
 #' library(lubridate)
 #' library(dplyr)
 #' library(admiral)
+#' # ensure that `date_source()` from admiralonco is used to avoid deprecation
+#' # warning
+#' unloadNamespace("admiralonco")
+#' library(admiralonco)
 #'
 #' adsl <- tibble::tribble(
 #'   ~USUBJID, ~TRTSDT,
@@ -245,7 +249,7 @@ derive_param_clinbenefit <- function(dataset,
           "The dataset names specified for `source_pd` and `source_resp` must be \n",
           "included in the list specified for the `source_datasets` parameter.\n",
           "Following names were provided by `source_datasets`:\n",
-          enumerate(source_names, quote_fun = squote)
+          "{.val {source_names}}"
         )
       )
     }
@@ -256,7 +260,7 @@ derive_param_clinbenefit <- function(dataset,
           "The dataset names specified for `source_resp` must be \n",
           "included in the list specified for the `source_datasets` parameter.\n",
           "Following names were provided by `source_datasets`:\n",
-          enumerate(source_names, quote_fun = squote)
+          "{.val {source_names}}"
         )
       )
     }

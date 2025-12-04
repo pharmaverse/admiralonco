@@ -1,6 +1,9 @@
 # filter_pd ----
 ## filter_pd Test 1: first PD in separate BDS dataset ----
 test_that("filter_pd Test 1: first PD in separate BDS dataset", {
+  # Suppress lifecycle messages within the test environment
+  withr::local_options(list(lifecycle_verbosity = "quiet"))
+
   adrs <- tibble::tribble(
     ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,
     "CDISCPILOT01", "01-701-1015", "OVR",    "CR",   "2016-01-25",
@@ -40,7 +43,7 @@ test_that("filter_pd Test 1: first PD in separate BDS dataset", {
   actual_output <- filter_pd(
     dataset = adrs,
     filter = PARAMCD == "OVR",
-    source_pd = admiral::date_source(
+    source_pd = date_source(
       dataset_name = "adevent",
       date = ADT,
       filter = PARAMCD == "PD",
@@ -57,6 +60,9 @@ test_that("filter_pd Test 1: first PD in separate BDS dataset", {
 
 ## filter_pd Test 2: first PD in ADSL dataset ----
 test_that("filter_pd Test 2: first PD in ADSL dataset", {
+  # Suppress lifecycle messages within the test environment
+  withr::local_options(list(lifecycle_verbosity = "quiet"))
+
   adrs <- tibble::tribble(
     ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,
     "CDISCPILOT01", "01-701-1015", "OVR",    "CR",   "2016-01-25",
@@ -96,7 +102,7 @@ test_that("filter_pd Test 2: first PD in ADSL dataset", {
   actual_output <- filter_pd(
     dataset = adrs,
     filter = PARAMCD == "OVR",
-    source_pd = admiral::date_source(
+    source_pd = date_source(
       dataset_name = "adsl",
       date = PDDT
     ),
@@ -112,6 +118,9 @@ test_that("filter_pd Test 2: first PD in ADSL dataset", {
 
 ## filter_pd Test 3: first PD in input dataset ----
 test_that("filter_pd Test 3: first PD in input dataset", {
+  # Suppress lifecycle messages within the test environment
+  withr::local_options(list(lifecycle_verbosity = "quiet"))
+
   adrs <- tibble::tribble(
     ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,
     "CDISCPILOT01", "01-701-1015", "OVR",    "CR",   "2016-01-25",
@@ -145,7 +154,7 @@ test_that("filter_pd Test 3: first PD in input dataset", {
   actual_output <- filter_pd(
     dataset = adrs,
     filter = PARAMCD == "OVR",
-    source_pd = admiral::date_source(
+    source_pd = date_source(
       dataset_name = "adrs",
       date = ADT,
       filter = PARAMCD == "PD",
@@ -162,6 +171,9 @@ test_that("filter_pd Test 3: first PD in input dataset", {
 
 ## filter_pd Test 4: first PD derived from input dataset ----
 test_that("filter_pd Test 4: first PD derived from input dataset", {
+  # Suppress lifecycle messages within the test environment
+  withr::local_options(list(lifecycle_verbosity = "quiet"))
+
   adrs <- tibble::tribble(
     ~STUDYID,       ~USUBJID,      ~PARAMCD, ~AVALC, ~ADT,
     "CDISCPILOT01", "01-701-1015", "OVR",    "CR",   "2016-01-25",
@@ -193,7 +205,7 @@ test_that("filter_pd Test 4: first PD derived from input dataset", {
   actual_output <- filter_pd(
     dataset = adrs,
     filter = PARAMCD == "OVR",
-    source_pd = admiral::date_source(
+    source_pd = date_source(
       dataset_name = "adrs",
       date = ADT,
       filter = PARAMCD == "OVR" & AVALC == "PD",
@@ -226,23 +238,17 @@ test_that("filter_pd Test 5: error if invalid source_datasets", {
     ADT = lubridate::as_date(ADT)
   )
 
-  expect_error(
+  expect_snapshot(
     filter_pd(
       dataset = adrs,
       filter = PARAMCD == "OVR",
-      source_pd = admiral::date_source(
+      source_pd = date_source(
         dataset_name = "adrs",
         date = ADT,
         filter = PARAMCD == "OVR" & AVALC == "PD",
       ),
       source_datasets = list(ars = adrs)
     ),
-    regexp = paste(
-      "The dataset name specified for `source_pd` must be included in the list",
-      " specified for the `source_datasets` parameter.",
-      "Following names were provided by `source_datasets`:",
-      "'ars'",
-      sep = "\n"
-    )
+    error = TRUE
   )
 })

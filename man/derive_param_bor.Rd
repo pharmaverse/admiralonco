@@ -162,6 +162,10 @@ library(dplyr)
 library(tibble)
 library(lubridate)
 library(admiral)
+# ensure that `date_source()` from admiralonco is used to avoid deprecation
+# warning
+unloadNamespace("admiralonco")
+library(admiralonco)
 
 # Create ADSL dataset
 adsl <- tribble(
