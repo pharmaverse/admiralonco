@@ -4,6 +4,14 @@
 
 ### Documentation
 
+- The “Ask AI” widget was added to the bottom right of each page. It
+  enables users to ask questions about
+  [admiralonco](https://pharmaverse.github.io/admiralonco/) and receive
+  answers from an LLM. It is trained on the documentation of the admiral
+  packages and provided by
+  [kapa.ai](https://docs.kapa.ai/kapa-for-open-source).
+  ([\#326](https://github.com/pharmaverse/admiralonco/issues/326))
+
 - A link to the [{admiral}
   ecosystem](https://pharmaverse.org/e2eclinical/adam/) page was added
   to the home page sidebar and main text.
