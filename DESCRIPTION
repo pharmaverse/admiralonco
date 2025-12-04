@@ -36,6 +36,7 @@ Depends: R (>= 3.5)
 Imports:
     admiral (>= 1.0.0),
     admiraldev (>= 1.0.0),
+    cli,
     dplyr (>= 0.8.4),
     lifecycle (>= 0.1.0),
     lubridate (>= 1.7.4),
@@ -62,7 +63,6 @@ Suggests:
     covr,
     DT,
     metatools,
-    cli,
     gt,
     withr
 VignetteBuilder: knitr
