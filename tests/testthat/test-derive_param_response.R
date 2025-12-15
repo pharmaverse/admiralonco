@@ -34,6 +34,9 @@ adrs <- tibble::tribble(
 
 ## Test 1: With source_pd ----
 test_that("derive_param_response Test 1: With source_pd", {
+  # Suppress lifecycle messages within the test environment
+  withr::local_options(list(lifecycle_verbosity = "quiet"))
+
   expected_output <- bind_rows(
     adrs,
     tibble::tribble(
@@ -53,7 +56,7 @@ test_that("derive_param_response Test 1: With source_pd", {
   )
 
   # Define the end of the assessment period for responses as the first PD date.
-  pd <- admiral::date_source(
+  pd <- date_source(
     dataset_name = "adrs",
     date = ADT,
     filter = PARAMCD == "PD" & AVALC == "Y"

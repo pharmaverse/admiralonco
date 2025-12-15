@@ -63,6 +63,9 @@ date, all records are included.
 library(dplyr)
 library(lubridate)
 library(admiral)
+# ensure that `date_source()` from admiralonco is used to avoid deprecation
+# warning
+unloadNamespace("admiralonco")
 library(admiralonco)
 
 # Filter OVR records up to first PD, first PD date provided in separate BDS dataset (adevent)

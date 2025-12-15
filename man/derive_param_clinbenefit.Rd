@@ -143,6 +143,10 @@ are populated with their values from \code{dataset_adsl}.
 library(lubridate)
 library(dplyr)
 library(admiral)
+# ensure that `date_source()` from admiralonco is used to avoid deprecation
+# warning
+unloadNamespace("admiralonco")
+library(admiralonco)
 
 adsl <- tibble::tribble(
   ~USUBJID, ~TRTSDT,
