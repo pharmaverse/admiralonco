@@ -97,7 +97,15 @@ Teckla Akinyi, Stefan Bundfuss
 library(dplyr)
 library(lubridate)
 library(admiral)
+# ensure that `date_source()` from admiralonco is used to avoid deprecation
+# warning
+unloadNamespace("admiralonco")
 library(admiralonco)
+#> 
+#> Attaching package: ‘admiralonco’
+#> The following objects are masked from ‘package:admiral’:
+#> 
+#>     date_source, death_event, lastalive_censor
 
 # Filter OVR records up to first PD, first PD date provided in separate BDS dataset (adevent)
 adrs <- tibble::tribble(

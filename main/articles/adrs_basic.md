@@ -324,14 +324,10 @@ pd <- date_source(
   date = ADT,
   filter = PARAMCD == "PD" & AVALC == "Y"
 )
-#> Warning: `date_source()` was deprecated in admiral 1.2.0.
-#> ℹ Please use `event()` instead.
-#> ✖ This message will turn into an error at the beginning of 2027.
+#> `date_source()` was deprecated in admiralonco 1.4.0.
+#> ✖ This message will turn into a warning {at the beginning of 2027}.
 #> ℹ See admiral's deprecation guidance:
 #>   https://pharmaverse.github.io/admiraldev/dev/articles/programming_strategy.html#deprecation
-#> This warning is displayed once every 8 hours.
-#> Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
-#> generated.
 ```
 
 An equivalent example if using `ADSL` instead could be as follows (where

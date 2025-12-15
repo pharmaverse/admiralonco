@@ -72,7 +72,7 @@ derive_param_clinbenefit(
 
   The list must contain the names provided by the `dataset_name` field
   of the
-  [`date_source()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/date_source.html)
+  [`date_source()`](https:/pharmaverse.github.io/admiralonco/main/reference/date_source.md)
   objects specified for `source_pd` and `source_resp`.
 
 - reference_date:
@@ -197,6 +197,15 @@ Andrew Smith
 library(lubridate)
 library(dplyr)
 library(admiral)
+# ensure that `date_source()` from admiralonco is used to avoid deprecation
+# warning
+unloadNamespace("admiralonco")
+library(admiralonco)
+#> 
+#> Attaching package: ‘admiralonco’
+#> The following objects are masked from ‘package:admiral’:
+#> 
+#>     date_source, death_event, lastalive_censor
 
 adsl <- tibble::tribble(
   ~USUBJID, ~TRTSDT,

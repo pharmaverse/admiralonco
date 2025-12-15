@@ -69,7 +69,7 @@ derive_param_bor(
   account.
 
   *Permitted Values:* a `date_source` object (see
-  [`date_source()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/date_source.html)
+  [`date_source()`](https:/pharmaverse.github.io/admiralonco/main/reference/date_source.md)
   for details)
 
 - source_datasets:
@@ -237,7 +237,16 @@ library(admiral)
 #> Attaching package: ‘admiral’
 #> The following objects are masked from ‘package:admiralonco’:
 #> 
-#>     death_event, lastalive_censor
+#>     date_source, death_event, lastalive_censor
+# ensure that `date_source()` from admiralonco is used to avoid deprecation
+# warning
+unloadNamespace("admiralonco")
+library(admiralonco)
+#> 
+#> Attaching package: ‘admiralonco’
+#> The following objects are masked from ‘package:admiral’:
+#> 
+#>     date_source, death_event, lastalive_censor
 
 # Create ADSL dataset
 adsl <- tribble(
@@ -317,11 +326,6 @@ pd_date <- date_source(
   date         = ADT,
   filter       = PARAMCD == "PD"
 )
-#> Warning: `date_source()` was deprecated in admiral 1.2.0.
-#> ℹ Please use `event()` instead.
-#> ✖ This message will turn into an error at the beginning of 2027.
-#> ℹ See admiral's deprecation guidance:
-#>   https://pharmaverse.github.io/admiraldev/dev/articles/programming_strategy.html#deprecation
 
 aval_fun_pass <- function(arg) {
   case_when(

@@ -169,6 +169,15 @@ Samia Kabi
 ``` r
 library(dplyr)
 library(admiral)
+# ensure that `date_source()` from admiralonco is used to avoid deprecation
+# warning
+unloadNamespace("admiralonco")
+library(admiralonco)
+#> 
+#> Attaching package: ‘admiralonco’
+#> The following objects are masked from ‘package:admiral’:
+#> 
+#>     date_source, death_event, lastalive_censor
 library(lubridate)
 library(tibble)
 

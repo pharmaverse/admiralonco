@@ -2,6 +2,19 @@
 
 ## admiralonco (development version)
 
+### New Features
+
+- The deprecated function
+  [`date_source()`](https:/pharmaverse.github.io/admiralonco/main/reference/date_source.md)
+  was copied to
+  [admiralonco](https://pharmaverse.github.io/admiralonco/) to provide a
+  deprecation *message* rather than a deprecation *warning*. For this to
+  have an effect the
+  [admiralonco](https://pharmaverse.github.io/admiralonco/) package must
+  be loaded *after* the
+  [admiral](https://pharmaverse.github.io/admiral/) package.
+  ([\#319](https://github.com/pharmaverse/admiralonco/issues/319))
+
 ### Documentation
 
 - The “Ask AI” widget was added to the bottom right of each page. It
