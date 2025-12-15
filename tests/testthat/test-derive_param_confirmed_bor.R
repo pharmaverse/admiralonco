@@ -63,7 +63,7 @@ adrs <- tibble::tribble(
     new_vars = exprs(TRTSDT)
   )
 
-pd_date <- admiral::date_source(
+pd_date <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == "PD"
@@ -224,7 +224,7 @@ test_that("derive_param_confirmed_bor Test 3: error if invalid response values",
       new_vars = exprs(TRTSDT)
     )
 
-  expect_error(
+  expect_snapshot(
     derive_param_confirmed_bor(
       adrs,
       dataset_adsl = adsl,
@@ -239,7 +239,7 @@ test_that("derive_param_confirmed_bor Test 3: error if invalid response values",
         PARAM = "Best Confirmed Overall Response by Investigator"
       )
     ),
-    regexp = "The following invalid values were found:\n`iCR`"
+    error = TRUE
   )
 })
 

@@ -1,5 +1,12 @@
 # admiralonco (development version)
 
+## New Features
+
+- The deprecated function `date_source()` was copied to `{admiralonco}` to
+provide a deprecation _message_ rather than a deprecation _warning_. For this to
+have an effect the `{admiralonco}` package must be loaded _after_ the
+`{admiral}` package. (#319)
+
 ## Documentation
 
 - The "Ask AI" widget was added to the bottom right of each page. It enables users

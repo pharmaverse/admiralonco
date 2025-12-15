@@ -57,7 +57,7 @@ adrs <- tibble::tribble(
     STUDYID = "XX1234"
   )
 
-pd_date <- admiral::date_source(
+pd_date <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == "PD"
@@ -193,7 +193,7 @@ test_that("derive_param_confirmed_resp Test 3: error if invalid response values"
       STUDYID = "XX1234"
     )
 
-  expect_error(
+  expect_snapshot(
     derive_param_confirmed_resp(
       adrs,
       dataset_adsl = adsl,
@@ -206,7 +206,7 @@ test_that("derive_param_confirmed_resp Test 3: error if invalid response values"
         PARAM = "Confirmed Response by Investigator"
       )
     ),
-    regexp = "The following invalid values were found:\n`iCR`"
+    error = TRUE
   )
 })
 

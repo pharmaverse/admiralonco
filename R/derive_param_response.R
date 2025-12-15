@@ -116,6 +116,10 @@
 #' @examples
 #' library(dplyr)
 #' library(admiral)
+#' # ensure that `date_source()` from admiralonco is used to avoid deprecation
+#' # warning
+#' unloadNamespace("admiralonco")
+#' library(admiralonco)
 #' library(lubridate)
 #' library(tibble)
 #'
