@@ -122,7 +122,7 @@ In this vignette, the `RS` SDTM dataset is expected to contain:
 
 # PCWG3 SDTM data
 rs <- pharmaversesdtm::rs_onco_pcwg3
-lb <- pharmaversesdtm::lb_onco_pcwg
+lb <- pharmaversesdtm::lb_onco_pcwg3
 
 # Filter only PSA records
 lb <- lb %>% 
