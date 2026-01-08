@@ -648,10 +648,12 @@ psa50_confirmed <- event_joined(
 )
 
 # PSA50-N – no PSA50 response
+# mode = "last" ensures that, for non-responders (subjects who never reach PCHG <= -50), the "no response" event is anchored to their last available PSA assessment
 psa50_n <- event(
   description   = "No PSA50 response",
   dataset_name  = "adpsa",
   condition     = TRUE,
+  mode = "last",
   set_values_to = exprs(
     AVALC = "N",
     AVAL  = 0
@@ -684,10 +686,12 @@ psa90_confirmed <- event_joined(
 )
 
 # PSA90-N – no PSA90 response
+# mode = "last" ensures that, for non-responders (subjects who never reach PCHG <= -90), the "no response" event is anchored to their last available PSA assessment
 psa90_n <- event(
   description   = "No PSA90 response",
   dataset_name  = "adpsa",
   condition     = TRUE,
+  mode = "last",
   set_values_to = exprs(
     AVALC = "N",
     AVAL  = 0
