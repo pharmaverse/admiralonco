@@ -19,7 +19,8 @@ template:
       data-consent-screen-disclaimer="By clicking 'Allow tracking', you consent to anonymous user tracking which helps us improve our service. We don't collect any personally identifiable information."
       data-consent-screen-accept-button-text="Allow tracking"
       data-consent-screen-reject-button-text="No, thanks"
-      data-modal-example-questions="Tell me a little about the {admiralonco} package., What are some important {admiralonco} vignette and what do they describe?"
+      data-modal-search-placeholder="Ask me a question about {admiralonco} or the {admiral} ecosystem..."
+      data-modal-example-questions="Tell me a little about the {admiralonco} package., What are some important {admiralonco} vignettes and what do they describe?"
       data-modal-z-index="9999"
       ></script>search:
   exclude: ['news/index.html']
@@ -92,24 +93,14 @@ reference:
      * In Year 1, there will be a message issued if you use the function/argument, but it will still be available to use.
      * In Year 2, a warning will be produced if you use the function/argument, but it will still be available to use.
      * In Year 3, an error will be produced if you use the function/argument and no longer be able to use.
-     * Finally, after 3 years, the function/argument and related documentation and tests will be removed from `{admiral}`.
+     * Finally, after 3 years, the function/argument and related documentation and tests will be removed from `{admiralonco}`.
 
-     *Note: Guidance on replacement functionality will be found in the message produced as well as in the function's
-     documentation.*
+     *Note: Guidance on replacement functionality will be found in the message
+     produced as well as in the function's documentation.*
 
      Below, you can find a list of functions in the process of being deprecated:
    contents:
    - has_keyword("deprecated")
-
- - title: Superseded
-   desc: |
-     Superseded functions have been replaced with more flexible functions that
-     allow for construction of more diverse endpoints for a wider array of
-     oncology indications, beyond solid tumor/RECIST. However, we will not be
-     removing these functions from `{admiralonco}` in the near future and they
-     will continue to be supported.
-   contents:
-   - has_keyword("superseded")
 
 navbar:
   structure:

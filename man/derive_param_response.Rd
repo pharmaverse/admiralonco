@@ -47,10 +47,9 @@ All observations in \code{dataset} defining the response data fulfilling the
 the end of the assessment period as defined by \code{source_pd}.
 \itemize{
 \item For subjects with at least one response before the end of the assessment
-period, \code{AVALC} is set to \code{"Y"}, \code{AVAL} to \code{1}, and \code{ADT} to the first
-date when the response occurred.
-\item For all other subjects \code{AVALC} is set to \code{"N"}, \code{AVAL} to \code{0}, and
-\code{ADT} to \code{NA}.
+period, \code{AVALC} is set to \code{"Y"} and \code{ADT} to the first date when the
+response occurred.
+\item For all other subjects \code{AVALC} is set to \code{"N"} and \code{ADT} to \code{NA}.
 }}
 
 \item{source_datasets}{Source dataset
@@ -71,7 +70,7 @@ new parameter, e.g. \code{exprs(PARAMCD = "RSP", PARAM = "Response by investigat
 
 The values must be symbols, character strings, numeric values or \code{NA}.}
 
-\item{aval_fun}{\emph{Deprecated}, please use \code{set_values_to} instead.
+\item{aval_fun}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Please use \code{set_values_to} instead.
 
 Function to map character analysis value (\code{AVALC}) to numeric analysis
 value (\code{AVAL})
@@ -88,15 +87,13 @@ The input dataset with a new parameter indicating if and when a
 response occurred
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}} The \code{derive_param_response()} function has
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} The \code{derive_param_response()} function has
 been superseded in favor of \code{derive_extreme_event()}.
 
-Adds a parameter indicating if a response has been observed.
-If a response has been observed, \code{AVALC} is set to "Y", \code{AVAL} to 1 and \code{ADT}
-is set to the
-first date when a response has been observed.
-If a response has not been observed, \code{AVALC} is set to "N", \code{AVAL} to 0 and
-\code{ADT} is set NA.
+Adds a parameter indicating if a response has been observed. If a response
+has been observed, \code{AVALC} is set to "Y" and \code{ADT} is set to the first date
+when a response has been observed. If a response has not been observed,
+\code{AVALC} is set to "N" and \code{ADT} is set NA.
 }
 \details{
 \enumerate{
@@ -110,10 +107,9 @@ as defined by \code{pd_source}) is added to the response dataset.
 fulfilled is selected.
 \item For each observation in \code{dataset_adsl} a new observation is created.
 \itemize{
-\item For subjects with a response \code{AVALC} is set to \code{"Y"}, \code{AVAL} to \code{1}, and
-\code{ADT} to  the first date (\code{ADT}) where the response condition is fulfilled.
-\item For all other subjects \code{AVALC} is set to \code{"N"}, \code{AVAL} to \code{0}
-and \code{ADT} to \code{NA}.
+\item For subjects with a response \code{AVALC} is set to \code{"Y"} and \code{ADT} to
+the first date (\code{ADT}) where the response condition is fulfilled.
+\item For all other subjects \code{AVALC} is set to \code{"N"} and \code{ADT} to \code{NA}.
 }
 \item The variables specified by the \code{set_values_to} parameter are added to
 the new observations.
@@ -186,7 +182,8 @@ derive_param_response(
   arrange(USUBJID, PARAMCD, ADT)
 }
 \seealso{
-Other superseded: 
+Other deprecated: 
+\code{\link{date_source}()},
 \code{\link{derive_param_bor}()},
 \code{\link{derive_param_clinbenefit}()},
 \code{\link{derive_param_confirmed_bor}()},
@@ -196,5 +193,5 @@ Other superseded:
 \author{
 Samia Kabi
 }
-\concept{superseded}
-\keyword{superseded}
+\concept{deprecated}
+\keyword{deprecated}

@@ -1,8 +1,8 @@
 #' Adds a Parameter for Clinical Benefit
 #'
 #' @description
-#' `r lifecycle::badge("superseded")` The `derive_param_clinbenefit()` function
-#' has been superseded in favor of `derive_extreme_event()`.
+#' `r lifecycle::badge("deprecated")` The `derive_param_clinbenefit()` function
+#' has been deprecated in favor of `derive_extreme_event()`.
 #'
 #' Adds a parameter for clinical benefit/disease control
 #'
@@ -48,9 +48,6 @@
 #'
 #'   + `N` for subjects present in `dataset_adsl` but not present in `dataset`
 #'   or the dataset identified in `source_resp`.
-#'
-#'   \item `AVAL` is derived using `AVALC` as input to the function specified in
-#'   `aval_fun`.
 #'
 #'   \item The variables specified by `set_values_to` are added to the new observations
 #'   with values equal to the values specified in the same.
@@ -98,7 +95,7 @@
 #' that must elapse before an evaluable non-PD assessment counts toward determining
 #' clinical benefit.
 #'
-#' @param aval_fun *Deprecated*, please use `set_values_to` instead.
+#' @param aval_fun `r lifecycle::badge("deprecated")` Please use `set_values_to` instead.
 #'
 #' Function to map character analysis value (`AVALC`) to numeric analysis value
 #' (`AVAL`)
@@ -118,8 +115,8 @@
 #'
 #' @return The input dataset with a new parameter for clinical benefit
 #'
-#' @family superseded
-#' @keywords superseded
+#' @family deprecated
+#' @keywords deprecated
 #'
 #' @export
 #'
@@ -208,6 +205,17 @@ derive_param_clinbenefit <- function(dataset,
                                      clinben_vals = c("CR", "PR", "SD", "NON-CR/NON-PD"),
                                      set_values_to,
                                      subject_keys = get_admiral_option("subject_keys")) {
+  deprecate_inform(
+    when = "1.4",
+    what = "derive_param_clinbenefit()",
+    with = "admiral::derive_extreme_event()",
+    details = c(
+      x = "This message will turn into a warning at the beginning of 2027.",
+      i = "See admiral's deprecation guidance:
+      https://pharmaverse.github.io/admiraldev/dev/articles/programming_strategy.html#deprecation"
+    )
+  )
+
   # Assertions and quotes
   reference_date <- assert_symbol(enexpr(reference_date))
   assert_vars(subject_keys)
@@ -231,13 +239,11 @@ derive_param_clinbenefit <- function(dataset,
   assert_character_vector(clinben_vals)
 
   if (!missing(aval_fun)) {
-    deprecate_warn(
+    deprecate_stop(
       "0.4.0",
       "derive_param_clinbenefit(aval_fun = )",
       "derive_param_clinbenefit(set_values_to = )"
     )
-    assert_function(aval_fun)
-    set_values_to <- exprs(!!!set_values_to, AVAL = {{ aval_fun }}(AVALC))
   }
 
   source_names <- names(source_datasets)

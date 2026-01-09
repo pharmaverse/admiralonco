@@ -1,7 +1,7 @@
 #' Adds a Parameter for Confirmed Best Overall Response
 #'
 #' @description
-#' `r lifecycle::badge("superseded")` The `derive_param_confirmed_bor()`
+#' `r lifecycle::badge("deprecated")` The `derive_param_confirmed_bor()`
 #' function has been superseded in favor of `derive_extreme_event()`.
 #'
 #' Adds a parameter for confirmed best overall response (BOR)
@@ -95,7 +95,7 @@
 #'
 #'   *Permitted Values:* a logical scalar
 #'
-#' @param aval_fun *Deprecated*, please use `set_values_to` instead.
+#' @param aval_fun `r lifecycle::badge("deprecated")` Please use `set_values_to` instead.
 #'
 #'   Function to map character analysis value (`AVALC`) to numeric analysis
 #'   value (`AVAL`)
@@ -181,8 +181,6 @@
 #'   variables are kept. If the selected record is from `dataset_adsl`, all
 #'   variables which are in both `dataset` and `dataset_adsl` are kept.
 #'
-#'   1. The `AVAL` variable is added and set to `aval_fun(AVALC)`.
-#'
 #'   1. The variables specified by the `set_values_to` parameter are added to
 #'   the new observations.
 #'
@@ -191,8 +189,8 @@
 #' @return The input dataset with a new parameter for confirmed best overall
 #'   response
 #'
-#' @family superseded
-#' @keywords superseded
+#' @family deprecated
+#' @keywords deprecated
 #'
 #' @author Stefan Bundfuss
 #'
@@ -342,6 +340,17 @@ derive_param_confirmed_bor <- function(dataset,
                                        aval_fun,
                                        set_values_to,
                                        subject_keys = get_admiral_option("subject_keys")) {
+  deprecate_inform(
+    when = "1.4",
+    what = "derive_param_confirmed_bor()",
+    with = "admiral::derive_extreme_event()",
+    details = c(
+      x = "This message will turn into a warning at the beginning of 2027.",
+      i = "See admiral's deprecation guidance:
+      https://pharmaverse.github.io/admiraldev/dev/articles/programming_strategy.html#deprecation"
+    )
+  )
+
   # Check input parameters
   filter_source <- assert_filter_cond(enexpr(filter_source))
   reference_date <- assert_symbol(enexpr(reference_date))
@@ -359,12 +368,11 @@ derive_param_confirmed_bor <- function(dataset,
   assert_param_does_not_exist(dataset, set_values_to$PARAMCD)
 
   if (!missing(aval_fun)) {
-    deprecate_warn(
+    deprecate_stop(
       "0.4.0",
       "derive_param_confirmed_bor(aval_fun = )",
       "derive_param_confirmed_bor(set_values_to = )"
     )
-    set_values_to <- exprs(!!!set_values_to, AVAL = {{ aval_fun }}(AVALC))
   }
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # filter_pd and filter_source: Filter source dataset using filter_source----

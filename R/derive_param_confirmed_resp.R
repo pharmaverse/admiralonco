@@ -1,7 +1,7 @@
 #' Adds a Parameter for Confirmed Response
 #'
 #' @description
-#' `r lifecycle::badge("superseded")` The `derive_param_confirmed_resp()`
+#' `r lifecycle::badge("deprecated")` The `derive_param_confirmed_resp()`
 #' function has been superseded in favor of `derive_extreme_event()`.
 #'
 #' Adds a parameter for confirmed response
@@ -70,7 +70,7 @@
 #'
 #'   *Permitted Values:* a logical scalar
 #'
-#' @param aval_fun *Deprecated*, please use `set_values_to` instead.
+#' @param aval_fun `r lifecycle::badge("deprecated")` Please use `set_values_to` instead.
 #'
 #'   Function to map character analysis value (`AVALC`) to numeric analysis
 #'   value (`AVAL`)
@@ -129,8 +129,6 @@
 #'   the response criteria are fulfilled. For all other subjects in
 #'   `dataset_adsl` `AVALC` is set to `"N"` and `ADT` to `NA`.
 #'
-#'   \item The `AVAL` variable is added and set to `aval_fun(AVALC)`.
-#'
 #'   \item The variables specified by the `set_values_to` parameter are added to
 #'   the new observations.
 #'
@@ -139,8 +137,8 @@
 #'
 #' @return The input dataset with a new parameter for confirmed response
 #'
-#' @family superseded
-#' @keywords superseded
+#' @family deprecated
+#' @keywords deprecated
 #'
 #' @author Stefan Bundfuss
 #'
@@ -274,6 +272,17 @@ derive_param_confirmed_resp <- function(dataset,
                                         aval_fun,
                                         set_values_to,
                                         subject_keys = get_admiral_option("subject_keys")) {
+  deprecate_inform(
+    when = "1.4",
+    what = "derive_param_confirmed_resp()",
+    with = "admiral::derive_extreme_event()",
+    details = c(
+      x = "This message will turn into a warning at the beginning of 2027.",
+      i = "See admiral's deprecation guidance:
+      https://pharmaverse.github.io/admiraldev/dev/articles/programming_strategy.html#deprecation"
+    )
+  )
+
   # Check input parameters
   filter_source <- assert_filter_cond(enexpr(filter_source))
   assert_integer_scalar(ref_confirm, subset = "non-negative")
@@ -291,12 +300,11 @@ derive_param_confirmed_resp <- function(dataset,
   }
 
   if (!missing(aval_fun)) {
-    deprecate_warn(
+    deprecate_stop(
       "0.4.0",
       "derive_param_confirmed_resp(aval_fun = )",
       "derive_param_confirmed_resp(set_values_to = )"
     )
-    set_values_to <- exprs(!!!set_values_to, AVAL = {{ aval_fun }}(AVALC))
   }
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # filter_pd and filter_source: Filter source dataset using filter_source----

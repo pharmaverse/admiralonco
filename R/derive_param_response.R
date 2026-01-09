@@ -2,15 +2,13 @@
 #' Disease
 #'
 #' @description
-#' `r lifecycle::badge("superseded")` The `derive_param_response()` function has
+#' `r lifecycle::badge("deprecated")` The `derive_param_response()` function has
 #' been superseded in favor of `derive_extreme_event()`.
 #'
-#' Adds a parameter indicating if a response has been observed.
-#' If a response has been observed, `AVALC` is set to "Y", `AVAL` to 1 and `ADT`
-#'  is set to the
-#' first date when a response has been observed.
-#' If a response has not been observed, `AVALC` is set to "N", `AVAL` to 0 and
-#' `ADT` is set NA.
+#' Adds a parameter indicating if a response has been observed. If a response
+#' has been observed, `AVALC` is set to "Y" and `ADT` is set to the first date
+#' when a response has been observed. If a response has not been observed,
+#' `AVALC` is set to "N" and `ADT` is set NA.
 #'
 #' @param dataset Input dataset
 #'
@@ -52,11 +50,10 @@
 #'   the end of the assessment period as defined by `source_pd`.
 #'
 #'   + For subjects with at least one response before the end of the assessment
-#'   period, `AVALC` is set to `"Y"`, `AVAL` to `1`, and `ADT` to the first
-#'   date when the response occurred.
+#'   period, `AVALC` is set to `"Y"` and `ADT` to the first date when the
+#'   response occurred.
 #'
-#'   + For all other subjects `AVALC` is set to `"N"`, `AVAL` to `0`, and
-#'    `ADT` to `NA`.
+#'   + For all other subjects `AVALC` is set to `"N"` and `ADT` to `NA`.
 #'
 #' @param set_values_to Variables to set
 #'
@@ -66,14 +63,13 @@
 #'
 #'   The values must be symbols, character strings, numeric values or `NA`.
 #'
-#' @param aval_fun *Deprecated*, please use `set_values_to` instead.
+#' @param aval_fun `r lifecycle::badge("deprecated")` Please use `set_values_to` instead.
 #'
 #'   Function to map character analysis value (`AVALC`) to numeric analysis
 #'   value (`AVAL`)
 #'
 #'   The (first) argument of the function must expect a character vector and the
 #'   function must return a numeric vector.
-#'
 #'
 #' @param subject_keys Variables to uniquely identify a subject
 #'
@@ -93,10 +89,9 @@
 #'   fulfilled is selected.
 #'
 #'   1. For each observation in `dataset_adsl` a new observation is created.
-#'       + For subjects with a response `AVALC` is set to `"Y"`, `AVAL` to `1`, and
-#'       `ADT` to  the first date (`ADT`) where the response condition is fulfilled.
-#'       + For all other subjects `AVALC` is set to `"N"`, `AVAL` to `0`
-#'       and `ADT` to `NA`.
+#'       + For subjects with a response `AVALC` is set to `"Y"` and `ADT` to
+#'       the first date (`ADT`) where the response condition is fulfilled.
+#'       + For all other subjects `AVALC` is set to `"N"` and `ADT` to `NA`.
 #'
 #'   1. The variables specified by the `set_values_to` parameter are added to
 #'   the new observations.
@@ -108,8 +103,8 @@
 #' @return The input dataset with a new parameter indicating if and when a
 #' response occurred
 #'
-#' @family superseded
-#' @keywords superseded
+#' @family deprecated
+#' @keywords deprecated
 #'
 #' @export
 #'
@@ -185,6 +180,17 @@ derive_param_response <- function(dataset,
                                   set_values_to,
                                   aval_fun,
                                   subject_keys = get_admiral_option("subject_keys")) {
+  deprecate_inform(
+    when = "1.4",
+    what = "derive_param_response()",
+    with = "admiral::derive_extreme_event()",
+    details = c(
+      x = "This message will turn into a warning at the beginning of 2027.",
+      i = "See admiral's deprecation guidance:
+      https://pharmaverse.github.io/admiraldev/dev/articles/programming_strategy.html#deprecation"
+    )
+  )
+
   # ---- checking and quoting ----
   assert_vars(subject_keys)
   assert_data_frame(
@@ -200,12 +206,11 @@ derive_param_response <- function(dataset,
   }
 
   if (!missing(aval_fun)) {
-    deprecate_warn(
+    deprecate_stop(
       "0.4.0",
       "derive_param_response(aval_fun = )",
       "derive_param_response(set_values_to = )"
     )
-    set_values_to <- exprs(!!!set_values_to, AVAL = {{ aval_fun }}(AVALC))
   }
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

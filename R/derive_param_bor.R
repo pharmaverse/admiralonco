@@ -1,8 +1,8 @@
 #' Adds a Parameter for Best Overall Response (without confirmation)
 #'
 #' @description
-#' `r lifecycle::badge("superseded")` The `derive_param_bor()` function has been
-#' superseded in favor of `derive_extreme_event()`.
+#' `r lifecycle::badge("deprecated")` The `derive_param_bor()` function has been
+#' deprecated in favor of `derive_extreme_event()`.
 #'
 #' Adds a parameter for best overall response, without confirmation, optionally up to
 #' first progressive disease
@@ -10,7 +10,7 @@
 #' @details
 #'    Calculates the best overall response (BOR) parameter, as detailed below.
 #'
-#'    Records after PD can be removed using the source_pd and source_datasets
+#'    Records after PD can be removed using the `source_pd` and `source_datasets`
 #'    arguments.
 #'
 #'   Note:
@@ -25,9 +25,7 @@
 #'   4. The Best Response, from the records in steps 1 to 3, is then selected in the following
 #'      order of preference: CR, PR, SD, NON-CR/NON-PD, PD, NE, MISSING
 #'
-#'   5. The `AVAL` column is added and set using the `aval_fun(AVALC)` function
-#'
-#'   6. The columns specified by the `set_values_to` parameter and records
+#'   5. The columns specified by the `set_values_to` parameter and records
 #'      are added to the dataframe passed into the `dataset` argument
 #'
 #'  Note: Any responses of SD or NON-CR/NON-PD that occur before `reference_date` +
@@ -117,7 +115,7 @@
 #'
 #'   *Permitted Values:* a logical scalar
 #'
-#' @param aval_fun *Deprecated*, please use `set_values_to` instead.
+#' @param aval_fun `r lifecycle::badge("deprecated")` Please use `set_values_to` instead.
 #'
 #'   Function to map character analysis value (`AVALC`) to numeric analysis
 #'   value (`AVAL`)
@@ -137,8 +135,6 @@
 #'   *Permitted Values:* A list of symbols created using `exprs()`.
 #'
 #' @examples
-#'
-#' library(magrittr)
 #' library(dplyr)
 #' library(tibble)
 #' library(lubridate)
@@ -247,12 +243,12 @@
 #'   filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
 #'   source_pd = pd_date,
 #'   source_datasets = list(adrs = adrs),
-#'   aval_fun = aval_fun_pass,
 #'   reference_date = TRTSDT,
 #'   ref_start_window = 28,
 #'   set_values_to = exprs(
 #'     PARAMCD = "BOR",
-#'     PARAM = "Best Overall Response"
+#'     PARAM = "Best Overall Response",
+#'     AVAL = aval_fun_pass(AVALC)
 #'   )
 #' ) %>%
 #'   filter(PARAMCD == "BOR")
@@ -260,8 +256,8 @@
 #'
 #' @author Stephen Gormley
 #'
-#' @family superseded
-#' @keywords superseded
+#' @family deprecated
+#' @keywords deprecated
 #'
 #' @return The dataframe passed in the `dataset` argument with additional columns and/or
 #'         rows as set in the `set_values_to` argument.
@@ -277,6 +273,17 @@ derive_param_bor <- function(dataset,
                              aval_fun,
                              set_values_to,
                              subject_keys = get_admiral_option("subject_keys")) {
+  deprecate_inform(
+    when = "1.4",
+    what = "derive_param_bor()",
+    with = "admiral::derive_extreme_event()",
+    details = c(
+      x = "This message will turn into a warning at the beginning of 2027.",
+      i = "See admiral's deprecation guidance:
+      https://pharmaverse.github.io/admiraldev/dev/articles/programming_strategy.html#deprecation"
+    )
+  )
+
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # Assert statements (checked in order of signature) ----
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -319,8 +326,7 @@ derive_param_bor <- function(dataset,
   )
 
   if (!missing(aval_fun)) {
-    deprecate_warn("0.4.0", "derive_param_bor(aval_fun = )", "derive_param_bor(set_values_to = )")
-    set_values_to <- exprs(!!!set_values_to, AVAL = {{ aval_fun }}(AVALC))
+    deprecate_stop("0.4.0", "derive_param_bor(aval_fun = )", "derive_param_bor(set_values_to = )")
   }
 
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
