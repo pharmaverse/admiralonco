@@ -294,12 +294,14 @@ derive_param_clinbenefit <- function(dataset,
 
   if (!is.null(source_pd)) {
     # Look for valid non-PD measurements after window from reference date
-    ovr_data <- filter_pd(
-      dataset = dataset,
-      filter = !!filter_source,
-      source_pd = source_pd,
-      source_datasets = source_datasets,
-      subject_keys = subject_keys
+    suppressMessages(
+      ovr_data <- filter_pd(
+        dataset = dataset,
+        filter = !!filter_source,
+        source_pd = source_pd,
+        source_datasets = source_datasets,
+        subject_keys = subject_keys
+      )
     )
   } else {
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

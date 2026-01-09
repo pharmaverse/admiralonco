@@ -313,13 +313,15 @@ derive_param_confirmed_resp <- function(dataset,
 
   if (!is.null(source_pd)) {
     # Restrict input dataset
-    source_data <- dataset %>%
-      filter_pd(
-        filter = !!filter_source,
-        source_pd = source_pd,
-        source_datasets = source_datasets,
-        subject_keys = subject_keys
-      )
+    suppressMessages(
+      source_data <- dataset %>%
+        filter_pd(
+          filter = !!filter_source,
+          source_pd = source_pd,
+          source_datasets = source_datasets,
+          subject_keys = subject_keys
+        )
+    )
   } else {
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     # filter_source: Filter using filter_source argument ----

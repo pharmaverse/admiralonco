@@ -53,13 +53,13 @@ adrs <- tibble::tribble(
     new_vars = exprs(TRTSDT)
   )
 
-pd <- admiral::date_source(
+pd <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == "PD" & AVALC == "Y" & ANL01FL == "Y"
 )
 
-resp <- admiral::date_source(
+resp <- date_source(
   dataset_name = "adrs",
   date = ADT,
   filter = PARAMCD == "RSP" & AVALC == "Y" & ANL01FL == "Y"

@@ -190,7 +190,6 @@ derive_param_response <- function(dataset,
       https://pharmaverse.github.io/admiraldev/dev/articles/programming_strategy.html#deprecation"
     )
   )
-
   # ---- checking and quoting ----
   assert_vars(subject_keys)
   assert_data_frame(
@@ -220,15 +219,17 @@ derive_param_response <- function(dataset,
 
   if (!is.null(source_pd)) {
     #----  Only records from `dataset` where `filter_source` before PD ----
-    resp_before_pd <- dataset %>%
-      filter_pd(
-        # Need to specify a filter otherwise:
-        # ERROR ! Argument `filter_source` is missing, with no default
-        filter = !!filter_s,
-        source_pd = source_pd,
-        source_datasets = source_datasets,
-        subject_keys = exprs(!!!subject_keys)
-      )
+    suppressMessages(
+      resp_before_pd <- dataset %>%
+        filter_pd(
+          # Need to specify a filter otherwise:
+          # ERROR ! Argument `filter_source` is missing, with no default
+          filter = !!filter_s,
+          source_pd = source_pd,
+          source_datasets = source_datasets,
+          subject_keys = exprs(!!!subject_keys)
+        )
+    )
   } else {
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     # filter_source: Filter using filter_source argument ----

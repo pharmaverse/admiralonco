@@ -335,13 +335,15 @@ derive_param_bor <- function(dataset,
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
   if (!is.null(source_pd)) {
-    dataset_filter <- dataset %>%
-      filter_pd(
-        filter          = !!filter_source,
-        source_pd       = source_pd,
-        source_datasets = source_datasets,
-        subject_keys    = subject_keys
-      )
+    suppressMessages(
+      dataset_filter <- dataset %>%
+        filter_pd(
+          filter          = !!filter_source,
+          source_pd       = source_pd,
+          source_datasets = source_datasets,
+          subject_keys    = subject_keys
+        )
+    )
   } else {
     #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     # filter_source: Filter using filter_source argument ----
