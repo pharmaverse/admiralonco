@@ -55,7 +55,7 @@ ader_bor <- ader_tte %>%
     dataset_add = adrs,
     filter_add = PARAMCD == "BOR" & ANL01FL == "Y",
     by_vars = get_admiral_option("subject_keys"),
-    new_vars = exprs(BOR = AVAL)
+    new_vars = exprs(BOR = AVAL, BORC = AVALC)
   )
 
 ader_aseq <- ader_bor %>%
