@@ -18,9 +18,13 @@ library(stringr)
 # as needed and assign to the variables below.
 # For illustration purposes read in admiral test data
 
+data("admiral_adsl")
+data("admiral_adrs")
+
+adsl <- admiral_adsl
+adrs <- admiral_adrs
+
 adtte <- pharmaverseadam::adtte_onco
-adrs <- pharmaverseadam::adrs_onco
-adsl <- pharmaverseadam::adsl
 adlb <- pharmaverseadam::adlb
 advs <- pharmaverseadam::advs
 adex <- pharmaverseadam::adex %>%
