@@ -119,7 +119,6 @@ In this vignette, the `RS` SDTM dataset is expected to contain:
 -   Combined responses derived from both RECIST 1.1 (soft tissue) and PCWG3 (bone lesion) guidelines as collected at source.
 
 ```{r message=FALSE}
-
 # PCWG3 SDTM data
 rs <- pharmaversesdtm::rs_onco_pcwg3
 lb <- pharmaversesdtm::lb_onco_pcwg3
@@ -218,7 +217,10 @@ adpsa <- adpsa %>%
 
 ### Derive `PARAMCD`, `PARAM`, `PARAMN`
 
-The next step is to assign parameter level values such as `PARAMCD`, `PARAM`, `PARAMN` to values collected from source, etc. For `RS`, a lookup can be created based on the SDTM `RSTESTCD` values and for `ADPSA(LB)`they are directly applied.
+The next step is to assign parameter level values such as `PARAMCD`, `PARAM`,
+`PARAMN` to values collected from source, etc. For `RS`, a lookup can be created
+based on the SDTM `RSTESTCD` values and for `ADPSA` (`LB`) they are directly
+applied.
 
 ```{r, eval=TRUE, include=TRUE, message=FALSE}
 # Prepare param_lookup for SDTM RSTESTCD to add metadata
@@ -481,7 +483,9 @@ no_data_missing <- event(
 
 ### Derive Best Overall Response (BOR) {#bor}
 
-Use the defined events to derive BOR based on the first occurrence in the `adrs` dataset, prioritizing responses hierarchically (CR \> PR \> SD \> Non-CR/NON-PD \> PD \> NE \> NED \> MISSING).
+Use the defined events to derive BOR based on the first occurrence in the `adrs`
+dataset, prioritizing responses hierarchically (CR \> PR \> SD \> NON-CR/NON-PD
+\> PD \> NE \> NED \> MISSING).
 
 In this part of the vignette, we will derive Best Overall Response based on combined response (`PARAMCD = "OVRLRESC"`) as derived above.
 
@@ -620,10 +624,11 @@ dataset_vignette(
 
 ### Define Events for all PSA endpoints
 
-For responder the first assessment of response is selected. For non-responder the last PSA assessment is selected.
+For responder the first assessment of response is selected. For non-responder
+the last PSA assessment is selected. Subjects wihtout baseline but with a
+post-baseline PSA assessment are considered as non-responder.
 
 ```{r}
-
 # PSA50-Y – first time PCHG <= -50
 psa50_y <- event(
   description   = "First time PSA50 (PCHG <= -50)",
@@ -646,19 +651,6 @@ psa50_confirmed <- event_joined(
   set_values_to   = exprs(
     AVALC = "Y",
     AVAL  = 1
-  )
-)
-
-# PSA50-N – no PSA50 response
-# mode = "last" ensures that, for non-responders (subjects who never reach PCHG <= -50), the "no response" event is anchored to their last available PSA assessment
-psa50_n <- event(
-  description   = "No PSA50 response",
-  dataset_name  = "adpsa",
-  condition     = TRUE,
-  mode = "last",
-  set_values_to = exprs(
-    AVALC = "N",
-    AVAL  = 0
   )
 )
 
@@ -687,10 +679,11 @@ psa90_confirmed <- event_joined(
   )
 )
 
-# PSA90-N – no PSA90 response
-# mode = "last" ensures that, for non-responders (subjects who never reach PCHG <= -90), the "no response" event is anchored to their last available PSA assessment
-psa90_n <- event(
-  description   = "No PSA90 response",
+# PSA-N – no PSA response
+# mode = "last" ensures that, for non-responders (subjects who never reach PCHG <= -xx),
+# the "no response" event is anchored to their last available PSA assessment
+psa_n <- event(
+  description   = "No PSA response",
   dataset_name  = "adpsa",
   condition     = TRUE,
   mode = "last",
@@ -716,13 +709,12 @@ psa_missing <- event(
 ### Derive Unconfirmed PSA50 PSA90 (PSAURS) {#psaurs}
 
 ```{r}
-
 # PSA50URS (unconfirmed >=50% decline)
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = get_admiral_option("subject_keys"),
     # 1) Y: response, 2) N: no response (with PSA data), 3) MISSING: no PSA data at all
-    events  = list(psa50_y, psa50_n, psa_missing),
+    events  = list(psa50_y, psa_n, psa_missing),
     source_datasets = list(
       adpsa = adpsa,
       adsl  = adsl
@@ -742,7 +734,7 @@ adrs <- adrs %>%
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = get_admiral_option("subject_keys"),
-    events  = list(psa90_y, psa90_n, psa_missing),
+    events  = list(psa90_y, psa_n, psa_missing),
     source_datasets = list(
       adpsa = adpsa,
       adsl  = adsl
@@ -763,13 +755,12 @@ adrs <- adrs %>%
 ### Derive Confirmed PSA50 PSA90 (PSACRS) {#psacrs}
 
 ```{r}
-
 # PSA50CRS (confirmed >=50% decline)
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = get_admiral_option("subject_keys"),
     # confirmed response, then no response (with PSA), then MISSING (no PSA)
-    events  = list(psa50_confirmed, psa50_n, psa_missing),
+    events  = list(psa50_confirmed, psa_n, psa_missing),
     source_datasets = list(
       adpsa = adpsa,
       adsl  = adsl
@@ -789,7 +780,7 @@ adrs <- adrs %>%
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = get_admiral_option("subject_keys"),
-    events  = list(psa90_confirmed, psa90_n, psa_missing),
+    events  = list(psa90_confirmed, psa_n, psa_missing),
     source_datasets = list(
       adpsa = adpsa,
       adsl  = adsl
