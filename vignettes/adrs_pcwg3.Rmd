@@ -581,7 +581,7 @@ dataset_vignette(
 
 In this section, we derive PSA50 (\>=50% decline from baseline) and PSA90 (\>=90% decline) endpoints, both unconfirmed and confirmed, using `derive_extreme_event()` applied to PSA percent change from baseline (`PCHG`) derived from the LB domain (ADPSA). For all PSA endpoints, response (`AVALC = "Y"`) is prioritized over no response (`AVALC = "N"`), and subjects without any PSA measurements are assigned `AVALC = "MISSING"` for this vignette.
 
-### Derive BASE, CHG, PCHG for PSA (ADPSA)
+### Derive `BASE`, `CHG`, `PCHG` for PSA (ADPSA)
 
 As the `LB` domain is used in this vignette, the baseline variables need to be derived. Alternatively, the `ADLB` dataset could be used. Then this step could be skipped.
 
@@ -624,7 +624,7 @@ dataset_vignette(
 ### Define Events for all PSA endpoints
 
 For responder the first assessment of response is selected. For non-responder
-the last PSA assessment is selected. Subjects wihtout baseline but with a
+the last PSA assessment is selected. Subjects without baseline but with a
 post-baseline PSA assessment are considered as non-responder.
 
 ```{r}
