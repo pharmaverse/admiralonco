@@ -155,7 +155,7 @@ dataset_vignette(
 
 ## Pre-processing of Input Records {#input}
 
-At this step, it may be useful to join `ADSL` to your `RS` and `LB`domains. Only the `ADSL` variables used for derivations are selected at this step.
+At this step, it may be useful to join `ADSL` to your `RS` and `LB` domains. Only the `ADSL` variables used for derivations are selected at this step.
 
 ```{r eval=TRUE}
 adsl_vars <- exprs(TRTSDT)
@@ -579,6 +579,8 @@ In this section, we derive PSA50 (\>=50% decline from baseline) and PSA90 (\>=90
 
 ### Derive BASE, CHG, PCHG for PSA (ADPSA)
 
+As the `LB` domain is used in this vignette, the baseline variables need to be derived. Alternatively, the `ADLB` dataset could be used. Then this step could be skipped.
+
 ```{r}
 adpsa <- adpsa %>%
   # Baseline: last non-missing PSA on/ before TRTSDT
@@ -618,9 +620,9 @@ dataset_vignette(
 
 ### Define Events for all PSA endpoints
 
-```{r}
+For responder the first assessment of response is selected. For non-responder the last PSA assessment is selected.
 
-### Define Events for all PSA endpoints
+```{r}
 
 # PSA50-Y – first time PCHG <= -50
 psa50_y <- event(
