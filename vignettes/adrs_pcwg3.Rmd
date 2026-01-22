@@ -124,8 +124,8 @@ rs <- pharmaversesdtm::rs_onco_pcwg3
 lb <- pharmaversesdtm::lb_onco_pcwg3
 
 # Filter only PSA records
-lb <- lb %>% 
-  filter(LBTESTCD=="PSA" & !is.na(LBORRES))
+lb <- lb %>%
+  filter(LBTESTCD == "PSA" & !is.na(LBORRES))
 
 # Convert blanks to NA
 rs <- convert_blanks_to_na(rs)
@@ -147,7 +147,7 @@ adsl <- filter(
 
 ```{r, eval=TRUE, echo=FALSE}
 dataset_vignette(
-   rs,
+  rs,
   display_vars = exprs(USUBJID, RSCAT, RSTESTCD, RSSTRESC, VISIT, VISITNUM, RSDTC)
 )
 ```
@@ -170,8 +170,7 @@ adpsa <- lb %>%
     dataset_add = adsl,
     new_vars    = exprs(TRTSDT),
     by_vars     = get_admiral_option("subject_keys")
-  ) 
-
+  )
 ```
 
 ### Partial Date Imputation and Deriving `ADT`, `ADTF`, `AVISIT`, `AVISITN` etc.
@@ -196,7 +195,7 @@ adrs <- adrs %>%
     AVISITN = VISITNUM
   )
 
-adpsa <- adpsa %>% 
+adpsa <- adpsa %>%
   derive_vars_dtm(
     dtc                = LBDTC,
     new_vars_prefix    = "A",
@@ -212,7 +211,6 @@ adpsa <- adpsa %>%
     AVISIT  = VISIT,
     AVISITN = VISITNUM,
   )
-
 ```
 
 ### Derive `PARAMCD`, `PARAM`, `PARAMN`
@@ -241,11 +239,13 @@ adrs <- adrs %>%
     AVALC = RSSTRESC
   )
 
-adpsa <- adpsa %>% 
-  mutate(PARAMCD = LBTESTCD,
-         PARAM   = LBTEST,
-         PARCAT1 = "PSA Response",
-         AVAL=LBSTRESN)
+adpsa <- adpsa %>%
+  mutate(
+    PARAMCD = LBTESTCD,
+    PARAM = LBTEST,
+    PARCAT1 = "PSA Response",
+    AVAL = LBSTRESN
+  )
 ```
 
 ## RECIST 1.1 and Bone Response Combined Based on PCWG3 Guidelines
@@ -611,13 +611,12 @@ adpsa <- adpsa %>%
     derivation = derive_var_pchg,
     filter     = ADT > TRTSDT & !is.na(BASE) & !is.na(CHG)
   )
-
 ```
 
 ```{r, eval=TRUE, echo=FALSE}
 dataset_vignette(
   adpsa %>%
-  arrange(!!!get_admiral_option("subject_keys"), PARAMCD, ADT, ADTM),
+    arrange(!!!get_admiral_option("subject_keys"), PARAMCD, ADT, ADTM),
   display_vars = exprs(USUBJID, AVISIT, AVISITN, ADT, AVAL, BASE, CHG, PCHG, ABLFL)
 )
 ```
@@ -631,9 +630,9 @@ post-baseline PSA assessment are considered as non-responder.
 ```{r}
 # PSA50-Y – first time PCHG <= -50
 psa50_y <- event(
-  description   = "First time PSA50 (PCHG <= -50)",
-  dataset_name  = "adpsa",
-  condition     = PCHG <= -50,
+  description = "First time PSA50 (PCHG <= -50)",
+  dataset_name = "adpsa",
+  condition = PCHG <= -50,
   set_values_to = exprs(
     AVALC = "Y",
     AVAL  = 1
@@ -642,13 +641,13 @@ psa50_y <- event(
 
 # Confirmed PSA50 (Y)
 psa50_confirmed <- event_joined(
-  description  = "Confirmed PSA50 (PCHG <= -50, confirmed >=3 weeks later)",
+  description = "Confirmed PSA50 (PCHG <= -50, confirmed >=3 weeks later)",
   dataset_name = "adpsa",
-  join_vars    = exprs(PCHG, ADT),
-  join_type    = "after",
+  join_vars = exprs(PCHG, ADT),
+  join_type = "after",
   first_cond_upper = PCHG.join <= -50 & ADT.join >= ADT + 21,
-  condition       = PCHG <= -50,
-  set_values_to   = exprs(
+  condition = PCHG <= -50,
+  set_values_to = exprs(
     AVALC = "Y",
     AVAL  = 1
   )
@@ -656,9 +655,9 @@ psa50_confirmed <- event_joined(
 
 # PSA90-Y – first time PCHG <= -90
 psa90_y <- event(
-  description   = "First time PSA90 (PCHG <= -90)",
-  dataset_name  = "adpsa",
-  condition     = PCHG <= -90,
+  description = "First time PSA90 (PCHG <= -90)",
+  dataset_name = "adpsa",
+  condition = PCHG <= -90,
   set_values_to = exprs(
     AVALC = "Y",
     AVAL  = 1
@@ -667,13 +666,13 @@ psa90_y <- event(
 
 # Confirmed PSA90 (Y)
 psa90_confirmed <- event_joined(
-  description  = "Confirmed PSA90 (PCHG <= -90, confirmed >=3 weeks later)",
+  description = "Confirmed PSA90 (PCHG <= -90, confirmed >=3 weeks later)",
   dataset_name = "adpsa",
-  join_vars    = exprs(PCHG, ADT),
-  join_type    = "after",
+  join_vars = exprs(PCHG, ADT),
+  join_type = "after",
   first_cond_upper = PCHG.join <= -90 & ADT.join >= ADT + 21,
-  condition       = PCHG <= -90,
-  set_values_to   = exprs(
+  condition = PCHG <= -90,
+  set_values_to = exprs(
     AVALC = "Y",
     AVAL  = 1
   )
@@ -683,9 +682,9 @@ psa90_confirmed <- event_joined(
 # mode = "last" ensures that, for non-responders (subjects who never reach PCHG <= -xx),
 # the "no response" event is anchored to their last available PSA assessment
 psa_n <- event(
-  description   = "No PSA response",
-  dataset_name  = "adpsa",
-  condition     = TRUE,
+  description = "No PSA response",
+  dataset_name = "adpsa",
+  condition = TRUE,
   mode = "last",
   set_values_to = exprs(
     AVALC = "N",
@@ -703,7 +702,6 @@ psa_missing <- event(
     AVAL  = NA_real_
   )
 )
-
 ```
 
 ### Derive Unconfirmed PSA50 PSA90 (PSAURS) {#psaurs}
@@ -714,14 +712,14 @@ adrs <- adrs %>%
   derive_extreme_event(
     by_vars = get_admiral_option("subject_keys"),
     # 1) Y: response, 2) N: no response (with PSA data), 3) MISSING: no PSA data at all
-    events  = list(psa50_y, psa_n, psa_missing),
+    events = list(psa50_y, psa_n, psa_missing),
     source_datasets = list(
       adpsa = adpsa,
       adsl  = adsl
     ),
     tmp_event_nr_var = event_nr,
     order = exprs(event_nr, ADTM),
-    mode  = "first",
+    mode = "first",
     set_values_to = exprs(
       PARAMCD = "PSA50URS",
       PARAM   = "PSA50 unconfirmed (>=50% decline)",
@@ -734,14 +732,14 @@ adrs <- adrs %>%
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = get_admiral_option("subject_keys"),
-    events  = list(psa90_y, psa_n, psa_missing),
+    events = list(psa90_y, psa_n, psa_missing),
     source_datasets = list(
       adpsa = adpsa,
       adsl  = adsl
     ),
     tmp_event_nr_var = event_nr,
     order = exprs(event_nr, ADTM),
-    mode  = "first",
+    mode = "first",
     set_values_to = exprs(
       PARAMCD = "PSA90URS",
       PARAM   = "PSA90 unconfirmed (>=90% decline)",
@@ -749,7 +747,6 @@ adrs <- adrs %>%
       PARAMN  = 12
     )
   )
-
 ```
 
 ### Derive Confirmed PSA50 PSA90 (PSACRS) {#psacrs}
@@ -760,14 +757,14 @@ adrs <- adrs %>%
   derive_extreme_event(
     by_vars = get_admiral_option("subject_keys"),
     # confirmed response, then no response (with PSA), then MISSING (no PSA)
-    events  = list(psa50_confirmed, psa_n, psa_missing),
+    events = list(psa50_confirmed, psa_n, psa_missing),
     source_datasets = list(
       adpsa = adpsa,
       adsl  = adsl
     ),
     tmp_event_nr_var = event_nr,
     order = exprs(event_nr, ADT),
-    mode  = "first",
+    mode = "first",
     set_values_to = exprs(
       PARAMCD = "PSA50CRS",
       PARAM   = "PSA50 confirmed (>=50% decline)",
@@ -780,14 +777,14 @@ adrs <- adrs %>%
 adrs <- adrs %>%
   derive_extreme_event(
     by_vars = get_admiral_option("subject_keys"),
-    events  = list(psa90_confirmed, psa_n, psa_missing),
+    events = list(psa90_confirmed, psa_n, psa_missing),
     source_datasets = list(
       adpsa = adpsa,
       adsl  = adsl
     ),
     tmp_event_nr_var = event_nr,
     order = exprs(event_nr, ADTM),
-    mode  = "first",
+    mode = "first",
     set_values_to = exprs(
       PARAMCD = "PSA90CRS",
       PARAM   = "PSA90 confirmed (>=90% decline)",
@@ -795,7 +792,6 @@ adrs <- adrs %>%
       PARAMN  = 13
     )
   )
-
 ```
 
 ```{r, eval=TRUE, echo=FALSE}
