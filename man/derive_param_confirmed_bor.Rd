@@ -109,7 +109,7 @@ response is set to \code{"MISSING"} for these subjects.
 
 \emph{Permitted Values:} a logical scalar}
 
-\item{aval_fun}{\emph{Deprecated}, please use \code{set_values_to} instead.
+\item{aval_fun}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Please use \code{set_values_to} instead.
 
 Function to map character analysis value (\code{AVALC}) to numeric analysis
 value (\code{AVAL})
@@ -132,7 +132,7 @@ The input dataset with a new parameter for confirmed best overall
 response
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}} The \code{derive_param_confirmed_bor()}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} The \code{derive_param_confirmed_bor()}
 function has been superseded in favor of \code{derive_extreme_event()}.
 
 Adds a parameter for confirmed best overall response (BOR)
@@ -203,7 +203,6 @@ If the best response is not unique, the first one (with respect to \code{ADT})
 is selected. If the selected record is from the input dataset, all
 variables are kept. If the selected record is from \code{dataset_adsl}, all
 variables which are in both \code{dataset} and \code{dataset_adsl} are kept.
-\item The \code{AVAL} variable is added and set to \code{aval_fun(AVALC)}.
 \item The variables specified by the \code{set_values_to} parameter are added to
 the new observations.
 \item The new observations are added to input dataset.
@@ -341,7 +340,8 @@ derive_param_confirmed_bor(
   filter(PARAMCD == "CBOR")
 }
 \seealso{
-Other superseded: 
+Other deprecated: 
+\code{\link{date_source}()},
 \code{\link{derive_param_bor}()},
 \code{\link{derive_param_clinbenefit}()},
 \code{\link{derive_param_confirmed_resp}()},
@@ -351,5 +351,5 @@ Other superseded:
 \author{
 Stefan Bundfuss
 }
-\concept{superseded}
-\keyword{superseded}
+\concept{deprecated}
+\keyword{deprecated}

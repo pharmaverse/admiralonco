@@ -28,15 +28,13 @@ for (obj in c("bor_cr", "bor_pr", "bor_sd", "bor_non_crpd", "bor_pd", "bor_ne"))
 # Introduction
 
 This article describes creating an `ADRS` ADaM with oncology endpoint parameters
-based on RECIST v1.1. It shows an alternative way of deriving the endpoints
-presented in [Creating a Basic ADRS](adrs_basic.html) and additionally modified
-versions of the endpoints (see [Derive Non-standard Parameters](#nonstandard))
-which cannot be derived by the admiralonco functions. Most of the endpoints are
-derived by calling `admiral::derive_extreme_event()`. It is very flexible. Thus
-the examples in this vignette can also be used as a starting point for
-implementing other response criteria than RECIST 1.1, e.g., iRECIST or
-International Myeloma Working Group (IMWG) criteria for the diagnosis of
-multiple myeloma.
+based on RECIST v1.1. It shows standard RECIST 1.1 endpoints and additionally
+modified versions of the endpoints (see [Derive Non-standard
+Parameters](#nonstandard)). Most of the endpoints are derived by calling
+`admiral::derive_extreme_event()`. It is very flexible. Thus the examples in
+this vignette can also be used as a starting point for implementing other
+response criteria than RECIST 1.1, e.g., iRECIST or International Myeloma
+Working Group (IMWG) criteria for the diagnosis of multiple myeloma.
 
 For confirmation of response particularly, `CR`, the case that `CR` is followed
 by `PR` (or `SD`) is considered as a data issue and the derivations of the

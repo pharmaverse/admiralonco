@@ -36,5 +36,14 @@ pd <- date_source(
   filter = PARAMCD == "PD"
 )
 }
+\seealso{
+Other deprecated: 
+\code{\link{derive_param_bor}()},
+\code{\link{derive_param_clinbenefit}()},
+\code{\link{derive_param_confirmed_bor}()},
+\code{\link{derive_param_confirmed_resp}()},
+\code{\link{derive_param_response}()},
+\code{\link{filter_pd}()}
+}
 \concept{deprecated}
 \keyword{deprecated}

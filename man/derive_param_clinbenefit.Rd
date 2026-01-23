@@ -58,7 +58,7 @@ The list must contain the names provided by the \code{dataset_name} field of the
 that must elapse before an evaluable non-PD assessment counts toward determining
 clinical benefit.}
 
-\item{aval_fun}{\emph{Deprecated}, please use \code{set_values_to} instead.
+\item{aval_fun}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Please use \code{set_values_to} instead.
 
 Function to map character analysis value (\code{AVALC}) to numeric analysis value
 (\code{AVAL})
@@ -80,8 +80,8 @@ used to uniquely identify subjects.}
 The input dataset with a new parameter for clinical benefit
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}} The \code{derive_param_clinbenefit()} function
-has been superseded in favor of \code{derive_extreme_event()}.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} The \code{derive_param_clinbenefit()} function
+has been deprecated in favor of \code{derive_extreme_event()}.
 
 Adds a parameter for clinical benefit/disease control
 }
@@ -127,9 +127,6 @@ or the dataset identified in \code{source_resp}
 \item \code{N} for subjects present in \code{dataset_adsl} but not present in \code{dataset}
 or the dataset identified in \code{source_resp}.
 }
-
-\item \code{AVAL} is derived using \code{AVALC} as input to the function specified in
-\code{aval_fun}.
 
 \item The variables specified by \code{set_values_to} are added to the new observations
 with values equal to the values specified in the same.
@@ -213,7 +210,8 @@ derive_param_clinbenefit(
   filter(PARAMCD == "CBR")
 }
 \seealso{
-Other superseded: 
+Other deprecated: 
+\code{\link{date_source}()},
 \code{\link{derive_param_bor}()},
 \code{\link{derive_param_confirmed_bor}()},
 \code{\link{derive_param_confirmed_resp}()},
@@ -223,5 +221,5 @@ Other superseded:
 \author{
 Andrew Smith
 }
-\concept{superseded}
-\keyword{superseded}
+\concept{deprecated}
+\keyword{deprecated}
