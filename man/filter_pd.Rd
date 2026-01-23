@@ -38,8 +38,8 @@ A list of symbols created using \code{exprs()} is expected.}
 A subset of the input dataset
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}} The \code{filter_pd()} function has been
-superseded in favor of \code{filter_relative()}.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} The \code{filter_pd()} function has been
+deprecated in favor of \code{filter_relative()}.
 
 Filter a dataset to only include the source parameter records up to and
 including the first PD (progressive disease). These records are passed to
@@ -194,7 +194,8 @@ filter_pd(
 )
 }
 \seealso{
-Other superseded: 
+Other deprecated: 
+\code{\link{date_source}()},
 \code{\link{derive_param_bor}()},
 \code{\link{derive_param_clinbenefit}()},
 \code{\link{derive_param_confirmed_bor}()},
@@ -204,5 +205,5 @@ Other superseded:
 \author{
 Teckla Akinyi, Stefan Bundfuss
 }
-\concept{superseded}
-\keyword{superseded}
+\concept{deprecated}
+\keyword{deprecated}

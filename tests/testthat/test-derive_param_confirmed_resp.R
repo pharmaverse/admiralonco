@@ -66,6 +66,7 @@ pd_date <- date_source(
 # derive_param_confirmed_resp ----
 ## Test 1: default confirmed response ----
 test_that("derive_param_confirmed_resp Test 1: default confirmed response", {
+  withr::local_options(list(lifecycle_verbosity = "quiet"))
   suppress_warning(
     actual <-
       derive_param_confirmed_resp(
@@ -115,6 +116,7 @@ test_that("derive_param_confirmed_resp Test 1: default confirmed response", {
 
 ## Test 2: accept SD ----
 test_that("derive_param_confirmed_resp Test 2: accept SD", {
+  withr::local_options(list(lifecycle_verbosity = "quiet"))
   adrs_ext <- bind_rows(
     filter(adrs, USUBJID != "7"),
     tibble::tribble(
@@ -179,6 +181,7 @@ test_that("derive_param_confirmed_resp Test 2: accept SD", {
 
 ## Test 3: error if invalid response values ----
 test_that("derive_param_confirmed_resp Test 3: error if invalid response values", {
+  withr::local_options(list(lifecycle_verbosity = "quiet"))
   adrs <- tibble::tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
     "1",      "2020-01-01", "PR",
@@ -212,6 +215,7 @@ test_that("derive_param_confirmed_resp Test 3: error if invalid response values"
 
 ## Test 4: No source_pd ----
 test_that("derive_param_confirmed_resp Test 4: No source_pd", {
+  withr::local_options(list(lifecycle_verbosity = "quiet"))
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # source_pd = NULL, so tibble with two subjects:
   #    - USUBJID == 1 will be a response as responsed after PD.
@@ -278,8 +282,8 @@ test_that("derive_param_confirmed_resp Test 4: No source_pd", {
   )
 })
 
-## Test 5: Deprecation warning for aval_fun ----
-test_that("derive_param_confirmed_resp Test 5: Deprecation warning for aval_fun", {
+## Test 5: Deprecation error for aval_fun ----
+test_that("derive_param_confirmed_resp Test 5: Deprecation error for aval_fun", {
   adrs <- tibble::tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
     "1",      "2020-01-01", "SD",
@@ -297,8 +301,8 @@ test_that("derive_param_confirmed_resp Test 5: Deprecation warning for aval_fun"
       STUDYID = "XX1234"
     )
 
-  expect_warning(
-    actual_no_source_pd <-
+  expect_error(
+    suppressMessages(
       derive_param_confirmed_resp(
         adrs,
         dataset_adsl = adsl,
@@ -311,35 +315,31 @@ test_that("derive_param_confirmed_resp Test 5: Deprecation warning for aval_fun"
           PARAMCD = "CRSP",
           PARAM = "Confirmed Response by Investigator"
         )
-      ),
-    class = "lifecycle_warning_deprecated"
-  )
-
-  expected_no_source_pd <- bind_rows(
-    adrs,
-    tibble::tribble(
-      ~USUBJID, ~ADTC,         ~AVALC, ~AVAL,
-      "1",      "2020-02-16",  "Y",    1,
-      "2",      NA_character_, "N",    0,
-      "3",      NA_character_, "N",    0,
-      "4",      NA_character_, "N",    0,
-      "5",      NA_character_, "N",    0,
-      "6",      NA_character_, "N",    0,
-      "7",      NA_character_, "N",    0,
-      "8",      NA_character_, "N",    0,
-      "9",      NA_character_, "N",    0
-    ) %>%
-      mutate(
-        ADT = lubridate::ymd(ADTC),
-        STUDYID = "XX1234",
-        PARAMCD = "CRSP",
-        PARAM = "Confirmed Response by Investigator"
       )
+    ),
+    class = "lifecycle_error_deprecated"
   )
+})
 
-  expect_dfs_equal(
-    base = expected_no_source_pd,
-    compare = actual_no_source_pd,
-    keys = c("USUBJID", "PARAMCD", "ADT")
-  )
+## Test 6: deprecation message if function is called ----
+test_that("derive_param_confirmed_resp Test 6: deprecation message if function is called", {
+  expect_snapshot({
+    suppress_warning(
+      actual <-
+        derive_param_confirmed_resp(
+          adrs,
+          dataset_adsl = adsl,
+          filter_source = PARAMCD == "OVR",
+          source_pd = pd_date,
+          source_datasets = list(adrs = adrs),
+          ref_confirm = 28,
+          set_values_to = exprs(
+            AVAL = yn_to_numeric(AVALC),
+            PARAMCD = "CRSP",
+            PARAM = "Confirmed Response by Investigator"
+          )
+        ),
+      "Dataset contains CR records followed by PR"
+    )
+  })
 })

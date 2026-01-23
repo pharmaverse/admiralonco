@@ -115,6 +115,8 @@ expected_01 <- bind_rows(
 
 ## Test 1: No source_pd ----
 test_that("derive_param_bor Test 1: No source_pd", {
+  withr::local_options(list(lifecycle_verbosity = "quiet"))
+
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   ### default  BOR, All Subjects have a record after reference date ----
   #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -328,6 +330,7 @@ test_that("derive_param_bor Test 2: With source_pd", {
 
 ## Test 3: Error if missing records for filter_source ----
 test_that("derive_param_bor Test 3: Error if missing records for filter_source", {
+  withr::local_options(list(lifecycle_verbosity = "quiet"))
   expect_snapshot(
     derive_param_bor(
       dataset = adrs,
@@ -346,8 +349,8 @@ test_that("derive_param_bor Test 3: Error if missing records for filter_source",
   )
 })
 
-## Test 4: Deprecation warning for aval_fun ----
-test_that("derive_param_bor Test 4: Deprecation warning for aval_fun", {
+## Test 4: Deprecation error for aval_fun ----
+test_that("derive_param_bor Test 4: Deprecation error for aval_fun", {
   suppressMessages(
     pd_date <- date_source(
       dataset_name = "adrs_pd",
@@ -373,48 +376,43 @@ test_that("derive_param_bor Test 4: Deprecation warning for aval_fun", {
   adrs_pd <- adrs %>%
     bind_rows(pd_records)
 
-  expect_warning(
-    actual_pd_01 <- derive_param_bor(
-      dataset = adrs_pd,
+  expect_error(
+    suppressMessages(
+      actual_pd_01 <- derive_param_bor(
+        dataset = adrs_pd,
+        dataset_adsl = adsl,
+        filter_source = PARAMCD == "OVR",
+        source_pd = pd_date,
+        source_datasets = list(adrs_pd = adrs_pd),
+        reference_date = TRTSDT,
+        ref_start_window = 28,
+        aval_fun = aval_fun_pass,
+        set_values_to = exprs(
+          PARAMCD = "BOR",
+          PARAM = "Best Overall Response"
+        )
+      )
+    ),
+    class = "lifecycle_error_deprecated"
+  )
+})
+
+## Test 5: deprecation message if function is called ----
+test_that("derive_param_bor Test 5: deprecation message if function is called", {
+  expect_snapshot({
+    actual_01 <- derive_param_bor(
+      dataset = adrs,
       dataset_adsl = adsl,
       filter_source = PARAMCD == "OVR",
-      source_pd = pd_date,
-      source_datasets = list(adrs_pd = adrs_pd),
+      source_pd = NULL,
+      source_datasets = NULL,
       reference_date = TRTSDT,
       ref_start_window = 28,
-      aval_fun = aval_fun_pass,
       set_values_to = exprs(
+        AVAL = {{ aval_fun_pass }}(AVALC),
         PARAMCD = "BOR",
         PARAM = "Best Overall Response"
       )
-    ),
-    class = "lifecycle_warning_deprecated"
-  )
-
-  # add PD recodrs to expected
-  expected_pd_01 <- expected_01 %>%
-    bind_rows(pd_records)
-
-  # This is now PR as PD removed CR recrods
-  expected_pd_01$AVALC[expected_pd_01$USUBJID == 2 &
-    expected_pd_01$PARAMCD == "BOR"] <- "PR"
-  expected_pd_01$AVAL[expected_pd_01$USUBJID == 2 &
-    expected_pd_01$PARAMCD == "BOR"] <- 22
-  expected_pd_01$ADT[expected_pd_01$USUBJID == 2 &
-    expected_pd_01$PARAMCD == "BOR"] <- lubridate::ymd("2020-02-01")
-
-
-  # This is now MISSING as PD removed all records
-  expected_pd_01$AVALC[expected_pd_01$USUBJID == 6 &
-    expected_pd_01$PARAMCD == "BOR"] <- "MISSING"
-  expected_pd_01$AVAL[expected_pd_01$USUBJID == 6 &
-    expected_pd_01$PARAMCD == "BOR"] <- 77
-  expected_pd_01$ADT[expected_pd_01$USUBJID == 6 &
-    expected_pd_01$PARAMCD == "BOR"] <- NA
-
-  expect_dfs_equal(
-    base    = expected_pd_01,
-    compare = actual_pd_01,
-    keys    = c("USUBJID", "PARAMCD", "ADT")
-  )
+    )
+  })
 })

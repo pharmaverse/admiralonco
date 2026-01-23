@@ -81,7 +81,7 @@ Otherwise, no \code{"SD"} assessment must occur between the two assessments.
 
 \emph{Permitted Values:} a logical scalar}
 
-\item{aval_fun}{\emph{Deprecated}, please use \code{set_values_to} instead.
+\item{aval_fun}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Please use \code{set_values_to} instead.
 
 Function to map character analysis value (\code{AVALC}) to numeric analysis
 value (\code{AVAL})
@@ -104,7 +104,7 @@ A list of symbols created using \code{exprs()} is expected.}
 The input dataset with a new parameter for confirmed response
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}} The \code{derive_param_confirmed_resp()}
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} The \code{derive_param_confirmed_resp()}
 function has been superseded in favor of \code{derive_extreme_event()}.
 
 Adds a parameter for confirmed response
@@ -147,8 +147,6 @@ must occur within the confirmation period.
 \item For responders \code{AVALC} is set to \code{"Y"} and \code{ADT} to the first date where
 the response criteria are fulfilled. For all other subjects in
 \code{dataset_adsl} \code{AVALC} is set to \code{"N"} and \code{ADT} to \code{NA}.
-
-\item The \code{AVAL} variable is added and set to \code{aval_fun(AVALC)}.
 
 \item The variables specified by the \code{set_values_to} parameter are added to
 the new observations.
@@ -275,7 +273,8 @@ derive_param_confirmed_resp(
   filter(PARAMCD == "CRSP")
 }
 \seealso{
-Other superseded: 
+Other deprecated: 
+\code{\link{date_source}()},
 \code{\link{derive_param_bor}()},
 \code{\link{derive_param_clinbenefit}()},
 \code{\link{derive_param_confirmed_bor}()},
@@ -285,5 +284,5 @@ Other superseded:
 \author{
 Stefan Bundfuss
 }
-\concept{superseded}
-\keyword{superseded}
+\concept{deprecated}
+\keyword{deprecated}

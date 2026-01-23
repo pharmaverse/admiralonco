@@ -86,6 +86,8 @@ test_that("derive_param_response Test 1: With source_pd", {
 
 ## Test 2: No source_pd ----
 test_that("derive_param_response Test 2: No source_pd", {
+  withr::local_options(list(lifecycle_verbosity = "quiet"))
+
   expected_output_no_source_pd <- bind_rows(
     adrs,
     tibble::tribble(
@@ -126,47 +128,43 @@ test_that("derive_param_response Test 2: No source_pd", {
   )
 })
 
-## Test 3: deprecation warning for aval_fun ----
-test_that("derive_param_response Test 3: deprecation warning for aval_fun", {
-  expected_output_no_source_pd <- bind_rows(
-    adrs,
-    tibble::tribble(
-      ~USUBJID, ~ADTC,        ~AVALC, ~AVAL, ~CHECKKEPTCOL,
-      "1",      "2020-01-02", "Y",    1,     "001",
-      "2",      "",           "N",    0,     "002",
-      "3",      "2021-12-25", "Y",    1,     "003",
-      "4",      "",           "N",    0,     "004",
-    ) %>%
-      mutate(
-        ADT = lubridate::ymd(ADTC),
-        STUDYID = "XX1234",
-        PARAMCD = "RSP",
-        PARAM = "Response by investigator"
-      ) %>%
-      select(-ADTC)
+## Test 3: deprecation error for aval_fun ----
+test_that("derive_param_response Test 3: deprecation error for aval_fun", {
+  expect_error(
+    suppressMessages(
+      actual_output_no_source_pd <- adrs %>%
+        derive_param_response(
+          dataset_adsl = adsl,
+          filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR"),
+          source_pd = NULL,
+          source_datasets = NULL,
+          aval_fun = admiral::yn_to_numeric,
+          set_values_to = exprs(
+            PARAMCD = "RSP",
+            PARAM = "Response by investigator"
+          ),
+          subject_keys = get_admiral_option("subject_keys")
+        )
+    ),
+    class = "lifecycle_error_deprecated"
   )
+})
 
-  # Derive the response parameter
-  expect_warning(
-    actual_output_no_source_pd <- adrs %>%
+## Test 4: deprecation message if function is called ----
+test_that("derive_param_response Test 4: deprecation message if function is called", {
+  expect_snapshot({
+    adrs %>%
       derive_param_response(
         dataset_adsl = adsl,
         filter_source = PARAMCD == "OVR" & AVALC %in% c("CR", "PR"),
         source_pd = NULL,
         source_datasets = NULL,
-        aval_fun = admiral::yn_to_numeric,
         set_values_to = exprs(
+          AVAL = admiral::yn_to_numeric(AVALC),
           PARAMCD = "RSP",
           PARAM = "Response by investigator"
         ),
         subject_keys = get_admiral_option("subject_keys")
-      ),
-    class = "lifecycle_warning_deprecated"
-  )
-
-  expect_dfs_equal(
-    actual_output_no_source_pd,
-    expected_output_no_source_pd,
-    keys = c("USUBJID", "PARAMCD", "ADT")
-  )
+      )
+  })
 })
