@@ -1,8 +1,8 @@
 # Filter up to First PD (Progressive Disease) Date
 
-**\[superseded\]** The `filter_pd()` function has been superseded in
+**\[deprecated\]** The `filter_pd()` function has been deprecated in
 favor of
-[`filter_relative()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/filter_relative.html).
+[`filter_relative()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/filter_relative.html).
 
 Filter a dataset to only include the source parameter records up to and
 including the first PD (progressive disease). These records are passed
@@ -37,7 +37,7 @@ filter_pd(
 - source_pd:
 
   A
-  [`admiral::date_source()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/date_source.html)
+  [`admiral::date_source()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/date_source.html)
   object providing the date of first PD
 
   For each subject the first date (`date` field) in the provided dataset
@@ -50,7 +50,7 @@ filter_pd(
 
   The name must match the name provided by the `dataset_name` field of
   the
-  [`admiral::date_source()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/date_source.html)
+  [`admiral::date_source()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/date_source.html)
   object specified for `source_pd`.
 
 - subject_keys:
@@ -80,7 +80,8 @@ A subset of the input dataset
 
 ## See also
 
-Other superseded:
+Other deprecated:
+[`date_source()`](https:/pharmaverse.github.io/admiralonco/main/reference/date_source.md),
 [`derive_param_bor()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_bor.md),
 [`derive_param_clinbenefit()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_clinbenefit.md),
 [`derive_param_confirmed_bor()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_confirmed_bor.md),
@@ -145,6 +146,11 @@ filter_pd(
   source_pd = pd,
   source_datasets = list(adevent = adevent)
 )
+#> `filter_pd()` was deprecated in admiralonco 1.4.
+#> ℹ Please use `admiral::filter_relative()` instead.
+#> ✖ This message will turn into a warning at the beginning of 2027.
+#> ℹ See admiral's deprecation guidance:
+#>   https://pharmaverse.github.io/admiraldev/dev/articles/programming_strategy.html#deprecation
 #> # A tibble: 6 × 6
 #>   STUDYID      USUBJID     PARAMCD AVALC ADT        ANL01FL
 #>   <chr>        <chr>       <chr>   <chr> <date>     <chr>  

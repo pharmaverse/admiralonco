@@ -1,8 +1,8 @@
 # Adds a Parameter for Confirmed Best Overall Response
 
-**\[superseded\]** The `derive_param_confirmed_bor()` function has been
+**\[deprecated\]** The `derive_param_confirmed_bor()` function has been
 superseded in favor of
-[`derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_extreme_event.html).
+[`derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html).
 
 Adds a parameter for confirmed best overall response (BOR)
 
@@ -67,7 +67,7 @@ derive_param_confirmed_bor(
   account.
 
   *Permitted Values:* a `date_source` object (see
-  [`admiral::date_source()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/date_source.html)
+  [`admiral::date_source()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/date_source.html)
   for details)
 
 - source_datasets:
@@ -147,7 +147,7 @@ derive_param_confirmed_bor(
 
 - aval_fun:
 
-  *Deprecated*, please use `set_values_to` instead.
+  **\[deprecated\]** Please use `set_values_to` instead.
 
   Function to map character analysis value (`AVALC`) to numeric analysis
   value (`AVAL`)
@@ -264,16 +264,15 @@ response
     from `dataset_adsl`, all variables which are in both `dataset` and
     `dataset_adsl` are kept.
 
-4.  The `AVAL` variable is added and set to `aval_fun(AVALC)`.
-
-5.  The variables specified by the `set_values_to` parameter are added
+4.  The variables specified by the `set_values_to` parameter are added
     to the new observations.
 
-6.  The new observations are added to input dataset.
+5.  The new observations are added to input dataset.
 
 ## See also
 
-Other superseded:
+Other deprecated:
+[`date_source()`](https:/pharmaverse.github.io/admiralonco/main/reference/date_source.md),
 [`derive_param_bor()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_bor.md),
 [`derive_param_clinbenefit()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_clinbenefit.md),
 [`derive_param_confirmed_resp()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_confirmed_resp.md),
@@ -399,6 +398,11 @@ derive_param_confirmed_bor(
   )
 ) %>%
   filter(PARAMCD == "CBOR")
+#> `derive_param_confirmed_bor()` was deprecated in admiralonco 1.4.
+#> ℹ Please use `admiral::derive_extreme_event()` instead.
+#> ✖ This message will turn into a warning at the beginning of 2027.
+#> ℹ See admiral's deprecation guidance:
+#>   https://pharmaverse.github.io/admiraldev/dev/articles/programming_strategy.html#deprecation
 #> Warning: Dataset contains CR records followed by PR.
 #> Run `get_crpr_dataset()` to access the CR records records followed by PR
 #> # A tibble: 9 × 8

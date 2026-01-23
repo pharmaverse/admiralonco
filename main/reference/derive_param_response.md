@@ -1,14 +1,13 @@
 # Adds a Parameter Indicating If a Subject Had a Response before Progressive Disease
 
-**\[superseded\]** The `derive_param_response()` function has been
+**\[deprecated\]** The `derive_param_response()` function has been
 superseded in favor of
-[`derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_extreme_event.html).
+[`derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html).
 
 Adds a parameter indicating if a response has been observed. If a
-response has been observed, `AVALC` is set to "Y", `AVAL` to 1 and `ADT`
-is set to the first date when a response has been observed. If a
-response has not been observed, `AVALC` is set to "N", `AVAL` to 0 and
-`ADT` is set NA.
+response has been observed, `AVALC` is set to "Y" and `ADT` is set to
+the first date when a response has been observed. If a response has not
+been observed, `AVALC` is set to "N" and `ADT` is set NA.
 
 ## Usage
 
@@ -66,11 +65,10 @@ derive_param_response(
   before the end of the assessment period as defined by `source_pd`.
 
   - For subjects with at least one response before the end of the
-    assessment period, `AVALC` is set to `"Y"`, `AVAL` to `1`, and `ADT`
-    to the first date when the response occurred.
+    assessment period, `AVALC` is set to `"Y"` and `ADT` to the first
+    date when the response occurred.
 
-  - For all other subjects `AVALC` is set to `"N"`, `AVAL` to `0`, and
-    `ADT` to `NA`.
+  - For all other subjects `AVALC` is set to `"N"` and `ADT` to `NA`.
 
 - source_datasets:
 
@@ -80,12 +78,12 @@ derive_param_response(
   `list(adrs= adrs)`).
 
   The name must match the `dataset_name` field of the
-  [`admiral::date_source()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/date_source.html)
+  [`admiral::date_source()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/date_source.html)
   object specified for `source_pd`.
 
   The variables specified by the `subject_keys` argument and the `date`
   field of the
-  [`admiral::date_source()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/date_source.html)
+  [`admiral::date_source()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/date_source.html)
   object are expected in the dataset.
 
 - set_values_to:
@@ -102,7 +100,7 @@ derive_param_response(
 
 - aval_fun:
 
-  *Deprecated*, please use `set_values_to` instead.
+  **\[deprecated\]** Please use `set_values_to` instead.
 
   Function to map character analysis value (`AVALC`) to numeric analysis
   value (`AVAL`)
@@ -139,12 +137,10 @@ occurred
 
 4.  For each observation in `dataset_adsl` a new observation is created.
 
-    - For subjects with a response `AVALC` is set to `"Y"`, `AVAL` to
-      `1`, and `ADT` to the first date (`ADT`) where the response
-      condition is fulfilled.
+    - For subjects with a response `AVALC` is set to `"Y"` and `ADT` to
+      the first date (`ADT`) where the response condition is fulfilled.
 
-    - For all other subjects `AVALC` is set to `"N"`, `AVAL` to `0` and
-      `ADT` to `NA`.
+    - For all other subjects `AVALC` is set to `"N"` and `ADT` to `NA`.
 
 5.  The variables specified by the `set_values_to` parameter are added
     to the new observations.
@@ -153,7 +149,8 @@ occurred
 
 ## See also
 
-Other superseded:
+Other deprecated:
+[`date_source()`](https:/pharmaverse.github.io/admiralonco/main/reference/date_source.md),
 [`derive_param_bor()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_bor.md),
 [`derive_param_clinbenefit()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_clinbenefit.md),
 [`derive_param_confirmed_bor()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_confirmed_bor.md),
@@ -235,6 +232,11 @@ derive_param_response(
   subject_keys = get_admiral_option("subject_keys")
 ) %>%
   arrange(USUBJID, PARAMCD, ADT)
+#> `derive_param_response()` was deprecated in admiralonco 1.4.
+#> ℹ Please use `admiral::derive_extreme_event()` instead.
+#> ✖ This message will turn into a warning at the beginning of 2027.
+#> ℹ See admiral's deprecation guidance:
+#>   https://pharmaverse.github.io/admiraldev/dev/articles/programming_strategy.html#deprecation
 #> # A tibble: 17 × 8
 #>    USUBJID PARAMCD AVALC ANL01FL STUDYID ADT         AVAL PARAM                 
 #>    <chr>   <chr>   <chr> <chr>   <chr>   <date>     <dbl> <chr>                 

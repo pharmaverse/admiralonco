@@ -1,11 +1,11 @@
 # Pre-Defined Response Event Objects
 
 These pre-defined
-[`event()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/event.html)
+[`event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/event.html)
 and
-[`event_joined()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/event_joined.html)
+[`event_joined()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/event_joined.html)
 objects can be used as input to
-[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_extreme_event.html).
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html).
 
 ## Usage
 
@@ -44,7 +44,7 @@ cbor_pr
 To see the definition of the various objects simply print the object in
 the R console, e.g. `bor_sd`. For details of how to use these objects
 please refer to
-[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_extreme_event.html).
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html).
 
 It is assumed that `dataset_name = "ovr"` refers to the dataset of the
 only overall response assessments at each visit which should be
@@ -54,9 +54,9 @@ of anti-cancer therapy.
 
 ## See also
 
-[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_extreme_event.html),
-[`admiral::event()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/event.html),
-[`admiral::event_joined()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/event_joined.html)
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html),
+[`admiral::event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/event.html),
+[`admiral::event_joined()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/event_joined.html)
 
 ## Examples
 

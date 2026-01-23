@@ -6,7 +6,7 @@ This article describes creating an `ADRS` ADaM dataset for prostate
 cancer studies based on [**Prostate Cancer Working Group 3 (PCWG3)**
 criteria](https://doi.org/10.1200/JCO.2015.64.2702). Most of the
 endpoints are derived by calling
-[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_extreme_event.html).
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html).
 
 Metastatic prostate cancer response cannot be fully captured by RECIST
 1.1 criteria alone. Therefore, the PCWG3 guidelines extend these

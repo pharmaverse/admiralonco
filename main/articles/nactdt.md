@@ -74,11 +74,11 @@ pr <- tribble(
 
 To derive the New Anti-Cancer Therapy start date with data from a single
 source, the function
-[`admiral::derive_vars_merged()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_vars_merged.html)
+[`admiral::derive_vars_merged()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_vars_merged.html)
 can be used. If numeric date is required,
-[`admiral::convert_dtc_to_dt`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/convert_dtc_to_dt.html)
+[`admiral::convert_dtc_to_dt`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/convert_dtc_to_dt.html)
 , or if time part is needed,
-[`admiral::convert_dtc_to_dtm()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/convert_dtc_to_dtm.html)
+[`admiral::convert_dtc_to_dtm()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/convert_dtc_to_dtm.html)
 can be used as part of an expression for the `new_vars` argument.
 
 ``` r
@@ -97,20 +97,20 @@ adsl <- derive_vars_merged(
 
 To derive the New Anti-Cancer Therapy start date with data from multiple
 sources, the function
-[`admiral::derive_vars_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_vars_extreme_event.html)
+[`admiral::derive_vars_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_vars_extreme_event.html)
 can be used.
 
 #### Prerequisite
 
 Prior to calling the function, an input `event` object must be created
 for each source dataset using
-[`admiral::event()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/event.html).
+[`admiral::event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/event.html).
 Within this function, any company-specific subsetting can be passed to
 the `condition` argument. If numeric version of the dates will be
 needed,
-[`admiral::convert_dtc_to_dt()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/convert_dtc_to_dt.html),
+[`admiral::convert_dtc_to_dt()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/convert_dtc_to_dt.html),
 or if time part is needed,
-[`admiral::convert_dtc_to_dtm()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/convert_dtc_to_dtm.html)
+[`admiral::convert_dtc_to_dtm()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/convert_dtc_to_dtm.html)
 can be used as part of an expression for the `set_values_to` argument.
 
 ``` r
@@ -161,7 +161,7 @@ may be referenced for case usage.
 ### Derive Date Parameter
 
 The [admiral](https://pharmaverse.github.io/admiral/) function
-[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_extreme_event.html)
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html)
 can be used for deriving parameter based on the first or last
 observation from single and multiple sources.
 
@@ -169,7 +169,7 @@ Based on individual company standards, this parameter may be added to an
 event or date dataset such as `ADEVENT` or `ADDATES`, which are
 generally intermediate datasets to `ADTTE`. For demonstration purpose, a
 new anti-cancer date parameter will be merged into `ADRS`. A list of
-[`event()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/event.html)
+[`event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/event.html)
 objects is expected and this will contain the sources of the dates and
 any company specific filtering.
 

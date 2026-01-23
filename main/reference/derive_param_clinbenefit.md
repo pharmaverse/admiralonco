@@ -1,8 +1,8 @@
 # Adds a Parameter for Clinical Benefit
 
-**\[superseded\]** The `derive_param_clinbenefit()` function has been
-superseded in favor of
-[`derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_extreme_event.html).
+**\[deprecated\]** The `derive_param_clinbenefit()` function has been
+deprecated in favor of
+[`derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html).
 
 Adds a parameter for clinical benefit/disease control
 
@@ -88,7 +88,7 @@ derive_param_clinbenefit(
 
 - aval_fun:
 
-  *Deprecated*, please use `set_values_to` instead.
+  **\[deprecated\]** Please use `set_values_to` instead.
 
   Function to map character analysis value (`AVALC`) to numeric analysis
   value (`AVAL`)
@@ -167,20 +167,18 @@ Example: `clinben_vals <- c("CR", "PR")`
     - `N` for subjects present in `dataset_adsl` but not present in
       `dataset` or the dataset identified in `source_resp`.
 
-6.  `AVAL` is derived using `AVALC` as input to the function specified
-    in `aval_fun`.
-
-7.  The variables specified by `set_values_to` are added to the new
+6.  The variables specified by `set_values_to` are added to the new
     observations with values equal to the values specified in the same.
 
-8.  The new observations are added to `dataset`. Variables held in
+7.  The new observations are added to `dataset`. Variables held in
     common between `dataset` and `dataset_adsl` are kept for the new
     observations, and are populated with their values from
     `dataset_adsl`.
 
 ## See also
 
-Other superseded:
+Other deprecated:
+[`date_source()`](https:/pharmaverse.github.io/admiralonco/main/reference/date_source.md),
 [`derive_param_bor()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_bor.md),
 [`derive_param_confirmed_bor()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_confirmed_bor.md),
 [`derive_param_confirmed_resp()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_confirmed_resp.md),
@@ -270,6 +268,11 @@ derive_param_clinbenefit(
   )
 ) %>%
   filter(PARAMCD == "CBR")
+#> `derive_param_clinbenefit()` was deprecated in admiralonco 1.4.
+#> ℹ Please use `admiral::derive_extreme_event()` instead.
+#> ✖ This message will turn into a warning at the beginning of 2027.
+#> ℹ See admiral's deprecation guidance:
+#>   https://pharmaverse.github.io/admiraldev/dev/articles/programming_strategy.html#deprecation
 #> # A tibble: 4 × 7
 #>   USUBJID PARAMCD AVALC ADT        STUDYID ANL01FL TRTSDT    
 #>   <chr>   <chr>   <chr> <date>     <chr>   <chr>   <date>    

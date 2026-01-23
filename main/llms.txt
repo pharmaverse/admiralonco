@@ -159,7 +159,7 @@ used as input for derivations
 ## Example Datasets
 
 You can run
-[`admiral::use_ad_template()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/use_ad_template.html)
+[`admiral::use_ad_template()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/use_ad_template.html)
 to produce additional datasets
 
 - [`admiral_adrs`](https:/pharmaverse.github.io/admiralonco/main/reference/admiral_adrs.md)
@@ -182,7 +182,7 @@ When a function is deprecated:
   and no longer be able to use.
 - Finally, after 3 years, the function/argument and related
   documentation and tests will be removed from
-  [admiral](https://pharmaverse.github.io/admiral/).
+  [admiralonco](https://pharmaverse.github.io/admiralonco/).
 
 *Note: Guidance on replacement functionality will be found in the
 message produced as well as in the function’s documentation.*
@@ -195,30 +195,26 @@ deprecated:
 
   Create a `date_source` object
 
-## Superseded
-
-Superseded functions have been replaced with more flexible functions
-that allow for construction of more diverse endpoints for a wider array
-of oncology indications, beyond solid tumor/RECIST. However, we will not
-be removing these functions from
-[admiralonco](https://pharmaverse.github.io/admiralonco/) in the near
-future and they will continue to be supported.
-
 - [`derive_param_bor()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_bor.md)
-  **\[superseded\]** : Adds a Parameter for Best Overall Response
+  **\[deprecated\]** : Adds a Parameter for Best Overall Response
   (without confirmation)
+
 - [`derive_param_clinbenefit()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_clinbenefit.md)
-  **\[superseded\]** : Adds a Parameter for Clinical Benefit
+  **\[deprecated\]** : Adds a Parameter for Clinical Benefit
+
 - [`derive_param_confirmed_bor()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_confirmed_bor.md)
-  **\[superseded\]** : Adds a Parameter for Confirmed Best Overall
+  **\[deprecated\]** : Adds a Parameter for Confirmed Best Overall
   Response
+
 - [`derive_param_confirmed_resp()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_confirmed_resp.md)
-  **\[superseded\]** : Adds a Parameter for Confirmed Response
+  **\[deprecated\]** : Adds a Parameter for Confirmed Response
+
 - [`derive_param_response()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_response.md)
-  **\[superseded\]** : Adds a Parameter Indicating If a Subject Had a
+  **\[deprecated\]** : Adds a Parameter Indicating If a Subject Had a
   Response before Progressive Disease
+
 - [`filter_pd()`](https:/pharmaverse.github.io/admiralonco/main/reference/filter_pd.md)
-  **\[superseded\]** : Filter up to First PD (Progressive Disease) Date
+  **\[deprecated\]** : Filter up to First PD (Progressive Disease) Date
 
 # Articles
 

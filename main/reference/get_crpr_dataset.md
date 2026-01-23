@@ -44,11 +44,6 @@ library(dplyr)
 library(lubridate)
 library(admiralonco)
 library(rlang)
-#> 
-#> Attaching package: ‘rlang’
-#> The following object is masked from ‘package:magrittr’:
-#> 
-#>     set_names
 
 adrs <- tribble(
   ~USUBJID, ~ADTC,        ~AVALC,

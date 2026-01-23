@@ -47,14 +47,14 @@ Source:
 [`DESCRIPTION`](https://github.com/pharmaverse/admiralonco/blob/main/DESCRIPTION)
 
 Bundfuss S, Jain A, Nguyen V, Starostecka O, Peddamudium K, Namai T,
-Farrugia R (2025). *admiralonco: Oncology Extension Package for ADaM in
+Farrugia R (2026). *admiralonco: Oncology Extension Package for ADaM in
 'R' Asset Library*. R package version 1.3.0.9000,
 <https://pharmaverse.github.io/admiralonco/>.
 
     @Manual{,
       title = {admiralonco: Oncology Extension Package for ADaM in 'R' Asset Library},
       author = {Stefan Bundfuss and Amit Jain and Vinh Nguyen and Olga Starostecka and Kiran Peddamudium and Tomoyuki Namai and Ross Farrugia},
-      year = {2025},
+      year = {2026},
       note = {R package version 1.3.0.9000},
       url = {https://pharmaverse.github.io/admiralonco/},
     }

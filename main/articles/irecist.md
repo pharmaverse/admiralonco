@@ -7,7 +7,7 @@ parameters based on iRECIST. It shows a similar way of deriving the
 endpoints presented in [Creating ADRS (Including Non-standard
 Endpoints)](https:/pharmaverse.github.io/admiralonco/main/articles/adrs.md).
 Most of the endpoints are derived by calling
-[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_extreme_event.html).
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html).
 
 This vignette follows the iRECIST guidelines, for more information user
 may visit <https://recist.eortc.org/irecist/>
@@ -156,7 +156,7 @@ so changing `AVAL` here would not change the result of those
 derivations. However, please note that the ordering of `AVAL` will be
 used to determine `ANL01FL` in the subsequent step, ensure that the
 appropriate `mode` is being set in the
-[`admiral::derive_var_extreme_flag()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_var_extreme_flag.html).
+[`admiral::derive_var_extreme_flag()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_var_extreme_flag.html).
 
 iRECIST ordering will be used or if you’d like to provide your own
 company-specific ordering here you could do this as follows:
@@ -228,7 +228,7 @@ adrs <- adrs %>%
 To restrict response data up to and including first reported progressive
 disease `ANL02FL` flag could be created by using
 [admiral](https://pharmaverse.github.io/admiral/) function
-[`admiral::derive_var_relative_flag()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_var_relative_flag.html).
+[`admiral::derive_var_relative_flag()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_var_relative_flag.html).
 
 ``` r
 adrs <- adrs %>%
@@ -312,13 +312,13 @@ no_data_missing <- event(
 #### Handling Different Input Response Values
 
 If `RS` contains other response values than the iRECIST responses, the
-[`event()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/event.html)
+[`event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/event.html)
 and
-[`event_joined()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/event_joined.html)
+[`event_joined()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/event_joined.html)
 can be adjusted to cover this scenario. For example, if RECIST responses
 (`"CR"`, `"PR"`, `"SD"`, …) are collected up to first PD and iRECIST
 responses (`"iCR"`, `"iPR"`, `"iSD"`, …) thereafter, the
-[`event()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/event.html)
+[`event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/event.html)
 object defining unconfirmed response can be adjusted in the following
 way.
 
@@ -347,7 +347,7 @@ occurrence of `iUPD`. In cases where we have `SD`, `SD`, `iUPD`, `PR`,
 occurrence of `iUPD`.
 
 The function
-[`admiral::derive_extreme_records()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_extreme_records.html),
+[`admiral::derive_extreme_records()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_records.html),
 in conjunction with the event `icpd_y`, could be used to find the date
 of the first `iUPD`.
 
@@ -410,14 +410,14 @@ For progressive disease and response shown in steps here and below, in
 our examples we show these as `ADRS` parameters, but they could equally
 be achieved via `ADSL` dates or `ADEVENT` parameters.If you prefer to
 store as an ADSL date, then the function
-[`admiral::derive_var_extreme_dt()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_var_extreme_dt.html)
+[`admiral::derive_var_extreme_dt()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_var_extreme_dt.html)
 could be used to find the date of first `iCPD` as a variable, rather
 than as a new parameter record.
 
 ### Derive Response Parameter
 
 The function
-[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_extreme_event.html)
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html)
 can then be used to find the date of first response. In the below
 example, the response condition has been defined as `iCR` or `iPR` via
 the event `irsp_y` that was created for iRECIST.
@@ -455,7 +455,7 @@ adrs <- adrs %>%
 ### Derive Clinical Benefit Parameter
 
 The function
-[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_extreme_event.html)
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html)
 can then be used to derive the clinical benefit parameter, which we
 define as a patient having had a response or a sustained period of time
 before first `iUPD`. This could also be known as disease control. In
@@ -508,7 +508,7 @@ adrs <- adrs %>%
 ### Derive Best Overall Response Parameter
 
 The function
-[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_extreme_event.html)
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html)
 can be used to derive the best overall response (without confirmation
 required) parameter. Similar to the above function you can optionally
 decide what period would you consider an `iSD` or `NON-iCR/NON-iUPD` as
@@ -615,7 +615,7 @@ adrs <- adrs %>%
 
 Any of the above response parameters can be repeated for “confirmed”
 responses only. For these the function
-[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.3.1/cran-release/reference/derive_extreme_event.html)
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html)
 can be used with different events. Some of the other functions from
 above can then be re-used passing in these confirmed response records.
 See the examples below of derived parameters requiring confirmation. The

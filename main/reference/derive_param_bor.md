@@ -1,6 +1,6 @@
 # Adds a Parameter for Best Overall Response (without confirmation)
 
-**\[superseded\]** The `derive_param_bor()` function has been superseded
+**\[deprecated\]** The `derive_param_bor()` function has been deprecated
 in favor of `derive_extreme_event()`.
 
 Adds a parameter for best overall response, without confirmation,
@@ -126,7 +126,7 @@ derive_param_bor(
 
 - aval_fun:
 
-  *Deprecated*, please use `set_values_to` instead.
+  **\[deprecated\]** Please use `set_values_to` instead.
 
   Function to map character analysis value (`AVALC`) to numeric analysis
   value (`AVAL`)
@@ -161,8 +161,8 @@ and/or rows as set in the `set_values_to` argument.
 
 Calculates the best overall response (BOR) parameter, as detailed below.
 
-Records after PD can be removed using the source_pd and source_datasets
-arguments.
+Records after PD can be removed using the `source_pd` and
+`source_datasets` arguments.
 
 Note:
 
@@ -181,10 +181,7 @@ Note:
     selected in the following order of preference: CR, PR, SD,
     NON-CR/NON-PD, PD, NE, MISSING
 
-5.  The `AVAL` column is added and set using the `aval_fun(AVALC)`
-    function
-
-6.  The columns specified by the `set_values_to` parameter and records
+5.  The columns specified by the `set_values_to` parameter and records
     are added to the dataframe passed into the `dataset` argument
 
 Note: Any responses of SD or NON-CR/NON-PD that occur before
@@ -201,7 +198,8 @@ be overwritten using the `set_values_to` parameter.
 
 ## See also
 
-Other superseded:
+Other deprecated:
+[`date_source()`](https:/pharmaverse.github.io/admiralonco/main/reference/date_source.md),
 [`derive_param_clinbenefit()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_clinbenefit.md),
 [`derive_param_confirmed_bor()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_confirmed_bor.md),
 [`derive_param_confirmed_resp()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_confirmed_resp.md),
@@ -215,7 +213,6 @@ Stephen Gormley
 ## Examples
 
 ``` r
-library(magrittr)
 library(dplyr)
 #> 
 #> Attaching package: ‘dplyr’
@@ -347,27 +344,24 @@ derive_param_bor(
   filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
   source_pd = pd_date,
   source_datasets = list(adrs = adrs),
-  aval_fun = aval_fun_pass,
   reference_date = TRTSDT,
   ref_start_window = 28,
   set_values_to = exprs(
     PARAMCD = "BOR",
-    PARAM = "Best Overall Response"
+    PARAM = "Best Overall Response",
+    AVAL = aval_fun_pass(AVALC)
   )
 ) %>%
   filter(PARAMCD == "BOR")
-#> Warning: The `aval_fun` argument of `derive_param_bor()` is deprecated as of admiralonco
-#> 0.4.0.
-#> ℹ Please use the `set_values_to` argument instead.
-#> # A tibble: 8 × 9
-#>   USUBJID AVALC   ANL01FL PARAMCD ADT        STUDYID TRTSDT     PARAM       AVAL
-#>   <chr>   <chr>   <chr>   <chr>   <date>     <chr>   <date>     <chr>      <dbl>
-#> 1 1       CR      Y       BOR     2020-02-01 XX1234  2020-01-01 Best Over…    11
-#> 2 2       PR      Y       BOR     2020-02-01 XX1234  2019-12-12 Best Over…    22
-#> 3 3       CR      Y       BOR     2019-11-12 XX1234  2019-11-11 Best Over…    11
-#> 4 4       PR      Y       BOR     2020-01-01 XX1234  2019-12-30 Best Over…    22
-#> 5 5       PR      Y       BOR     2020-01-01 XX1234  2020-01-01 Best Over…    22
-#> 6 6       CR      Y       BOR     2020-02-16 XX1234  2020-02-02 Best Over…    11
-#> 7 7       CR      Y       BOR     2020-02-16 XX1234  2020-02-02 Best Over…    11
-#> 8 8       MISSING NA      BOR     NA         XX1234  2020-04-01 Best Over…    77
+#> `derive_param_bor()` was deprecated in admiralonco 1.4.
+#> ℹ Please use `admiral::derive_extreme_event()` instead.
+#> ✖ This message will turn into a warning at the beginning of 2027.
+#> ℹ See admiral's deprecation guidance:
+#>   https://pharmaverse.github.io/admiraldev/dev/articles/programming_strategy.html#deprecation
+#> Error in process_set_values_to(., set_values_to): Assigning variables failed!
+#> • `set_values_to = exprs(PARAMCD = BOR, PARAM = Best Overall Response, AVAL =
+#>   aval_fun_pass(AVALC))`
+#> See error message below:
+#> ℹ In argument: `AVAL = aval_fun_pass(AVALC)`. Caused by error in
+#> `aval_fun_pass()`: ! could not find function "aval_fun_pass"
 ```
