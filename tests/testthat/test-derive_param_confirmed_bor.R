@@ -72,6 +72,7 @@ pd_date <- date_source(
 # derive_param_confirmed_bor ----
 ## Test 1: default confirmed BOR ----
 test_that("derive_param_confirmed_bor Test 1: default confirmed BOR", {
+  withr::local_options(list(lifecycle_verbosity = "quiet"))
   suppress_warning(
     actual <-
       derive_param_confirmed_bor(
@@ -128,6 +129,7 @@ test_that("derive_param_confirmed_bor Test 1: default confirmed BOR", {
 
 ## Test 2: accept SD, ND handling, missing as NE ----
 test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as NE", {
+  withr::local_options(list(lifecycle_verbosity = "quiet"))
   adrs_ext <- bind_rows(
     filter(adrs, USUBJID != "7"),
     tibble::tribble(
@@ -205,6 +207,7 @@ test_that("derive_param_confirmed_bor Test 2: accept SD, ND handling, missing as
 
 ## Test 3: error if invalid response values ----
 test_that("derive_param_confirmed_bor Test 3: error if invalid response values", {
+  withr::local_options(list(lifecycle_verbosity = "quiet"))
   adrs <- tibble::tribble(
     ~USUBJID, ~ADTC,        ~AVALC,
     "1",      "2020-01-01", "PR",
@@ -245,6 +248,7 @@ test_that("derive_param_confirmed_bor Test 3: error if invalid response values",
 
 ## Test 4: No source_pd ----
 test_that("derive_param_confirmed_bor Test 4: No source_pd", {
+  withr::local_options(list(lifecycle_verbosity = "quiet"))
   suppress_warning(
     actual_no_source_pd <-
       derive_param_confirmed_bor(
@@ -299,10 +303,10 @@ test_that("derive_param_confirmed_bor Test 4: No source_pd", {
   )
 })
 
-## Test 5: Deprecation warning for aval_fun ----
-test_that("derive_param_confirmed_bor Test 5: Deprecation warning for aval_fun", {
-  expect_warning(
-    suppress_warning(
+## Test 5: Deprecation error for aval_fun ----
+test_that("derive_param_confirmed_bor Test 5: Deprecation error for aval_fun", {
+  expect_error(
+    suppressMessages(
       actual_no_source_pd <-
         derive_param_confirmed_bor(
           adrs,
@@ -318,42 +322,33 @@ test_that("derive_param_confirmed_bor Test 5: Deprecation warning for aval_fun",
             PARAMCD = "CBOR",
             PARAM = "Best Confirmed Overall Response by Investigator"
           )
+        )
+    ),
+    class = "lifecycle_error_deprecated"
+  )
+})
+
+## Test 6: deprecation message if function is called ----
+test_that("derive_param_confirmed_bor Test 6: deprecation message if function is called", {
+  expect_snapshot({
+    suppress_warning(
+      actual <-
+        derive_param_confirmed_bor(
+          adrs,
+          dataset_adsl = adsl,
+          filter_source = PARAMCD == "OVR",
+          source_pd = pd_date,
+          source_datasets = list(adrs = adrs),
+          reference_date = TRTSDT,
+          ref_start_window = 28,
+          ref_confirm = 28,
+          set_values_to = exprs(
+            AVAL = aval_resp(AVALC),
+            PARAMCD = "CBOR",
+            PARAM = "Best Confirmed Overall Response by Investigator"
+          )
         ),
       "Dataset contains CR records followed by PR"
-    ),
-    class = "lifecycle_warning_deprecated"
-  )
-
-  expected_no_source_pd <- bind_rows(
-    adrs,
-    tibble::tribble(
-      ~USUBJID, ~ADTC,         ~AVALC,          ~AVAL,
-      "1",      "2020-02-01",  "CR",            1,
-      "2",      "2020-02-01",  "SD",            3,
-      "3",      "2020-01-01",  "SD",            3,
-      "4",      "2020-03-01",  "SD",            3,
-      "5",      "2020-05-15",  "NON-CR/NON-PD", 4,
-      "6",      "2020-03-30",  "SD",            3,
-      "7",      "2020-02-06",  "NE",            6,
-      "8",      NA_character_, "MISSING",       7,
-      "9",      "2020-03-06",  "SD",            3 # expected is now SD
-    ) %>%
-      mutate(
-        ADT = lubridate::ymd(ADTC),
-        STUDYID = "XX1234",
-        PARAMCD = "CBOR",
-        PARAM = "Best Confirmed Overall Response by Investigator"
-      ) %>%
-      derive_vars_merged(
-        dataset_add = adsl,
-        by_vars = exprs(STUDYID, USUBJID),
-        new_vars = exprs(TRTSDT)
-      )
-  )
-
-  expect_dfs_equal(
-    base = expected_no_source_pd,
-    compare = actual_no_source_pd,
-    keys = c("USUBJID", "PARAMCD", "ADT")
-  )
+    )
+  })
 })

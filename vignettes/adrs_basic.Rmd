@@ -17,6 +17,12 @@ knitr::opts_chunk$set(
 library(admiraldev)
 ```
 
+# Important Note
+
+Many of the functions used in this vignette are deprecated. Thus it is
+recommended to use [Creating ADRS (Including Non-standard Endpoints)](adrs.html)
+instead.
+
 # Introduction
 
 This article describes creating an `ADRS` ADaM with common oncology endpoint

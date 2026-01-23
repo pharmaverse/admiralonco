@@ -7,6 +7,34 @@ provide a deprecation _message_ rather than a deprecation _warning_. For this to
 have an effect the `{admiralonco}` package must be loaded _after_ the
 `{admiral}` package. (#319)
 
+## Breaking Changes
+
+- The following functions/arguments are entering the next phase of the [deprecation process](https://pharmaverse.github.io/admiraldev/articles/programming_strategy.html#deprecation): 
+
+  **Phase 1 (message)**
+    
+  - `derive_param_bor()` is deprecated in favor of `admiral::derive_extreme_event()`. (#320)
+  - `derive_param_clinbenefit()` is deprecated in favor of `admiral::derive_extreme_event()`. (#320)
+  - `derive_param_confirmed_bor()` is deprecated in favor of `admiral::derive_extreme_event()`. (#320)
+  - `derive_param_confirmed_resp()` is deprecated in favor of `admiral::derive_extreme_event()`. (#320)
+  - `derive_param_response()` is deprecated in favor of `admiral::derive_extreme_event()`. (#320)
+  - `filter_pd()` is deprecated in favor of `admiral::filter_relative()`. (#320)
+  
+  **Phase 2 (warning)**
+  
+  No functions or arguments in this phase  
+  
+  **Phase 3 (error)**
+  
+  - The `aval_fun` argument in `derive_param_bor()`, `derive_param_clinbenefit()`,
+  `derive_param_confirmed_bor()`, `derive_param_confirmed_resp()`, and
+  `derive_param_response()` is deprecated in favor of the `set_values_to`
+  argument.
+
+  **Phase 4 (removed)**
+
+  No functions or arguments in this phase
+
 ## Documentation
 
 - PSA response endpoints were added to the "Creating ADRS with Prostate Cancer

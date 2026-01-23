@@ -1,8 +1,8 @@
 #' Filter up to First PD (Progressive Disease) Date
 #'
 #' @description
-#' `r lifecycle::badge("superseded")` The `filter_pd()` function has been
-#' superseded in favor of `filter_relative()`.
+#' `r lifecycle::badge("deprecated")` The `filter_pd()` function has been
+#' deprecated in favor of `filter_relative()`.
 #'
 #' Filter a dataset to only include the source parameter records up to and
 #' including the first PD (progressive disease). These records are passed to
@@ -49,8 +49,8 @@
 #'
 #' @export
 #'
-#' @family superseded
-#' @keywords superseded
+#' @family deprecated
+#' @keywords deprecated
 #'
 #' @examples
 #'
@@ -191,6 +191,17 @@ filter_pd <- function(dataset,
                       source_pd,
                       source_datasets,
                       subject_keys = get_admiral_option("subject_keys")) {
+  deprecate_inform(
+    when = "1.4",
+    what = "filter_pd()",
+    with = "admiral::filter_relative()",
+    details = c(
+      x = "This message will turn into a warning at the beginning of 2027.",
+      i = "See admiral's deprecation guidance:
+      https://pharmaverse.github.io/admiraldev/dev/articles/programming_strategy.html#deprecation"
+    )
+  )
+
   # Check input arguments
   assert_vars(subject_keys)
   assert_data_frame(dataset,

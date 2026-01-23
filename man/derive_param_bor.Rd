@@ -96,7 +96,7 @@ for these subjects.
 
 \emph{Permitted Values:} a logical scalar}
 
-\item{aval_fun}{\emph{Deprecated}, please use \code{set_values_to} instead.
+\item{aval_fun}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Please use \code{set_values_to} instead.
 
 Function to map character analysis value (\code{AVALC}) to numeric analysis
 value (\code{AVAL})
@@ -119,8 +119,8 @@ The dataframe passed in the \code{dataset} argument with additional columns and/
 rows as set in the \code{set_values_to} argument.
 }
 \description{
-\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#superseded}{\figure{lifecycle-superseded.svg}{options: alt='[Superseded]'}}}{\strong{[Superseded]}} The \code{derive_param_bor()} function has been
-superseded in favor of \code{derive_extreme_event()}.
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} The \code{derive_param_bor()} function has been
+deprecated in favor of \code{derive_extreme_event()}.
 
 Adds a parameter for best overall response, without confirmation, optionally up to
 first progressive disease
@@ -128,7 +128,7 @@ first progressive disease
 \details{
 Calculates the best overall response (BOR) parameter, as detailed below.
 
-Records after PD can be removed using the source_pd and source_datasets
+Records after PD can be removed using the \code{source_pd} and \code{source_datasets}
 arguments.
 
 Note:
@@ -140,7 +140,6 @@ Note:
 \code{reference_date} + \code{ref_start_window} are assigned a Best Overall Response of \code{NE}.
 \item The Best Response, from the records in steps 1 to 3, is then selected in the following
 order of preference: CR, PR, SD, NON-CR/NON-PD, PD, NE, MISSING
-\item The \code{AVAL} column is added and set using the \code{aval_fun(AVALC)} function
 \item The columns specified by the \code{set_values_to} parameter and records
 are added to the dataframe passed into the \code{dataset} argument
 }
@@ -156,8 +155,6 @@ or populated differently (e.g. \code{RSSTRESC}, \code{VISIT}, \code{PARCATy}, \c
 overwritten using the \code{set_values_to} parameter.
 }
 \examples{
-
-library(magrittr)
 library(dplyr)
 library(tibble)
 library(lubridate)
@@ -266,18 +263,19 @@ derive_param_bor(
   filter_source = PARAMCD == "OVR" & ANL01FL == "Y",
   source_pd = pd_date,
   source_datasets = list(adrs = adrs),
-  aval_fun = aval_fun_pass,
   reference_date = TRTSDT,
   ref_start_window = 28,
   set_values_to = exprs(
     PARAMCD = "BOR",
-    PARAM = "Best Overall Response"
+    PARAM = "Best Overall Response",
+    AVAL = aval_fun_pass(AVALC)
   )
 ) \%>\%
   filter(PARAMCD == "BOR")
 }
 \seealso{
-Other superseded: 
+Other deprecated: 
+\code{\link{date_source}()},
 \code{\link{derive_param_clinbenefit}()},
 \code{\link{derive_param_confirmed_bor}()},
 \code{\link{derive_param_confirmed_resp}()},
@@ -287,5 +285,5 @@ Other superseded:
 \author{
 Stephen Gormley
 }
-\concept{superseded}
-\keyword{superseded}
+\concept{deprecated}
+\keyword{deprecated}
