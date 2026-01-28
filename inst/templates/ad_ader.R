@@ -75,7 +75,7 @@ covar <- adsl %>%
   derive_vars_merged(
     dataset_add = country_code_lookup,
     new_vars = exprs(COUNTRYN = country_number, COUNTRYL = country_name),
-    by_vars = exprs(COUNTRY = country_code),
+    by_vars = exprs(COUNTRY = country_code)
   ) %>%
   mutate(
     STUDYIDN = as.numeric(word(USUBJID, 1, sep = fixed("-"))),
