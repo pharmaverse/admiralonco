@@ -53,7 +53,7 @@ ader_tte <- adsl %>%
     value_var = CNSR
   )
 
-# Add response date to ADSL for duration of response calculation
+# Derive Best Overall Response (BOR) variables from ADRS
 ader_bor <- ader_tte %>%
   derive_vars_merged(
     dataset_add = adrs,
