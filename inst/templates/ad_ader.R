@@ -20,6 +20,7 @@ library(stringr)
 
 data("admiral_adsl")
 data("admiral_adrs")
+data("country_code_lookup")
 
 adsl <- admiral_adsl
 adrs <- admiral_adrs
@@ -68,7 +69,7 @@ ader_aseq <- ader_bor %>%
     check_type = "error"
   )
 
-#---- Derive Covariates ----
+# ---- Derive Covariates ----
 # Include numeric values for STUDYIDN, USUBJIDN, SEXN, RACEN etc.
 
 covar <- adsl %>%
@@ -131,7 +132,7 @@ covar <- adsl %>%
     RACE, RACEN, ETHNIC, ETHNICN, FORM, FORMN, COUNTRY, COUNTRYN, COUNTRYL
   )
 
-#---- Derive additional baselines from VS and LB ----
+# ---- Derive additional baselines from ADVS and ADLB ----
 
 labsbl <- adlb %>%
   filter(ABLFL == "Y" & PARAMCD %in% c("CREAT", "ALT", "AST", "BILI")) %>%
