@@ -2,7 +2,7 @@
 #
 # Label: Exposure Response Data
 #
-# Input: adsl, adrs, tte_source objects
+# Input: adsl, adrs, adtte, adlb, advs, adex
 library(admiral)
 library(admiralonco)
 # pharmaverseadam contains example datasets generated from the CDISC pilot
