@@ -114,12 +114,12 @@ covar <- adsl %>%
     ),
     COHORT = ARMN,
     COHORTC = ARM,
-    ROUTE = unique(adex$EXROUTE),
+    ROUTE = unique(adex$EXROUTE)[1],
     ROUTEN = case_when(
       ROUTE == "TRANSDERMAL" ~ 3,
       TRUE ~ NA_real_
     ),
-    FORM = unique(adex$EXDOSFRM),
+    FORM = unique(adex$EXDOSFRM)[1],
     FORMN = case_when(
       FORM == "PATCH" ~ 3,
       TRUE ~ 4
