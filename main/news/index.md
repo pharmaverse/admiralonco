@@ -1,6 +1,6 @@
 # Changelog
 
-## admiralonco (development version)
+## admiralonco 1.4.0
 
 ### New Features
 

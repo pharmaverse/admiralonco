@@ -5,7 +5,7 @@
 As this is a package extension, if you are new to
 [admiral](https://pharmaverse.github.io/admiral/) then the best place to
 first start reading would be the [Get
-Started](https://pharmaverse.github.io/admiral/articles/admiral.html)
+Started](https://pharmaverse.github.io/admiral/cran-release/articles/admiral.html)
 page. This extension package follows the same main idea and conventions,
 and re-uses many functions from
 [admiral](https://pharmaverse.github.io/admiral/), so it is important to
