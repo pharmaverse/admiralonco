@@ -37,6 +37,17 @@ have an effect the `{admiralonco}` package must be loaded _after_ the
 
 ## Documentation
 
+- PSA response endpoints were added to the "Creating ADRS with Prostate Cancer
+Working Group 3 (PCWG3) Criteria" vignette. (#317)
+
+- The response values in the "Creating ADRS with Prostate Cancer Working Group 3
+(PCWG3) Criteria" vignette were aligned to the standard terminology and the data
+issue in the `RS` domain was fixed. (#313)
+
+- The wording in the "Bone Response Categories Based on PCWG3 Guidelines" section
+of the "Creating ADRS with Prostate Cancer Working Group 3 (PCWG3) Criteria"
+vignette was improved. (#314)
+
 - The "Ask AI" widget was added to the bottom right of each page. It enables users
 to ask questions about `{admiralonco}` and receive answers from an LLM. It is
 trained on the documentation of the admiral packages and provided by
