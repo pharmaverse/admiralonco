@@ -22,7 +22,24 @@ template:
       data-modal-search-placeholder="Ask me a question about {admiralonco} or the {admiral} ecosystem..."
       data-modal-example-questions="Tell me a little about the {admiralonco} package., What are some important {admiralonco} vignettes and what do they describe?"
       data-modal-z-index="9999"
-      ></script>search:
+      ></script>
+
+      <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Select all navbar links that have an aria-label
+        var navLinks = document.querySelectorAll('.navbar-nav .nav-link[aria-label]');
+
+        navLinks.forEach(function (link) {
+          // Initialize Bootstrap 5 Tooltip
+          link.setAttribute('title', link.getAttribute('aria-label'));
+          new bootstrap.Tooltip(link, {
+            placement: 'bottom', // Tooltip appears below the icon
+            trigger: 'hover'
+          });
+        });
+      });
+      </script>
+search:
   exclude: ['news/index.html']
 repo:
   url:
@@ -137,8 +154,8 @@ navbar:
     slack:
       icon: fa-slack
       href: https://app.slack.com/client/T028PB489D3/C02M8KN8269
-      aria-label: Slack
+      aria-label: Join the pharmaverse Slack!
     newissue:
       icon: fa-bug
       href: https://github.com/pharmaverse/admiralonco/issues/new/choose
-      aria-label: New Issue
+      aria-label: Report an Issue
