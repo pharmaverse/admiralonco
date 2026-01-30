@@ -1,0 +1,843 @@
+# Creating ADRS with Prostate Cancer Working Group 3 (PCWG3) Criteria
+
+## Introduction
+
+This article describes creating an `ADRS` ADaM dataset for prostate
+cancer studies based on [**Prostate Cancer Working Group 3 (PCWG3)**
+criteria](https://doi.org/10.1200/JCO.2015.64.2702). Most of the
+endpoints are derived by calling
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html).
+
+RECIST 1.1 criteria alone are insufficient to fully characterize
+response in metastatic prostate cancer. The PCWG3 guidelines address
+this limitation by defining a composite response that applies RECIST 1.1
+to soft‑tissue lesions while using PCWG3 rules for bone lesions.
+
+Note that only the PCWG3-specific steps are covered in this vignette.
+For extended guidance on all steps in ADRS creation, refer to the
+examples in [Creating ADRS (Including Non-standard
+Endpoints)](https:/pharmaverse.github.io/admiralonco/v1.4.0/articles/adrs.md).
+
+## PCWG3 Guidelines for Prostate Cancer Response
+
+In metastatic prostate cancer clinical trials, efficacy is assessed
+using PCWG3-modified RECIST 1.1 response and PSA tumor marker
+assessments. In this vignette, we have not discussed RECIST 1.1
+responses (soft tissue responses), as they are well-documented and
+widely known, and have focused solely on PCWG3 guidelines for evaluating
+bone scan responses in prostate cancer and PSA tumor marker assessments.
+
+### Prostate-specific antigen (PSA)
+
+Prostate-specific antigen (PSA) tumor marker assessments are a key
+component of the PCWG3 criteria for evaluating prostate cancer
+progression and response. For this vignette, the focus is on \>=50%
+decline in PSA from baseline as a secondary endpoint and \>=90% decline
+in PSA from baseline as an exploratory endpoint, confirmed at least 3
+weeks later. While this matches PCWG3 principles, please apply the
+confirmation timing specified in your protocol and any company-specific
+requirements.
+
+### Bone Response Categories Based on PCWG3 Guidelines:
+
+PCWG3 provides specific criteria for assessing bone lesions, including
+categories like PDu, NED, and PD, along with the 2+2 rule for confirming
+progression.
+
+#### Progressive Disease Unconfirmed (PDu)
+
+- At least 2 new bone lesions have appeared *within the flare window*
+  compared to baseline *or*
+- At least 2 new bone lesions have appeared *outside the flare window*
+  compared to the first post-treatment scan.
+
+Note: if there is no following visit (final visit), the time point
+remains at PDu.
+
+#### Progressive Disease (PD)
+
+- At least 2 new bone lesions had appeared *within the flare window*
+  compared to baseline (PDu), and at least 2 additional new bone lesions
+  have been found on the next scan confirming progression (PD). The date
+  of progression is the date of the scan showing the first 2 lesions.
+  *or*
+- At least 2 new bone lesions had appeared *outside the flare window*
+  compared to the first post-treatment scan (PDu), and the 2 lesions are
+  persistent on the next scan confirming progression (PD). The date of
+  progression is the date of the scan that first documents the second
+  lesion.
+
+See [**Bone Lesion Confirmation Guidance (The 2+2 Rule)**](#id_22rule)
+for further details.
+
+#### Not Evaluable (NE)
+
+When imaging is entirely missing or was not done.
+
+#### No Evidence of Disease (NED)
+
+No bone lesions are present on the scan (whether some were present at
+baseline and have completely disappeared or whether there were no bone
+lesions from the start).
+
+#### Non-Progressive Disease (Non-PD)
+
+Neither PD, PDu, NED or NE.
+
+#### Bone Lesion Confirmation Guidance (The 2+2 Flare Rule)
+
+Progression on a bone scan is defined based on whether the assessment
+occurs during the flare period or afterwards. The flare period is
+generally considered to be the first 8–12 weeks post-baseline, primarily
+involving the initial post-baseline assessment. Please refer to your
+study documentation to confirm how the flare period is defined.
+
+*Flare Period:* If two or more new bone lesions are identified at the
+first post-baseline bone scan compared to the baseline scan, and then at
+a subsequent bone scan (conducted at least 6 weeks later) two or more
+additional new lesions are observed (resulting in a cumulative total of
+four or more new lesions since the baseline scan), the progression is
+confirmed and the progression date is set as the date of that first
+post-baseline bone scan. This process is referred to as the “2+2 rule.”
+
+*After Flare Period:* The first post-baseline bone scan performed within
+the flare period becomes the new reference point for subsequent scans,
+regardless of whether progression (including PDu) is detected at that
+time. If two or more new lesions appear relative to this new reference
+and their persistence or increase in number is confirmed by a follow-up
+scan at least 6 weeks later, the progression date is recorded as the
+date of the first scan that noted the appearance of the two new lesions.
+
+##### Examples of the 2+2 Rule
+
+*Flare Period Progression:* A patient with metastatic prostate cancer
+has a baseline bone scan showing 10 lesions. At the first post-baseline
+bone scan (within the flare period), 2 new lesions are identified,
+increasing the total count to 12. This finding is labeled as Progressive
+Disease Unconfirmed (PDu). A follow-up scan conducted at least 6 weeks
+later reveals 2 additional new lesions (totaling 4 new lesions compared
+to baseline). Progression is confirmed based on the 2+2 rule, and the
+progression date is set as the date of the first post-baseline bone
+scan. At the first post-baseline bone scan response is re-assigned from
+PDu to PD.
+
+*Flare Phenomenon:* In another scenario, the same patient has a baseline
+bone scan showing 10 lesions. The first post-baseline bone scan during
+the flare period identifies 2 new lesions, increasing the count to 12.
+However, a follow-up scan conducted 6 weeks later reveals no additional
+new lesions. According to the 2+2 rule, this is classified as a flare
+phenomenon, not true progression. At the first post-baseline bone scan
+response is re-assigned from PDu to NON-PD.
+
+*After Flare Period Progression:* A patient has a baseline scan showing
+8 lesions. The first post-baseline bone scan, conducted 12 weeks after
+baseline (within the flare period), shows no new lesions, meaning
+progression is not detected. This scan becomes the new reference point
+for subsequent assessments.
+
+At a later scan conducted 18 weeks post-baseline (6 weeks after the new
+reference point, outside the flare period), 2 new lesions are observed
+relative to the new reference point. A follow-up scan performed 24 weeks
+post-baseline (6 weeks later) confirms the persistence of these 2 new
+lesions. The progression date is recorded as 18 weeks post-baseline,
+which is the date of the first scan noting the appearance of the 2 new
+lesions.
+
+Please check [Responses & Bone Lesion Confirmation Guidance (The 2+2
+Flare
+Rule)](https://4870646.fs1.hubspotusercontent-na1.net/hubfs/4870646/KEO149_Info_PCWG3_03.2.pdf)
+for more details.
+
+## Programming Workflow
+
+- [Read in Data](#readdata)
+- [Pre-processing of Input Records](#input)
+- [Derive Best Overall Response (BOR)](#bor)
+- [Derive Confirmed Best Overall Response (CBOR)](#cbor)
+- [Derive Unconfirmed PSA50 and PSA90 (PSAURS)](#psaurs)
+- [Derive Confirmed PSA50 and PSA90 (PSACRS)](#psacrs)
+- [Other Endpoints](#other)
+
+### Required Packages
+
+The examples of this vignette require the following packages.
+
+``` r
+library(admiral)
+library(admiralonco)
+library(pharmaversesdtm)
+library(pharmaverseadam)
+library(dplyr)
+library(tibble)
+```
+
+### Read in Data
+
+To begin, all data frames needed for the creation of `ADRS` should be
+read into the environment.This will be a company‑specific process. Some
+of the data frames needed are `ADSL`,`RS` and `LB`.
+
+For demonstration purpose, the SDTM and ADaM datasets (based on CDISC
+Pilot test data) from
+[pharmaversesdtm](https://pharmaverse.github.io/pharmaversesdtm/) and
+[pharmaverseadam](https://pharmaverse.github.io/pharmaverseadam/) are
+used.
+
+In this vignette, the `RS` SDTM dataset is expected to contain:
+
+- Soft tissue lesion responses evaluated using RECIST 1.1 criteria at
+  each timepoint.
+- Bone lesion responses assessed across visits using PCWG3 rules.
+- Combined responses derived from both RECIST 1.1 (soft tissue) and
+  PCWG3 (bone lesion) guidelines as collected at source.
+
+``` r
+# PCWG3 SDTM data
+rs <- pharmaversesdtm::rs_onco_pcwg3
+lb <- pharmaversesdtm::lb_onco_pcwg3
+
+# Filter only PSA records
+lb <- lb %>%
+  filter(LBTESTCD == "PSA" & !is.na(LBORRES))
+
+# Convert blanks to NA
+rs <- convert_blanks_to_na(rs)
+lb <- convert_blanks_to_na(lb)
+
+# ADaM data
+adsl <- pharmaverseadam::adsl
+```
+
+### Pre-processing of Input Records
+
+At this step, it may be useful to join `ADSL` to your `RS` and `LB`
+domains. Only the `ADSL` variables used for derivations are selected at
+this step.
+
+``` r
+adsl_vars <- exprs(TRTSDT)
+adrs <- derive_vars_merged(
+  rs,
+  dataset_add = adsl,
+  new_vars = adsl_vars,
+  by_vars = get_admiral_option("subject_keys")
+)
+
+adpsa <- lb %>%
+  derive_vars_merged(
+    dataset_add = adsl,
+    new_vars    = exprs(TRTSDT),
+    by_vars     = get_admiral_option("subject_keys")
+  )
+```
+
+#### Partial Date Imputation and Deriving `ADT`, `ADTF`, `AVISIT`, `AVISITN` etc.
+
+If your data collection allows for partial dates, you could apply a
+company-specific imputation rule at this stage when deriving `ADT`. For
+this example, here we impute missing day to last possible date.
+
+``` r
+adrs <- adrs %>%
+  derive_vars_dtm(
+    dtc = RSDTC,
+    new_vars_prefix = "A",
+    highest_imputation = "D",
+    date_imputation = "last"
+  ) %>%
+  derive_vars_dtm_to_dt(exprs(ADTM)) %>%
+  derive_vars_dy(
+    reference_date = TRTSDT,
+    source_vars = exprs(ADT)
+  ) %>%
+  mutate(
+    AVISIT = VISIT,
+    AVISITN = VISITNUM
+  )
+
+adpsa <- adpsa %>%
+  derive_vars_dtm(
+    dtc                = LBDTC,
+    new_vars_prefix    = "A",
+    highest_imputation = "D",
+    date_imputation    = "last"
+  ) %>%
+  derive_vars_dtm_to_dt(exprs(ADTM)) %>%
+  derive_vars_dy(
+    reference_date = TRTSDT,
+    source_vars    = exprs(ADT)
+  ) %>%
+  mutate(
+    AVISIT  = VISIT,
+    AVISITN = VISITNUM,
+  )
+```
+
+#### Derive `PARAMCD`, `PARAM`, `PARAMN`
+
+The next step is to assign parameter level values such as `PARAMCD`,
+`PARAM`, `PARAMN` to values collected from source, etc. For `RS`, a
+lookup can be created based on the SDTM `RSTESTCD` values and for
+`ADPSA` (`LB`) they are directly applied.
+
+``` r
+# Prepare param_lookup for SDTM RSTESTCD to add metadata
+param_lookup <- tibble::tribble(
+  ~RSTESTCD,  ~PARAMCD,   ~PARAM,                                   ~PARAMN,
+  "SFTSRESP", "SFTSRESP", "Soft Tissue Response by Investigator",         1,
+  "BONERESP", "BONERESP", "Bone Response by Investigator",                2,
+  "OVRLRESP", "OVRLRESP", "Overall Tumor Response by Investigator",       3
+)
+
+adrs <- adrs %>%
+  derive_vars_merged_lookup(
+    dataset_add = param_lookup,
+    by_vars = exprs(RSTESTCD)
+  ) %>%
+  mutate(
+    PARCAT1 = RSCAT,
+    AVALC = RSSTRESC
+  )
+
+adpsa <- adpsa %>%
+  mutate(
+    PARAMCD = LBTESTCD,
+    PARAM = LBTEST,
+    PARCAT1 = "PSA Response",
+    AVAL = LBSTRESN
+  )
+```
+
+### RECIST 1.1 and Bone Response Combined Based on PCWG3 Guidelines
+
+#### Derive Combined Overall Time Point Response by Investigator (`OVRLRESC`) Parameter
+
+Although `OVRLRESP`, representing the Overall Tumor Response by
+Investigator is available in the source data, we have re-derived the
+combined overall response by Investigator (`OVRLRESC`). This derivation
+follows the rules from the *PCWG3 and RECIST 1.1 combined response
+interpretation*, as described in the PharmaSUG 2024 publication on
+metastatic prostate cancer response criteria ([PharmaSUG 2024,
+DS-287](https://www.lexjansen.com/pharmasug/2024/DS/PharmaSUG-2024-DS-287.pdf)).
+
+##### Table : Combined Overall Time Point Response as per summarized PCWG3 guidelines
+
+| Table 1: Overall Time Point Response                                                                                                                                                                                                                                                                        |                        |                   |
+|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------|-------------------|
+| Soft Tissue (RECIST 1.1) TPR, Bone Lesion (PCWG3) TPR, and PCWG Combined TPR                                                                                                                                                                                                                                |                        |                   |
+| Soft Tissue (RECIST 1.1)                                                                                                                                                                                                                                                                                    | Bone Lesion (PCWG3)    | Overall PCWG      |
+| PD                                                                                                                                                                                                                                                                                                          | Any                    | PD                |
+| Any                                                                                                                                                                                                                                                                                                         | PD                     | PD                |
+| NE                                                                                                                                                                                                                                                                                                          | NON-PD, PDu, NED or NE | NE                |
+| NED                                                                                                                                                                                                                                                                                                         | NON-PD                 | NON-CR/NON-PD     |
+| NED                                                                                                                                                                                                                                                                                                         | PDu                    | PDu               |
+| NED                                                                                                                                                                                                                                                                                                         | NED                    | NE                |
+| NED                                                                                                                                                                                                                                                                                                         | NE                     | NE                |
+| SD                                                                                                                                                                                                                                                                                                          | NON-PD, PDu, NED or NE | SD                |
+| NON-CR/NON-PD                                                                                                                                                                                                                                                                                               | NON-PD, PDu, NED or NE | NON-CR/NON-PD     |
+| PR                                                                                                                                                                                                                                                                                                          | NON-PD, PDu, NED or NE | PR                |
+| CR                                                                                                                                                                                                                                                                                                          | NON-PD, PDu, or NE     | PR (1)            |
+| CR                                                                                                                                                                                                                                                                                                          | NON-PD, PDu, or NE     | NON-CR/NON-PD (2) |
+| CR                                                                                                                                                                                                                                                                                                          | NED                    | CR                |
+| \* When no target and non-target lesions are identified at baseline, and no new lesions are identified on-study, the response will be No Evidence of Disease (NED).                                                                                                                                         |                        |                   |
+| \*\* Progressive Disease Unconfirmed (PDu): Temporary marker of possible PD where at least 2 new bone lesions are present, but an additional scan is required for confirmation. To be updated to PD or NON-PD once a subsequent scan is available. If this is the final visit, the response remains as PDu. |                        |                   |
+| \(1\) The overall TPR will be PR if target lesions were present at screening.                                                                                                                                                                                                                               |                        |                   |
+| \(2\) The overall TPR will be NON-CR/NON-PD if no target lesions were present at screening.                                                                                                                                                                                                                 |                        |                   |
+
+###### Derive Combined Overall Time Point Response by Investigator (`OVRLRESC`) Records referenced from above table.
+
+For Scenario 11, in this vignette, it is assumed that all subjects have
+target lesions identified at screening. If there are subjects without
+target lesions identified at screening, the overall response must be
+evaluated differently, as described in Scenario 11 and referenced in the
+commented code. Please review your study data to verify whether
+screening lesions are categorized as target or non-target as this
+classification impacts the derivation of the overall response.
+
+``` r
+adrs <- derive_param_computed(
+  dataset = adrs,
+  by_vars = exprs(
+    !!!get_admiral_option("subject_keys"), !!!adsl_vars, DOMAIN, RSEVAL, ADT,
+    ADY, ADTM, ADTF, VISIT, VISITNUM, AVISIT, AVISITN
+  ),
+  parameters = c("SFTSRESP", "BONERESP"),
+  set_values_to = exprs(
+    AVALC = case_when(
+      # Scenario 1 & 2: Soft Tissue PD or Bone Lesion PD -> Overall response = PD
+      AVALC.SFTSRESP == "PD" | AVALC.BONERESP == "PD" ~ "PD",
+
+      # Scenario 3: Soft Tissue = NE + Bone Lesion = NON-PD, PDu, NED, or NE -> Overall response = NE
+      AVALC.SFTSRESP == "NE" & AVALC.BONERESP %in% c("NON-PD", "PDu", "NED", "NE") ~ "NE",
+
+      # Scenario 4: Soft Tissue = NED + Bone Lesion = NON-PD -> Overall response = NON-CR/NON-PD
+      AVALC.SFTSRESP == "NED" & AVALC.BONERESP == "NON-PD" ~ "NON-CR/NON-PD",
+
+      # Scenario 5: Soft Tissue = NED + Bone Lesion = PDu -> Overall response = PDu
+      AVALC.SFTSRESP == "NED" & AVALC.BONERESP == "PDu" ~ "PDu",
+
+      # Scenario 6: Soft Tissue = NED + Bone Lesion = NED -> Overall response = NE
+      AVALC.SFTSRESP == "NED" & AVALC.BONERESP == "NED" ~ "NE",
+
+      # Scenario 7: Soft Tissue = NED + Bone Lesion = NE -> Overall response = NE
+      AVALC.SFTSRESP == "NED" & AVALC.BONERESP == "NE" ~ "NE",
+
+      # Scenario 8: Soft Tissue = SD + Bone Lesion = NON-PD, PDu, NED, or NE -> Overall response = SD
+      AVALC.SFTSRESP == "SD" & AVALC.BONERESP %in% c("NON-PD", "PDu", "NED", "NE") ~ "SD",
+
+      # Scenario 9: Soft Tissue = NON-CR/NON-PD + Bone Lesion = NON-PD, PDu, NED, or NE -> Overall response = NON-CR/NON-PD
+      AVALC.SFTSRESP == "NON-CR/NON-PD" & AVALC.BONERESP %in% c("NON-PD", "PDu", "NED", "NE") ~ "NON-CR/NON-PD",
+
+      # Scenario 10: Soft Tissue = PR + Bone Lesion = NON-PD, PDu, NED, or NE -> Overall response = PR
+      AVALC.SFTSRESP == "PR" & AVALC.BONERESP %in% c("NON-PD", "PDu", "NED", "NE") ~ "PR",
+
+      # Scenario 11: Soft Tissue = CR + Bone Lesion = NON-PD, PDu, NE -> Overall response = PR
+      # ((1) The overall TPR will be PR if target lesions were present at screening.)
+      AVALC.SFTSRESP == "CR" & AVALC.BONERESP %in% c("NON-PD", "PDu", "NE") ~ "PR",
+
+      # Soft Tissue = CR + Bone Lesion = NON-PD, PDu, NE -> Overall response =NON-CR/NON-PD
+      # (2) The overall TPR will be NON-CR/NON-PD if no target lesions were present at screening.)
+      # AVALC.SFTSRESP == "CR" & AVALC.BONERESP %in% c("NON-PD", "PDu", "NE") ~ "NON-CR/NON-PD",
+
+      # Scenario 12: Soft Tissue = CR + Bone Lesion = NED -> Overall response = CR
+      AVALC.SFTSRESP == "CR" & AVALC.BONERESP == "NED" ~ "CR",
+
+      # Default: If conditions are not met, assign NA
+      TRUE ~ NA_character_
+    ),
+    PARAMCD = "OVRLRESC",
+    PARAM = "Overall Tumor Response by Investigator - Derived",
+    PARAMN = 4,
+    PARCAT1 = "PCWG3 and RECIST 1.1"
+  )
+)
+```
+
+#### Derive `AVAL` (Numeric tumor response from `AVALC` values)
+
+The `AVAL` values are not considered in the further parameter
+derivations below, and so changing `AVAL` here would not change the
+result of those derivations.
+
+``` r
+adrs <- adrs %>%
+  mutate(
+    AVAL = case_when(
+      AVALC == "CR" ~ 1, # Complete Response
+      AVALC == "PR" ~ 2, # Partial Response
+      AVALC == "SD" ~ 3, # Stable Disease
+      AVALC == "PD" ~ 4, # Progressive Disease
+      AVALC == "NON-CR/NON-PD" ~ 5, # Neither Complete Response nor Progressive Disease
+      AVALC == "NON-PD" ~ 6, # Non-Progressive Disease
+      AVALC == "PDu" ~ 7, # Progressive Disease Unconfirmed
+      AVALC == "NE" ~ 8, # Not Evaluable
+      AVALC == "NED" ~ 9, # No Evidence of Disease
+      TRUE ~ NA_real_ # Default for unexpected/missing AVALC values
+    )
+  )
+```
+
+#### Best Overall Response (BOR) and Confirmed Best Overall Response (CBOR)
+
+BOR represents the Best Overall Responses observed during the study,
+reflecting valid tumor responses such as Complete Response (CR), Partial
+Response (PR), Stable Disease (SD), and Progressive Disease (PD).
+
+CBOR, on the other hand, refers to the Confirmed Best Overall Response,
+requiring sustained responses like CR and PR to meet confirmation
+criteria, such as persistence over a predefined confirmation period
+(e.g., 28 days), based on PCWG3 guidelines.
+
+For both BOR and CBOR, if *PDu remains the last recorded assessment*
+without follow-up confirmation, it is classified as *SD* in this
+vignette. However, as a more conservative approach, you may choose to
+classify it as *PD*. Please refer to your study documentation and
+protocol requirements to confirm the preferred approach to handling
+*unresolved PDu*.
+
+Additionally, for CBOR, if *CR* or *PR* cannot be confirmed, it is
+classified as *SD* as usually done for RECIST. Please check the event
+`bor_sd` defined in the next section.
+
+#### Define Events for Best Overall Response (BOR)
+
+Please note:
+
+- Some of these events are already defined in
+  [admiralonco](https://pharmaverse.github.io/admiralonco/) (see
+  [Pre-Defined Response Event
+  Objects](https:/pharmaverse.github.io/admiralonco/v1.4.0/reference/event_objects.md)).
+  The definitions are repeated here to show the complete picture.
+- Some of these events are also used for deriving confirmed best overall
+  response.
+
+``` r
+bor_cr <- event(
+  description = "Complete Response (CR)",
+  dataset_name = "adrs",
+  condition = AVALC == "CR",
+  set_values_to = exprs(AVALC = "CR")
+)
+
+bor_pr <- event(
+  description = "Partial Response (PR)",
+  dataset_name = "adrs",
+  condition = AVALC == "PR",
+  set_values_to = exprs(AVALC = "PR")
+)
+
+bor_non_crpd <- event(
+  description = "NON-CR/NON-PD",
+  dataset_name = "adrs",
+  condition = AVALC == "NON-CR/NON-PD",
+  set_values_to = exprs(AVALC = "NON-CR/NON-PD")
+)
+
+bor_sd <- event(
+  description = "Stable Disease (SD)",
+  dataset_name = "adrs",
+  # CR and PR are included for CBOR when CR or PR couldn't be confirmed
+  # PDu can occur only as last assessment and is considered as SD
+  condition = AVALC %in% c("CR", "PR", "SD", "PDu"),
+  set_values_to = exprs(AVALC = "SD")
+)
+
+bor_pd <- event(
+  description = "Progressive Disease (PD)",
+  dataset_name = "adrs",
+  condition = AVALC == "PD",
+  set_values_to = exprs(AVALC = "PD")
+)
+
+bor_ne <- event(
+  description = "Not Evaluable (NE)",
+  dataset_name = "adrs",
+  condition = AVALC == "NE",
+  set_values_to = exprs(AVALC = "NE")
+)
+
+bor_ned <- event(
+  description = "No Evidence of Disease (NED)",
+  dataset_name = "adrs",
+  condition = AVALC == "NED",
+  set_values_to = exprs(AVALC = "NED")
+)
+
+no_data_missing <- event(
+  description = paste(
+    "Define missing response (MISSING) for all patients in adsl (should be used",
+    "as last event)"
+  ),
+  dataset_name = "adsl",
+  condition = TRUE,
+  set_values_to = exprs(AVALC = "MISSING"),
+  keep_source_vars = adsl_vars
+)
+```
+
+#### Derive Best Overall Response (BOR)
+
+Use the defined events to derive BOR based on the first occurrence in
+the `adrs` dataset, prioritizing responses hierarchically (CR \> PR \>
+SD \> NON-CR/NON-PD \> PD \> NE \> NED \> MISSING).
+
+In this part of the vignette, we will derive Best Overall Response based
+on combined response (`PARAMCD = "OVRLRESC"`) as derived above.
+
+``` r
+adrs <- adrs %>%
+  derive_extreme_event(
+    by_vars = get_admiral_option("subject_keys"),
+    events = list(
+      bor_cr, bor_pr, bor_sd, bor_non_crpd, bor_pd, bor_ne, bor_ned, no_data_missing
+    ),
+    source_datasets = list(
+      adsl = adsl,
+      adrs = adrs %>% filter(PARAMCD == "OVRLRESC") # Use derived responses (OVRLRESC)
+    ),
+    order = exprs(event_nr, ADT), # Prioritize earliest valid event
+    tmp_event_nr_var = event_nr,
+    mode = "first", # Retain the best response observed at the first occurrence
+    set_values_to = exprs(
+      PARAMCD = "BOR",
+      PARAM = "Best Overall Response",
+      PARAMN = 5,
+      PARCAT1 = "PCWG3 and RECIST 1.1"
+    )
+  )
+```
+
+#### Derive Confirmed BOR (CBOR)
+
+As per RECIST 1.1 and PCWG3 guidelines, Complete Response (CR) and
+Partial Response (PR) require confirmation within a *28-day period* to
+ensure their validity.
+
+``` r
+# Confirmed CR Event with 28-day persistence
+cbor_cr <- event_joined(
+  description = "Confirmed Complete Response (CR)",
+  dataset_name = "adrs",
+  join_vars = exprs(AVALC, ADT),
+  join_type = "after",
+  first_cond_upper = AVALC.join == "CR" & ADT.join >= ADT + 28, # Follow-up within 28-day window
+  condition = AVALC == "CR" & all(AVALC.join == "CR"), # All linked records must also be CR
+  set_values_to = exprs(AVALC = "CR") # Set response as Confirmed CR
+)
+
+# Confirmed PR Event with 28-day persistence
+cbor_pr <- event_joined(
+  description = "Confirmed Partial Response (PR)",
+  dataset_name = "adrs",
+  join_vars = exprs(AVALC, ADT),
+  join_type = "after",
+  first_cond_upper = AVALC.join %in% c("CR", "PR") & ADT.join >= ADT + 28, # Include CR as confirmation
+  condition = AVALC == "PR" & all(AVALC.join %in% c("CR", "PR")), # Ensure no events other than CR or PR in between
+  set_values_to = exprs(AVALC = "PR")
+)
+
+adrs <- adrs %>%
+  derive_extreme_event(
+    by_vars = get_admiral_option("subject_keys"),
+    events = list(
+      cbor_cr, cbor_pr, bor_sd, bor_non_crpd, bor_pd, bor_ne, bor_ned, no_data_missing
+    ),
+    source_datasets = list(
+      adsl = adsl,
+      adrs = adrs %>% filter(PARAMCD == "OVRLRESC")
+    ),
+    tmp_event_nr_var = event_nr,
+    order = exprs(event_nr, ADT),
+    mode = "first",
+    set_values_to = exprs(
+      PARAMCD = "CBOR",
+      PARAM = "Confirmed Best Overall Response",
+      PARAMN = 6,
+      PARCAT1 = "PCWG3 and RECIST 1.1"
+    )
+  )
+```
+
+### PSA Analysis
+
+In this section, we derive PSA50 (\>=50% decline from baseline) and
+PSA90 (\>=90% decline) endpoints, both unconfirmed and confirmed, using
+[`derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html)
+applied to PSA percent change from baseline (`PCHG`) derived from the LB
+domain (ADPSA). For all PSA endpoints, response (`AVALC = "Y"`) is
+prioritized over no response (`AVALC = "N"`), and subjects without any
+PSA measurements are assigned `AVALC = "MISSING"` for this vignette.
+
+#### Derive `BASE`, `CHG`, `PCHG` for PSA (ADPSA)
+
+As the `LB` domain is used in this vignette, the baseline variables need
+to be derived. Alternatively, the `ADLB` dataset could be used. Then
+this step could be skipped.
+
+``` r
+adpsa <- adpsa %>%
+  # Baseline: last non-missing PSA on/ before TRTSDT
+  restrict_derivation(
+    derivation = derive_var_extreme_flag,
+    args = params(
+      by_vars = exprs(!!!get_admiral_option("subject_keys"), PARAMCD),
+      order   = exprs(ADTM),
+      new_var = ABLFL,
+      mode    = "last"
+    ),
+    filter = !is.na(AVAL) & ADT <= TRTSDT
+  ) %>%
+  derive_var_base(
+    by_vars    = exprs(!!!get_admiral_option("subject_keys"), PARAMCD),
+    source_var = AVAL,
+    new_var    = BASE
+  ) %>%
+  restrict_derivation(
+    derivation = derive_var_chg,
+    filter     = ADT > TRTSDT
+  ) %>%
+  restrict_derivation(
+    derivation = derive_var_pchg,
+    filter     = ADT > TRTSDT & !is.na(BASE) & !is.na(CHG)
+  )
+```
+
+#### Define Events for all PSA endpoints
+
+For responder the first assessment of response is selected. For
+non-responder the last PSA assessment is selected. Subjects without
+baseline but with a post-baseline PSA assessment are considered as
+non-responder.
+
+``` r
+# PSA50-Y – first time PCHG <= -50
+psa50_y <- event(
+  description = "First time PSA50 (PCHG <= -50)",
+  dataset_name = "adpsa",
+  condition = PCHG <= -50,
+  set_values_to = exprs(
+    AVALC = "Y",
+    AVAL  = 1
+  )
+)
+
+# Confirmed PSA50 (Y)
+psa50_confirmed <- event_joined(
+  description = "Confirmed PSA50 (PCHG <= -50, confirmed >=3 weeks later)",
+  dataset_name = "adpsa",
+  join_vars = exprs(PCHG, ADT),
+  join_type = "after",
+  first_cond_upper = PCHG.join <= -50 & ADT.join >= ADT + 21,
+  condition = PCHG <= -50,
+  set_values_to = exprs(
+    AVALC = "Y",
+    AVAL  = 1
+  )
+)
+
+# PSA90-Y – first time PCHG <= -90
+psa90_y <- event(
+  description = "First time PSA90 (PCHG <= -90)",
+  dataset_name = "adpsa",
+  condition = PCHG <= -90,
+  set_values_to = exprs(
+    AVALC = "Y",
+    AVAL  = 1
+  )
+)
+
+# Confirmed PSA90 (Y)
+psa90_confirmed <- event_joined(
+  description = "Confirmed PSA90 (PCHG <= -90, confirmed >=3 weeks later)",
+  dataset_name = "adpsa",
+  join_vars = exprs(PCHG, ADT),
+  join_type = "after",
+  first_cond_upper = PCHG.join <= -90 & ADT.join >= ADT + 21,
+  condition = PCHG <= -90,
+  set_values_to = exprs(
+    AVALC = "Y",
+    AVAL  = 1
+  )
+)
+
+# PSA-N – no PSA response
+# mode = "last" ensures that, for non-responders (subjects who never reach PCHG <= -xx),
+# the "no response" event is anchored to their last available PSA assessment
+psa_n <- event(
+  description = "No PSA response",
+  dataset_name = "adpsa",
+  condition = TRUE,
+  mode = "last",
+  set_values_to = exprs(
+    AVALC = "N",
+    AVAL  = 0
+  )
+)
+
+# No PSA data -> MISSING
+psa_missing <- event(
+  description = "No PSA measurements available",
+  dataset_name = "adsl",
+  condition = TRUE,
+  set_values_to = exprs(
+    AVALC = "MISSING",
+    AVAL  = NA_real_
+  )
+)
+```
+
+#### Derive Unconfirmed PSA50 PSA90 (PSAURS)
+
+``` r
+# PSA50URS (unconfirmed >=50% decline)
+adrs <- adrs %>%
+  derive_extreme_event(
+    by_vars = get_admiral_option("subject_keys"),
+    # 1) Y: response, 2) N: no response (with PSA data), 3) MISSING: no PSA data at all
+    events = list(psa50_y, psa_n, psa_missing),
+    source_datasets = list(
+      adpsa = adpsa,
+      adsl  = adsl
+    ),
+    tmp_event_nr_var = event_nr,
+    order = exprs(event_nr, ADTM),
+    mode = "first",
+    set_values_to = exprs(
+      PARAMCD = "PSA50URS",
+      PARAM   = "PSA50 unconfirmed (>=50% decline)",
+      PARCAT1 = "PSA Response",
+      PARAMN  = 10
+    )
+  )
+
+# PSA90URS (unconfirmed >=90% decline)
+adrs <- adrs %>%
+  derive_extreme_event(
+    by_vars = get_admiral_option("subject_keys"),
+    events = list(psa90_y, psa_n, psa_missing),
+    source_datasets = list(
+      adpsa = adpsa,
+      adsl  = adsl
+    ),
+    tmp_event_nr_var = event_nr,
+    order = exprs(event_nr, ADTM),
+    mode = "first",
+    set_values_to = exprs(
+      PARAMCD = "PSA90URS",
+      PARAM   = "PSA90 unconfirmed (>=90% decline)",
+      PARCAT1 = "PSA Response",
+      PARAMN  = 12
+    )
+  )
+```
+
+#### Derive Confirmed PSA50 PSA90 (PSACRS)
+
+``` r
+# PSA50CRS (confirmed >=50% decline)
+adrs <- adrs %>%
+  derive_extreme_event(
+    by_vars = get_admiral_option("subject_keys"),
+    # confirmed response, then no response (with PSA), then MISSING (no PSA)
+    events = list(psa50_confirmed, psa_n, psa_missing),
+    source_datasets = list(
+      adpsa = adpsa,
+      adsl  = adsl
+    ),
+    tmp_event_nr_var = event_nr,
+    order = exprs(event_nr, ADT),
+    mode = "first",
+    set_values_to = exprs(
+      PARAMCD = "PSA50CRS",
+      PARAM   = "PSA50 confirmed (>=50% decline)",
+      PARCAT1 = "PSA Response",
+      PARAMN  = 11
+    )
+  )
+
+# PSA90CRS (confirmed >=90% decline)
+adrs <- adrs %>%
+  derive_extreme_event(
+    by_vars = get_admiral_option("subject_keys"),
+    events = list(psa90_confirmed, psa_n, psa_missing),
+    source_datasets = list(
+      adpsa = adpsa,
+      adsl  = adsl
+    ),
+    tmp_event_nr_var = event_nr,
+    order = exprs(event_nr, ADTM),
+    mode = "first",
+    set_values_to = exprs(
+      PARAMCD = "PSA90CRS",
+      PARAM   = "PSA90 confirmed (>=90% decline)",
+      PARCAT1 = "PSA Response",
+      PARAMN  = 13
+    )
+  )
+```
+
+### Other Endpoints
+
+For examples on the additional endpoints, please see [Creating ADRS
+(Including Non-standard
+Endpoints)](https:/pharmaverse.github.io/admiralonco/v1.4.0/articles/adrs.md).
