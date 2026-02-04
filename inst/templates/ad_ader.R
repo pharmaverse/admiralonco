@@ -31,6 +31,9 @@ advs <- pharmaverseadam::advs
 adex <- pharmaverseadam::adex %>%
   filter(PARCAT1 == "INDIVIDUAL")
 
+adpp <- pharmaverseadam::adpp
+
+
 # Derivations ----
 
 # For ADTTE censor variables add "IND" to PARAMCD
@@ -63,7 +66,21 @@ ader_bor <- ader_tte %>%
     new_vars = exprs(BOR = AVAL, BORC = AVALC)
   )
 
-ader_aseq <- ader_bor %>%
+# Add exposure metrics
+
+ader_auc <- ader_bor %>%
+  derive_vars_transposed(
+    dataset_merge = adpp,
+    filter = PARAMCD %in% c("AUCLST", "CMAX"),
+    by_vars = get_admiral_option("subject_keys"),
+    key_var = PARAMCD,
+    value_var = AVAL
+  ) %>%
+  rename(AUCSS = AUCLST, CMAXSS = CMAX)
+
+# Add Sequence number
+
+ader_aseq <- ader_auc %>%
   derive_var_obs_number(
     by_vars = get_admiral_option("subject_keys"),
     check_type = "error"
@@ -193,3 +210,4 @@ if (!file.exists(dir)) {
   dir.create(dir, recursive = TRUE, showWarnings = FALSE)
 }
 save(ader, file = file.path(dir, "ader.rda"), compress = "bzip2")
+
