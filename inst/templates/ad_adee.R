@@ -217,7 +217,7 @@ adee_base <- adtte %>%
 
 # ---- Add Anaylsis variables
 
-adee_prefinal <- adee_base %>%
+adee <- adee_base %>%
   # Analysis flags
   mutate(
     ANL01FL = if_else(PARAMCD == "PFS", "Y", ""),
