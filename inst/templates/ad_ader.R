@@ -210,4 +210,3 @@ if (!file.exists(dir)) {
   dir.create(dir, recursive = TRUE, showWarnings = FALSE)
 }
 save(ader, file = file.path(dir, "ader.rda"), compress = "bzip2")
-
