@@ -1,8 +1,8 @@
 # Name: ADEE
 #
-# Label: Exposure Response Data
+# Label: Exposure Efficacy Response Data
 #
-# Input: adsl, adrs, adtte, adlb, advs, adex, adpp
+# Input: adsl, adtte, adlb, advs, adex, adpp
 # Load required packages
 library(admiral)
 library(admiralonco)

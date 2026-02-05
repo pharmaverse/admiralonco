@@ -15,15 +15,16 @@ library(stringr)
 
 # Load source datasets ----
 
-# Use haven::read_sas() or similar to read in production data
-# For illustration, using pharmaverseadam example data
-library(pharmaverseadam)
+# Use e.g. haven::read_sas to read in .sas7bdat, or other suitable functions
+# as needed and assign to the variables below.
+# For illustration purposes read in data from pharmaverseadam
 
 adsl <- pharmaverseadam::adsl
-adtr <- pharmaverseadam::adtr_onco # Has tumor measurements
-adrs <- pharmaverseadam::adrs_onco # Has response evaluations
+adrs <- pharmaverseadam::adrs_onco
+adtr <- pharmaverseadam::adtr_onco
 adlb <- pharmaverseadam::adlb
 advs <- pharmaverseadam::advs
+adpp <- pharmaverseadam::adpp
 
 # ---- Prepare adsl - add derived variables
 
@@ -311,6 +312,7 @@ adtrr <- adtrr_base %>%
     new_var = ASEQ,
     check_type = "error"
   ) %>%
+  select(-DOMAIN, -all_of(c(starts_with("RS"), starts_with("TR"), starts_with("TU")))) %>%
   arrange(USUBJID, PARAMN, AVISITN)
 
 # Save output ----

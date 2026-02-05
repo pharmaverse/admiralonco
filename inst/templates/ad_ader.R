@@ -16,15 +16,10 @@ library(stringr)
 
 # Use e.g. haven::read_sas to read in .sas7bdat, or other suitable functions
 # as needed and assign to the variables below.
-# For illustration purposes read in admiral test data
+# For illustration purposes read in data from pharmaverseadam
 
-data("admiral_adsl")
-data("admiral_adrs")
-data("country_code_lookup")
-
-adsl <- admiral_adsl
-adrs <- admiral_adrs
-
+adsl <- pharmaverseadam::adsl
+adrs <- pharmaverseadam::adrs_onco
 adtte <- pharmaverseadam::adtte_onco
 adlb <- pharmaverseadam::adlb
 advs <- pharmaverseadam::advs
@@ -32,7 +27,6 @@ adex <- pharmaverseadam::adex %>%
   filter(PARCAT1 == "INDIVIDUAL")
 
 adpp <- pharmaverseadam::adpp
-
 
 # Derivations ----
 
