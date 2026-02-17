@@ -17,6 +17,4 @@ Please check off each taskbox as an acknowledgment that you completed the task o
 - [ ] Address all merge conflicts and resolve appropriately 
 - [ ] Pat yourself on the back for a job well done!  Much love to your accomplishment!
 
-The following line requests to update the man pages by the "Man Pages" workflow.
-
-/roxygenize
+To create the website for the content of this PR add "[create website]" to the title of the pull request.
