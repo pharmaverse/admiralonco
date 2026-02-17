@@ -257,7 +257,7 @@ response data up to and including first reported progressive disease.
 This would be an alternative and transparent method to the use of
 `source_pd` argument approach to create ADRS parameters below. Using
 [admiral](https://pharmaverse.github.io/admiral/) function
-[`admiral::derive_var_relative_flag()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_var_relative_flag.html)
+[`admiral::derive_var_relative_flag()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_var_relative_flag.html)
 we could create `ANL02FL` as below.
 
 ``` r
@@ -282,7 +282,7 @@ overwritten by `set_values_to` argument are kept from the earliest
 occurring input record fulfilling the required criteria.
 
 The function
-[`admiral::derive_extreme_records()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_records.html)
+[`admiral::derive_extreme_records()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_records.html)
 can be used to find the date of first `PD`.
 
 ``` r
@@ -312,12 +312,12 @@ For progressive disease, response and death parameters shown in steps
 here and below, in our examples we show these as `ADRS` parameters, but
 they could equally be achieved via `ADSL` dates or `ADEVENT` parameters.
 If you prefer to store as an ADSL date, then the function
-[`admiral::derive_var_extreme_dt()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_var_extreme_dt.html)
+[`admiral::derive_var_extreme_dt()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_var_extreme_dt.html)
 could be used to find the date of first `PD` as a variable, rather than
 as a new parameter record. All the parameter derivation functions that
 use these dates are flexible to allow sourcing these from any input
 source using
-[`admiral::date_source()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/date_source.html).
+[`admiral::date_source()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/date_source.html).
 See examples below.
 
 ### Derive Response Parameter
@@ -351,7 +351,7 @@ The function
 [`derive_param_response()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_response.md)
 can then be used to find the date of first response. This differs from
 the
-[`admiral::derive_extreme_records()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_records.html)
+[`admiral::derive_extreme_records()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_records.html)
 function in that it only looks for events occurring prior to first `PD`.
 In the below example, the response condition has been defined as `CR` or
 `PR`.
@@ -497,7 +497,7 @@ derivation of BOR in any way - as the function derivation relies only on
 ### Derive Best Overall Response of CR/PR Parameter
 
 The function
-[`admiral::derive_extreme_records()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_records.html)
+[`admiral::derive_extreme_records()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_records.html)
 can be used to check if a patient had a response for BOR.
 
 ``` r
@@ -661,7 +661,7 @@ replace the `PARAMCD == "OVR"` source with `PARAMCD == "OVRR1"`.
 ### Derive Death Parameter
 
 The function
-[`admiral::derive_extreme_records()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_records.html)
+[`admiral::derive_extreme_records()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_records.html)
 can be used to create a new death parameter using death date from
 `ADSL`. We need to restrict the columns from `ADSL` as we’ll merge all
 required variables later across all our `ADRS` records.
@@ -693,7 +693,7 @@ adrs <- adrs %>%
 ### Derive Last Disease Assessment Parameters
 
 The function
-[`admiral::derive_extreme_records()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_records.html)
+[`admiral::derive_extreme_records()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_records.html)
 can be used to create a parameter for last disease assessment.
 
 ``` r
@@ -719,7 +719,7 @@ adrs <- adrs %>%
 ### Derive Measurable Disease at Baseline Parameter
 
 The function
-[`admiral::derive_param_exist_flag()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_param_exist_flag.html)
+[`admiral::derive_param_exist_flag()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_param_exist_flag.html)
 can be used to check whether a patient has measurable disease at
 baseline, according to a company-specific condition. In this example we
 check `TU` for target lesions during the baseline visit. We need to
@@ -751,7 +751,7 @@ adrs <- adrs %>%
 ### Assign `ASEQ`
 
 The function
-[`admiral::derive_var_obs_number()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_var_obs_number.html)
+[`admiral::derive_var_obs_number()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_var_obs_number.html)
 can be used to derive `ASEQ`. An example call is:
 
 ``` r

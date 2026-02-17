@@ -6,7 +6,7 @@ This article describes creating an `ADRS` ADaM dataset for prostate
 cancer studies based on [**Prostate Cancer Working Group 3 (PCWG3)**
 criteria](https://doi.org/10.1200/JCO.2015.64.2702). Most of the
 endpoints are derived by calling
-[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html).
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html).
 
 RECIST 1.1 criteria alone are insufficient to fully characterize
 response in metastatic prostate cancer. The PCWG3 guidelines address
@@ -622,7 +622,7 @@ adrs <- adrs %>%
 
 In this section, we derive PSA50 (\>=50% decline from baseline) and
 PSA90 (\>=90% decline) endpoints, both unconfirmed and confirmed, using
-[`derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html)
+[`derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html)
 applied to PSA percent change from baseline (`PCHG`) derived from the LB
 domain (ADPSA). For all PSA endpoints, response (`AVALC = "Y"`) is
 prioritized over no response (`AVALC = "N"`), and subjects without any

@@ -2,7 +2,7 @@
 
 **\[deprecated\]** The `derive_param_confirmed_bor()` function has been
 superseded in favor of
-[`derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html).
+[`derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html).
 
 Adds a parameter for confirmed best overall response (BOR)
 
@@ -67,7 +67,7 @@ derive_param_confirmed_bor(
   account.
 
   *Permitted Values:* a `date_source` object (see
-  [`admiral::date_source()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/date_source.html)
+  [`admiral::date_source()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/date_source.html)
   for details)
 
 - source_datasets:

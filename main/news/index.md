@@ -2,6 +2,8 @@
 
 ## admiralonco 1.4.0
 
+CRAN release: 2026-01-29
+
 ### New Features
 
 - The deprecated function
@@ -25,27 +27,27 @@
 
   - [`derive_param_bor()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_bor.md)
     is deprecated in favor of
-    [`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html).
+    [`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html).
     ([\#320](https://github.com/pharmaverse/admiralonco/issues/320))
   - [`derive_param_clinbenefit()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_clinbenefit.md)
     is deprecated in favor of
-    [`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html).
+    [`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html).
     ([\#320](https://github.com/pharmaverse/admiralonco/issues/320))
   - [`derive_param_confirmed_bor()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_confirmed_bor.md)
     is deprecated in favor of
-    [`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html).
+    [`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html).
     ([\#320](https://github.com/pharmaverse/admiralonco/issues/320))
   - [`derive_param_confirmed_resp()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_confirmed_resp.md)
     is deprecated in favor of
-    [`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html).
+    [`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html).
     ([\#320](https://github.com/pharmaverse/admiralonco/issues/320))
   - [`derive_param_response()`](https:/pharmaverse.github.io/admiralonco/main/reference/derive_param_response.md)
     is deprecated in favor of
-    [`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html).
+    [`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html).
     ([\#320](https://github.com/pharmaverse/admiralonco/issues/320))
   - [`filter_pd()`](https:/pharmaverse.github.io/admiralonco/main/reference/filter_pd.md)
     is deprecated in favor of
-    [`admiral::filter_relative()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/filter_relative.html).
+    [`admiral::filter_relative()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/filter_relative.html).
     ([\#320](https://github.com/pharmaverse/admiralonco/issues/320))
 
   **Phase 2 (warning)**
@@ -169,7 +171,7 @@ CRAN release: 2023-12-20
 ### Breaking Changes
 
 - The `derive_*()` functions were superseded in favor of
-  [`derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html).
+  [`derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html).
   Any superseded functions can continue to be used as demonstrated via
   the “Basic ADRS” vignette, as they will remain supported and won’t be
   deprecated in the near future.
@@ -178,7 +180,7 @@ CRAN release: 2023-12-20
 - The
   [`filter_pd()`](https:/pharmaverse.github.io/admiralonco/main/reference/filter_pd.md)
   function was superseded in favor of
-  [`filter_relative()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/filter_relative.html).
+  [`filter_relative()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/filter_relative.html).
   ([\#256](https://github.com/pharmaverse/admiralonco/issues/256))
 
 - The function `call_aval_fun()`, which was deprecated in admiralonco
@@ -198,7 +200,7 @@ CRAN release: 2023-09-14
 
 - Oncology specific events are provided for deriving oncology parameters
   with
-  [`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html).
+  [`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html).
   ([\#234](https://github.com/pharmaverse/admiralonco/issues/234))
 
 ### Documentation
@@ -210,7 +212,7 @@ CRAN release: 2023-09-14
     [admiralonco](https://pharmaverse.github.io/admiralonco/) functions
     to cover standard RECIST 1.1.
   - A more flexible version which uses
-    [`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html).
+    [`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html).
     This should be used if non-standard `ADRS` parameters should be
     implemented or non-standard response values should be considered.
     This version can also be used as a starting point for implementing
@@ -268,9 +270,9 @@ CRAN release: 2023-06-12
   - The `AVAL` variable is now populated via the `set_values_to`
     argument as the `aval_fun` argument was deprecated.
   - `admiral::derive_param_extreme_event()` calls were replaced by
-    [`admiral::derive_extreme_records()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_records.html)
+    [`admiral::derive_extreme_records()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_records.html)
     calls due to deprecation of `admiral::derive_param_extreme_event()`.
-  - [`admiral::derive_param_exist_flag()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_param_exist_flag.html)
+  - [`admiral::derive_param_exist_flag()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_param_exist_flag.html)
     calls were updated as the `dataset_adsl` argument was renamed to
     `dataset_ref`.
 
@@ -315,7 +317,7 @@ CRAN release: 2023-03-14
 ### Various
 
 - ADTTE template simplified for duration of response in line with
-  [`admiral::derive_param_tte()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_param_tte.html)
+  [`admiral::derive_param_tte()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_param_tte.html)
   enhancement
   ([\#203](https://github.com/pharmaverse/admiralonco/issues/203))
 
@@ -329,7 +331,7 @@ CRAN release: 2022-12-07
   to `get_admiral_option("subject_keys")`instead of
   `vars(STUDYID, USUBJID)` to allow users to change the variables that
   uniquely identify a subject once using
-  [`set_admiral_options()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/set_admiral_options.html)
+  [`set_admiral_options()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/set_admiral_options.html)
   to avoid several instances of find + replace in a script.
   ([\#175](https://github.com/pharmaverse/admiralonco/issues/175))
 

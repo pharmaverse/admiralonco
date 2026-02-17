@@ -46,7 +46,7 @@ used as input for derivations
 ## Example Datasets
 
 You can run
-[`admiral::use_ad_template()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/use_ad_template.html)
+[`admiral::use_ad_template()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/use_ad_template.html)
 to produce additional datasets
 
 - [`admiral_adrs`](https:/pharmaverse.github.io/admiralonco/main/reference/admiral_adrs.md)

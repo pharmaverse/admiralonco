@@ -2,7 +2,7 @@
 
 **\[deprecated\]** The `derive_param_clinbenefit()` function has been
 deprecated in favor of
-[`derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html).
+[`derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html).
 
 Adds a parameter for clinical benefit/disease control
 

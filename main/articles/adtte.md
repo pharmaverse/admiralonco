@@ -64,7 +64,7 @@ adrs <- adrs_onco
 
 To derive the parameter dependent variables like `CNSR`, `ADT`,
 `STARTDT`, `EVNTDESC`, `SRCDOM`, `PARAMCD`, … the
-[`admiral::derive_param_tte()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_param_tte.html)
+[`admiral::derive_param_tte()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_param_tte.html)
 function can be used. It adds one parameter to the input dataset with
 one observation per subject. Usually it is called several times.
 
@@ -74,9 +74,9 @@ If no event occurred, the analysis date is set to the latest censoring
 date.
 
 The events and censorings are defined by the
-[`admiral::event_source()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/event_source.html)
+[`admiral::event_source()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/event_source.html)
 and the
-[`admiral::censor_source()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/censor_source.html)
+[`admiral::censor_source()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/censor_source.html)
 class respectively. It defines
 
 - which observations (`filter` parameter) of a source dataset
@@ -92,13 +92,13 @@ for censorings.
 [admiral](https://pharmaverse.github.io/admiral/)/[admiralonco](https://pharmaverse.github.io/admiralonco/)
 enforce this recommendation. Therefore the `censor` parameter is
 available for
-[`admiral::censor_source()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/censor_source.html)
+[`admiral::censor_source()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/censor_source.html)
 only. It is defaulted to `1`.
 
 The `dataset_name` parameter expects a character value which is used as
 an identifier. The actual data which is used for the derivation of the
 parameter is provided via the `source_datasets` parameter of
-[`admiral::derive_param_tte()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_param_tte.html).
+[`admiral::derive_param_tte()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_param_tte.html).
 It expects a named list of datasets. The names correspond to the
 identifiers specified for the `dataset_name` parameter. This allows to
 define events and censoring independent of the data.
@@ -132,10 +132,10 @@ An optional step at this stage would be required to enable derivation of
 duration of response: If using `ADRS` / `ADEVENT` parameters as input
 for any response dates (instead of a variable in `ADSL`) then you would
 need to use
-[`admiral::derive_vars_merged()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_vars_merged.html)
+[`admiral::derive_vars_merged()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_vars_merged.html)
 to add the response date as a temporary variable (e.g. `TEMP_RESPDT`) to
 be able to feed into
-[`admiral::derive_param_tte()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_param_tte.html)
+[`admiral::derive_param_tte()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_param_tte.html)
 as the start date. You would also need to use this to filter the source
 `ADSL` dataset so as to only derive the records for responders. This
 could also be repeated as needed for IRF/BICR and confirmed responses.
@@ -153,7 +153,7 @@ adsl <- adsl %>%
 ```
 
 The pre-defined objects can be passed directly to
-[`admiral::derive_param_tte()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_param_tte.html)
+[`admiral::derive_param_tte()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_param_tte.html)
 to create a new time-to-event parameter. Below shows example calls for
 Overall Survival (OS), Progression Free Survival (PFS), and duration of
 response (as above, this is only derived for responder patients so we
@@ -203,9 +203,9 @@ using `ANLzzFL` as explained in the ADRS vignette, so that records after
 new anti-cancer therapy never contribute to the PD and DEATH parameters.
 Or alternatively you can control this on the ADTTE side by filtering
 which records are used in
-[`admiral::event_source()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/event_source.html)
+[`admiral::event_source()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/event_source.html)
 and
-[`admiral::censor_source()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/censor_source.html),
+[`admiral::censor_source()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/censor_source.html),
 e.g. for PD or death event date we can use `filter` argument to exclude
 events occurring after new anti-cancer therapy.
 
@@ -277,7 +277,7 @@ adtte <- derive_param_tte(
 ### Derive Analysis Value (`AVAL`)
 
 The analysis value (`AVAL`) can be derived by calling
-[`admiral::derive_vars_duration()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_vars_duration.html).
+[`admiral::derive_vars_duration()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_vars_duration.html).
 
 This example derives the time to event in days.
 
@@ -319,7 +319,7 @@ adtte_months <- adtte %>%
 ### Derive Analysis Sequence Number (`ASEQ`)
 
 The [admiral](https://pharmaverse.github.io/admiral/) function
-[`admiral::derive_var_obs_number()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_var_obs_number.html)
+[`admiral::derive_var_obs_number()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_var_obs_number.html)
 can be used to derive `ASEQ`:
 
 ``` r
@@ -335,7 +335,7 @@ adtte <- adtte %>%
 
 Variables from ADSL which are required for time-to-event analyses, e.g.,
 treatment variables or covariates can be added using
-[`admiral::derive_vars_merged()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_vars_merged.html).
+[`admiral::derive_vars_merged()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_vars_merged.html).
 
 ``` r
 adtte <- adtte %>%

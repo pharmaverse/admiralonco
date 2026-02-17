@@ -2,7 +2,7 @@
 
 **\[deprecated\]** The `filter_pd()` function has been deprecated in
 favor of
-[`filter_relative()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/filter_relative.html).
+[`filter_relative()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/filter_relative.html).
 
 Filter a dataset to only include the source parameter records up to and
 including the first PD (progressive disease). These records are passed
@@ -37,7 +37,7 @@ filter_pd(
 - source_pd:
 
   A
-  [`admiral::date_source()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/date_source.html)
+  [`admiral::date_source()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/date_source.html)
   object providing the date of first PD
 
   For each subject the first date (`date` field) in the provided dataset
@@ -50,7 +50,7 @@ filter_pd(
 
   The name must match the name provided by the `dataset_name` field of
   the
-  [`admiral::date_source()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/date_source.html)
+  [`admiral::date_source()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/date_source.html)
   object specified for `source_pd`.
 
 - subject_keys:

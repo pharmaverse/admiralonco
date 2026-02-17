@@ -301,7 +301,7 @@ In the below example:
   `PARAMCD` and `ADT` are a unique key,
 - if there is more than one assessment at a date, the worst one is
   flagged (ensure that the appropriate `mode` is being set in the
-  [`admiral::derive_var_extreme_flag()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_var_extreme_flag.html)),
+  [`admiral::derive_var_extreme_flag()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_var_extreme_flag.html)),
 - to get the correct ordering, we will define the `worst_resp()`
   function.
 
@@ -336,7 +336,7 @@ adrs <- adrs %>%
 To restrict response data up to and including first reported progressive
 disease `ANL02FL` flag could be created by using
 [admiral](https://pharmaverse.github.io/admiral/) function
-[`admiral::derive_var_relative_flag()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_var_relative_flag.html).
+[`admiral::derive_var_relative_flag()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_var_relative_flag.html).
 
 According to GCIG guidelines, assessments after patients received mouse
 antibodies or if there has been medical and/or surgical interference
@@ -371,7 +371,7 @@ case, this information is collected only for CA-125 records while a flag
 is needed at the patient level.
 
 CA-125 Response Evaluable Flag can easily be derived using
-[`derive_var_merged_exist_flag()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_var_merged_exist_flag.html)
+[`derive_var_merged_exist_flag()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_var_merged_exist_flag.html)
 function.
 
 ``` r
@@ -416,7 +416,7 @@ records.
 ### CA-125 Progression
 
 The function
-[`admiral::derive_extreme_records()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_records.html)
+[`admiral::derive_extreme_records()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_records.html)
 can be used to find the date of first CA-125 PD.
 
 ``` r
@@ -497,7 +497,7 @@ the creation of a new parameter.
 ### CA-125 Best Confirmed Overall Response
 
 The function
-[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html)
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html)
 can be used to derive the CA-125 Best Confirmed Overall Response
 Parameter.
 
