@@ -16,8 +16,8 @@ on:
     branches:
       - main
       - patch
-  # 'pull_request' events are triggered when PRs are
-  # created against one of these target branches.
+  # 'pull_request' events are triggered when PRs are created against one of
+  # these target branches or if commits are pushed to the source/feature branch.
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
