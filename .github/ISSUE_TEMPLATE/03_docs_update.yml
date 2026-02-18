@@ -8,7 +8,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        The admiral team loves documentation!  Help us keep it up to date and fresh!
+        The admiralonco team loves documentation!  Help us keep it up to date and fresh!
   - type: dropdown
     id: browsers
     attributes:
