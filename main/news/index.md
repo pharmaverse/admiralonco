@@ -1,5 +1,9 @@
 # Changelog
 
+## admiralonco 1.4.0.9000
+
+### Documentation
+
 ## admiralonco 1.4.0
 
 CRAN release: 2026-01-29
