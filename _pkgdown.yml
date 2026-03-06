@@ -2,9 +2,11 @@ url: https://pharmaverse.github.io/admiralonco/
 
 template:
   bootstrap: 5
+  light-switch: true
   params:
    bootswatch: flatly
   includes:
+    css: pkgdown/extra.css
     in_header: |
       <script
       async
@@ -122,7 +124,7 @@ reference:
 navbar:
   structure:
     left: [getstarted, reference, articles, news]
-    right: [search, slack, newissue, github]
+    right: [search, slack, newissue, github, lightswitch]
   components:
     getstarted:
       text: Get Started
