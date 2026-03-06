@@ -22,3 +22,5 @@
   endpoints](https:/pharmaverse.github.io/admiralonco/main/articles/irecist.md):
 - [Creating and Using New Anti-Cancer Start
   Date](https:/pharmaverse.github.io/admiralonco/main/articles/nactdt.md):
+- [Explore the admiralonco ADaM
+  Templates](https:/pharmaverse.github.io/admiralonco/main/articles/templates.md):

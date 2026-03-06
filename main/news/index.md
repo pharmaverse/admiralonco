@@ -1,8 +1,13 @@
 # Changelog
 
-## admiralonco 1.4.0.9001
+## admiralonco 1.4.0.9002
 
 ### Documentation
+
+- A new vignette “Explore ADaM Templates” was added to the “Get Started”
+  menu. It displays the
+  [admiralonco](https://pharmaverse.github.io/admiralonco/) templates.
+  ([\#341](https://github.com/pharmaverse/admiralonco/issues/341))
 
 ## admiralonco 1.4.0
 
