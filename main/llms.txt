@@ -47,9 +47,11 @@ packages stated in `DESCRIPTION`.
 
 If a previous version of the package should be used, it is recommended
 to use latest version of the dependencies at the point of time when the
-previous version of {admiralonco} was released. For example, admiralonco
-0.3.0 was released on 2023-03-14. I.e., it will work with the latest
-version of packages available at that date, e.g., admiral 0.10.
+previous version of
+[admiralonco](https://pharmaverse.github.io/admiralonco/) was released.
+For example, admiralonco 0.3.0 was released on 2023-03-14. I.e., it will
+work with the latest version of packages available at that date, e.g.,
+admiral 0.10.
 
 ## Scope
 
