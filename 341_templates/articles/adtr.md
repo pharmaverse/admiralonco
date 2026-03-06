@@ -1,0 +1,614 @@
+# Creating ADTR
+
+## Introduction
+
+This article describes creating an `ADTR` (Tumor Results) ADaM with
+common oncology parameters based on RECIST v1.1.
+
+The main part in programming a tumor results dataset is the calculation
+of the sum of diameters of all target lesions (lymph nodes & non-lymph
+nodes), the calculation of nadir, change & percentage change from
+baseline, and the analysis flags that could be required for reporting.
+The tumor results data could be set up for investigator and/or
+Independent review facility (IRF)/Blinded Independent Central Review
+(BICR) data. The below sample code would need to be updated (for
+example, update the Evaluator `TR.TREVAL`, `TU.TUEVAL`, and the
+applicable parameter details `PARAM`, `PARAMCD`, `PARCATy`) in order to
+create the acquired data for Independent review facility (IRF)/Blinded
+Independent Central Review (BICR).
+
+The source dataset used will depend on each company, this could be
+solely the `TR` domain or you may merge `TU` with `TR` (SDTM inputs) to
+get additional data variables or to ensure that you’re processing the
+same lesions as collected.
+
+Individual lesion diameters for each target lesion is required to
+calculate the sum of diameters for all target lesions, this data could
+be taken directly from `TR` or additional parameters could be created in
+`ADTR` (or similar) depending on the additional processing required
+(e.g. imputation of dates, re-labeling of visits) and your company
+specifications.
+
+The majority of the functions used here exist from
+[admiral](https://pharmaverse.github.io/admiral/).
+
+**Note**: *All examples assume CDISC SDTM and/or ADaM format as input
+unless otherwise specified.*
+
+### Required Packages
+
+The examples of this vignette require the following packages.
+
+``` r
+library(admiral)
+library(dplyr)
+library(pharmaversesdtm)
+library(pharmaverseadam)
+library(lubridate)
+library(stringr)
+library(admiralonco)
+```
+
+## Programming Workflow
+
+- [Read in Data](#readdata)
+- [Merge `TR` with `TU` and Derive New Variables](#merge)
+- [Pre-processing of Input Records](#input)
+- [Derive Parameters for Lesion Diameters (`LDIAMn`,
+  `NLDIAMn`)](#parameters)
+- [Derive Parameter for Sum of Diameters (`SDIAM`) and
+  `ANL01FL`](#sdiam)
+- [Derive Baseline (`ABLFL`, `BASE`)](#base)
+- [Derive NADIR](#nadir)
+- [Derive Change from Baseline (`CHG`, `PCHG`)](#chg)
+- [Derive Additional Flag Variables (e.g. `CRFL`, `CRNFL`, `PDFL`,
+  `PDFL`](#addflag)
+- [Derive Additional Analysis Flags (e.g. `ANLzzFL`](#analflag)
+- [Derive Analysis Sequence Number (`ASEQ`)](#aseq)
+- [Add `ADSL` Variables](#adslvars)
+
+### Read in Data
+
+To start, all data frames needed for the creation of `ADTR` should be
+read into the environment. This will be a company specific process. Some
+of the data frames needed may be `ADSL`, `ADRS` ,`RS`, `TU`, `TR`,
+`SUPPTU` `SUPPTR`.
+
+For example purposes, the SDTM and ADaM datasets (based on CDISC Pilot
+test data)—which are included in
+[pharmaversesdtm](https://pharmaverse.github.io/pharmaversesdtm/) and
+[pharmaverseadam](https://pharmaverse.github.io/pharmaverseadam/)—are
+used. Also, see [Handling of Missing
+Values](https://pharmaverse.github.io/admiral/articles/admiral.html#handling-of-missing-values)
+explains why we need to use the
+[`convert_blanks_to_na()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/convert_blanks_to_na.html)
+function.
+
+On the `TR` domain we filter on where tumor assessment short name
+`TRTESTCD` is `"LDIAM"` or `"LPERP"`. Depending on your data collection
+standards you may need to update the code to filter on
+`TRTESTCD == "DIAMETER"`. If this is the case then the template code
+where we derive parameters for lesions diameters should be updated
+accordingly.
+
+``` r
+data("adsl")
+data("adrs_onco")
+data("rs_onco_recist")
+data("tu_onco_recist")
+data("tr_onco_recist")
+adrs <- adrs_onco
+tu <- tu_onco_recist
+tr <- tr_onco_recist
+rs <- rs_onco_recist
+
+tu <- convert_blanks_to_na(tu) %>%
+  filter(TUEVAL == "INVESTIGATOR")
+tr <- convert_blanks_to_na(tr) %>%
+  filter(
+    TREVAL == "INVESTIGATOR" & TRGRPID == "TARGET" & TRTESTCD %in% c("LDIAM", "LPERP")
+  )
+rs <- convert_blanks_to_na(rs)
+```
+
+At this step, it may be useful to join `ADSL` to your `TR` domain. For
+efficiency, only the `ADSL` variables (in this example, Randomization
+date (`RANDDT`) used for derivations are selected at this step. The rest
+of the relevant `ADSL` variables would be added later.
+
+``` r
+adsl_vars <- exprs(RANDDT)
+tr <- derive_vars_merged(
+  tr,
+  dataset_add = adsl,
+  new_vars = adsl_vars,
+  by_vars = get_admiral_option("subject_keys")
+)
+```
+
+### Merge `TR` with `TU` and Derive New Variables
+
+Depending on your company specifications you may want to merge `TU` with
+`TR`. At this point if you require any new variables these could be
+added in this step. As an example, here we are keeping the tumor
+location (`TULOC`), and deriving a new variable for the tumor group site
+(`TULOCGR1`).
+
+``` r
+tr <- derive_vars_merged(
+  tr,
+  dataset_add = tu,
+  new_vars = exprs(TULOC),
+  by_vars = c(get_admiral_option("subject_keys"), exprs(TRLNKID = TULNKID))
+) %>% mutate(
+  TULOCGR1 = if_else(
+    TULOC == "LYMPH NODE",
+    "NODAL",
+    "NON-NODAL"
+  )
+)
+```
+
+Furthermore, you could create additional new variables that are required
+downstream when deriving the required parameters. For example, here we
+include lesion ID expected (`LSEXP`) and lesion ID assessed (`LSASS`).
+
+``` r
+tr <- mutate(
+  tr,
+  LSEXP = TRLNKID,
+  LSASS = if_else(!is.na(TRSTRESN), TRLNKID, NA_character_)
+)
+```
+
+### Pre-processing of Input Records
+
+The next step involves company-specific pre-processing of records
+required downstream prior to the parameter derivations, to ensure that
+all the associated variable processing is done once before any new
+parameters are derived.
+
+In order to calculate the sum of diameter of lesions, we need to ensure
+that lesions are grouped correctly, how this is done will be based on
+your company specifications but individual lesions sizes could be
+grouped either by using the analysis date `ADT` or visit `AVISIT`. This
+is to ensure that each lesion size is only counted once.
+
+Below are some considerations depending on your analysis.
+
+#### Partial Date Imputation and Deriving `ADT`, `ADTF`, `AVISIT` etc
+
+If your data collection allows for partial dates, you could apply a
+company-specific imputation rule when deriving the analysis date `ADT`
+(you could also add further code to handle missing `ADT`, if this is a
+consideration).
+
+In the example below, we impute the missing day to the earliest possible
+date to derive the analysis date `ADT`, and then re-derive the analysis
+day `ADY`.
+
+``` r
+tr <- derive_vars_dt(
+  tr,
+  dtc = TRDTC,
+  new_vars_prefix = "A",
+  highest_imputation = "D",
+  date_imputation = "first"
+) %>%
+  derive_vars_dy(
+    reference_date = RANDDT,
+    source_vars = exprs(ADT)
+  )
+```
+
+#### Unscheduled visits
+
+If you have data collected at unscheduled visits, these could be
+identified as uniquely in your SDTM. However, if this is not the case
+and your grouping lesions by visit then you will need to amend the below
+code to apply company specific algorithm to re-label unscheduled visits
+as per your specifications.
+
+``` r
+tr <- mutate(
+  tr,
+  AVISIT = if_else(
+    VISIT == "SCREENING",
+    "BASELINE",
+    VISIT
+  ),
+  AVISITN = if_else(
+    AVISIT == "BASELINE",
+    0,
+    VISITNUM
+  )
+)
+```
+
+### Derive Parameters for Lesion Diameters (`LDIAMn` & `NLDIAMn`)
+
+Depending on your company specifications you may either create
+parameters for Target Lesion diameter for lymph nodes (`LDIAMn`) and
+non-lymph nodes (`NLDIAMn`) in `ADTR` or similar dataset.
+
+The below examples show the set up of the parameter details and the
+analysis value & flag (`AVAL`/`ANL01FL`) variables.
+
+``` r
+tr <- mutate(tr, tmp_lesion_nr = str_sub(TRLNKID, 3))
+adtr <- bind_rows(
+  tr %>%
+    filter(TRTESTCD == "LDIAM") %>%
+    mutate(
+      PARAMCD = paste0("LDIAM", tmp_lesion_nr),
+      PARAM = paste("Target Lesion", tmp_lesion_nr, "Analysis Diameter")
+    ),
+  tr %>%
+    filter(TRTESTCD == "LPERP") %>%
+    mutate(
+      PARAMCD = paste0("NLDIAM", tmp_lesion_nr),
+      PARAM = paste("Target Lesion", tmp_lesion_nr, "Analysis Perpendicular")
+    )
+) %>%
+  mutate(
+    PARCAT1 = "Target Lesion(s)",
+    PARCAT2 = "Investigator",
+    PARCAT3 = "RECIST 1.1",
+    AVAL = TRSTRESN,
+    ANL01FL = if_else(!is.na(AVAL), "Y", NA_character_)
+  ) %>%
+  select(-tmp_lesion_nr)
+```
+
+### Derive Parameter for Sum of Diameter and Analysis Flag `ANL01FL`
+
+Sum of Target Lesions Diameters is the sum of the diameters of both
+lymph and non-lymph nodes (sum of analysis values `AVAL` from source
+observations `LDIAMn` & `LNDIAMn`).
+
+In this vignette, the sum of the diameters is calculated across all the
+available lesion measurements, and we use the analysis flag `ANL01FL` to
+select the records that should be used as part of the analysis based on
+RECIST 1.1. Subsequently we then build on this analysis flag (see
+[`ANLzzFL`](#analflag)) to demonstrate additional analysis flags for
+example purposes only. The analysis flags therefore should be setup
+according to your company specifications.
+
+In the example below, the lesion sizes are counted and grouped according
+to the by variables specified, in this case we group by the visit
+(`AVISIT` and `AVISITN`) to ensure that the correct lesion measurements
+are summed together. If there are different analysis day/dates
+(`ADY`/`ADT`) associated with a particular visit, we take the minimum
+day/date.
+
+``` r
+adtr_sum <- derive_summary_records(
+  dataset_add = adtr,
+  by_vars = c(get_admiral_option("subject_keys"), adsl_vars, exprs(AVISIT, AVISITN)),
+  filter_add = (str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
+    (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL"),
+  set_values_to = exprs(
+    AVAL = sum(AVAL, na.rm = TRUE),
+    ADY = min(ADY, na.rm = TRUE),
+    ADT = min(ADT, na.rm = TRUE),
+    PARAMCD = "SDIAM",
+    PARAM = "Target Lesions Sum of Diameters by Investigator",
+    PARCAT1 = "Target Lesion(s)",
+    PARCAT2 = "Investigator",
+    PARCAT3 = "RECIST 1.1"
+  )
+)
+```
+
+The analysis flag `ANL01FL` flags the sum of diameters where the number
+of lesions assessed at baseline and at post-baseline match. To assess
+whether the number of lesions expected and assessed match, you could
+compare lesion identifiers (`TR.TRLNKID`) or use the previous variables
+set up earlier to compare lesion expected (`LSEXP`) vs lesion assessed
+(`LSASS`) or check for target lesion response (from `RS`) = `NE`. A
+target lesion response of `NE` means all lesions from baseline are not
+measured at that post-baseline visit.
+
+Lesions can split or merge, if this is a consideration then this needs
+to be taken care of when deciding on which algorithm to use to check
+that all lesions are measured at post-baseline.
+
+In the below example, we use
+[`derive_var_merged_summary()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_var_merged_summary.html)
+function multiple times in order to process additional variables for sum
+of diameter parameter, and calculate the analysis flag (`ANL01FL`).
+
+In the first step we concatenate lesions IDs measured `LSEXP` at
+baseline, and merge in with the second step where we concatenate the
+lesions IDs assessed `LSASS` at that visit record. You can then compare
+`LSEXP` vs `LSASS` at each visit.
+
+In the final step, the analysis flag is set `ANL01FL = "Y"` where
+lesions assessed at post-baseline match baseline.
+
+``` r
+adtr_sum <- adtr_sum %>%
+  derive_var_merged_summary(
+    dataset_add = adtr,
+    by_vars = get_admiral_option("subject_keys"),
+    filter_add = AVISIT == "BASELINE" &
+      ((str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
+        (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")),
+    new_vars = exprs(LSEXP = paste(sort(TRLNKID), collapse = ", "))
+  ) %>%
+  derive_var_merged_summary(
+    dataset_add = adtr,
+    by_vars = c(get_admiral_option("subject_keys"), exprs(AVISIT)),
+    filter_add = ((str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
+      (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")) & ANL01FL == "Y",
+    new_vars = exprs(LSASS = paste(sort(TRLNKID), collapse = ", "))
+  ) %>%
+  mutate(
+    ANL01FL = if_else(LSEXP == LSASS, "Y", NA_character_)
+  )
+#> `derive_var_merged_summary()` was deprecated in admiral 1.4.
+#> ℹ Please use `derive_vars_merged_summary()` instead.
+#> ✖ Function is brought inline with our programming strategy - warning will be
+#>   issued in January 2027
+#> ℹ See admiral's deprecation guidance:
+#>   https://pharmaverse.github.io/admiraldev/dev/articles/programming_strategy.html#deprecation
+```
+
+### Derive Baseline (`ABLFL`, `BASE`)
+
+These functions are available in `admiral`, below examples show its
+usage for `ADTR`. Here we create baseline record flag `ABLFL` by
+selecting the last record prior to analysis day 1, and then derive the
+baseline value `BASE`. If in a particular study/or subject, baseline is
+defined differently, you need to make sure to update appropriate
+arguments.
+
+``` r
+adtr_sum <- adtr_sum %>%
+  restrict_derivation(
+    derivation = derive_var_extreme_flag,
+    args = params(
+      by_vars = get_admiral_option("subject_keys"),
+      order = exprs(ADY),
+      new_var = ABLFL,
+      mode = "last"
+    ),
+    filter = ADY <= 1
+  ) %>%
+  derive_var_base(
+    by_vars = get_admiral_option("subject_keys")
+  )
+```
+
+### Derive `NADIR`
+
+Once we have Sum of Target Lesions Diameters parameter (`SDIAM`), the
+`NADIR` is set to the lowest sum of diameters in Analysis Value (`AVAL`)
+before the current observation, where all lesions were assessed
+(i.e. `ANL01FL == "Y"`). The first observations after baseline
+(depending on how you have defined baseline earlier) is set to the
+baseline value.
+
+``` r
+adtr_sum <- adtr_sum %>%
+  derive_vars_joined(
+    dataset_add = adtr_sum,
+    by_vars = get_admiral_option("subject_keys"),
+    order = exprs(AVAL),
+    new_vars = exprs(NADIR = AVAL),
+    join_vars = exprs(ADY),
+    join_type = "all",
+    filter_add = ANL01FL == "Y",
+    filter_join = ADY.join < ADY,
+    mode = "first",
+    check_type = "none"
+  )
+```
+
+### Derive Change from Baseline (`CHG`, `PCHG`)
+
+These functions are available in admiral, below examples show its usage
+for `ADTR`. We calculate the change from baseline (`CHG`, `CHGNAD`) and
+percentage change from baseline (`PCHG` , `PCHGNAD`) for the parameter
+`SDIAM` (using `AVAL - BASE`) the variable `NADIR` (using
+`AVAL - NADIR`).
+
+``` r
+adtr_sum <- adtr_sum %>%
+  derive_var_chg() %>%
+  derive_var_pchg() %>%
+  mutate(
+    CHGNAD = AVAL - NADIR,
+    PCHGNAD = if_else(NADIR == 0, NA_real_, 100 * CHGNAD / NADIR)
+  )
+```
+
+### Derive Additional Flag Variables
+
+Depending on the analysis flags you require, you may want to create
+additional flag variables that will then aid setting up any additional
+analysis flag variables defined as per your company specifications.
+
+#### Derive `PDFL`
+
+In this example, we want to flag when a patient has had `PD`. This could
+be done in a number of ways:
+
+##### 1. Take the date of `PD` from `ADRS`
+
+``` r
+adtr_sum <- adtr_sum %>%
+  derive_var_merged_exist_flag(
+    dataset_add = adrs,
+    filter_add = PARAMCD == "PD",
+    by_vars = c(get_admiral_option("subject_keys"), exprs(ADT)),
+    new_var = PDFL,
+    condition = AVALC == "Y"
+  )
+```
+
+##### 2. Take the first date when the overall response is `PD` from `RS`
+
+``` r
+adtr_sum <- adtr_sum %>%
+  derive_var_merged_exist_flag(
+    dataset_add = derive_vars_dt(
+      rs,
+      dtc = RSDTC,
+      new_vars_prefix = "A",
+      highest_imputation = "D",
+      flag_imputation = "none"
+    ),
+    filter_add = RSTESTCD == "OVRLRESP" & RSEVAL == "INVESTIGATOR",
+    by_vars = c(get_admiral_option("subject_keys"), exprs(ADT)),
+    new_var = PDFL,
+    condition = RSSTRESC == "PD"
+  )
+```
+
+##### 3. Target lesion response of no `CR` at the current observation visit and but a `CR` response at the `NADIR` observation
+
+``` r
+adtr_sum <- adtr_sum %>% mutate(
+  CRFL = if_else(AVAL == 0 & ANL01FL == "Y", "Y", NA_character_),
+  CRNFL = if_else(NADIR == 0, "Y", NA_character_),
+  PDFL = if_else(is.na(CRFL) & CRNFL == "Y", "Y", NA_character_)
+)
+```
+
+##### 4. Calculate from source data
+
+The derivation for `PD` for target lesions is based on the calculated
+sum of diameters of the assessed lesions results in a calculated Percent
+Change from NADIR \>=20% (`PCHGNAD`) and a calculated Change from NADIR
+\>=5mm (`CHGNAD`).
+
+In this example, `CRFL` flags where the patient has had Complete
+Response, and `CRNFL`, flags where Complete response contributed to the
+`NADIR` calculation.
+
+``` r
+adtr_sum <- adtr_sum %>% mutate(
+  CRFL = if_else(AVAL == 0 & ANL01FL == "Y", "Y", NA_character_),
+  CRNFL = if_else(NADIR == 0, "Y", NA_character_)
+)
+```
+
+``` r
+adtr_sum <- adtr_sum %>%
+  mutate(
+    PDFL = if_else(
+      PCHGNAD >= 20 & CHGNAD >= 5 | is.na(CRFL) & CRNFL == "Y",
+      "Y",
+      NA_character_
+    )
+  )
+```
+
+### Derive Analysis Flags `ANLzzFL`
+
+Based on your specifications, additional analysis flags (`ANLzzFL`)
+could be set up in `ADTR`. Below are some examples which use the
+`ANL01FL` flag derived earlier for the sum of diameter parameter
+(`SDIAM`) as a basis.
+
+Analysis 02 Flag (`ANL02FL`) only includes visits (where analysis date
+is e.g after randomization date (`RANDDT`)) with the lowest `NADIR`
+(lowest sum of diameter) so maximum tumor shrinkage by using the first
+non-missing lowest percentage change from baseline (`PCHG`).
+
+``` r
+adtr_sum <- adtr_sum %>%
+  derive_var_relative_flag(
+    by_vars = get_admiral_option("subject_keys"),
+    order = exprs(ADT),
+    new_var = POSTRNDFL,
+    condition = ADT > RANDDT,
+    mode = "first",
+    selection = "after",
+    inclusive = TRUE,
+    flag_no_ref_groups = FALSE
+  ) %>%
+  restrict_derivation(
+    derivation = derive_var_extreme_flag,
+    args = params(
+      by_vars = get_admiral_option("subject_keys"),
+      new_var = ANL02FL,
+      order = exprs(PCHG),
+      mode = "first",
+      check_type = "none"
+    ),
+    filter = ANL01FL == "Y" & POSTRNDFL == "Y"
+  ) %>%
+  select(-POSTRNDFL)
+```
+
+Analysis 03 flag (`ANL03FL`) includes all sum of diameters where all
+lesions were assessed (where `ANL01FL == "Y"`) until the patient has
+`PD`, indicated by using the `PDFL` variable.
+
+``` r
+adtr_sum <- adtr_sum %>%
+  restrict_derivation(
+    derivation = derive_var_relative_flag,
+    args = params(
+      by_vars = get_admiral_option("subject_keys"),
+      new_var = ANL03FL,
+      condition = PDFL == "Y",
+      order = exprs(ADY),
+      mode = "first",
+      selection = "before",
+      inclusive = FALSE
+    ),
+    filter = ANL01FL == "Y" | PDFL == "Y"
+  )
+```
+
+Analysis 04 flag (`ANL04FL`) includes all sum of diameters where all
+lesions were assessed (where `ANL01FL == "Y"`) and additionally those
+indicating `PD` using the `PDFL` variable.
+
+``` r
+adtr_sum <- adtr_sum %>%
+  mutate(
+    ANL04FL = if_else(ANL01FL == "Y" | PDFL == "Y", "Y", NA_character_)
+  )
+```
+
+``` r
+adtr <- bind_rows(adtr, adtr_sum)
+```
+
+### Derive Analysis Sequence Number (`ASEQ`)
+
+The [admiral](https://pharmaverse.github.io/admiral/) function
+[`admiral::derive_var_obs_number()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_var_obs_number.html)
+can be used to derive `ASEQ`:
+
+``` r
+adtr <- adtr %>%
+  derive_var_obs_number(
+    by_vars = get_admiral_option("subject_keys"),
+    order = exprs(PARAMCD, AVISITN, TRSEQ),
+    check_type = "error"
+  )
+```
+
+### Add `ADSL` Variables
+
+If needed, the other `ADSL` variables can now be added. List of `ADSL`
+variables already merged held in vector `adsl_vars`.
+
+``` r
+adtr <- adtr %>%
+  derive_vars_merged(
+    dataset_add = select(adsl, !!!negate_vars(adsl_vars)),
+    by_vars = get_admiral_option("subject_keys")
+  )
+```
+
+## Example Script
+
+| ADaM   | Sample Code                                                 |
+|--------|-------------------------------------------------------------|
+| `ADTR` | `admiral::use_ad_template("ADTR", package = "admiralonco")` |
