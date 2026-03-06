@@ -48,6 +48,7 @@ Suggests:
     diffdf,
     DT,
     gt,
+    here,
     knitr,
     lintr,
     metatools,
