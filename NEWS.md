@@ -2,6 +2,8 @@
 
 ## Documentation
 
+- A new vignette "Explore ADaM Templates" was added to the "Get Started" menu.
+It displays the `{admiralonco}` templates. (#341)
 
 # admiralonco 1.4.0
 
