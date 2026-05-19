@@ -79,7 +79,7 @@ test data)—which are included in
 [pharmaversesdtm](https://pharmaverse.github.io/pharmaversesdtm/) and
 [pharmaverseadam](https://pharmaverse.github.io/pharmaverseadam/)—are
 used. Also, see [Handling of Missing
-Values](https://pharmaverse.github.io/admiral/cran-release/articles/admiral.html#handling-of-missing-values)
+Values](https://pharmaverse.github.io/admiral/cran-release/articles/concepts_conventions.html#missing)
 explains why we need to use the
 [`convert_blanks_to_na()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/convert_blanks_to_na.html)
 function.
