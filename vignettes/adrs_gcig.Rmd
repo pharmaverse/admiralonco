@@ -462,7 +462,7 @@ In our consideration we assume that the `SUPPRS` dataset contains `QNAM` values 
 
 Having previously transposed and merged `SUPPRS` dataset, we have a suitable structure for deriving `MCRIT` variables, since all the necessary variables we will use to check conditions are in one row.
 
-For this purpose `{admiral}` provides [`derive_vars_cat()`](https://pharmaverse.github.io/admiral/dev/reference/derive_vars_cat.html) function (see documentation for details).
+For this purpose `{admiral}` provides the `derive_vars_cat()` function (see documentation for details).
 
 ```{r}
 definition_mcrit <- exprs(

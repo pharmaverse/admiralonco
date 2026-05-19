@@ -1,4 +1,4 @@
-# admiralonco 1.4.0.9004
+# admiralonco 1.4.1
 
 ## Documentation
 
@@ -111,7 +111,7 @@ patient with a single `CR` or `PR` assessment is derived as `"NE"` instead of
 
 - All vignettes and templates were updated to be in line with the changes in
 `{admiral}` (see [Breaking
-Changes](https://pharmaverse.github.io/admiral/news/index.html#breaking-changes-1-0-0)
+Changes](https://pharmaverse.github.io/admiral/cran-release/news/index.html#breaking-changes-1-0-0)
 for details)(#256).
 
 ## Breaking Changes

@@ -274,13 +274,13 @@ derive_param_bor(
   filter(PARAMCD == "BOR")
 }
 \seealso{
-Other deprecated: 
-\code{\link{date_source}()},
-\code{\link{derive_param_clinbenefit}()},
-\code{\link{derive_param_confirmed_bor}()},
-\code{\link{derive_param_confirmed_resp}()},
-\code{\link{derive_param_response}()},
-\code{\link{filter_pd}()}
+Other deprecated:
+\code{\link[=date_source]{date_source()}},
+\code{\link[=derive_param_clinbenefit]{derive_param_clinbenefit()}},
+\code{\link[=derive_param_confirmed_bor]{derive_param_confirmed_bor()}},
+\code{\link[=derive_param_confirmed_resp]{derive_param_confirmed_resp()}},
+\code{\link[=derive_param_response]{derive_param_response()}},
+\code{\link[=filter_pd]{filter_pd()}}
 }
 \author{
 Stephen Gormley
