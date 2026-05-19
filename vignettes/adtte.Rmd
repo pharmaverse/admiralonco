@@ -191,7 +191,7 @@ dataset_vignette(
 ### Creating Your Own Time-to-Event Source Objects {#tteobj}
 
 We advise you consult the `{admiral}`
-[Creating a BDS Time-to-Event ADaM vignette](https://pharmaverse.github.io/admiral/articles/bds_tte.html)
+[Creating a BDS Time-to-Event ADaM vignette](https://pharmaverse.github.io/admiral/cran-release/articles/bds_tte.html)
 for further guidance on the different options available and more examples.
 
 One extra common oncology case we include here is around PFS when censoring
