@@ -20,10 +20,11 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Stefan Bundfuss \email{stefan.bundfuss@roche.com}
+\strong{Maintainer}: Stefan Bundfuss \email{stefan.bundfuss@external.roche.com}
 
 Authors:
 \itemize{
+  \item Stefan Bundfuss \email{stefan.bundfuss@external.roche.com}
   \item Amit Jain
   \item Vinh Nguyen
   \item Olga Starostecka
