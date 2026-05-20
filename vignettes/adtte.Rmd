@@ -347,4 +347,4 @@ dataset_vignette(
 
 ADaM | Sample Code
 ---- | --------------
-[`ADTTE`](templates.html#adtte) | `admiral::use_ad_template("ADTTE", package = "admiralonco")`
+`ADTTE` | `admiral::use_ad_template("ADTTE", package = "admiralonco")`

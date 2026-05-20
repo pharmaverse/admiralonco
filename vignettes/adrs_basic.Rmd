@@ -875,4 +875,4 @@ dataset_vignette(
 
 ADaM | Sample Code
 ---- | --------------
-[`ADRS_BASIC`](templates.html#adrs_basic) | `admiral::use_ad_template("ADRS_BASIC", package = "admiralonco")`
+`ADRS_BASIC` | `admiral::use_ad_template("ADRS_BASIC", package = "admiralonco")`

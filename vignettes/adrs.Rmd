@@ -1112,4 +1112,4 @@ dataset_vignette(
 
 ADaM | Sample Code
 ---- | --------------
-[`ADRS`](templates.html#adrs) | `admiral::use_ad_template("ADRS", package = "admiralonco")`
+`ADRS` | `admiral::use_ad_template("ADRS", package = "admiralonco")`
