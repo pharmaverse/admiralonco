@@ -348,6 +348,6 @@ adtte <- adtte %>%
 
 ## Example Script
 
-| ADaM                                                                                   | Sample Code                                                  |
-|----------------------------------------------------------------------------------------|--------------------------------------------------------------|
-| [`ADTTE`](https:/pharmaverse.github.io/admiralonco/main/articles/templates.html#adtte) | `admiral::use_ad_template("ADTTE", package = "admiralonco")` |
+| ADaM    | Sample Code                                                  |
+|---------|--------------------------------------------------------------|
+| `ADTTE` | `admiral::use_ad_template("ADTTE", package = "admiralonco")` |

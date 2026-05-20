@@ -938,9 +938,9 @@ adrs <- adrs %>%
 
 ## Example Script
 
-| ADaM                                                                                 | Sample Code                                                 |
-|--------------------------------------------------------------------------------------|-------------------------------------------------------------|
-| [`ADRS`](https:/pharmaverse.github.io/admiralonco/main/articles/templates.html#adrs) | `admiral::use_ad_template("ADRS", package = "admiralonco")` |
+| ADaM   | Sample Code                                                 |
+|--------|-------------------------------------------------------------|
+| `ADRS` | `admiral::use_ad_template("ADRS", package = "admiralonco")` |
 
 ------------------------------------------------------------------------
 

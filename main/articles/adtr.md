@@ -609,6 +609,6 @@ adtr <- adtr %>%
 
 ## Example Script
 
-| ADaM                                                                                 | Sample Code                                                 |
-|--------------------------------------------------------------------------------------|-------------------------------------------------------------|
-| [`ADTR`](https:/pharmaverse.github.io/admiralonco/main/articles/templates.html#adtr) | `admiral::use_ad_template("ADTR", package = "admiralonco")` |
+| ADaM   | Sample Code                                                 |
+|--------|-------------------------------------------------------------|
+| `ADTR` | `admiral::use_ad_template("ADTR", package = "admiralonco")` |
