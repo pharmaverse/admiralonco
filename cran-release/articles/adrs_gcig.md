@@ -5,7 +5,7 @@ studies based on Gynecological Cancer Intergroup (GCIG) criteria. Note
 that only the GCIG specific steps are covered in this vignette. To get a
 detailed guidance on all the steps, refer the [Creating ADRS (Including
 Non-standard
-Endpoints)](https:/pharmaverse.github.io/admiralonco/v1.4.0/articles/adrs.md).
+Endpoints)](https:/pharmaverse.github.io/admiralonco/v1.4.1/articles/adrs.md).
 
 ## Introduction
 
@@ -275,7 +275,7 @@ adrs <- adrs %>%
 Since the set of CA-125 response categories is a subset of the RECIST
 1.1 response categories and the set of combined response categories
 overlaps with the set of RECIST 1.1 response categories, we can use the
-[`admiralonco::aval_resp()`](https:/pharmaverse.github.io/admiralonco/v1.4.0/reference/aval_resp.md)
+[`admiralonco::aval_resp()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/aval_resp.md)
 function to assign `AVAL` (ordered from best to worst response).
 
 ``` r
@@ -301,7 +301,7 @@ In the below example:
   `PARAMCD` and `ADT` are a unique key,
 - if there is more than one assessment at a date, the worst one is
   flagged (ensure that the appropriate `mode` is being set in the
-  [`admiral::derive_var_extreme_flag()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_var_extreme_flag.html)),
+  [`admiral::derive_var_extreme_flag()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_var_extreme_flag.html)),
 - to get the correct ordering, we will define the `worst_resp()`
   function.
 
@@ -336,7 +336,7 @@ adrs <- adrs %>%
 To restrict response data up to and including first reported progressive
 disease `ANL02FL` flag could be created by using
 [admiral](https://pharmaverse.github.io/admiral/) function
-[`admiral::derive_var_relative_flag()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_var_relative_flag.html).
+[`admiral::derive_var_relative_flag()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_var_relative_flag.html).
 
 According to GCIG guidelines, assessments after patients received mouse
 antibodies or if there has been medical and/or surgical interference
@@ -371,7 +371,7 @@ case, this information is collected only for CA-125 records while a flag
 is needed at the patient level.
 
 CA-125 Response Evaluable Flag can easily be derived using
-[`derive_var_merged_exist_flag()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_var_merged_exist_flag.html)
+[`derive_var_merged_exist_flag()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_var_merged_exist_flag.html)
 function.
 
 ``` r
@@ -416,7 +416,7 @@ records.
 ### CA-125 Progression
 
 The function
-[`admiral::derive_extreme_records()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_records.html)
+[`admiral::derive_extreme_records()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_records.html)
 can be used to find the date of first CA-125 PD.
 
 ``` r
@@ -458,8 +458,8 @@ suitable structure for deriving `MCRIT` variables, since all the
 necessary variables we will use to check conditions are in one row.
 
 For this purpose [admiral](https://pharmaverse.github.io/admiral/)
-provides
-[`derive_vars_cat()`](https://pharmaverse.github.io/admiral/dev/reference/derive_vars_cat.html)
+provides the
+[`derive_vars_cat()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_vars_cat.html)
 function (see documentation for details).
 
 ``` r
@@ -497,7 +497,7 @@ the creation of a new parameter.
 ### CA-125 Best Confirmed Overall Response
 
 The function
-[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html)
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html)
 can be used to derive the CA-125 Best Confirmed Overall Response
 Parameter.
 
@@ -601,4 +601,4 @@ this vignette.
 
 For examples on the additional endpoints, please see [Creating ADRS
 (Including Non-standard
-Endpoints)](https:/pharmaverse.github.io/admiralonco/v1.4.0/articles/adrs.md).
+Endpoints)](https:/pharmaverse.github.io/admiralonco/v1.4.1/articles/adrs.md).

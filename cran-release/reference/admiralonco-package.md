@@ -21,9 +21,11 @@ Useful links:
 
 ## Author
 
-**Maintainer**: Stefan Bundfuss <stefan.bundfuss@roche.com>
+**Maintainer**: Stefan Bundfuss <stefan.bundfuss@external.roche.com>
 
 Authors:
+
+- Stefan Bundfuss <stefan.bundfuss@external.roche.com>
 
 - Amit Jain
 

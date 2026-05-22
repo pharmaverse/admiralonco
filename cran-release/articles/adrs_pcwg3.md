@@ -6,7 +6,7 @@ This article describes creating an `ADRS` ADaM dataset for prostate
 cancer studies based on [**Prostate Cancer Working Group 3 (PCWG3)**
 criteria](https://doi.org/10.1200/JCO.2015.64.2702). Most of the
 endpoints are derived by calling
-[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html).
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html).
 
 RECIST 1.1 criteria alone are insufficient to fully characterize
 response in metastatic prostate cancer. The PCWG3 guidelines address
@@ -16,7 +16,7 @@ to soft‑tissue lesions while using PCWG3 rules for bone lesions.
 Note that only the PCWG3-specific steps are covered in this vignette.
 For extended guidance on all steps in ADRS creation, refer to the
 examples in [Creating ADRS (Including Non-standard
-Endpoints)](https:/pharmaverse.github.io/admiralonco/v1.4.0/articles/adrs.md).
+Endpoints)](https:/pharmaverse.github.io/admiralonco/v1.4.1/articles/adrs.md).
 
 ## PCWG3 Guidelines for Prostate Cancer Response
 
@@ -466,7 +466,7 @@ Please note:
 - Some of these events are already defined in
   [admiralonco](https://pharmaverse.github.io/admiralonco/) (see
   [Pre-Defined Response Event
-  Objects](https:/pharmaverse.github.io/admiralonco/v1.4.0/reference/event_objects.md)).
+  Objects](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/event_objects.md)).
   The definitions are repeated here to show the complete picture.
 - Some of these events are also used for deriving confirmed best overall
   response.
@@ -622,7 +622,7 @@ adrs <- adrs %>%
 
 In this section, we derive PSA50 (\>=50% decline from baseline) and
 PSA90 (\>=90% decline) endpoints, both unconfirmed and confirmed, using
-[`derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html)
+[`derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html)
 applied to PSA percent change from baseline (`PCHG`) derived from the LB
 domain (ADPSA). For all PSA endpoints, response (`AVALC = "Y"`) is
 prioritized over no response (`AVALC = "N"`), and subjects without any
@@ -840,4 +840,4 @@ adrs <- adrs %>%
 
 For examples on the additional endpoints, please see [Creating ADRS
 (Including Non-standard
-Endpoints)](https:/pharmaverse.github.io/admiralonco/v1.4.0/articles/adrs.md).
+Endpoints)](https:/pharmaverse.github.io/admiralonco/v1.4.1/articles/adrs.md).

@@ -19,17 +19,17 @@ example function calls for the most common steps are provided by the
 following vignettes:
 
 - [Creating a Basic
-  ADRS](https:/pharmaverse.github.io/admiralonco/v1.4.0/articles/adrs_basic.md)
+  ADRS](https:/pharmaverse.github.io/admiralonco/v1.4.1/articles/adrs_basic.md)
 - [Creating ADRS (Including Non-standard
-  Endpoints)](https:/pharmaverse.github.io/admiralonco/v1.4.0/articles/adrs.md)
+  Endpoints)](https:/pharmaverse.github.io/admiralonco/v1.4.1/articles/adrs.md)
 - [Creating
-  ADTTE](https:/pharmaverse.github.io/admiralonco/v1.4.0/articles/adtte.md)
+  ADTTE](https:/pharmaverse.github.io/admiralonco/v1.4.1/articles/adtte.md)
 - [Creating
-  ADTR](https:/pharmaverse.github.io/admiralonco/v1.4.0/articles/adtr.md)
+  ADTR](https:/pharmaverse.github.io/admiralonco/v1.4.1/articles/adtr.md)
 
 [admiralonco](https://pharmaverse.github.io/admiralonco/) also provides
 template R scripts as a starting point. They can be created by calling
-[`use_ad_template()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/use_ad_template.html)
+[`use_ad_template()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/use_ad_template.html)
 from [admiral](https://pharmaverse.github.io/admiral/), e.g.,
 
 ``` r
@@ -45,7 +45,7 @@ use_ad_template(
 ```
 
 A list of all available templates can be obtained by
-[`list_all_templates()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/list_all_templates.html)
+[`list_all_templates()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/list_all_templates.html)
 from [admiral](https://pharmaverse.github.io/admiral/):
 
 ``` r

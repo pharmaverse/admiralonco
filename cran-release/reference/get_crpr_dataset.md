@@ -27,10 +27,10 @@ no longer be accessed (unless it has been saved in a variable).
 
 ## See also
 
-[`signal_crpr()`](https:/pharmaverse.github.io/admiralonco/v1.4.0/reference/signal_crpr.md)
+[`signal_crpr()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/signal_crpr.md)
 
 Utilities for Dataset Checking:
-[`signal_crpr()`](https:/pharmaverse.github.io/admiralonco/v1.4.0/reference/signal_crpr.md)
+[`signal_crpr()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/signal_crpr.md)
 
 ## Author
 

@@ -1,7 +1,7 @@
 # Pre-Defined Time-to-Event Source Objects
 
 These pre-defined `tte_source` objects can be used as input to
-[`admiral::derive_param_tte()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_param_tte.html).
+[`admiral::derive_param_tte()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_param_tte.html).
 
 ## Usage
 
@@ -24,7 +24,7 @@ trts_censor
 To see the definition of the various objects simply print the object in
 the R console, e.g. `print(death_event)`. For details of how to use
 these objects please refer to
-[`admiral::derive_param_tte()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_param_tte.html).
+[`admiral::derive_param_tte()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_param_tte.html).
 
 Printing an object will display input dataset_name, filter (if
 applicable), date variable, and appropriate values for `EVNTDESC`,
@@ -32,10 +32,10 @@ applicable), date variable, and appropriate values for `EVNTDESC`,
 
 ## See also
 
-[`admiral::derive_param_tte()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_param_tte.html),
-[`admiral::tte_source()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/tte_source.html),
-[`admiral::event_source()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/event_source.html),
-[`admiral::censor_source()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/censor_source.html)
+[`admiral::derive_param_tte()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_param_tte.html),
+[`admiral::tte_source()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/tte_source.html),
+[`admiral::event_source()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/event_source.html),
+[`admiral::censor_source()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/censor_source.html)
 
 ## Examples
 

@@ -2,7 +2,7 @@
 
 **\[deprecated\]** The `derive_param_clinbenefit()` function has been
 deprecated in favor of
-[`derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.0/cran-release/reference/derive_extreme_event.html).
+[`derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html).
 
 Adds a parameter for clinical benefit/disease control
 
@@ -72,7 +72,7 @@ derive_param_clinbenefit(
 
   The list must contain the names provided by the `dataset_name` field
   of the
-  [`date_source()`](https:/pharmaverse.github.io/admiralonco/v1.4.0/reference/date_source.md)
+  [`date_source()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/date_source.md)
   objects specified for `source_pd` and `source_resp`.
 
 - reference_date:
@@ -178,12 +178,12 @@ Example: `clinben_vals <- c("CR", "PR")`
 ## See also
 
 Other deprecated:
-[`date_source()`](https:/pharmaverse.github.io/admiralonco/v1.4.0/reference/date_source.md),
-[`derive_param_bor()`](https:/pharmaverse.github.io/admiralonco/v1.4.0/reference/derive_param_bor.md),
-[`derive_param_confirmed_bor()`](https:/pharmaverse.github.io/admiralonco/v1.4.0/reference/derive_param_confirmed_bor.md),
-[`derive_param_confirmed_resp()`](https:/pharmaverse.github.io/admiralonco/v1.4.0/reference/derive_param_confirmed_resp.md),
-[`derive_param_response()`](https:/pharmaverse.github.io/admiralonco/v1.4.0/reference/derive_param_response.md),
-[`filter_pd()`](https:/pharmaverse.github.io/admiralonco/v1.4.0/reference/filter_pd.md)
+[`date_source()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/date_source.md),
+[`derive_param_bor()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/derive_param_bor.md),
+[`derive_param_confirmed_bor()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/derive_param_confirmed_bor.md),
+[`derive_param_confirmed_resp()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/derive_param_confirmed_resp.md),
+[`derive_param_response()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/derive_param_response.md),
+[`filter_pd()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/filter_pd.md)
 
 ## Author
 
