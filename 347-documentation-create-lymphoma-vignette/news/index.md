@@ -1,5 +1,12 @@
 # Changelog
 
+## admiralonco (development version)
+
+### Documentation
+
+- New vignette “Creating ADRS with Lugano 2014 Criteria”.
+  ([\#347](https://github.com/pharmaverse/admiralonco/issues/347))
+
 ## admiralonco 1.4.1
 
 CRAN release: 2026-05-21
