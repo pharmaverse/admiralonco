@@ -1,3 +1,10 @@
+# admiralonco (development version)
+
+## Documentation
+
+- New vignette "Creating ADRS with Lugano 2014 Criteria". (#347)
+
+
 # admiralonco 1.4.1
 
 ## Documentation
