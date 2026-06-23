@@ -384,6 +384,8 @@ adrs <- derive_param_computed(
 )
 ```
 
+![](adrs_lymphoma_files/figure-html/unnamed-chunk-13-1.png)![](adrs_lymphoma_files/figure-html/unnamed-chunk-13-2.png)![](adrs_lymphoma_files/figure-html/unnamed-chunk-13-3.png)![](adrs_lymphoma_files/figure-html/unnamed-chunk-13-4.png)
+
 #### Derive `AVAL` (Numeric tumor response from `AVALC` values)
 
 The `AVAL` values are not considered in the further parameter
