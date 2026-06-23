@@ -47,6 +47,7 @@ Suggests:
     devtools,
     diffdf,
     DT,
+    ggplot2,
     gt,
     here,
     knitr,
