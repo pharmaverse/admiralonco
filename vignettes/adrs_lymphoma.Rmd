@@ -402,7 +402,8 @@ adrs <- derive_param_computed(
     PARAM = "Overall Response - Derived",
     PARAMN = 3,
     PARCAT1 = "LUGANO 2014"
-  )
+  ),
+  keep_nas = TRUE
 )
 ```
 
@@ -423,7 +424,10 @@ plot_response <- function(dataset, page, page_size = 4) {
            ),
            Response = factor(
              AVALC,
-             levels = c("CMR, CAR, CR", "PMR, PAR, PR", "NMR, SAD, SD", "PMD, PAD, PD", "NE", "NED", "PSP", "ND")
+             levels = c(
+               "CMR, CAR, CR", "PMR, PAR, PR", "NMR, SAD, SD", "PMD, PAD, PD",
+               "PSP", "NE", "NED",  "ND"
+             )
            ),
            Parameter = factor(
              PARAM,
@@ -453,13 +457,14 @@ plot_response <- function(dataset, page, page_size = 4) {
     size = 4
   ) +
   scale_color_manual(
-    values = c("CMR, CAR, CR" = "darkgreen", "PMR, PAR, PR" = "orange", "NMR, SAD, SD" = "blue", "PMD, PAD, PD" = "red", "NE" = "gray", "ND" = "black"), na.value = "grey"
+    values = c("CMR, CAR, CR" = "darkgreen", "PMR, PAR, PR" = "orange", "NMR, SAD, SD" = "blue", "PMD, PAD, PD" = "red", "NE" = "gray", "ND" = "black"), na.value = "lightgray"
   ) +
   scale_fill_manual(
-    values = c("CMR, CAR, CR" = "darkgreen", "PMR, PAR, PR" = "orange", "NMR, SAD, SD" = "blue", "PMD, PAD, PD" = "red", "NE" = "gray", "ND" = "black"), na.value = "grey"
+    values = c("CMR, CAR, CR" = "darkgreen", "PMR, PAR, PR" = "orange", "NMR, SAD, SD" = "blue", "PMD, PAD, PD" = "red", "NE" = "gray", "ND" = "black"), na.value = "lightgray"
   ) +
   scale_shape_manual(
-    values = c("CMR, CAR, CR" = 17, "PMR, PAR, PR" = 18, "NMR, SAD, SD" = 16, "PMD, PAD, PD" = 25, "NE" = 3, "ND" = 4)
+    values = c("CMR, CAR, CR" = 17, "PMR, PAR, PR" = 18, "NMR, SAD, SD" = 16, "PMD, PAD, PD" = 25, "NE" = 3, "ND" = 4),
+    na.value = 22
   ) +
   facet_wrap(vars(paste("Subject", USUBJID)), ncol = 1)
 }
