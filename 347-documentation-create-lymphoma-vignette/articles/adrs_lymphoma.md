@@ -380,7 +380,8 @@ adrs <- derive_param_computed(
     PARAM = "Overall Response - Derived",
     PARAMN = 3,
     PARCAT1 = "LUGANO 2014"
-  )
+  ),
+  keep_nas = TRUE
 )
 ```
 
