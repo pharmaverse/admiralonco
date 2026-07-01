@@ -16,8 +16,6 @@ knitr::opts_chunk$set(
 library(admiraldev)
 library(gt)
 library(ggplot2)
-# TO BE REMOVED ONCE THE BRANCH IS MERGED TO MAIN
-remotes::install_github("pharmaverse/pharmaversesdtm", ref = "235-general-issue-add-rs-data-for-lymphoma")
 ```
 
 # Introduction
@@ -129,8 +127,7 @@ In this vignette, the `RS` SDTM dataset is expected to contain lymphoma response
 ```{r message=FALSE}
 
 # Lymphoma SDTM data
-#rs <- pharmaversesdtm::rs_onco_lymphoma
-rs <- rs_onco_lymphoma
+rs <- pharmaversesdtm::rs_onco_lymphoma
 
 # Convert blanks to NA
 rs <- convert_blanks_to_na(rs)
