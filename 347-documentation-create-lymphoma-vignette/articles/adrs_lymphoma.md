@@ -136,8 +136,7 @@ dataset contains separate records for:
 ``` r
 
 # Lymphoma SDTM data
-#rs <- pharmaversesdtm::rs_onco_lymphoma
-rs <- rs_onco_lymphoma
+rs <- pharmaversesdtm::rs_onco_lymphoma
 
 # Convert blanks to NA
 rs <- convert_blanks_to_na(rs)
