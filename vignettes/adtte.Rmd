@@ -211,11 +211,11 @@ Assessment by Investigator" parameter (`LSTA`) to ensure all valid assessments
 are considered.
 
 In the example below, the `end_dates` argument is used to restrict the events
-and censorings to dates up to the start of a new anti-cancer therapy. `NACTDT`
-would be pre-derived as the first date of new anti-cancer therapy. See
-`{admiralonco}` [Creating and Using New Anti-Cancer Start Date](nactdt.html) for
-deriving `NACTDT`. In addition, `EOSDT` is used for `end_dates` to populate
-`EVNTDESC` when no new anti-cancer therapy was started.
+and censorings to those occurring on or before the start of new anti-cancer
+therapy. `NACTDT` would be pre-derived as the first date of new anti-cancer
+therapy. See `{admiralonco}` [Creating and Using New Anti-Cancer Start
+Date](nactdt.html) for deriving `NACTDT`. In addition, `EOSDT` is included in
+`end_dates` to populate `EVNTDESC` when no new anti-cancer therapy was started.
 
 ```{r, eval=FALSE}
 eosdt <- censor_source(
