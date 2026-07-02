@@ -65,9 +65,8 @@ For example purpose, the ADaM datasets---which are included in
 input.
 
 ```{r}
-data("adsl")
-data("adrs_onco")
-adrs <- adrs_onco
+adsl <- pharmaverseadam::adsl
+adrs <- pharmaverseadam::adrs_onco
 ```
 
 ## Derive Parameters (`CNSR`, `ADT`, `STARTDT`) {#parameters}
@@ -89,8 +88,7 @@ parameter) are potential events or censorings,
 - the value of the `CNSR` variable (`censor` parameter), and
 - which variable provides the date (`date` parameter).
 
-The date can be provided as date (`--DT` variable), datetime (`--DTM` variable),
-or character ISO-8601 date (`--DTC` variable).
+The date can be provided as date (`*DT` variable) or datetime (`*DTM` variable).
 
 CDISC strongly recommends `CNSR = 0` for events and positive integers for
 censorings. `{admiral}`/`{admiralonco}` enforce this recommendation. Therefore the `censor`
@@ -190,76 +188,73 @@ dataset_vignette(
 
 ### Creating Your Own Time-to-Event Source Objects {#tteobj}
 
-We advise you consult the `{admiral}`
-[Creating a BDS Time-to-Event ADaM vignette](https://pharmaverse.github.io/admiral/cran-release/articles/bds_tte.html)
+We advise you consult the `{admiral}` [Creating a BDS Time-to-Event ADaM
+vignette](https://pharmaverse.github.io/admiral/cran-release/articles/bds_tte.html)
+and [Time-to-Event
+Analyses](https://pharmaverse.github.io/admiral/cran-release/articles/tte_analyses_web.html)
 for further guidance on the different options available and more examples.
 
-One extra common oncology case we include here is around PFS when censoring
-at new anti-cancer therapy. This could either be controlled using `ANLzzFL` as
+One extra common oncology case we include here is around PFS when censoring at
+new anti-cancer therapy. This could either be controlled using `ANLzzFL` as
 explained in the ADRS vignette, so that records after new anti-cancer therapy
-never contribute to the PD and DEATH parameters. Or alternatively you can control
-this on the ADTTE side by filtering which records are used in
-`admiral::event_source()` and `admiral::censor_source()`, e.g. for PD or death
-event date we can use `filter` argument to exclude events occurring after new
-anti-cancer therapy.
+never contribute to the PD and DEATH parameters. Or alternatively you can
+control this on the `ADTTE` side by filtering which records are used via the
+`end_dates` argument of `derive_param_tte()`.
 
-The censor could be set as whichever date your analysis requires,
-e.g. date of last tumor assessment prior to new anti-cancer therapy or last
-radiological assessment. If you pass multiple censor dates then remember the
-function will choose the latest occurring of these, so be cautious here if
-feeding in say one censor date for last assessment prior to new anti-cancer
-therapy and one for last assessment - as the function would choose the maximum of
-these which in this case would be incorrect. The easiest solution here would be
-to pass in one censor date as the date of last assessment prior to new
-anti-cancer therapy or date of last assessment **if no new anti-cancer therapy**.
-If you wanted to use different censor dates which could have different `CNSDTDSC`
-values, then you'd need to ensure only one is set per patient.
+For `end_dates` you could specify whichever date your analysis requires, e.g.,
+start date of new anti-cancer therapy or date of surgery. The argument expects a
+list of `censor_source()` objects. The earliest date is used as the end of the
+observation period and events/censorings occurring after this date are not
+considered. If the `end_dates` argument is used, "Overall Response by
+Investigator" parameter (`OVR`) should be used instead of the "Last Disease
+Assessment by Investigator" parameter (`LSTA`) to ensure all valid assessments
+are considered.
 
-This case is demonstrated in the below example (where `NACTDT` would be
-pre-derived as first date of new anti-cancer therapy, and `LASTANDT` as the
-single tumor assessment censor date as described above. See `{admiralonco}` [Creating and Using New Anti-Cancer Start Date](nactdt.html) for deriving `NACTDT`).
+In the example below the `end_dates` argument is used to restrict the events and
+censorings to dates up to the start of a new anti-cancer therapy. `NACTDT` would
+be pre-derived as first date of new anti-cancer therapy. See `{admiralonco}`
+[Creating and Using New Anti-Cancer Start Date](nactdt.html) for deriving
+`NACTDT`. In addition `EOSDT` is used for `end_dates` to populate `EVNTDESC`.
 
 ```{r, eval=FALSE}
-pd_nact_event <- event_source(
+eosdt <- censor_source(
   dataset_name = "adsl",
-  filter = PDDT < NACTDT | is.na(NACTDT),
-  date = PDDT,
+  date = EOSDT,
   set_values_to = exprs(
-    EVNTDESC = "Disease Progression prior to NACT",
-    SRCDOM = "ADSL",
-    SRCVAR = "PDDT"
+    EVNTDESC = "End of Study"
   )
 )
 
-death_nact_event <- event_source(
+nactdt <- censor_source(
   dataset_name = "adsl",
-  filter = DTHDT < NACTDT | is.na(NACTDT),
-  date = DTHDT,
+  date = NACTDT,
   set_values_to = exprs(
-    EVNTDESC = "Death prior to NACT",
-    SRCDOM = "ADSL",
-    SRCVAR = "DTHDT"
+    EVNTDESC = "Start of New Anti-Cancer Therapy"
   )
 )
 
-lasta_nact_censor <- censor_source(
-  dataset_name = "adsl",
-  date = LASTANDT,
+valid_assessment <- censor_source(
+  dataset_name = "adrs",
+  filter = PARAMCD == "OVR" & AVALC != "NE",
+  date = ADT,
   set_values_to = exprs(
-    EVNTDESC = "Last Tumor Assessment prior to NACT",
-    CNSDTDSC = "Last Tumor Assessment prior to NACT",
-    SRCDOM = "ADSL",
-    SRCVAR = "LASTANDT"
+    CNSDTDSC = "Last Valid Tumor Assessment",
+    SRCDOM = "ADRS",
+    SRCVAR = "ADT"
   )
 )
 
 adtte <- derive_param_tte(
   dataset_adsl = adsl,
   start_date = RANDDT,
-  event_conditions = list(pd_nact_event, death_nact_event),
-  censor_conditions = list(lasta_nact_censor, rand_censor),
-  source_datasets = list(adsl = adsl),
-  set_values_to = exprs(PARAMCD = "PFSNACT", PARAM = "Progression Free Survival prior to NACT")
+  end_dates = list(nactdt, eosdt),
+  event_conditions = list(pd_event, death_event),
+  censor_conditions = list(valid_assessment, rand_censor),
+  source_datasets = list(adsl = adsl, adrs = adrs),
+  set_values_to = exprs(
+    PARAMCD = "PFSNACT",
+    PARAM = "Progression Free Survival prior to NACT"
+  )
 )
 ```
 

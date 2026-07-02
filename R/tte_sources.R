@@ -97,6 +97,7 @@ lasta_censor <- censor_source(
 rand_censor <- censor_source(
   dataset_name = "adsl",
   date = RANDDT,
+  consider_end_date = FALSE,
   set_values_to = exprs(
     EVNTDESC = "Randomization",
     CNSDTDSC = "Randomization",
@@ -112,6 +113,7 @@ rand_censor <- censor_source(
 trts_censor <- censor_source(
   dataset_name = "adsl",
   date = TRTSDT,
+  consider_end_dates = FALSE,
   set_values_to = exprs(
     EVNTDESC = "Treatment Start",
     CNSDTDSC = "Treatment Start",

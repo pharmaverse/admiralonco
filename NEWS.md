@@ -2,6 +2,10 @@
 
 ## Documentation
 
+- The "Creating ADTTE" vignette was updated to provide simpler code for
+  parameters where events and censorings are restricted by dates like the start
+  date of next anti-cancer therapy. (#348)
+
 - In all vignettes and templates, `derive_var_merged_summary()` calls were
   replaced by `derive_vars_merged_summary()` calls due to the renaming of the
   function in `{admiral}`. (#345)
