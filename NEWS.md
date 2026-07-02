@@ -4,7 +4,7 @@
 
 - The "Creating ADTTE" vignette was updated to provide simpler code for
   parameters where events and censorings are limited to those occurring before
-   dates such as the start of new anti-cancer therapy. (#348)
+  a date such as the start of new anti-cancer therapy. (#348)
 
 - In all vignettes and templates, `derive_var_merged_summary()` calls were
   replaced by `derive_vars_merged_summary()` calls due to the renaming of the

@@ -195,19 +195,19 @@ and [Time-to-Event
 Analyses](https://pharmaverse.github.io/admiral/cran-release/articles/tte_analyses_web.html)
 for further guidance on the different options available and more examples.
 
-One extra common oncology case we include here is around PFS when censoring at
-new anti-cancer therapy. This could either be controlled using `ANLzzFL` as
-explained in the ADRS vignette, so that records after new anti-cancer therapy
-never contribute to the PD and DEATH parameters. Or alternatively you can
+One additional common oncology use case described here involves PFS when
+censoring at new anti-cancer therapy. This can be controlled either by using
+`ANLzzFL` as explained in the ADRS vignette, so that records after new
+anti-cancer therapy never contribute to the PD and DEATH parameters or you can
 control this on the `ADTTE` side by filtering which records are used via the
 `end_dates` argument of `derive_param_tte()`.
 
 For `end_dates`, you could specify whichever date your analysis requires, e.g.,
 the start date of new anti-cancer therapy or the date of surgery. The argument
 expects a list of `censor_source()` objects. The earliest date is used as the
-end of the observation period and events or censorings occurring after this date
-are not considered. If the `end_dates` argument is used, "Overall Response by
-Investigator" parameter (`OVR`) should be used instead of the "Last Disease
+end of the observation period, and events or censorings occurring after this
+date are not considered. If the `end_dates` argument is used, "Overall Response
+by Investigator" parameter (`OVR`) should be used instead of the "Last Disease
 Assessment by Investigator" parameter (`LSTA`) to ensure all valid assessments
 are considered.
 
