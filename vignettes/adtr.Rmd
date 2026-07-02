@@ -309,7 +309,7 @@ The analysis flag `ANL01FL` flags the sum of diameters where the number of lesio
 
 Lesions can split or merge, if this is a consideration then this needs to be taken care of when deciding on which algorithm to use to check that all lesions are measured at post-baseline.
 
-In the below example, we use `derive_var_merged_summary()` function multiple
+In the below example, we use `derive_vars_merged_summary()` function multiple
 times in order to process additional variables for sum of diameter parameter,
 and calculate the analysis flag (`ANL01FL`).
 
@@ -323,7 +323,7 @@ assessed at post-baseline match baseline.
 
 ```{r}
 adtr_sum <- adtr_sum %>%
-  derive_var_merged_summary(
+  derive_vars_merged_summary(
     dataset_add = adtr,
     by_vars = get_admiral_option("subject_keys"),
     filter_add = AVISIT == "BASELINE" &
@@ -331,7 +331,7 @@ adtr_sum <- adtr_sum %>%
         (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")),
     new_vars = exprs(LSEXP = paste(sort(TRLNKID), collapse = ", "))
   ) %>%
-  derive_var_merged_summary(
+  derive_vars_merged_summary(
     dataset_add = adtr,
     by_vars = c(get_admiral_option("subject_keys"), exprs(AVISIT)),
     filter_add = ((str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |

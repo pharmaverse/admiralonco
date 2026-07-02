@@ -496,7 +496,7 @@ filter_consecutive_vals <- function(dataset, by_vars, order, var, val, n) {
       keep_no_ref_groups = TRUE,
       inclusive = FALSE
     ) %>%
-    derive_var_merged_summary(
+    derive_vars_merged_summary(
       dataset = .,
       dataset_add = .,
       by_vars = c(by_vars, expr(temp_seq)),
