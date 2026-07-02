@@ -1,3 +1,11 @@
+# admiralonco (development version)
+
+## Documentation
+
+- In all vignettes and templates, `derive_var_merged_summary()` calls were
+  replaced by `derive_vars_merged_summary()` calls due to the renaming of the
+  function in `{admiral}`. (#345)
+
 # admiralonco 1.4.1
 
 ## Documentation
