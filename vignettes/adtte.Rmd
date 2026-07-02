@@ -198,11 +198,10 @@ for further guidance on the different options available and more examples.
 One additional common oncology use case described here involves PFS when
 censoring at new anti-cancer therapy. This can be controlled either by using
 `ANLzzFL` as explained in the ADRS vignette, so that records after new
-anti-cancer therapy never contribute to the PD and DEATH parameters or you can
-control this on the `ADTTE` side by filtering which records are used via the
-`end_dates` argument of `derive_param_tte()`.
+anti-cancer therapy never contribute to the PD and DEATH parameters, or by
+using the `end_dates` argument of `derive_param_tte()` on the `ADTTE` side.
 
-For `end_dates`, you could specify whichever date your analysis requires, e.g.,
+For `end_dates`, you can specify whichever date your analysis requires, e.g.,
 the start date of new anti-cancer therapy or the date of surgery. The argument
 expects a list of `censor_source()` objects. The earliest date is used as the
 end of the observation period, and events or censorings occurring after this
@@ -216,7 +215,7 @@ and censorings to dates up to the start of a new anti-cancer therapy. `NACTDT`
 would be pre-derived as the first date of new anti-cancer therapy. See
 `{admiralonco}` [Creating and Using New Anti-Cancer Start Date](nactdt.html) for
 deriving `NACTDT`. In addition, `EOSDT` is used for `end_dates` to populate
-`EVNTDESC`.
+`EVNTDESC` when no new anti-cancer therapy was started.
 
 ```{r, eval=FALSE}
 eosdt <- censor_source(
