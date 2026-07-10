@@ -35,7 +35,7 @@ Please check [Lugano 2014 Classification](https://imagingendpoints.com/wp-conten
 
 The derivation below is provided only as an example of how an integrated timepoint response could be derived when the combined overall response is **not collected directly**. It is not intended as general Lugano 2014 implementation guidance. Study-specific rules may vary and should be aligned with the protocol, SAP, CRF design, and data review conventions.
 
-For extended guidance on common steps in ADRS creation and additional response endpoints, refer to the examples in [Creating ADRS (Including Non-standard Endpoints)](adrs.html).
+For extended guidance on common steps in `ADRS` creation and additional response endpoints, refer to the examples in [Creating ADRS (Including Non-standard Endpoints)](adrs.html).
 
 # Lugano 2014 Response Categories for Lymphoma
 
@@ -481,16 +481,16 @@ The `AVAL` values are not considered in the further parameter derivations below,
 ```{r}
 adrs <- adrs %>%
   mutate(
-    AVAL = case_when(
-      AVALC %in% c("CR", "CMR", "CAR") ~ 1,
-      AVALC %in% c("PR", "PMR", "PAR") ~ 2,
-      AVALC %in% c("SD", "NMR", "SMD", "SAD") ~ 3,
-      AVALC %in% c("PD", "PMD", "PAD") ~ 4,
-      AVALC == "NE" ~ 5,
-      AVALC == "NED" ~ 6,
-      AVALC == "PSP" ~ 7,
-      AVALC == "ND" ~ 8,
-      TRUE ~ NA_real_
+    AVAL = recode_values(
+      AVALC,
+      c("CR", "CMR", "CAR") ~ 1,
+      c("PR", "PMR", "PAR") ~ 2,
+      c("SD", "NMR", "SMD", "SAD") ~ 3,
+      c("PD", "PMD", "PAD") ~ 4,
+      "NE" ~ 5,
+      "NED" ~ 6,
+      "PSP" ~ 7,
+      "ND" ~ 8
     )
   )
 ```
