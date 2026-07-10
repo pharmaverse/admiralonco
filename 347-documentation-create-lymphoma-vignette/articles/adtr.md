@@ -314,7 +314,7 @@ to be taken care of when deciding on which algorithm to use to check
 that all lesions are measured at post-baseline.
 
 In the below example, we use
-[`derive_var_merged_summary()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/derive_var_merged_summary.html)
+[`derive_vars_merged_summary()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/derive_vars_merged_summary.html)
 function multiple times in order to process additional variables for sum
 of diameter parameter, and calculate the analysis flag (`ANL01FL`).
 
@@ -328,7 +328,7 @@ lesions assessed at post-baseline match baseline.
 
 ``` r
 adtr_sum <- adtr_sum %>%
-  derive_var_merged_summary(
+  derive_vars_merged_summary(
     dataset_add = adtr,
     by_vars = get_admiral_option("subject_keys"),
     filter_add = AVISIT == "BASELINE" &
@@ -336,7 +336,7 @@ adtr_sum <- adtr_sum %>%
         (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")),
     new_vars = exprs(LSEXP = paste(sort(TRLNKID), collapse = ", "))
   ) %>%
-  derive_var_merged_summary(
+  derive_vars_merged_summary(
     dataset_add = adtr,
     by_vars = c(get_admiral_option("subject_keys"), exprs(AVISIT)),
     filter_add = ((str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |
@@ -346,12 +346,6 @@ adtr_sum <- adtr_sum %>%
   mutate(
     ANL01FL = if_else(LSEXP == LSASS, "Y", NA_character_)
   )
-#> `derive_var_merged_summary()` was deprecated in admiral 1.4.
-#> ℹ Please use `derive_vars_merged_summary()` instead.
-#> ✖ Function is brought inline with our programming strategy - warning will be
-#>   issued in January 2027
-#> ℹ See admiral's deprecation guidance:
-#>   https://pharmaverse.github.io/admiraldev/dev/articles/programming_strategy.html#deprecation
 ```
 
 ### Derive Baseline (`ABLFL`, `BASE`)

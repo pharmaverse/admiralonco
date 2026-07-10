@@ -325,7 +325,10 @@ adrs <- bind_rows(
 ``` r
 adrs <- derive_param_computed(
   dataset = adrs,
-  by_vars = exprs(!!!get_admiral_option("subject_keys"), !!!adsl_vars, DOMAIN, ADT, ADY, ADTM, ADTF, VISIT, VISITNUM, AVISIT, AVISITN),
+  by_vars = exprs(
+    !!!get_admiral_option("subject_keys"), !!!adsl_vars, DOMAIN, ADT, ADY, ADTM,
+    ADTF, VISIT, VISITNUM, AVISIT, AVISITN
+  ),
   parameters = c("PETRSP", "CTRSP"),
   set_values_to = exprs(
     AVALC = case_when(

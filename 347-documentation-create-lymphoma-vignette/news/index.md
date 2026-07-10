@@ -7,6 +7,14 @@
 - New vignette “Creating ADRS with Lugano 2014 Criteria”.
   ([\#347](https://github.com/pharmaverse/admiralonco/issues/347))
 
+- In all vignettes and templates,
+  [`derive_var_merged_summary()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/derive_var_merged_summary.html)
+  calls were replaced by
+  [`derive_vars_merged_summary()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/derive_vars_merged_summary.html)
+  calls due to the renaming of the function in
+  [admiral](https://pharmaverse.github.io/admiral/).
+  ([\#345](https://github.com/pharmaverse/admiralonco/issues/345))
+
 ## admiralonco 1.4.1
 
 CRAN release: 2026-05-21

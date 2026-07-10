@@ -478,7 +478,7 @@ filter_consecutive_vals <- function(dataset, by_vars, order, var, val, n) {
       keep_no_ref_groups = TRUE,
       inclusive = FALSE
     ) %>%
-    derive_var_merged_summary(
+    derive_vars_merged_summary(
       dataset = .,
       dataset_add = .,
       by_vars = c(by_vars, expr(temp_seq)),
@@ -503,12 +503,6 @@ many_nes <- filter_consecutive_vals(
   val = "NE",
   n = 3
 )
-#> `derive_var_merged_summary()` was deprecated in admiral 1.4.
-#> ℹ Please use `derive_vars_merged_summary()` instead.
-#> ✖ Function is brought inline with our programming strategy - warning will be
-#>   issued in January 2027
-#> ℹ See admiral's deprecation guidance:
-#>   https://pharmaverse.github.io/admiraldev/dev/articles/programming_strategy.html#deprecation
 
 if (nrow(many_nes) > 0) {
   cli_warn("There are subjects with more than three NEs in a row.")
