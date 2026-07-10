@@ -52,32 +52,32 @@ protocol and statistical analysis plan.
 
 ### PET-CT Based Response Categories
 
-| Table 1: PET-CT Based Response Categories             |                                                             |                                              |
-|-------------------------------------------------------|-------------------------------------------------------------|----------------------------------------------|
-| Lugano 2014 response categories used in this vignette |                                                             |                                              |
-| PET-CT Response                                       | Description                                                 | Derived Overall Category                     |
-| CMR                                                   | Complete metabolic response                                 | CR                                           |
-| PMR                                                   | Partial metabolic response                                  | PR                                           |
-| NMR or SMD                                            | No metabolic response or stable metabolic disease           | SD                                           |
-| PMD                                                   | Progressive metabolic disease                               | PD                                           |
-| NE                                                    | Not evaluable                                               | Study-specific fallback logic                |
-| ND                                                    | Not done or not determined                                  | Study-specific fallback logic                |
-| NED                                                   | No evidence of FDG-avid disease, generally BICR or IRC only | Usually defaults to CT response if available |
-| PSP                                                   | Pseudoprogression                                           | Study-specific                               |
+| Table 1: PET-CT Based Response Categories             |                                                             |
+|-------------------------------------------------------|-------------------------------------------------------------|
+| Lugano 2014 response categories used in this vignette |                                                             |
+| PET-CT Response                                       | Description                                                 |
+| CMR                                                   | Complete metabolic response                                 |
+| PMR                                                   | Partial metabolic response                                  |
+| NMR or SMD                                            | No metabolic response or stable metabolic disease           |
+| PMD                                                   | Progressive metabolic disease                               |
+| NE                                                    | Not evaluable                                               |
+| ND                                                    | Not done or not determined                                  |
+| NED                                                   | No evidence of FDG-avid disease, generally BICR or IRC only |
+| PSP                                                   | Pseudoprogression                                           |
 
 ### CT-Based Response Categories
 
-| Table 2: CT-Based Response Categories              |                              |                          |
-|----------------------------------------------------|------------------------------|--------------------------|
-| Anatomic response categories used in this vignette |                              |                          |
-| CT Response                                        | Description                  | Derived Overall Category |
-| CAR                                                | Complete anatomic response   | CR                       |
-| PAR                                                | Partial anatomic response    | PR                       |
-| SAD                                                | Stable anatomic disease      | SD                       |
-| PAD                                                | Progressive anatomic disease | PD                       |
-| NE                                                 | Not evaluable                | NE                       |
-| ND                                                 | Not done or not determined   | ND                       |
-| NED                                                | No evidence of disease       | NED                      |
+| Table 2: CT-Based Response Categories              |                              |
+|----------------------------------------------------|------------------------------|
+| Anatomic response categories used in this vignette |                              |
+| CT Response                                        | Description                  |
+| CAR                                                | Complete anatomic response   |
+| PAR                                                | Partial anatomic response    |
+| SAD                                                | Stable anatomic disease      |
+| PAD                                                | Progressive anatomic disease |
+| NE                                                 | Not evaluable                |
+| ND                                                 | Not done or not determined   |
+| NED                                                | No evidence of disease       |
 
 In this example data, `NMR` is used for no metabolic response. Some
 implementations may use `SMD` for stable metabolic disease. For the
@@ -96,7 +96,7 @@ defaults to the CT response if one is available.
 - [Read in Data](#readdata)
 - [Pre-processing of Input Records](#input)
 - [Derive PET-CT and CT Response Parameters](#param)
-- [Derive Combined Overall Timepoint Response (OVRLRESC)](#ovrlresc)
+- [Derive Combined Overall Timepoint Response (`OVRLRESC`)](#ovrlresc)
 - [Other Endpoints](#other)
 
 ### Required Packages
@@ -244,14 +244,12 @@ analyses.
 | NMR or SMD                                                                                                                                                                 | Any                             | SD                                  |
 | PMD                                                                                                                                                                        | Any                             | PD                                  |
 | PSP                                                                                                                                                                        | Any                             | PSP                                 |
-| NED                                                                                                                                                                        | CAR / PAR / SAD / PAD / NE / ND | Use current CT response             |
-| NED                                                                                                                                                                        | NED                             | NED                                 |
+| NED                                                                                                                                                                        | Any                             | Use current CT response             |
 | NE / ND, with prior evaluable PET-CT                                                                                                                                       | CAR / PAR / SAD / NE / ND / NED | Carry forward prior PET-CT response |
 | NE / ND, with prior evaluable PET-CT                                                                                                                                       | PAD                             | PD                                  |
 | NE / ND, no prior evaluable PET-CT                                                                                                                                         | CAR / PAR / SAD / PAD / NED     | Use current CT response             |
 | NE / ND, no prior evaluable PET-CT                                                                                                                                         | NE / ND / Missing               | NE or ND                            |
-| Missing                                                                                                                                                                    | CAR / PAR / SAD / PAD / NED     | Use current CT response             |
-| Missing                                                                                                                                                                    | NE / ND                         | Use current CT response             |
+| Missing                                                                                                                                                                    | Any                             | Use current CT response             |
 | Missing                                                                                                                                                                    | Missing                         | ND                                  |
 | This table is example-only and should be aligned with the study protocol and statistical analysis plan.                                                                    |                                 |                                     |
 | For evaluable PET-CT responses CMR, PMR, NMR or SMD, and PMD, the PET-CT response determines the integrated response in this example.                                      |                                 |                                     |
@@ -264,27 +262,27 @@ analyses.
 ``` r
 # Pre-processing for Overall values
 map_pet_to_overall <- function(x) {
-  case_when(
-    x == "CMR" ~ "CR",
-    x == "PMR" ~ "PR",
-    x %in% c("NMR", "SMD") ~ "SD",
-    x == "PMD" ~ "PD",
-    x == "NED" ~ "NED",
-    x == "PSP" ~ "PSP",
-    TRUE ~ NA_character_
+  recode_values(
+    x,
+    "CMR" ~ "CR",
+    "PMR" ~ "PR",
+    c("NMR", "SMD") ~ "SD",
+    "PMD" ~ "PD",
+    "NED" ~ "NED",
+    "PSP" ~ "PSP"
   )
 }
 
 map_ct_to_overall <- function(x) {
-  case_when(
-    x == "CAR" ~ "CR",
-    x == "PAR" ~ "PR",
-    x == "SAD" ~ "SD",
-    x == "PAD" ~ "PD",
-    x == "NED" ~ "NED",
-    x == "NE" ~ "NE",
-    x == "ND" ~ "ND",
-    TRUE ~ NA_character_
+  recode_values(
+    x,
+    "CAR" ~ "CR",
+    "PAR" ~ "PR",
+    "SAD" ~ "SD",
+    "PAD" ~ "PD",
+    "NED" ~ "NED",
+    "NE" ~ "NE",
+    "ND" ~ "ND"
   )
 }
 ```
@@ -292,32 +290,25 @@ map_ct_to_overall <- function(x) {
 ###### Derive prior evaluable PET-CT response for carry-forward logic
 
 ``` r
-
-adrs_prior_pet <- adrs %>%
-  filter(PARAMCD == "PETRSP") %>%
-  derive_vars_joined(
-    dataset_add = adrs %>%
-      filter(
-        PARAMCD == "PETRSP",
-        AVALC %in% c("CMR", "PMR", "NMR", "SMD", "PMD", "NED", "PSP")
-      ) %>%
-      select(!!!get_admiral_option("subject_keys"), ADT, AVISITN, AVALC) %>%
-      distinct(),
-    by_vars = get_admiral_option("subject_keys"),
-    order = exprs(ADT, AVISITN),
-    mode = "last",
-    join_type = "before",
-    filter_join = ADT.join < ADT,
-    new_vars = exprs(
-      AVALC_P = AVALC,
-      ADT_P = ADT
+adrs <- adrs %>%
+  restrict_derivation(
+    filter = PARAMCD == "PETRSP",
+    derivation = derive_vars_joined,
+    args = params(
+      dataset_add = adrs,
+      filter_add = PARAMCD == "PETRSP" &
+        AVALC %in% c("CMR", "PMR", "NMR", "SMD", "PMD", "NED", "PSP"),
+      by_vars = get_admiral_option("subject_keys"),
+      order = exprs(ADT, AVISITN),
+      mode = "last",
+      join_type = "before",
+      filter_join = ADT.join < ADT,
+      new_vars = exprs(
+        AVALC_P = AVALC,
+        ADT_P = ADT
+      )
     )
   )
-
-adrs <- bind_rows(
-  adrs_prior_pet,
-  adrs %>% filter(PARAMCD != "PETRSP")
-)
 ```
 
 ###### Derive Combined Overall Timepoint Response.
