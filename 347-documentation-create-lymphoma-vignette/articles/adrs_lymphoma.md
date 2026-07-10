@@ -35,7 +35,7 @@ is **not collected directly**. It is not intended as general Lugano 2014
 implementation guidance. Study-specific rules may vary and should be
 aligned with the protocol, SAP, CRF design, and data review conventions.
 
-For extended guidance on common steps in ADRS creation and additional
+For extended guidance on common steps in `ADRS` creation and additional
 response endpoints, refer to the examples in [Creating ADRS (Including
 Non-standard
 Endpoints)](https:/pharmaverse.github.io/admiralonco/347-documentation-create-lymphoma-vignette/articles/adrs.md).
@@ -134,7 +134,6 @@ dataset contains separate records for:
   `RSSCAT = "NOT INCLUDING PET SCAN"`.
 
 ``` r
-
 # Lymphoma SDTM data
 rs <- pharmaversesdtm::rs_onco_lymphoma
 
@@ -195,9 +194,9 @@ derive `PARAMCD`, `PARAM`, and `PARAMN`.
 ``` r
 # Prepare param_lookup for SDTM RSTESTCD and RSSCAT to add metadata
 param_lookup <- tibble::tribble(
-  ~RSTESTCD,  ~RSSCAT,                   ~PARAMCD, ~PARAM,          ~PARAMN,
-  "OVRLRESP", "INCLUDING PET-CT SCAN",   "PETRSP", "PET-CT Response", 1,
-  "OVRLRESP", "NOT INCLUDING PET SCAN",  "CTRSP",  "CT Response",     2
+  ~RSTESTCD,  ~RSSCAT,                   ~PARAMCD, ~PARAM,            ~PARAMN,
+  "OVRLRESP", "INCLUDING PET-CT SCAN",   "PETRSP", "PET-CT Response",       1,
+  "OVRLRESP", "NOT INCLUDING PET SCAN",  "CTRSP",  "CT Response",           2
 )
 
 adrs <- adrs %>%
@@ -323,52 +322,53 @@ adrs <- derive_param_computed(
   parameters = c("PETRSP", "CTRSP"),
   set_values_to = exprs(
     AVALC = case_when(
-  # PET-CT evaluable: metabolic response determines overall response
-  AVALC.PETRSP %in% c("CMR", "PMR", "NMR", "SMD", "PMD", "PSP") ~
-    map_pet_to_overall(AVALC.PETRSP),
+      # PET-CT evaluable: metabolic response determines overall response
+      AVALC.PETRSP %in% c("CMR", "PMR", "NMR", "SMD", "PMD", "PSP") ~
+        map_pet_to_overall(AVALC.PETRSP),
 
-  # PET-CT NED: default to CT if CT is available
-  AVALC.PETRSP == "NED" &
-    AVALC.CTRSP %in% c("CAR", "PAR", "SAD", "PAD", "NE", "ND", "NED") ~
-    map_ct_to_overall(AVALC.CTRSP),
+      # PET-CT NED: default to CT if CT is available
+      AVALC.PETRSP == "NED" &
+        AVALC.CTRSP %in% c("CAR", "PAR", "SAD", "PAD", "NE", "ND", "NED") ~
+        map_ct_to_overall(AVALC.CTRSP),
 
-  # PET-CT NED and CT missing: keep NED
-  AVALC.PETRSP == "NED" & is.na(AVALC.CTRSP) ~
-    "NED",
+      # PET-CT NED and CT missing: keep NED
+      AVALC.PETRSP == "NED" & is.na(AVALC.CTRSP) ~
+        "NED",
 
-  # PET-CT is NE or ND and CT indicates progression
-  AVALC.PETRSP %in% c("NE", "ND") & AVALC.CTRSP == "PAD" ~
-    "PD",
+      # PET-CT is NE or ND and CT indicates progression
+      AVALC.PETRSP %in% c("NE", "ND") & AVALC.CTRSP == "PAD" ~
+        "PD",
 
-  # PET-CT is NE or ND and prior evaluable PET-CT exists
-  AVALC.PETRSP %in% c("NE", "ND") &
-    !is.na(AVALC_P.PETRSP) &
-    AVALC.CTRSP %in% c("CAR", "PAR", "SAD", "NE", "ND", "NED") ~
-    map_pet_to_overall(AVALC_P.PETRSP),
+      # PET-CT is NE or ND and prior evaluable PET-CT exists
+      AVALC.PETRSP %in% c("NE", "ND") &
+        !is.na(AVALC_P.PETRSP) &
+        AVALC.CTRSP %in% c("CAR", "PAR", "SAD", "NE", "ND", "NED") ~
+        map_pet_to_overall(AVALC_P.PETRSP),
 
-  # PET-CT is NE or ND and no prior evaluable PET-CT exists
-  AVALC.PETRSP %in% c("NE", "ND") &
-    is.na(AVALC_P.PETRSP) &
-    AVALC.CTRSP %in% c("CAR", "PAR", "SAD", "PAD", "NED") ~
-    map_ct_to_overall(AVALC.CTRSP),
+      # PET-CT is NE or ND and no prior evaluable PET-CT exists
+      AVALC.PETRSP %in% c("NE", "ND") &
+        is.na(AVALC_P.PETRSP) &
+        AVALC.CTRSP %in% c("CAR", "PAR", "SAD", "PAD", "NED") ~
+        map_ct_to_overall(AVALC.CTRSP),
 
-  # PET-CT is NE and CT is also NE or ND or missing
-  AVALC.PETRSP == "NE" &
-    (AVALC.CTRSP %in% c("NE", "ND") | is.na(AVALC.CTRSP)) ~
-    "NE",
+      # PET-CT is NE and CT is also NE or ND or missing
+      AVALC.PETRSP == "NE" &
+        (AVALC.CTRSP %in% c("NE", "ND") | is.na(AVALC.CTRSP)) ~
+        "NE",
 
-  # PET-CT is ND and CT is also NE or ND or missing
-  AVALC.PETRSP == "ND" &
-    (AVALC.CTRSP %in% c("NE", "ND") | is.na(AVALC.CTRSP)) ~
-    "ND",
+      # PET-CT is ND and CT is also NE or ND or missing
+      AVALC.PETRSP == "ND" &
+        (AVALC.CTRSP %in% c("NE", "ND") | is.na(AVALC.CTRSP)) ~
+        "ND",
 
-  # PET-CT missing; use CT response if available
-  is.na(AVALC.PETRSP) &
-    AVALC.CTRSP %in% c("CAR", "PAR", "SAD", "PAD", "NED", "NE", "ND") ~
-    map_ct_to_overall(AVALC.CTRSP),
+      # PET-CT missing; use CT response if available
+      is.na(AVALC.PETRSP) &
+        AVALC.CTRSP %in% c("CAR", "PAR", "SAD", "PAD", "NED", "NE", "ND") ~
+        map_ct_to_overall(AVALC.CTRSP),
 
-  # No valid response available
-  TRUE ~ "ND"),
+      # No valid response available
+      TRUE ~ "ND"
+    ),
     PARAMCD = "OVRLRESC",
     PARAM = "Overall Response - Derived",
     PARAMN = 3,
@@ -389,16 +389,16 @@ result of those derivations.
 ``` r
 adrs <- adrs %>%
   mutate(
-    AVAL = case_when(
-      AVALC %in% c("CR", "CMR", "CAR") ~ 1,
-      AVALC %in% c("PR", "PMR", "PAR") ~ 2,
-      AVALC %in% c("SD", "NMR", "SMD", "SAD") ~ 3,
-      AVALC %in% c("PD", "PMD", "PAD") ~ 4,
-      AVALC == "NE" ~ 5,
-      AVALC == "NED" ~ 6,
-      AVALC == "PSP" ~ 7,
-      AVALC == "ND" ~ 8,
-      TRUE ~ NA_real_
+    AVAL = recode_values(
+      AVALC,
+      c("CR", "CMR", "CAR") ~ 1,
+      c("PR", "PMR", "PAR") ~ 2,
+      c("SD", "NMR", "SMD", "SAD") ~ 3,
+      c("PD", "PMD", "PAD") ~ 4,
+      "NE" ~ 5,
+      "NED" ~ 6,
+      "PSP" ~ 7,
+      "ND" ~ 8
     )
   )
 ```
