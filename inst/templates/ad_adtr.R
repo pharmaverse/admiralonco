@@ -135,7 +135,7 @@ adtr_sum <- derive_summary_records(
 
 # Derive analysis flag (ANL01FL) ----
 adtr_sum <- adtr_sum %>%
-  derive_var_merged_summary(
+  derive_vars_merged_summary(
     dataset_add = adtr,
     by_vars = get_admiral_option("subject_keys"),
     filter_add = AVISIT == "BASELINE" &
@@ -143,7 +143,7 @@ adtr_sum <- adtr_sum %>%
         (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")),
     new_vars = exprs(LSEXP = paste(sort(TRLNKID), collapse = ", "))
   ) %>%
-  derive_var_merged_summary(
+  derive_vars_merged_summary(
     dataset_add = adtr,
     by_vars = c(get_admiral_option("subject_keys"), exprs(AVISIT)),
     filter_add = ((str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |

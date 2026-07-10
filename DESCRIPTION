@@ -1,7 +1,7 @@
 Type: Package
 Package: admiralonco
 Title: Oncology Extension Package for ADaM in 'R' Asset Library
-Version: 1.4.1.9000
+Version: 1.4.1.9001
 Authors@R: c(
     person("Stefan", "Bundfuss", , "stefan.bundfuss@external.roche.com", role = c("aut", "cre")),
     person("Amit", "Jain", role = "aut"),
@@ -68,9 +68,9 @@ Suggests:
     withr
 VignetteBuilder: 
     knitr
+Config/roxygen2/markdown: TRUE
+Config/roxygen2/version: 8.0.0
 Config/testthat/edition: 3
 Encoding: UTF-8
 Language: en-US
 LazyData: true
-Config/roxygen2/markdown: TRUE
-Config/roxygen2/version: 8.0.0
