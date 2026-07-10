@@ -52,8 +52,8 @@ pet_response_categories <- tibble::tribble(
   "PMR", "Partial metabolic response",
   "NMR or SMD", "No metabolic response or stable metabolic disease",
   "PMD", "Progressive metabolic disease",
-  "NE",  "Not evaluable",
-  "ND",  "Not done or not determined",
+  "NE", "Not evaluable",
+  "ND", "Not done or not determined",
   "NED", "No evidence of FDG-avid disease, generally BICR or IRC only",
   "PSP", "Pseudoprogression"
 )
@@ -75,8 +75,8 @@ ct_response_categories <- tibble::tribble(
   "PAR", "Partial anatomic response",
   "SAD", "Stable anatomic disease",
   "PAD", "Progressive anatomic disease",
-  "NE",  "Not evaluable",
-  "ND",  "Not done or not determined",
+  "NE", "Not evaluable",
+  "ND", "Not done or not determined",
   "NED", "No evidence of disease"
 )
 
@@ -125,7 +125,6 @@ In this vignette, the `RS` SDTM dataset is expected to contain lymphoma response
 -   CT-based response assessments, identified by `RSSCAT = "NOT INCLUDING PET SCAN"`.
 
 ```{r message=FALSE}
-
 # Lymphoma SDTM data
 rs <- pharmaversesdtm::rs_onco_lymphoma
 
@@ -148,8 +147,8 @@ adsl <- filter(
 
 ```{r, eval=TRUE, echo=FALSE}
 dataset_vignette(
-   rs,
-  display_vars = exprs(USUBJID, RSTESTCD,RSCAT,RSSCAT,RSMETHOD, RSSTRESC, VISIT, VISITNUM, RSDTC)
+  rs,
+  display_vars = exprs(USUBJID, RSTESTCD, RSCAT, RSSCAT, RSMETHOD, RSSTRESC, VISIT, VISITNUM, RSDTC)
 )
 ```
 
@@ -165,7 +164,6 @@ adrs <- derive_vars_merged(
   new_vars = adsl_vars,
   by_vars = get_admiral_option("subject_keys")
 )
-
 ```
 
 ### Partial Date Imputation and Deriving `ADT`, `ADTF`, `AVISIT`, `AVISITN` etc.
@@ -189,7 +187,6 @@ adrs <- adrs %>%
     AVISIT = VISIT,
     AVISITN = VISITNUM
   )
-
 ```
 
 ### Derive `PARAMCD`, `PARAM`, `PARAMN`{#param}
@@ -199,9 +196,9 @@ In this `RS` dataset, both PET-CT and CT response records use `RSTESTCD = "OVRLR
 ```{r, eval=TRUE, include=TRUE, message=FALSE}
 # Prepare param_lookup for SDTM RSTESTCD and RSSCAT to add metadata
 param_lookup <- tibble::tribble(
-  ~RSTESTCD,  ~RSSCAT,                   ~PARAMCD, ~PARAM,          ~PARAMN,
-  "OVRLRESP", "INCLUDING PET-CT SCAN",   "PETRSP", "PET-CT Response", 1,
-  "OVRLRESP", "NOT INCLUDING PET SCAN",  "CTRSP",  "CT Response",     2
+  ~RSTESTCD,  ~RSSCAT,                   ~PARAMCD, ~PARAM,            ~PARAMN,
+  "OVRLRESP", "INCLUDING PET-CT SCAN",   "PETRSP", "PET-CT Response",       1,
+  "OVRLRESP", "NOT INCLUDING PET SCAN",  "CTRSP",  "CT Response",           2
 )
 
 adrs <- adrs %>%
@@ -220,8 +217,8 @@ adrs <- adrs %>%
 
 ```{r, eval=TRUE, echo=FALSE}
 dataset_vignette(
-   adrs,
-  display_vars = exprs(USUBJID,PARAMCD,PARAM,AVALC, AVISIT, AVISITN,ADT)
+  adrs,
+  display_vars = exprs(USUBJID, PARAMCD, PARAM, AVALC, AVISIT, AVISITN, ADT)
 )
 ```
 
@@ -343,52 +340,53 @@ adrs <- derive_param_computed(
   parameters = c("PETRSP", "CTRSP"),
   set_values_to = exprs(
     AVALC = case_when(
-  # PET-CT evaluable: metabolic response determines overall response
-  AVALC.PETRSP %in% c("CMR", "PMR", "NMR", "SMD", "PMD", "PSP") ~
-    map_pet_to_overall(AVALC.PETRSP),
+      # PET-CT evaluable: metabolic response determines overall response
+      AVALC.PETRSP %in% c("CMR", "PMR", "NMR", "SMD", "PMD", "PSP") ~
+        map_pet_to_overall(AVALC.PETRSP),
 
-  # PET-CT NED: default to CT if CT is available
-  AVALC.PETRSP == "NED" &
-    AVALC.CTRSP %in% c("CAR", "PAR", "SAD", "PAD", "NE", "ND", "NED") ~
-    map_ct_to_overall(AVALC.CTRSP),
+      # PET-CT NED: default to CT if CT is available
+      AVALC.PETRSP == "NED" &
+        AVALC.CTRSP %in% c("CAR", "PAR", "SAD", "PAD", "NE", "ND", "NED") ~
+        map_ct_to_overall(AVALC.CTRSP),
 
-  # PET-CT NED and CT missing: keep NED
-  AVALC.PETRSP == "NED" & is.na(AVALC.CTRSP) ~
-    "NED",
+      # PET-CT NED and CT missing: keep NED
+      AVALC.PETRSP == "NED" & is.na(AVALC.CTRSP) ~
+        "NED",
 
-  # PET-CT is NE or ND and CT indicates progression
-  AVALC.PETRSP %in% c("NE", "ND") & AVALC.CTRSP == "PAD" ~
-    "PD",
+      # PET-CT is NE or ND and CT indicates progression
+      AVALC.PETRSP %in% c("NE", "ND") & AVALC.CTRSP == "PAD" ~
+        "PD",
 
-  # PET-CT is NE or ND and prior evaluable PET-CT exists
-  AVALC.PETRSP %in% c("NE", "ND") &
-    !is.na(AVALC_P.PETRSP) &
-    AVALC.CTRSP %in% c("CAR", "PAR", "SAD", "NE", "ND", "NED") ~
-    map_pet_to_overall(AVALC_P.PETRSP),
+      # PET-CT is NE or ND and prior evaluable PET-CT exists
+      AVALC.PETRSP %in% c("NE", "ND") &
+        !is.na(AVALC_P.PETRSP) &
+        AVALC.CTRSP %in% c("CAR", "PAR", "SAD", "NE", "ND", "NED") ~
+        map_pet_to_overall(AVALC_P.PETRSP),
 
-  # PET-CT is NE or ND and no prior evaluable PET-CT exists
-  AVALC.PETRSP %in% c("NE", "ND") &
-    is.na(AVALC_P.PETRSP) &
-    AVALC.CTRSP %in% c("CAR", "PAR", "SAD", "PAD", "NED") ~
-    map_ct_to_overall(AVALC.CTRSP),
+      # PET-CT is NE or ND and no prior evaluable PET-CT exists
+      AVALC.PETRSP %in% c("NE", "ND") &
+        is.na(AVALC_P.PETRSP) &
+        AVALC.CTRSP %in% c("CAR", "PAR", "SAD", "PAD", "NED") ~
+        map_ct_to_overall(AVALC.CTRSP),
 
-  # PET-CT is NE and CT is also NE or ND or missing
-  AVALC.PETRSP == "NE" &
-    (AVALC.CTRSP %in% c("NE", "ND") | is.na(AVALC.CTRSP)) ~
-    "NE",
+      # PET-CT is NE and CT is also NE or ND or missing
+      AVALC.PETRSP == "NE" &
+        (AVALC.CTRSP %in% c("NE", "ND") | is.na(AVALC.CTRSP)) ~
+        "NE",
 
-  # PET-CT is ND and CT is also NE or ND or missing
-  AVALC.PETRSP == "ND" &
-    (AVALC.CTRSP %in% c("NE", "ND") | is.na(AVALC.CTRSP)) ~
-    "ND",
+      # PET-CT is ND and CT is also NE or ND or missing
+      AVALC.PETRSP == "ND" &
+        (AVALC.CTRSP %in% c("NE", "ND") | is.na(AVALC.CTRSP)) ~
+        "ND",
 
-  # PET-CT missing; use CT response if available
-  is.na(AVALC.PETRSP) &
-    AVALC.CTRSP %in% c("CAR", "PAR", "SAD", "PAD", "NED", "NE", "ND") ~
-    map_ct_to_overall(AVALC.CTRSP),
+      # PET-CT missing; use CT response if available
+      is.na(AVALC.PETRSP) &
+        AVALC.CTRSP %in% c("CAR", "PAR", "SAD", "PAD", "NED", "NE", "ND") ~
+        map_ct_to_overall(AVALC.CTRSP),
 
-  # No valid response available
-  TRUE ~ "ND"),
+      # No valid response available
+      TRUE ~ "ND"
+    ),
     PARAMCD = "OVRLRESC",
     PARAM = "Overall Response - Derived",
     PARAMN = 3,
@@ -401,63 +399,66 @@ adrs <- derive_param_computed(
 ```{r, echo=FALSE}
 plot_response <- function(dataset, page, page_size = 4) {
   subjects <- unique(dataset$USUBJID)
-  page_nrs <- subjects %>% rank() %>% `/`(page_size) %>% ceiling()
-  
+  page_nrs <- subjects %>%
+    rank() %>%
+    `/`(page_size) %>%
+    ceiling()
+
   ggplot(dataset %>%
-         mutate(
-           page_nr = recode_values(USUBJID, from = subjects, to = page_nrs),
-           AVALC = replace_values(
-             AVALC,
-             c("CMR", "CAR", "CR") ~ "CMR, CAR, CR",
-             c("PMR", "PAR", "PR") ~ "PMR, PAR, PR",
-             c("NMR", "SAD", "SD") ~ "NMR, SAD, SD",
-             c("PMD", "PAD", "PD") ~ "PMD, PAD, PD"
-           ),
-           Response = factor(
-             AVALC,
-             levels = c(
-               "CMR, CAR, CR", "PMR, PAR, PR", "NMR, SAD, SD", "PMD, PAD, PD",
-               "PSP", "NE", "NED",  "ND"
-             )
-           ),
-           Parameter = factor(
-             PARAM,
-             levels = c("PET-CT Response", "CT Response", "Overall Response - Derived")
-           ),
-           Visit = factor(
-             AVISIT,
-             levels = c("BASELINE", "WEEK 8", "WEEK 16", "WEEK 24")
-           )
-         ) %>% 
-         filter(page_nr == !!page)) +
-  theme_classic() +
-  theme(
-    strip.background = element_blank(),
-    axis.line.y = element_blank(),
-    axis.ticks.y = element_blank(),
-    legend.background = element_rect(fill = "whitesmoke")
-  ) +
-  geom_point(
-    aes(
-      x = Visit,
-      y = Parameter,
-      shape = Response,
-      color = Response,
-      fill = Response
-    ),
-    size = 4
-  ) +
-  scale_color_manual(
-    values = c("CMR, CAR, CR" = "darkgreen", "PMR, PAR, PR" = "orange", "NMR, SAD, SD" = "blue", "PMD, PAD, PD" = "red", "NE" = "gray", "ND" = "black"), na.value = "lightgray"
-  ) +
-  scale_fill_manual(
-    values = c("CMR, CAR, CR" = "darkgreen", "PMR, PAR, PR" = "orange", "NMR, SAD, SD" = "blue", "PMD, PAD, PD" = "red", "NE" = "gray", "ND" = "black"), na.value = "lightgray"
-  ) +
-  scale_shape_manual(
-    values = c("CMR, CAR, CR" = 17, "PMR, PAR, PR" = 18, "NMR, SAD, SD" = 16, "PMD, PAD, PD" = 25, "NE" = 3, "ND" = 4),
-    na.value = 22
-  ) +
-  facet_wrap(vars(paste("Subject", USUBJID)), ncol = 1)
+    mutate(
+      page_nr = recode_values(USUBJID, from = subjects, to = page_nrs),
+      AVALC = replace_values(
+        AVALC,
+        c("CMR", "CAR", "CR") ~ "CMR, CAR, CR",
+        c("PMR", "PAR", "PR") ~ "PMR, PAR, PR",
+        c("NMR", "SAD", "SD") ~ "NMR, SAD, SD",
+        c("PMD", "PAD", "PD") ~ "PMD, PAD, PD"
+      ),
+      Response = factor(
+        AVALC,
+        levels = c(
+          "CMR, CAR, CR", "PMR, PAR, PR", "NMR, SAD, SD", "PMD, PAD, PD",
+          "PSP", "NE", "NED", "ND"
+        )
+      ),
+      Parameter = factor(
+        PARAM,
+        levels = c("PET-CT Response", "CT Response", "Overall Response - Derived")
+      ),
+      Visit = factor(
+        AVISIT,
+        levels = c("BASELINE", "WEEK 8", "WEEK 16", "WEEK 24")
+      )
+    ) %>%
+    filter(page_nr == !!page)) +
+    theme_classic() +
+    theme(
+      strip.background = element_blank(),
+      axis.line.y = element_blank(),
+      axis.ticks.y = element_blank(),
+      legend.background = element_rect(fill = "whitesmoke")
+    ) +
+    geom_point(
+      aes(
+        x = Visit,
+        y = Parameter,
+        shape = Response,
+        color = Response,
+        fill = Response
+      ),
+      size = 4
+    ) +
+    scale_color_manual(
+      values = c("CMR, CAR, CR" = "darkgreen", "PMR, PAR, PR" = "orange", "NMR, SAD, SD" = "blue", "PMD, PAD, PD" = "red", "NE" = "gray", "ND" = "black"), na.value = "lightgray"
+    ) +
+    scale_fill_manual(
+      values = c("CMR, CAR, CR" = "darkgreen", "PMR, PAR, PR" = "orange", "NMR, SAD, SD" = "blue", "PMD, PAD, PD" = "red", "NE" = "gray", "ND" = "black"), na.value = "lightgray"
+    ) +
+    scale_shape_manual(
+      values = c("CMR, CAR, CR" = 17, "PMR, PAR, PR" = 18, "NMR, SAD, SD" = 16, "PMD, PAD, PD" = 25, "NE" = 3, "ND" = 4),
+      na.value = 22
+    ) +
+    facet_wrap(vars(paste("Subject", USUBJID)), ncol = 1)
 }
 
 for (i in 1:ceiling(length(unique(adrs$USUBJID)) / 4)) {
