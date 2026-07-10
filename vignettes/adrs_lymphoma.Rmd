@@ -250,8 +250,7 @@ combined_lugano_table <- tibble::tribble(
   "NE / ND, with prior evaluable PET-CT",     "PAD",                              "PD",
   "NE / ND, no prior evaluable PET-CT",       "CAR / PAR / SAD / PAD / NED",      "Use current CT response",
   "NE / ND, no prior evaluable PET-CT",       "NE / ND / Missing",                "NE or ND",
-  "Missing",                                  "CAR / PAR / SAD / PAD / NED",      "Use current CT response",
-  "Missing",                                  "NE / ND",                          "Use current CT response",
+  "Missing",                                  Any,                                "Use current CT response",
   "Missing",                                  "Missing",                          "ND"
 )
 
