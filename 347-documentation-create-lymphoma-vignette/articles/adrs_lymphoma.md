@@ -256,7 +256,7 @@ analyses.
 | When PET-CT is reported as NED, the integrated response generally defaults to the CT response if available. If both PET-CT and CT are NED, the integrated response is NED. |                                 |                                     |
 | Pseudoprogression handling is study-specific and is not implemented further in this example.                                                                               |                                 |                                     |
 
-###### Combined Overall Timepoint Response(`OVRLRESC`) Records referenced from above table.
+#### Combined Overall Timepoint Response(`OVRLRESC`) Records referenced from above table
 
 ``` r
 # Pre-processing for Overall values
@@ -286,7 +286,7 @@ map_ct_to_overall <- function(x) {
 }
 ```
 
-###### Derive prior evaluable PET-CT response for carry-forward logic
+##### Derive prior evaluable PET-CT response for carry-forward logic
 
 ``` r
 adrs <- adrs %>%
@@ -310,7 +310,14 @@ adrs <- adrs %>%
   )
 ```
 
-###### Derive Combined Overall Timepoint Response.
+##### Derive Combined Overall Timepoint Response
+
+Please note that the by variables used below depend on the data
+collection. In the example it is assumed that PET-CT and CT response
+records are collected at the same day. If this is not the case, the
+variables `ADT`, `ADY`, `ADTM`, and `ADTF` shouldn’t be used. In
+addition, you may use `RSSPID` to identify the records that should be
+combined.
 
 ``` r
 adrs <- derive_param_computed(
