@@ -412,7 +412,9 @@ adrs <- adrs %>%
 
 ### Other Endpoints
 
-For examples of other endpoints, such as Best Overall Response (BOR),
-Confirmed Best Overall Response (CBOR), and other oncology response
-endpoints, please see [Creating ADRS (Including Non-standard
-Endpoints)](https:/pharmaverse.github.io/admiralonco/347-documentation-create-lymphoma-vignette/articles/adrs.md).
+The `OVRLRESC` parameter can be used as input for the derivation of
+standard endpoints, such as Best Overall Response (BOR), Confirmed Best
+Overall Response (CBOR), and other oncology response endpoints. Please
+see [Creating ADRS (Including Non-standard
+Endpoints)](https:/pharmaverse.github.io/admiralonco/347-documentation-create-lymphoma-vignette/articles/adrs.md)
+for guidance on how to derive them.
