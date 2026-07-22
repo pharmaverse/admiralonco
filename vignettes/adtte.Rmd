@@ -62,11 +62,44 @@ should be read into the environment. This will be a company specific process.
 
 For example purpose, the ADaM datasets---which are included in
 `{pharmaverseadam}`---are used. An alternative might be to use `ADEVENT` as
-input.
+input[^1].
+
+[^1]: The subjects are restricted to `"01-701-1015"`, `"01-701-1028"`,
+`"01-701-1034"`, `"01-701-1097"`, `"01-701-1115"`, `"01-701-1118"`,
+`"01-701-1130"`, `"01-701-1133"`, `"01-701-1146"`.
 
 ```{r}
 adsl <- pharmaverseadam::adsl
 adrs <- pharmaverseadam::adrs_onco
+```
+
+```{r, echo=FALSE}
+cm <- tribble(
+  ~STUDYID, ~USUBJID, ~CMCAT, ~CMSCAT, ~CMTRT, ~CMSTDTC,
+  "CDISCPILOT01", "01-701-1015", "PRIOR TREATMENT", "CHEMOTHERAPY", "DEXRAZOXANE", NA,
+  "CDISCPILOT01", "01-701-1015", "ON TREATMENT", "CHEMOTHERAPY", "DEXROZOXANE", "2014-07-02",
+  "CDISCPILOT01", "01-701-1015", "ON TREATMENT", "CHEMOTHERAPY", "DEXROZOXANE", "2014-06-19",
+  "CDISCPILOT01", "01-701-1028", "PRIOR TREATMENT", "CHEMOTHERAPY", "METHOTREXATE", NA,
+  "CDISCPILOT01", "01-701-1028", "ON TREATMENT", "CHEMOTHERAPY", "METHOTREXATE", "2014-01-14",
+  "CDISCPILOT01", "01-701-1034", "PRIOR TREATMENT", "CHEMOTHERAPY", "OLAPARIB", NA,
+  "CDISCPILOT01", "01-701-1034", "ON TREATMENT", "CHEMOTHERAPY", "OLAPARIB", "2014-12-30",
+  "CDISCPILOT01", "01-701-1097", "PRIOR TREATMENT", "CHEMOTHERAPY", "TEMODAL", NA,
+  "CDISCPILOT01", "01-701-1097", "ON TREATMENT", "CHEMOTHERAPY", "TEMODAL", "2013-12-31",
+)
+
+adsl <- adsl %>%
+  filter(USUBJID %in% c(
+    "01-701-1015", "01-701-1028", "01-701-1034", "01-701-1097", "01-701-1115",
+    "01-701-1118", "01-701-1130", "01-701-1133", "01-701-1146"
+  )) %>%
+  derive_vars_merged(
+    dataset_add = cm,
+    by_vars = get_admiral_option("subject_keys"),
+    order = exprs(NACTDT),
+    mode = "first",
+    new_vars = exprs(NACTDT = convert_dtc_to_dt(CMSTDTC)),
+    filter_add = CMSCAT == "CHEMOTHERAPY" & CMCAT == "ON TREATMENT"
+  )
 ```
 
 ## Derive Parameters (`CNSR`, `ADT`, `STARTDT`) {#parameters}
@@ -217,7 +250,7 @@ therapy. See `{admiralonco}` [Creating and Using New Anti-Cancer Start
 Date](nactdt.html) for deriving `NACTDT`. In addition, `EOSDT` is included in
 `end_dates` to populate `EVNTDESC` when no new anti-cancer therapy was started.
 
-```{r, eval=FALSE}
+```{r}
 eosdt <- censor_source(
   dataset_name = "adsl",
   date = EOSDT,
@@ -256,6 +289,12 @@ adtte <- derive_param_tte(
     PARAMCD = "PFSNACT",
     PARAM = "Progression Free Survival prior to NACT"
   )
+)
+```
+```{r, echo=FALSE}
+dataset_vignette(
+  adtte,
+  display_vars = exprs(USUBJID, PARAMCD, PARAM, STARTDT, ADT, CNSR, EVNTDESC, CNSDTDSC)
 )
 ```
 
