@@ -267,8 +267,7 @@ map_pet_to_overall <- function(x) {
     "PMR" ~ "PR",
     c("NMR", "SMD") ~ "SD",
     "PMD" ~ "PD",
-    "NED" ~ "NED",
-    "PSP" ~ "PSP"
+    "NED" ~ "NED"
   )
 }
 
@@ -296,7 +295,7 @@ adrs <- adrs %>%
     args = params(
       dataset_add = adrs,
       filter_add = PARAMCD == "PETRSP" &
-        AVALC %in% c("CMR", "PMR", "NMR", "SMD", "PMD", "NED", "PSP"),
+        AVALC %in% c("CMR", "PMR", "NMR", "SMD", "PMD"),
       by_vars = get_admiral_option("subject_keys"),
       order = exprs(ADT, AVISITN),
       mode = "last",
@@ -330,7 +329,7 @@ adrs <- derive_param_computed(
   set_values_to = exprs(
     AVALC = case_when(
       # PET-CT evaluable: metabolic response determines overall response
-      AVALC.PETRSP %in% c("CMR", "PMR", "NMR", "SMD", "PMD", "PSP") ~
+      AVALC.PETRSP %in% c("CMR", "PMR", "NMR", "SMD", "PMD") ~
         map_pet_to_overall(AVALC.PETRSP),
 
       # PET-CT NED: default to CT if CT is available
@@ -404,8 +403,7 @@ adrs <- adrs %>%
       c("PD", "PMD", "PAD") ~ 4,
       "NE" ~ 5,
       "NED" ~ 6,
-      "PSP" ~ 7,
-      "ND" ~ 8
+      "ND" ~ 7
     )
   )
 ```
