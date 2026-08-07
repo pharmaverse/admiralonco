@@ -66,7 +66,7 @@ input[^1].
 
 [^1]: The subjects are restricted to `"01-701-1015"`, `"01-701-1028"`,
 `"01-701-1034"`, `"01-701-1097"`, `"01-701-1115"`, `"01-701-1118"`,
-`"01-701-1130"`, `"01-701-1133"`, `"01-701-1146"`.
+`"01-701-1130"`, `"01-701-1133"`, `"01-701-1146"`, `"01-701-1211"`.
 
 ```{r}
 adsl <- pharmaverseadam::adsl
@@ -90,7 +90,7 @@ cm <- tribble(
 adsl <- adsl %>%
   filter(USUBJID %in% c(
     "01-701-1015", "01-701-1028", "01-701-1034", "01-701-1097", "01-701-1115",
-    "01-701-1118", "01-701-1130", "01-701-1133", "01-701-1146"
+    "01-701-1118", "01-701-1130", "01-701-1133", "01-701-1146", "01-701-1211"
   )) %>%
   derive_vars_merged(
     dataset_add = cm,
@@ -180,6 +180,12 @@ adsl <- adsl %>%
     new_vars = exprs(TEMP_RESPDT = ADT)
   )
 ```
+```{r, echo=FALSE}
+dataset_vignette(
+  adsl,
+  display_vars = exprs(USUBJID, RANDDT, TEMP_RESPDT, NACTDT, EOSDT)
+)
+```
 
 The pre-defined objects can be passed directly to `admiral::derive_param_tte()` to create
 a new time-to-event parameter. Below shows example calls for Overall Survival (OS), Progression
@@ -249,6 +255,9 @@ therapy. `NACTDT` would be pre-derived as the first date of new anti-cancer
 therapy. See `{admiralonco}` [Creating and Using New Anti-Cancer Start
 Date](nactdt.html) for deriving `NACTDT`. In addition, `EOSDT` is included in
 `end_dates` to populate `EVNTDESC` when no new anti-cancer therapy was started.
+For censored subjects, `EVNTDESC` will be set to `"Start of New Anti-Cancer
+Therapy"` if the subject started new anti-cancer therapy and set to `"End of
+Study"` otherwise.
 
 ```{r}
 eosdt <- censor_source(
@@ -278,7 +287,7 @@ valid_assessment <- censor_source(
   )
 )
 
-adtte <- derive_param_tte(
+adtte <- adtte %>% derive_param_tte(
   dataset_adsl = adsl,
   start_date = RANDDT,
   end_dates = list(nactdt, eosdt),
@@ -293,7 +302,7 @@ adtte <- derive_param_tte(
 ```
 ```{r, echo=FALSE}
 dataset_vignette(
-  adtte,
+  adtte %>% filter(PARAMCD == "PFSNACT"),
   display_vars = exprs(USUBJID, PARAMCD, PARAM, STARTDT, ADT, CNSR, EVNTDESC, CNSDTDSC)
 )
 ```
