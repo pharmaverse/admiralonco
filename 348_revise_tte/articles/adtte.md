@@ -225,7 +225,10 @@ new anti-cancer therapy. See
 Using New Anti-Cancer Start
 Date](https:/pharmaverse.github.io/admiralonco/348_revise_tte/articles/nactdt.md)
 for deriving `NACTDT`. In addition, `EOSDT` is included in `end_dates`
-to populate `EVNTDESC` when no new anti-cancer therapy was started.
+to populate `EVNTDESC` when no new anti-cancer therapy was started. For
+censored subjects, `EVNTDESC` will be set to
+`"Start of New Anti-Cancer Therapy"` if the subject started new
+anti-cancer therapy and set to `"End of Study"` otherwise.
 
 ``` r
 eosdt <- censor_source(
@@ -255,7 +258,7 @@ valid_assessment <- censor_source(
   )
 )
 
-adtte <- derive_param_tte(
+adtte <- adtte %>% derive_param_tte(
   dataset_adsl = adsl,
   start_date = RANDDT,
   end_dates = list(nactdt, eosdt),
@@ -351,4 +354,4 @@ adtte <- adtte %>%
 
 1.  The subjects are restricted to `"01-701-1015"`, `"01-701-1028"`,
     `"01-701-1034"`, `"01-701-1097"`, `"01-701-1115"`, `"01-701-1118"`,
-    `"01-701-1130"`, `"01-701-1133"`, `"01-701-1146"`.
+    `"01-701-1130"`, `"01-701-1133"`, `"01-701-1146"`, `"01-701-1211"`.
