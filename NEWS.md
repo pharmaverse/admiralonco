@@ -2,6 +2,8 @@
 
 ## Documentation
 
+- New vignette "Creating ADRS with Lugano 2014 Criteria". (#347)
+
 - The "Creating ADTTE" vignette was updated to provide simpler code for
   parameters where events and censorings are limited to those occurring before
   a date such as the start of new anti-cancer therapy. (#348)
