@@ -4,6 +4,9 @@
 
 ### Documentation
 
+- New vignette “Creating ADRS with Lugano 2014 Criteria”.
+  ([\#347](https://github.com/pharmaverse/admiralonco/issues/347))
+
 - In all vignettes and templates,
   [`derive_var_merged_summary()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/derive_var_merged_summary.html)
   calls were replaced by

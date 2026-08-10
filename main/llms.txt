@@ -230,6 +230,8 @@ deprecated:
   Criteria](https:/pharmaverse.github.io/admiralonco/main/articles/adrs_gcig.md):
 - [Creating ADRS with IMWG
   Criteria](https:/pharmaverse.github.io/admiralonco/main/articles/adrs_imwg.md):
+- [Creating ADRS with Lugano 2014
+  Criteria](https:/pharmaverse.github.io/admiralonco/main/articles/adrs_lymphoma.md):
 - [Creating ADRS with Prostate Cancer Working Group 3 (PCWG3)
   Criteria](https:/pharmaverse.github.io/admiralonco/main/articles/adrs_pcwg3.md):
 - [Creating ADRS (Including Non-standard
