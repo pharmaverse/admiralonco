@@ -1,0 +1,514 @@
+---
+title: "Creating ADRS with Lugano 2014 Criteria"
+output:
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Creating ADRS with Lugano 2014 Criteria}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+library(admiraldev)
+library(gt)
+library(ggplot2)
+```
+
+# Introduction
+
+This article describes creating an `ADRS` ADaM dataset for lymphoma studies based on the [**Lugano 2014 response criteria**](https://doi.org/10.1200/JCO.2013.54.8800).
+
+Lymphoma response assessment under Lugano 2014 is based on a combination of imaging-based evaluations:
+
+-   **PET-CT based assessment**, providing metabolic response evaluation using the 5-point Deauville scale.
+-   **CT-based assessment**, providing anatomic response evaluation of nodal and extranodal disease.
+
+Depending on the study and the disease subtype, response evaluation may use PET-CT as the primary modality (for FDG-avid lymphomas) or CT alone (for non–FDG-avid lymphomas). Some studies collect both PET-CT and CT response components, and a combined overall response is derived.
+
+Please check [Lugano 2014 Classification](https://imagingendpoints.com/wp-content/uploads/2022/07/IEP-6936-Lugano-at-IE-2022-FV1.0_DIGITAL_Final-25-07-22.pdf) for more details.
+
+**Note:** In many Lugano 2014 studies, the overall timepoint response may be collected directly from the investigator or independent review committee. In such cases, the collected overall response should generally be used according to the study protocol and statistical analysis plan, and the derivation shown below may not be needed.
+
+The derivation below is provided only as an example of how an integrated timepoint response could be derived when the combined overall response is **not collected directly**. It is not intended as general Lugano 2014 implementation guidance. Study-specific rules may vary and should be aligned with the protocol, SAP, CRF design, and data review conventions.
+
+For extended guidance on common steps in `ADRS` creation and additional response endpoints, refer to the examples in [Creating ADRS (Including Non-standard Endpoints)](adrs.html).
+
+# Lugano 2014 Response Categories for Lymphoma
+
+The Lugano 2014 response criteria define lymphoma response using PET-CT based metabolic assessment and CT-based anatomic assessment.
+
+The following tables summarize the response categories used in this vignette for PET-CT and CT assessments. These summaries are intended to support the example derivations and should be aligned with the study protocol and statistical analysis plan.
+
+## PET-CT Based Response Categories
+
+```{r pet-response-categories, echo=FALSE, message=FALSE}
+pet_response_categories <- tibble::tribble(
+  ~`PET-CT Response`, ~`Description`,
+  "CMR", "Complete metabolic response",
+  "PMR", "Partial metabolic response",
+  "NMR or SMD", "No metabolic response or stable metabolic disease",
+  "PMD", "Progressive metabolic disease",
+  "NE", "Not evaluable",
+  "ND", "Not done or not determined",
+  "NED", "No evidence of FDG-avid disease, generally BICR or IRC only",
+  "PSP", "Pseudoprogression"
+)
+
+pet_response_categories |>
+  gt::gt() |>
+  gt::tab_header(
+    title = "Table 1: PET-CT Based Response Categories",
+    subtitle = "Lugano 2014 response categories used in this vignette"
+  )
+```
+
+## CT-Based Response Categories
+
+```{r ct-response-categories, echo=FALSE, message=FALSE}
+ct_response_categories <- tibble::tribble(
+  ~`CT Response`, ~`Description`,
+  "CAR", "Complete anatomic response",
+  "PAR", "Partial anatomic response",
+  "SAD", "Stable anatomic disease",
+  "PAD", "Progressive anatomic disease",
+  "NE", "Not evaluable",
+  "ND", "Not done or not determined",
+  "NED", "No evidence of disease"
+)
+
+ct_response_categories |>
+  gt::gt() |>
+  gt::tab_header(
+    title = "Table 2: CT-Based Response Categories",
+    subtitle = "Anatomic response categories used in this vignette"
+  )
+```
+
+In this example data, `NMR` is used for no metabolic response. Some implementations may use `SMD` for stable metabolic disease. For the purpose of the combined overall response derivation in this vignette, both `NMR` and `SMD` map to `SD`.
+
+Values such as `NED`, `PSP`, `NE`, and `ND` require study-specific handling. For example, `NED` by PET-CT is generally expected only from a blinded independent central review (BICR) or independent review committee (IRC) and may indicate that no FDG-avid disease was identified at baseline. In that case, the integrated timepoint response often defaults to the CT response if one is available.
+
+# Programming Workflow
+
+-   [Read in Data](#readdata)
+-   [Pre-processing of Input Records](#input)
+-   [Derive PET-CT and CT Response Parameters](#param)
+-   [Derive Combined Overall Timepoint Response (`OVRLRESC`)](#ovrlresc)
+-   [Other Endpoints](#other)
+
+## Required Packages
+
+The examples of this vignette require the following packages.
+
+```{r, warning=FALSE, message=FALSE}
+library(admiral)
+library(admiralonco)
+library(pharmaversesdtm)
+library(pharmaverseadam)
+library(dplyr)
+library(tibble)
+```
+
+## Read in Data {#readdata}
+
+To begin, all data frames needed for the creation of `ADRS` should be read into the environment. This will be a company-specific process. For this vignette, the main input datasets are `ADSL` and `RS`.
+
+For demonstration purposes, the SDTM and ADaM datasets based on CDISC Pilot test data from `{pharmaversesdtm}` and `{pharmaverseadam}` are used.
+
+In this vignette, the `RS` SDTM dataset is expected to contain lymphoma response assessments based on Lugano 2014 criteria. The example `RS` dataset contains separate records for:
+
+-   PET-CT based response assessments, identified by `RSSCAT = "INCLUDING PET-CT SCAN"`.
+-   CT-based response assessments, identified by `RSSCAT = "NOT INCLUDING PET SCAN"`.
+
+```{r message=FALSE}
+# Lymphoma SDTM data
+rs <- pharmaversesdtm::rs_onco_lymphoma
+
+# Convert blanks to NA
+rs <- convert_blanks_to_na(rs)
+
+# ADaM data
+adsl <- pharmaverseadam::adsl
+```
+
+```{r echo=FALSE}
+# select subjects from adsl such that there is one subject without RS data
+rs_subjects <- unique(rs$USUBJID)
+adsl_subjects <- unique(adsl$USUBJID)
+adsl <- filter(
+  adsl,
+  USUBJID %in% union(rs_subjects, setdiff(adsl_subjects, rs_subjects)[1])
+)
+```
+
+```{r, eval=TRUE, echo=FALSE}
+dataset_vignette(
+  rs,
+  display_vars = exprs(USUBJID, RSTESTCD, RSCAT, RSSCAT, RSMETHOD, RSSTRESC, VISIT, VISITNUM, RSDTC)
+)
+```
+
+## Pre-processing of Input Records {#input}
+
+At this step, it may be useful to join `ADSL` to your `RS` domain. Only the `ADSL` variables used for derivations are selected at this step.
+
+```{r eval=TRUE}
+adsl_vars <- exprs(TRTSDT)
+adrs <- derive_vars_merged(
+  rs,
+  dataset_add = adsl,
+  new_vars = adsl_vars,
+  by_vars = get_admiral_option("subject_keys")
+)
+```
+
+### Partial Date Imputation and Deriving `ADT`, `ADTF`, `AVISIT`, `AVISITN` etc.
+
+If your data collection allows for partial dates, you could apply a company-specific imputation rule at this stage when deriving `ADT`. For this example, here we impute missing day to last possible date.
+
+```{r}
+adrs <- adrs %>%
+  derive_vars_dtm(
+    dtc = RSDTC,
+    new_vars_prefix = "A",
+    highest_imputation = "D",
+    date_imputation = "last"
+  ) %>%
+  derive_vars_dtm_to_dt(exprs(ADTM)) %>%
+  derive_vars_dy(
+    reference_date = TRTSDT,
+    source_vars = exprs(ADT)
+  ) %>%
+  mutate(
+    AVISIT = VISIT,
+    AVISITN = VISITNUM
+  )
+```
+
+### Derive `PARAMCD`, `PARAM`, `PARAMN`{#param}
+
+In this `RS` dataset, both PET-CT and CT response records use `RSTESTCD = "OVRLRESP"` and are distinguished by `RSSCAT` and `RSMETHOD`. For this vignette, `RSTESTCD` and `RSSCAT` are used to derive `PARAMCD`, `PARAM`, and `PARAMN`.
+
+```{r, eval=TRUE, include=TRUE, message=FALSE}
+# Prepare param_lookup for SDTM RSTESTCD and RSSCAT to add metadata
+param_lookup <- tibble::tribble(
+  ~RSTESTCD,  ~RSSCAT,                   ~PARAMCD, ~PARAM,            ~PARAMN,
+  "OVRLRESP", "INCLUDING PET-CT SCAN",   "PETRSP", "PET-CT Response",       1,
+  "OVRLRESP", "NOT INCLUDING PET SCAN",  "CTRSP",  "CT Response",           2
+)
+
+adrs <- adrs %>%
+  derive_vars_merged_lookup(
+    dataset_add = param_lookup,
+    by_vars = exprs(RSTESTCD, RSSCAT)
+  ) %>%
+  mutate(
+    PARCAT1 = RSCAT,
+    AVALC = case_when(
+      RSSTAT == "NOT DONE" ~ "ND",
+      TRUE ~ RSSTRESC
+    )
+  )
+```
+
+```{r, eval=TRUE, echo=FALSE}
+dataset_vignette(
+  adrs,
+  display_vars = exprs(USUBJID, PARAMCD, PARAM, AVALC, AVISIT, AVISITN, ADT)
+)
+```
+
+## Derive Combined Overall Timepoint Response(`OVRLRESC`) Parameter {#ovrlresc}
+
+For this vignette, the combined overall timepoint response parameter, `OVRLRESC`, is derived from the PET-CT and CT response records collected at each visit.
+
+This example represents a scenario where the combined overall response is **not collected directly** on the CRF. Instead, it is derived using the available PET-CT and CT response records.
+
+### General Derivation Assumptions Used in This Vignette
+
+The following table summarizes the assumptions used in this vignette to derive the combined overall timepoint response from PET-CT and CT response records under Lugano 2014. These assumptions are intended for demonstration purposes. Please refer to your study protocol, statistical analysis plan, and other study documentation before using in production analyses.
+
+#### Table: Combined Overall Timepoint Response Based on Lugano 2014 Response Categories
+
+```{r , eval=TRUE, include=TRUE, message=FALSE, echo=FALSE}
+combined_lugano_table <- tibble::tribble(
+  ~`PET-CT Response`,                         ~`CT Response`,                     ~`Combined Overall Response`,
+  "CMR",                                      "Any",                              "CR",
+  "PMR",                                      "Any",                              "PR",
+  "NMR or SMD",                               "Any",                              "SD",
+  "PMD",                                      "Any",                              "PD",
+  "PSP",                                      "Any",                              "PSP",
+  "NED",                                      "Any",                              "Use current CT response",
+  "NE / ND, with prior evaluable PET-CT",     "CAR / PAR / SAD / NE / ND / NED",  "Carry forward prior PET-CT response",
+  "NE / ND, with prior evaluable PET-CT",     "PAD",                              "PD",
+  "NE / ND, no prior evaluable PET-CT",       "CAR / PAR / SAD / PAD / NED",      "Use current CT response",
+  "NE / ND, no prior evaluable PET-CT",       "NE / ND / Missing",                "NE or ND",
+  "Missing",                                  "Any",                              "Use current CT response",
+  "Missing",                                  "Missing",                          "ND"
+)
+
+combined_lugano_table |>
+  gt::gt() |>
+  gt::tab_header(
+    title = "Table 3: Combined Overall Timepoint Response",
+    subtitle = "PET-CT, CT, and Combined Overall Response Mapping"
+  ) |>
+  gt::tab_source_note(
+    source_note = "This table is example-only and should be aligned with the study protocol and statistical analysis plan."
+  ) |>
+  gt::tab_source_note(
+    source_note = "For evaluable PET-CT responses CMR, PMR, NMR or SMD, and PMD, the PET-CT response determines the integrated response in this example."
+  ) |>
+  gt::tab_source_note(
+    source_note = "When PET-CT is NE or ND and the current CT response is not progressive, prior evaluable PET-CT response may be carried forward."
+  ) |>
+  gt::tab_source_note(
+    source_note = "When PET-CT is reported as NED, the integrated response generally defaults to the CT response if available. If both PET-CT and CT are NED, the integrated response is NED."
+  ) |>
+  gt::tab_source_note(
+    source_note = "Pseudoprogression handling is study-specific and is not implemented further in this example."
+  )
+```
+
+### Combined Overall Timepoint Response(`OVRLRESC`) Records referenced from above table
+
+```{r, eval=TRUE, include=TRUE, message=FALSE}
+# Pre-processing for Overall values
+map_pet_to_overall <- function(x) {
+  recode_values(
+    x,
+    "CMR" ~ "CR",
+    "PMR" ~ "PR",
+    c("NMR", "SMD") ~ "SD",
+    "PMD" ~ "PD",
+    "NED" ~ "NED"
+  )
+}
+
+map_ct_to_overall <- function(x) {
+  recode_values(
+    x,
+    "CAR" ~ "CR",
+    "PAR" ~ "PR",
+    "SAD" ~ "SD",
+    "PAD" ~ "PD",
+    "NED" ~ "NED",
+    "NE" ~ "NE",
+    "ND" ~ "ND"
+  )
+}
+```
+
+#### Derive prior evaluable PET-CT response for carry-forward logic
+
+```{r, eval=TRUE, message=FALSE, include=TRUE}
+adrs <- adrs %>%
+  restrict_derivation(
+    filter = PARAMCD == "PETRSP",
+    derivation = derive_vars_joined,
+    args = params(
+      dataset_add = adrs,
+      filter_add = PARAMCD == "PETRSP" &
+        AVALC %in% c("CMR", "PMR", "NMR", "SMD", "PMD"),
+      by_vars = get_admiral_option("subject_keys"),
+      order = exprs(ADT, AVISITN),
+      mode = "last",
+      join_type = "before",
+      filter_join = ADT.join < ADT,
+      new_vars = exprs(
+        AVALC_P = AVALC,
+        ADT_P = ADT
+      )
+    )
+  )
+```
+
+#### Derive Combined Overall Timepoint Response
+
+Please note that the by variables used below depend on the data collection. In
+the example it is assumed that PET-CT and CT response records are collected at
+the same day. If this is not the case, the variables `ADT`, `ADY`, `ADTM`, and
+`ADTF` shouldn't be used. In addition, you may use `RSSPID` to identify the
+records that should be combined.
+
+```{r eval=TRUE, message=FALSE, include=TRUE}
+adrs <- derive_param_computed(
+  dataset = adrs,
+  by_vars = exprs(
+    !!!get_admiral_option("subject_keys"), !!!adsl_vars, DOMAIN, ADT, ADY, ADTM,
+    ADTF, VISIT, VISITNUM, AVISIT, AVISITN
+  ),
+  parameters = c("PETRSP", "CTRSP"),
+  set_values_to = exprs(
+    AVALC = case_when(
+      # PET-CT evaluable: metabolic response determines overall response
+      AVALC.PETRSP %in% c("CMR", "PMR", "NMR", "SMD", "PMD") ~
+        map_pet_to_overall(AVALC.PETRSP),
+
+      # PET-CT NED: default to CT if CT is available
+      AVALC.PETRSP == "NED" &
+        AVALC.CTRSP %in% c("CAR", "PAR", "SAD", "PAD", "NE", "ND", "NED") ~
+        map_ct_to_overall(AVALC.CTRSP),
+
+      # PET-CT NED and CT missing: keep NED
+      AVALC.PETRSP == "NED" & is.na(AVALC.CTRSP) ~
+        "NED",
+
+      # PET-CT is NE or ND and CT indicates progression
+      AVALC.PETRSP %in% c("NE", "ND") & AVALC.CTRSP == "PAD" ~
+        "PD",
+
+      # PET-CT is NE or ND and prior evaluable PET-CT exists
+      AVALC.PETRSP %in% c("NE", "ND") &
+        !is.na(AVALC_P.PETRSP) &
+        AVALC.CTRSP %in% c("CAR", "PAR", "SAD", "NE", "ND", "NED") ~
+        map_pet_to_overall(AVALC_P.PETRSP),
+
+      # PET-CT is NE or ND and no prior evaluable PET-CT exists
+      AVALC.PETRSP %in% c("NE", "ND") &
+        is.na(AVALC_P.PETRSP) &
+        AVALC.CTRSP %in% c("CAR", "PAR", "SAD", "PAD", "NED") ~
+        map_ct_to_overall(AVALC.CTRSP),
+
+      # PET-CT is NE and CT is also NE or ND or missing
+      AVALC.PETRSP == "NE" &
+        (AVALC.CTRSP %in% c("NE", "ND") | is.na(AVALC.CTRSP)) ~
+        "NE",
+
+      # PET-CT is ND and CT is also NE or ND or missing
+      AVALC.PETRSP == "ND" &
+        (AVALC.CTRSP %in% c("NE", "ND") | is.na(AVALC.CTRSP)) ~
+        "ND",
+
+      # PET-CT missing; use CT response if available
+      is.na(AVALC.PETRSP) &
+        AVALC.CTRSP %in% c("CAR", "PAR", "SAD", "PAD", "NED", "NE", "ND") ~
+        map_ct_to_overall(AVALC.CTRSP),
+
+      # No valid response available
+      TRUE ~ "ND"
+    ),
+    PARAMCD = "OVRLRESC",
+    PARAM = "Overall Response - Derived",
+    PARAMN = 3,
+    PARCAT1 = "LUGANO 2014"
+  ),
+  keep_nas = TRUE
+)
+```
+
+```{r, echo=FALSE}
+plot_response <- function(dataset, page, page_size = 4) {
+  subjects <- unique(dataset$USUBJID)
+  page_nrs <- subjects %>%
+    rank() %>%
+    `/`(page_size) %>%
+    ceiling()
+
+  ggplot(dataset %>%
+    mutate(
+      page_nr = recode_values(USUBJID, from = subjects, to = page_nrs),
+      AVALC = replace_values(
+        AVALC,
+        c("CMR", "CAR", "CR") ~ "CMR, CAR, CR",
+        c("PMR", "PAR", "PR") ~ "PMR, PAR, PR",
+        c("NMR", "SAD", "SD") ~ "NMR, SAD, SD",
+        c("PMD", "PAD", "PD") ~ "PMD, PAD, PD"
+      ),
+      Response = factor(
+        AVALC,
+        levels = c(
+          "CMR, CAR, CR", "PMR, PAR, PR", "NMR, SAD, SD", "PMD, PAD, PD",
+          "PSP", "NE", "NED", "ND"
+        )
+      ),
+      Parameter = factor(
+        PARAM,
+        levels = c("PET-CT Response", "CT Response", "Overall Response - Derived")
+      ),
+      Visit = factor(
+        AVISIT,
+        levels = c("BASELINE", "WEEK 8", "WEEK 16", "WEEK 24")
+      )
+    ) %>%
+    filter(page_nr == !!page)) +
+    theme_classic() +
+    theme(
+      strip.background = element_blank(),
+      axis.line.y = element_blank(),
+      axis.ticks.y = element_blank(),
+      legend.background = element_rect(fill = "whitesmoke")
+    ) +
+    geom_point(
+      aes(
+        x = Visit,
+        y = Parameter,
+        shape = Response,
+        color = Response,
+        fill = Response
+      ),
+      size = 4
+    ) +
+    scale_color_manual(
+      values = c("CMR, CAR, CR" = "darkgreen", "PMR, PAR, PR" = "orange", "NMR, SAD, SD" = "blue", "PMD, PAD, PD" = "red", "NE" = "gray", "ND" = "black"), na.value = "lightgray"
+    ) +
+    scale_fill_manual(
+      values = c("CMR, CAR, CR" = "darkgreen", "PMR, PAR, PR" = "orange", "NMR, SAD, SD" = "blue", "PMD, PAD, PD" = "red", "NE" = "gray", "ND" = "black"), na.value = "lightgray"
+    ) +
+    scale_shape_manual(
+      values = c("CMR, CAR, CR" = 17, "PMR, PAR, PR" = 18, "NMR, SAD, SD" = 16, "PMD, PAD, PD" = 25, "NE" = 3, "ND" = 4),
+      na.value = 22
+    ) +
+    facet_wrap(vars(paste("Subject", USUBJID)), ncol = 1)
+}
+
+for (i in 1:ceiling(length(unique(adrs$USUBJID)) / 4)) {
+  print(plot_response(adrs, page = i))
+}
+```
+
+```{r, eval=TRUE, echo=FALSE}
+dataset_vignette(
+  adrs %>%
+    filter(PARAMCD %in% c("OVRLRESC")) %>%
+    arrange(!!!get_admiral_option("subject_keys"), AVISITN, PARAMN),
+  display_vars = exprs(USUBJID, PARAMCD, PARAM, PARCAT1, AVALC, AVISIT, ADT)
+)
+```
+
+### Derive `AVAL` (Numeric tumor response from `AVALC` values)
+
+The `AVAL` values are not considered in the further parameter derivations below, and so changing `AVAL` here would not change the result of those derivations.
+
+```{r}
+adrs <- adrs %>%
+  mutate(
+    AVAL = recode_values(
+      AVALC,
+      c("CR", "CMR", "CAR") ~ 1,
+      c("PR", "PMR", "PAR") ~ 2,
+      c("SD", "NMR", "SMD", "SAD") ~ 3,
+      c("PD", "PMD", "PAD") ~ 4,
+      "NE" ~ 5,
+      "NED" ~ 6,
+      "ND" ~ 7
+    )
+  )
+```
+
+```{r, echo=FALSE}
+dataset_vignette(
+  adrs %>%
+    filter(PARAMCD %in% c("OVRLRESC")) %>%
+    arrange(!!!get_admiral_option("subject_keys"), AVISITN, PARAMN),
+  display_vars = exprs(USUBJID, PARAMCD, PARAM, PARCAT1, AVALC, AVAL, AVISIT, ADT)
+)
+```
+
+## Other Endpoints {#other}
+
+The `OVRLRESC` parameter can be used as input for the derivation of standard endpoints, such as Best Overall Response (BOR), Confirmed Best Overall Response (CBOR), and other oncology response endpoints. Please see [Creating ADRS (Including Non-standard Endpoints)](adrs.html) for guidance on how to derive them.
