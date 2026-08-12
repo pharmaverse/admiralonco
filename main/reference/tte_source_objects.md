@@ -73,7 +73,7 @@ for (obj in admiral::list_tte_source_objects(package = "admiralonco")$object) {
 #>   SRCDOM: "ADSL"
 #>   SRCVAR: "TRTSDT"
 #> order: NULL
-#> consider_end_dates: TRUE
+#> consider_end_dates: FALSE
 #> 
 #> pd_event 
 #> <event_source> object
@@ -130,6 +130,6 @@ for (obj in admiral::list_tte_source_objects(package = "admiralonco")$object) {
 #>   SRCDOM: "ADSL"
 #>   SRCVAR: "RANDDT"
 #> order: NULL
-#> consider_end_dates: TRUE
+#> consider_end_dates: FALSE
 #> 
 ```

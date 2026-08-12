@@ -7,6 +7,11 @@
 - New vignette “Creating ADRS with Lugano 2014 Criteria”.
   ([\#347](https://github.com/pharmaverse/admiralonco/issues/347))
 
+- The “Creating ADTTE” vignette was updated to provide simpler code for
+  parameters where events and censorings are limited to those occurring
+  before a date such as the start of new anti-cancer therapy.
+  ([\#348](https://github.com/pharmaverse/admiralonco/issues/348))
+
 - In all vignettes and templates,
   [`derive_var_merged_summary()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/derive_var_merged_summary.html)
   calls were replaced by
