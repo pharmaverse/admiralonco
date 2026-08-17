@@ -255,7 +255,7 @@ adpsa <- adpsa %>%
 
 ### Derive Combined Overall Time Point Response by Investigator (`OVRLRESC`) Parameter
 
-Although `OVRLRESP`, representing the Overall Tumor Response by Investigator is available in the source data, we have re-derived the combined overall response by Investigator (`OVRLRESC`). This derivation follows the rules from the _PCWG3 and RECIST 1.1 combined response interpretation_, as described in the PharmaSUG 2024 publication on metastatic prostate cancer response criteria ([PharmaSUG 2024, DS-287](https://www.lexjansen.com/pharmasug/2024/DS/PharmaSUG-2024-DS-287.pdf)).
+Although `OVRLRESP`, representing the Overall Tumor Response by Investigator is available in the source data, we have re-derived the combined overall response by Investigator (`OVRLRESC`). This derivation follows the rules from the _PCWG3 and RECIST 1.1 combined response interpretation_, as described in the PharmaSUG 2024 publication on metastatic prostate cancer response criteria ([PharmaSUG 2024, DS-287](https://www.scribd.com/document/774615816/PharmaSUG-2024-DS-287)).
 
 #### Table : Combined Overall Time Point Response as per summarized PCWG3 guidelines
 
