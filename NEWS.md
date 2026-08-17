@@ -1,4 +1,4 @@
-# admiralonco (development version)
+# admiralonco 1.5.0
 
 ## Documentation
 

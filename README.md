@@ -95,10 +95,10 @@ developer community:
 
 ## Acknowledgments
 
-Along with the authors and contributors, thanks to the following people for
-their work on the package:
+Along with the authors and contributors, thanks to the following people and
+companies for their work on the package:
 
 Teckla Akinyi, Uwe Bader, Stephen Gormley, Liming Jin, Samia Kabi, Zhang
 Kangjie, Karl Kennedy, Konstantina Koukourikou, Pavan Kumar, Edoardo Mancini,
-Matt Marino, Thomas Neitmann, Hinal Patel, Andrew Smith, Gopi Vegesna, Annie
-Yang
+Matt Marino, Thomas Neitmann, Hinal Patel, Andrew Smith, Gopi Vegesna, Ashwini
+Weber, Annie Yang, <a href='https://amgen.com/'><img alt = 'Amgen Inc.' src = 'man/figures/amgen_logo.png' style="height: 1em; width: auto; vertical-align: text-bottom;"></a>

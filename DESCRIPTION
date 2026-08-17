@@ -1,7 +1,7 @@
 Type: Package
 Package: admiralonco
 Title: Oncology Extension Package for ADaM in 'R' Asset Library
-Version: 1.4.1.9003
+Version: 1.5.0
 Authors@R: c(
     person("Stefan", "Bundfuss", , "stefan.bundfuss@external.roche.com", role = c("aut", "cre")),
     person("Amit", "Jain", role = "aut"),
@@ -11,10 +11,8 @@ Authors@R: c(
     person("Tomoyuki", "Namai", role = "aut"),
     person("Ross", "Farrugia", role = "aut"),
     person("Yirong", "Cao", role = "ctb"),
-    person("Ashwini", "Weber", role = "ctb"),
     person("F. Hoffmann-La Roche AG", role = c("cph", "fnd")),
     person("GlaxoSmithKline LLC", role = c("cph", "fnd")),
-    person("Amgen Inc.", role = c("cph", "fnd")),
     person("Bristol Myers Squibb", role = c("cph", "fnd"))
   )
 Description: Programming oncology specific Clinical Data Interchange
