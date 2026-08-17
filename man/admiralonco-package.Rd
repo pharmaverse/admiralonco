@@ -36,10 +36,8 @@ Authors:
 Other contributors:
 \itemize{
   \item Yirong Cao [contributor]
-  \item Ashwini Weber [contributor]
   \item F. Hoffmann-La Roche AG [copyright holder, funder]
   \item GlaxoSmithKline LLC [copyright holder, funder]
-  \item Amgen Inc. [copyright holder, funder]
   \item Bristol Myers Squibb [copyright holder, funder]
 }
 
