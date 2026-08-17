@@ -318,7 +318,7 @@ combined overall response by Investigator (`OVRLRESC`). This derivation
 follows the rules from the *PCWG3 and RECIST 1.1 combined response
 interpretation*, as described in the PharmaSUG 2024 publication on
 metastatic prostate cancer response criteria ([PharmaSUG 2024,
-DS-287](https://www.lexjansen.com/pharmasug/2024/DS/PharmaSUG-2024-DS-287.pdf)).
+DS-287](https://www.scribd.com/document/774615816/PharmaSUG-2024-DS-287)).
 
 ##### Table : Combined Overall Time Point Response as per summarized PCWG3 guidelines
 
