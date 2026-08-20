@@ -5,7 +5,7 @@
 We define *authors* as those who are actively maintaining the code base,
 and *contributors* as those who made a significant contribution in the
 past. For all acknowledgements, see the eponymous section in the [Home
-Page](https://pharmaverse.github.io/admiralonco).
+Page](https://pharmaverse.github.io/admiralonco/).
 
 - **Stefan Bundfuss**. Author, maintainer.
 
@@ -23,15 +23,15 @@ Page](https://pharmaverse.github.io/admiralonco).
 
 - **Yirong Cao**. Contributor.
 
-- **[](https://roche.com/)[![Roche
+- **[](https://www.roche.com/)[![Roche
   logo](reference/figures/roche_logo.png)](https://www.roche.com/)**.
   Copyright holder, funder.
 
-- **[](https://gsk.com/)[![GSK
-  logo](reference/figures/gsk_logo.png)](https://www.gsk.com/)**.
+- **[](https://www.gsk.com/en-gb/)[![GSK
+  logo](reference/figures/gsk_logo.png)](https://www.gsk.com/en-gb/)**.
   Copyright holder, funder.
 
-- **[](https://bms.com/)[![BMS
+- **[](https://www.bms.com/)[![BMS
   logo](reference/figures/bms_logo.png)](https://www.bms.com/)**.
   Copyright holder, funder.
 

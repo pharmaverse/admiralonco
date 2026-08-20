@@ -1,12 +1,12 @@
 # admiralonco
 
 [![pharmaverse admiralonco
-badge](http://pharmaverse.org/shields/admiralonco.svg)](https://pharmaverse.org)
+badge](https://pharmaverse.org/shields/admiralonco.svg)](https://pharmaverse.org)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/admiralonco)](https://CRAN.R-project.org/package=admiralonco)
 ![Test
 Coverage](https://raw.githubusercontent.com/pharmaverse/admiralonco/badges/main/test-coverage.svg)[![Total
-Downloads](http://cranlogs.r-pkg.org/badges/grand-total/admiralonco?color=green)](https://cran.r-project.org/package=admiralonco)
+Downloads](https://cranlogs.r-pkg.org/badges/grand-total/admiralonco?color=green)](https://cran.r-project.org/package=admiralonco)
 
 Oncology extension package for ADaM in R Asset Library
 [admiral](https://pharmaverse.github.io/admiral/)
@@ -112,7 +112,7 @@ Teckla Akinyi, Uwe Bader, Stephen Gormley, Liming Jin, Samia Kabi, Zhang
 Kangjie, Karl Kennedy, Konstantina Koukourikou, Pavan Kumar, Edoardo
 Mancini, Matt Marino, Thomas Neitmann, Hinal Patel, Andrew Smith, Gopi
 Vegesna, Ashwini Weber, Annie Yang, [![Amgen
-Inc.](reference/figures/amgen_logo.png)](https://amgen.com/)
+Inc.](reference/figures/amgen_logo.png)](https://www.amgen.com/)
 
 # Package index
 

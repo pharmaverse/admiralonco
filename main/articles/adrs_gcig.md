@@ -35,7 +35,7 @@ considerations for data collection in relation to these criteria.
 
 For more information about GCIG criteria user may visit [GCIG guidelines
 on response criteria in ovarian
-cancer](https://pubmed.ncbi.nlm.nih.gov/21270624/)
+cancer](https://doi.org/10.1097/igc.0b013e3182070f17).
 
 ### CA-125 response categories
 
