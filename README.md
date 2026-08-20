@@ -1,10 +1,10 @@
 # admiralonco <img src="man/figures/logo.png" align="right" width="200" style="margin-left:50px;"/>
 
 <!-- start badges -->
-[![pharmaverse admiralonco badge](http://pharmaverse.org/shields/admiralonco.svg)](https://pharmaverse.org)
+[![pharmaverse admiralonco badge](https://pharmaverse.org/shields/admiralonco.svg)](https://pharmaverse.org)
 [![CRAN status](https://www.r-pkg.org/badges/version/admiralonco)](https://CRAN.R-project.org/package=admiralonco)
 ![Test Coverage](https://raw.githubusercontent.com/pharmaverse/admiralonco/badges/main/test-coverage.svg)
-[![Total Downloads](http://cranlogs.r-pkg.org/badges/grand-total/admiralonco?color=green)](https://cran.r-project.org/package=admiralonco)
+[![Total Downloads](https://cranlogs.r-pkg.org/badges/grand-total/admiralonco?color=green)](https://cran.r-project.org/package=admiralonco)
 <!-- end badges -->
 
 Oncology extension package for ADaM in R Asset Library `{admiral}`
