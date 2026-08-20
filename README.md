@@ -1,10 +1,10 @@
 # admiralonco <img src="man/figures/logo.png" align="right" width="200" style="margin-left:50px;"/>
 
 <!-- start badges -->
-[![pharmaverse admiralonco badge](http://pharmaverse.org/shields/admiralonco.svg)](https://pharmaverse.org)
+[![pharmaverse admiralonco badge](https://pharmaverse.org/shields/admiralonco.svg)](https://pharmaverse.org)
 [![CRAN status](https://www.r-pkg.org/badges/version/admiralonco)](https://CRAN.R-project.org/package=admiralonco)
 ![Test Coverage](https://raw.githubusercontent.com/pharmaverse/admiralonco/badges/main/test-coverage.svg)
-[![Total Downloads](http://cranlogs.r-pkg.org/badges/grand-total/admiralonco?color=green)](https://cran.r-project.org/package=admiralonco)
+[![Total Downloads](https://cranlogs.r-pkg.org/badges/grand-total/admiralonco?color=green)](https://cran.r-project.org/package=admiralonco)
 <!-- end badges -->
 
 Oncology extension package for ADaM in R Asset Library `{admiral}`
@@ -101,4 +101,4 @@ companies for their work on the package:
 Teckla Akinyi, Uwe Bader, Stephen Gormley, Liming Jin, Samia Kabi, Zhang
 Kangjie, Karl Kennedy, Konstantina Koukourikou, Pavan Kumar, Edoardo Mancini,
 Matt Marino, Thomas Neitmann, Hinal Patel, Andrew Smith, Gopi Vegesna, Ashwini
-Weber, Annie Yang, <a href='https://amgen.com/'><img alt = 'Amgen Inc.' src = 'man/figures/amgen_logo.png' style="height: 1em; width: auto; vertical-align: text-bottom;"></a>
+Weber, Annie Yang, <a href='https://www.amgen.com/'><img alt = 'Amgen Inc.' src = 'man/figures/amgen_logo.png' style="height: 1em; width: auto; vertical-align: text-bottom;"></a>

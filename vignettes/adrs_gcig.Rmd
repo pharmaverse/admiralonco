@@ -48,7 +48,7 @@ However, the CA-125 criteria can be a bit tricky to use in programming, especial
 
 We aim to share our current knowledge and experience in implementing GCIG criteria for ovarian clinical trials. Additionally, we have made certain assumptions regarding how data is collected on CRFs to perform response analysis according to the GCIG criteria. We hope this vignette provides valuable guidance on ADRS programming and highlights key considerations for data collection in relation to these criteria.
 
-For more information about GCIG criteria user may visit [GCIG guidelines on response criteria in ovarian cancer](https://pubmed.ncbi.nlm.nih.gov/21270624/)
+For more information about GCIG criteria user may visit [GCIG guidelines on response criteria in ovarian cancer](https://doi.org/10.1097/igc.0b013e3182070f17).
 
 ## CA-125 response categories
 
