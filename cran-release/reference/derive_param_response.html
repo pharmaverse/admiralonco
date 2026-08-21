@@ -30,7 +30,7 @@ Adds a parameter indicating if a response has been observed. If a response
 has been observed, AVALC is set to "Y" and ADT is set to the first date
 when a response has been observed. If a response has not been observed,
 AVALC is set to "N" and ADT is set NA.'>
-<meta property="og:image" content="https:/pharmaverse.github.io/admiralonco/v1.4.1/logo.png">
+<meta property="og:image" content="https:/pharmaverse.github.io/admiralonco/v1.5.0/logo.png">
 <script async src="https://widget.kapa.ai/kapa-widget.bundle.js" data-website-id="2c7249cc-f1dc-4a63-8674-6ecbcb34d95c" data-project-name="admiral" data-project-color="#2c3e50" data-project-logo="https://pharmaverse.github.io/admiralonco/cran-release/logo.png" data-consent-required="true" data-user-analytics-cookie-enabled="true" data-consent-screen-title="Help us improve our AI assistant" data-consent-screen-disclaimer="By clicking 'Allow tracking', you consent to anonymous user tracking which helps us improve our service. We don't collect any personally identifiable information." data-consent-screen-accept-button-text="Allow tracking" data-consent-screen-reject-button-text="No, thanks" data-modal-search-placeholder="Ask me a question about {admiralonco} or the {admiral} ecosystem..." data-modal-example-questions="Tell me a little about the {admiralonco} package., What are some important {admiralonco} vignettes and what do they describe?" data-modal-z-index="9999"></script><script>
 document.addEventListener("DOMContentLoaded", function () {
   // Select all navbar links that have an aria-label
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     <a class="navbar-brand me-2" href="../index.html">admiralonco</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -81,6 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
     <li><a class="dropdown-item" href="../articles/adrs_imwg.html">Creating ADRS with IMWG Criteria</a></li>
     <li><a class="dropdown-item" href="../articles/adrs_gcig.html">Creating ADRS with GCIG Criteria</a></li>
     <li><a class="dropdown-item" href="../articles/adrs_pcwg3.html">Creating ADRS with PCWG3 Criteria</a></li>
+    <li><a class="dropdown-item" href="../articles/adrs_lymphoma.html">Creating ADRS with Lugano 2014 Criteria</a></li>
     <li><a class="dropdown-item" href="../articles/adtte.html">Creating ADTTE</a></li>
     <li><a class="dropdown-item" href="../articles/adtr.html">Creating ADTR</a></li>
     <li><a class="dropdown-item" href="../articles/nactdt.html">Creating and Using New Anti-Cancer Start Date</a></li>
@@ -92,6 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
     <div class="dropdown-menu" aria-labelledby="dropdown-versions">
     <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/main">main</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/cran-release">cran-release</a>
+<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/v1.5.0">v1.5.0</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/v1.4.1">v1.4.1</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/v1.4.0">v1.4.0</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/v1.3.0">v1.3.0</a>
@@ -128,7 +130,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     <div class="ref-description section level2">
     <p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> The <code>derive_param_response()</code> function has
-been superseded in favor of <code><a href="https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html">derive_extreme_event()</a></code>.</p>
+been superseded in favor of <code><a href="https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/derive_extreme_event.html">derive_extreme_event()</a></code>.</p>
 <p>Adds a parameter indicating if a response has been observed. If a response
 has been observed, <code>AVALC</code> is set to "Y" and <code>ADT</code> is set to the first date
 when a response has been observed. If a response has not been observed,
@@ -146,7 +148,7 @@ when a response has been observed. If a response has not been observed,
 <span>  source_datasets <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">set_values_to</span>,</span>
 <span>  <span class="va">aval_fun</span>,</span>
-<span>  subject_keys <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/get_admiral_option.html">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span></span>
+<span>  subject_keys <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/get_admiral_option.html">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -213,9 +215,9 @@ response occurred.</p></li>
 <p>A named list of datasets with one element is expected
 (e.g. <code>list(adrs= adrs)</code>).</p>
 <p>The name must match the <code>dataset_name</code> field of the
-<code><a href="https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/date_source.html">admiral::date_source()</a></code> object specified for <code>source_pd</code>.</p>
+<code><a href="https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/date_source.html">admiral::date_source()</a></code> object specified for <code>source_pd</code>.</p>
 <p>The variables specified by the <code>subject_keys</code> argument and the <code>date</code>
-field of the <code><a href="https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/date_source.html">admiral::date_source()</a></code> object are expected in the dataset.</p>
+field of the <code><a href="https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/date_source.html">admiral::date_source()</a></code> object are expected in the dataset.</p>
 </dd>
 
 
@@ -362,11 +364,11 @@ the new observations.</p></li>
 <span class="r-in"><span>  source_pd <span class="op">=</span> <span class="va">pd</span>,</span></span>
 <span class="r-in"><span>  source_datasets <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>adrs <span class="op">=</span> <span class="va">adrs</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>  set_values_to <span class="op">=</span> <span class="fu"><a href="https://rlang.r-lib.org/reference/defusing-advanced.html" class="external-link">exprs</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>    AVAL <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/yn_to_numeric.html">yn_to_numeric</a></span><span class="op">(</span><span class="va">AVALC</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    AVAL <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/yn_to_numeric.html">yn_to_numeric</a></span><span class="op">(</span><span class="va">AVALC</span><span class="op">)</span>,</span></span>
 <span class="r-in"><span>    PARAMCD <span class="op">=</span> <span class="st">"RSP"</span>,</span></span>
 <span class="r-in"><span>    PARAM <span class="op">=</span> <span class="st">"Response by investigator"</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span>,</span></span>
-<span class="r-in"><span>  subject_keys <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/get_admiral_option.html">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  subject_keys <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/get_admiral_option.html">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">USUBJID</span>, <span class="va">PARAMCD</span>, <span class="va">ADT</span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> `derive_param_response()` was deprecated in admiralonco 1.4.</span>
@@ -402,11 +404,11 @@ the new observations.</p></li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by F. Hoffmann-La Roche AG, GlaxoSmithKline LLC, Amgen Inc., Bristol Myers Squibb, Stefan Bundfuss, Amit Jain, Vinh Nguyen, Olga Starostecka, Kiran Peddamudium, Tomoyuki Namai, Ross Farrugia, Yirong Cao, Ashwini Weber.</p>
+  <p>Developed by F. Hoffmann-La Roche AG, GlaxoSmithKline LLC, Amgen Inc., Bristol Myers Squibb, Stefan Bundfuss, Amit Jain, Vinh Nguyen, Olga Starostecka, Kiran Peddamudium, Tomoyuki Namai, Ross Farrugia, Yirong Cao.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

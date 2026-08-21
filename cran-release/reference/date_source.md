@@ -39,12 +39,12 @@ An object of class `date_source`.
 ## See also
 
 Other deprecated:
-[`derive_param_bor()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/derive_param_bor.md),
-[`derive_param_clinbenefit()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/derive_param_clinbenefit.md),
-[`derive_param_confirmed_bor()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/derive_param_confirmed_bor.md),
-[`derive_param_confirmed_resp()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/derive_param_confirmed_resp.md),
-[`derive_param_response()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/derive_param_response.md),
-[`filter_pd()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/filter_pd.md)
+[`derive_param_bor()`](https:/pharmaverse.github.io/admiralonco/v1.5.0/reference/derive_param_bor.md),
+[`derive_param_clinbenefit()`](https:/pharmaverse.github.io/admiralonco/v1.5.0/reference/derive_param_clinbenefit.md),
+[`derive_param_confirmed_bor()`](https:/pharmaverse.github.io/admiralonco/v1.5.0/reference/derive_param_confirmed_bor.md),
+[`derive_param_confirmed_resp()`](https:/pharmaverse.github.io/admiralonco/v1.5.0/reference/derive_param_confirmed_resp.md),
+[`derive_param_response()`](https:/pharmaverse.github.io/admiralonco/v1.5.0/reference/derive_param_response.md),
+[`filter_pd()`](https:/pharmaverse.github.io/admiralonco/v1.5.0/reference/filter_pd.md)
 
 ## Examples
 

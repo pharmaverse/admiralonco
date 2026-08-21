@@ -30,7 +30,7 @@ Filter a dataset to only include the source parameter records up to and
 including the first PD (progressive disease). These records are passed to
 downstream derivations regarding responses such as BOR (best overall
 response).">
-<meta property="og:image" content="https:/pharmaverse.github.io/admiralonco/v1.4.1/logo.png">
+<meta property="og:image" content="https:/pharmaverse.github.io/admiralonco/v1.5.0/logo.png">
 <script async src="https://widget.kapa.ai/kapa-widget.bundle.js" data-website-id="2c7249cc-f1dc-4a63-8674-6ecbcb34d95c" data-project-name="admiral" data-project-color="#2c3e50" data-project-logo="https://pharmaverse.github.io/admiralonco/cran-release/logo.png" data-consent-required="true" data-user-analytics-cookie-enabled="true" data-consent-screen-title="Help us improve our AI assistant" data-consent-screen-disclaimer="By clicking 'Allow tracking', you consent to anonymous user tracking which helps us improve our service. We don't collect any personally identifiable information." data-consent-screen-accept-button-text="Allow tracking" data-consent-screen-reject-button-text="No, thanks" data-modal-search-placeholder="Ask me a question about {admiralonco} or the {admiral} ecosystem..." data-modal-example-questions="Tell me a little about the {admiralonco} package., What are some important {admiralonco} vignettes and what do they describe?" data-modal-z-index="9999"></script><script>
 document.addEventListener("DOMContentLoaded", function () {
   // Select all navbar links that have an aria-label
@@ -55,7 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     <a class="navbar-brand me-2" href="../index.html">admiralonco</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -81,6 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
     <li><a class="dropdown-item" href="../articles/adrs_imwg.html">Creating ADRS with IMWG Criteria</a></li>
     <li><a class="dropdown-item" href="../articles/adrs_gcig.html">Creating ADRS with GCIG Criteria</a></li>
     <li><a class="dropdown-item" href="../articles/adrs_pcwg3.html">Creating ADRS with PCWG3 Criteria</a></li>
+    <li><a class="dropdown-item" href="../articles/adrs_lymphoma.html">Creating ADRS with Lugano 2014 Criteria</a></li>
     <li><a class="dropdown-item" href="../articles/adtte.html">Creating ADTTE</a></li>
     <li><a class="dropdown-item" href="../articles/adtr.html">Creating ADTR</a></li>
     <li><a class="dropdown-item" href="../articles/nactdt.html">Creating and Using New Anti-Cancer Start Date</a></li>
@@ -92,6 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
     <div class="dropdown-menu" aria-labelledby="dropdown-versions">
     <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/main">main</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/cran-release">cran-release</a>
+<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/v1.5.0">v1.5.0</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/v1.4.1">v1.4.1</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/v1.4.0">v1.4.0</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/v1.3.0">v1.3.0</a>
@@ -128,7 +130,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     <div class="ref-description section level2">
     <p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> The <code>filter_pd()</code> function has been
-deprecated in favor of <code><a href="https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/filter_relative.html">filter_relative()</a></code>.</p>
+deprecated in favor of <code><a href="https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/filter_relative.html">filter_relative()</a></code>.</p>
 <p>Filter a dataset to only include the source parameter records up to and
 including the first PD (progressive disease). These records are passed to
 downstream derivations regarding responses such as BOR (best overall
@@ -143,7 +145,7 @@ response).</p>
 <span>  <span class="va">filter</span>,</span>
 <span>  <span class="va">source_pd</span>,</span>
 <span>  <span class="va">source_datasets</span>,</span>
-<span>  subject_keys <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/get_admiral_option.html">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span></span>
+<span>  subject_keys <span class="op">=</span> <span class="fu"><a href="https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/get_admiral_option.html">get_admiral_option</a></span><span class="op">(</span><span class="st">"subject_keys"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -169,7 +171,7 @@ response).</p>
 <dt id="arg-source-pd">source_pd<a class="anchor" aria-label="anchor" href="#arg-source-pd"></a>
 </dt>
 <dd>
-<p>A <code><a href="https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/date_source.html">admiral::date_source()</a></code> object providing the date of first PD</p>
+<p>A <code><a href="https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/date_source.html">admiral::date_source()</a></code> object providing the date of first PD</p>
 <p>For each subject the first date (<code>date</code> field) in the provided dataset
 (<code>dataset_name</code> field) restricted by <code>filter</code> field is considered as first
 PD date.</p>
@@ -181,7 +183,7 @@ PD date.</p>
 <dd>
 <p>A named list of data sets is expected.</p>
 <p>The name must match the name provided by the <code>dataset_name</code> field of the
-<code><a href="https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/date_source.html">admiral::date_source()</a></code> object specified for <code>source_pd</code>.</p>
+<code><a href="https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/date_source.html">admiral::date_source()</a></code> object specified for <code>source_pd</code>.</p>
 </dd>
 
 
@@ -421,11 +423,11 @@ date, all records are included.</p></li>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by F. Hoffmann-La Roche AG, GlaxoSmithKline LLC, Amgen Inc., Bristol Myers Squibb, Stefan Bundfuss, Amit Jain, Vinh Nguyen, Olga Starostecka, Kiran Peddamudium, Tomoyuki Namai, Ross Farrugia, Yirong Cao, Ashwini Weber.</p>
+  <p>Developed by F. Hoffmann-La Roche AG, GlaxoSmithKline LLC, Amgen Inc., Bristol Myers Squibb, Stefan Bundfuss, Amit Jain, Vinh Nguyen, Olga Starostecka, Kiran Peddamudium, Tomoyuki Namai, Ross Farrugia, Yirong Cao.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

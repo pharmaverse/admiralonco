@@ -1,11 +1,11 @@
 # Pre-Defined Response Event Objects
 
 These pre-defined
-[`event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/event.html)
+[`event()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/event.html)
 and
-[`event_joined()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/event_joined.html)
+[`event_joined()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/event_joined.html)
 objects can be used as input to
-[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html).
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/derive_extreme_event.html).
 
 ## Usage
 
@@ -44,7 +44,7 @@ cbor_pr
 To see the definition of the various objects simply print the object in
 the R console, e.g. `bor_sd`. For details of how to use these objects
 please refer to
-[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html).
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/derive_extreme_event.html).
 
 It is assumed that `dataset_name = "ovr"` refers to the dataset of the
 only overall response assessments at each visit which should be
@@ -54,9 +54,9 @@ of anti-cancer therapy.
 
 ## See also
 
-[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html),
-[`admiral::event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/event.html),
-[`admiral::event_joined()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/event_joined.html)
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/derive_extreme_event.html),
+[`admiral::event()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/event.html),
+[`admiral::event_joined()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/event_joined.html)
 
 ## Examples
 
@@ -154,9 +154,12 @@ for (obj_name in exports) {
 #>   <event_joined> object
 #>   description: "Define complete response (CR) for confirmed best overall response (CBOR) as CR followed by CR at least 28 days later and at most one NE in between"
 #>   dataset_name: "ovr"
+#>   filter_source: NULL
 #>   condition: AVALC == "CR" & all(AVALC.join %in% c("CR", "NE")) & count_vals(var = AVALC.join, 
 #>     val = "NE") <= 1
+#>   by_vars: NULL
 #>   order: NULL
+#>   tmp_obs_nr_var: NULL
 #>   join_vars:
 #>     AVALC
 #>     ADT
@@ -171,12 +174,15 @@ for (obj_name in exports) {
 #>   <event_joined> object
 #>   description: "Define partial response (PR) for confirmed best overall response (CBOR) as PR followed by CR or PR at least 28 days later, at most one NE in between, and no PR after CR"
 #>   dataset_name: "ovr"
+#>   filter_source: NULL
 #>   condition: AVALC == "PR" & all(AVALC.join %in% c("CR", "PR", "NE")) & count_vals(var = AVALC.join, 
 #>     val = "NE") <= 1 & (min_cond(var = ADT.join, cond = AVALC.join == 
 #>     "CR") > max_cond(var = ADT.join, cond = AVALC.join == "PR") | 
 #>     count_vals(var = AVALC.join, val = "CR") == 0 | count_vals(var = AVALC.join, 
 #>     val = "PR") == 0)
+#>   by_vars: NULL
 #>   order: NULL
+#>   tmp_obs_nr_var: NULL
 #>   join_vars:
 #>     AVALC
 #>     ADT
@@ -191,10 +197,13 @@ for (obj_name in exports) {
 #>   <event_joined> object
 #>   description: "Define confirmed response as CR followed by CR at least 28 days later and at most one NE in between"
 #>   dataset_name: "ovr"
+#>   filter_source: NULL
 #>   condition: AVALC == "CR" & all(AVALC.join %in% c("CR", "NE")) & count_vals(var = AVALC.join, 
 #>     val = "NE") <= 1
+#>   by_vars: NULL
 #>   order:
 #>     ADT
+#>   tmp_obs_nr_var: NULL
 #>   join_vars:
 #>     AVALC
 #>     ADT
@@ -209,13 +218,16 @@ for (obj_name in exports) {
 #>   <event_joined> object
 #>   description: "Define confirmed response as PR followed by CR or PR at least 28 days later, at most one NE in between, and no PR after CR"
 #>   dataset_name: "ovr"
+#>   filter_source: NULL
 #>   condition: AVALC == "PR" & all(AVALC.join %in% c("CR", "PR", "NE")) & count_vals(var = AVALC.join, 
 #>     val = "NE") <= 1 & (min_cond(var = ADT.join, cond = AVALC.join == 
 #>     "CR") > max_cond(var = ADT.join, cond = AVALC.join == "PR") | 
 #>     count_vals(var = AVALC.join, val = "CR") == 0 | count_vals(var = AVALC.join, 
 #>     val = "PR") == 0)
+#>   by_vars: NULL
 #>   order:
 #>     ADT
+#>   tmp_obs_nr_var: NULL
 #>   join_vars:
 #>     AVALC
 #>     ADT

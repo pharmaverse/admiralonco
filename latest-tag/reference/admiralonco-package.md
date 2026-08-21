@@ -43,12 +43,8 @@ Other contributors:
 
 - Yirong Cao \[contributor\]
 
-- Ashwini Weber \[contributor\]
-
 - F. Hoffmann-La Roche AG \[copyright holder, funder\]
 
 - GlaxoSmithKline LLC \[copyright holder, funder\]
-
-- Amgen Inc. \[copyright holder, funder\]
 
 - Bristol Myers Squibb \[copyright holder, funder\]

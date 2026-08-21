@@ -5,7 +5,7 @@
 We define *authors* as those who are actively maintaining the code base,
 and *contributors* as those who made a significant contribution in the
 past. For all acknowledgements, see the eponymous section in the [Home
-Page](https://pharmaverse.github.io/admiralonco).
+Page](https://pharmaverse.github.io/admiralonco/).
 
 - **Stefan Bundfuss**. Author, maintainer.
 
@@ -23,21 +23,15 @@ Page](https://pharmaverse.github.io/admiralonco).
 
 - **Yirong Cao**. Contributor.
 
-- **Ashwini Weber**. Contributor.
-
-- **[](https://roche.com/)[![Roche
+- **[](https://www.roche.com/)[![Roche
   logo](reference/figures/roche_logo.png)](https://www.roche.com/)**.
   Copyright holder, funder.
 
-- **[](https://gsk.com/)[![GSK
-  logo](reference/figures/gsk_logo.png)](https://www.gsk.com/)**.
+- **[](https://www.gsk.com/en-gb/)[![GSK
+  logo](reference/figures/gsk_logo.png)](https://www.gsk.com/en-gb/)**.
   Copyright holder, funder.
 
-- **[](https://amgen.com/)[![Amgen
-  logo](reference/figures/amgen_logo.png)](https://www.amgen.com/)**.
-  Copyright holder, funder.
-
-- **[](https://bms.com/)[![BMS
+- **[](https://www.bms.com/)[![BMS
   logo](reference/figures/bms_logo.png)](https://www.bms.com/)**.
   Copyright holder, funder.
 
@@ -48,13 +42,13 @@ Source:
 
 Bundfuss S, Jain A, Nguyen V, Starostecka O, Peddamudium K, Namai T,
 Farrugia R (2026). *admiralonco: Oncology Extension Package for ADaM in
-'R' Asset Library*. R package version 1.4.1,
+'R' Asset Library*. R package version 1.5.0,
 <https://pharmaverse.github.io/admiralonco/>.
 
     @Manual{,
       title = {admiralonco: Oncology Extension Package for ADaM in 'R' Asset Library},
       author = {Stefan Bundfuss and Amit Jain and Vinh Nguyen and Olga Starostecka and Kiran Peddamudium and Tomoyuki Namai and Ross Farrugia},
       year = {2026},
-      note = {R package version 1.4.1},
+      note = {R package version 1.5.0},
       url = {https://pharmaverse.github.io/admiralonco/},
     }

@@ -22,7 +22,7 @@
 Programming oncology specific Clinical Data Interchange Standards Consortium (CDISC) compliant Analysis Data Model (ADaM) datasets in 'R'. ADaM datasets are a mandatory part of any New Drug or Biologics License Application submitted to the United States Food and Drug Administration (FDA). Analysis derivations are implemented in accordance with the &quot;Analysis Data Model Implementation Guide&quot; (CDISC Analysis Data Model Team (2021), https://www.cdisc.org/standards/foundational/adam). The package is an extension package of the 'admiral' package.">
 <meta property="og:description" content="
 Programming oncology specific Clinical Data Interchange Standards Consortium (CDISC) compliant Analysis Data Model (ADaM) datasets in 'R'. ADaM datasets are a mandatory part of any New Drug or Biologics License Application submitted to the United States Food and Drug Administration (FDA). Analysis derivations are implemented in accordance with the &quot;Analysis Data Model Implementation Guide&quot; (CDISC Analysis Data Model Team (2021), https://www.cdisc.org/standards/foundational/adam). The package is an extension package of the 'admiral' package.">
-<meta property="og:image" content="https:/pharmaverse.github.io/admiralonco/v1.4.1/logo.png">
+<meta property="og:image" content="https:/pharmaverse.github.io/admiralonco/v1.5.0/logo.png">
 <script async src="https://widget.kapa.ai/kapa-widget.bundle.js" data-website-id="2c7249cc-f1dc-4a63-8674-6ecbcb34d95c" data-project-name="admiral" data-project-color="#2c3e50" data-project-logo="https://pharmaverse.github.io/admiralonco/cran-release/logo.png" data-consent-required="true" data-user-analytics-cookie-enabled="true" data-consent-screen-title="Help us improve our AI assistant" data-consent-screen-disclaimer="By clicking 'Allow tracking', you consent to anonymous user tracking which helps us improve our service. We don't collect any personally identifiable information." data-consent-screen-accept-button-text="Allow tracking" data-consent-screen-reject-button-text="No, thanks" data-modal-search-placeholder="Ask me a question about {admiralonco} or the {admiral} ecosystem..." data-modal-example-questions="Tell me a little about the {admiralonco} package., What are some important {admiralonco} vignettes and what do they describe?" data-modal-z-index="9999"></script><script>
 document.addEventListener("DOMContentLoaded", function () {
   // Select all navbar links that have an aria-label
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     <a class="navbar-brand me-2" href="../index.html">admiralonco</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -73,6 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
     <li><a class="dropdown-item" href="../articles/adrs_imwg.html">Creating ADRS with IMWG Criteria</a></li>
     <li><a class="dropdown-item" href="../articles/adrs_gcig.html">Creating ADRS with GCIG Criteria</a></li>
     <li><a class="dropdown-item" href="../articles/adrs_pcwg3.html">Creating ADRS with PCWG3 Criteria</a></li>
+    <li><a class="dropdown-item" href="../articles/adrs_lymphoma.html">Creating ADRS with Lugano 2014 Criteria</a></li>
     <li><a class="dropdown-item" href="../articles/adtte.html">Creating ADTTE</a></li>
     <li><a class="dropdown-item" href="../articles/adtr.html">Creating ADTR</a></li>
     <li><a class="dropdown-item" href="../articles/nactdt.html">Creating and Using New Anti-Cancer Start Date</a></li>
@@ -84,6 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
     <div class="dropdown-menu" aria-labelledby="dropdown-versions">
     <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/main">main</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/cran-release">cran-release</a>
+<a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/v1.5.0">v1.5.0</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/v1.4.1">v1.4.1</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/v1.4.0">v1.4.0</a>
 <a class="dropdown-item" data-toggle="tooltip" title="" href="https://pharmaverse.github.io/admiralonco/v1.3.0">v1.3.0</a>
@@ -153,10 +155,8 @@ document.addEventListener("DOMContentLoaded", function () {
 <p>Other contributors:</p>
 <ul>
 <li><p>Yirong Cao [contributor]</p></li>
-<li><p>Ashwini Weber [contributor]</p></li>
 <li><p>F. Hoffmann-La Roche AG [copyright holder, funder]</p></li>
 <li><p>GlaxoSmithKline LLC [copyright holder, funder]</p></li>
-<li><p>Amgen Inc. [copyright holder, funder]</p></li>
 <li><p>Bristol Myers Squibb [copyright holder, funder]</p></li>
 </ul>
 </div>
@@ -167,11 +167,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by F. Hoffmann-La Roche AG, GlaxoSmithKline LLC, Amgen Inc., Bristol Myers Squibb, Stefan Bundfuss, Amit Jain, Vinh Nguyen, Olga Starostecka, Kiran Peddamudium, Tomoyuki Namai, Ross Farrugia, Yirong Cao, Ashwini Weber.</p>
+  <p>Developed by F. Hoffmann-La Roche AG, GlaxoSmithKline LLC, Amgen Inc., Bristol Myers Squibb, Stefan Bundfuss, Amit Jain, Vinh Nguyen, Olga Starostecka, Kiran Peddamudium, Tomoyuki Namai, Ross Farrugia, Yirong Cao.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer>

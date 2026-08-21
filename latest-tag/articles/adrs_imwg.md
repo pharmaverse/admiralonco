@@ -6,9 +6,9 @@ This article describes creating an `ADRS` ADaM dataset in multiple
 myeloma (MM) studies based on International Myeloma Working Group (IMWG)
 criteria. It shows a similar way of deriving the endpoints presented in
 [Creating ADRS (Including Non-standard
-Endpoints)](https:/pharmaverse.github.io/admiralonco/v1.4.1/articles/adrs.md).
+Endpoints)](https:/pharmaverse.github.io/admiralonco/v1.5.0/articles/adrs.md).
 Most of the endpoints are derived by calling
-[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html).
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/derive_extreme_event.html).
 
 The hallmark of MM is the production of monoclonal immunoglobulins
 and/or light chains by the clonal plasma cells. Numerous parameters need
@@ -198,7 +198,7 @@ changing `AVAL` here would not change the result of those derivations.
 However, please note that the ordering of `AVAL` will be used to
 determine `ANL01FL` in the subsequent step, ensure that the appropriate
 `mode` is being set in the
-[`admiral::derive_var_extreme_flag()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_var_extreme_flag.html).
+[`admiral::derive_var_extreme_flag()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/derive_var_extreme_flag.html).
 
 IMWG ordering will be used or if you’d like to provide your own
 company-specific ordering here you could do this as follows:
@@ -478,7 +478,7 @@ filter_consecutive_vals <- function(dataset, by_vars, order, var, val, n) {
       keep_no_ref_groups = TRUE,
       inclusive = FALSE
     ) %>%
-    derive_var_merged_summary(
+    derive_vars_merged_summary(
       dataset = .,
       dataset_add = .,
       by_vars = c(by_vars, expr(temp_seq)),
@@ -503,12 +503,6 @@ many_nes <- filter_consecutive_vals(
   val = "NE",
   n = 3
 )
-#> `derive_var_merged_summary()` was deprecated in admiral 1.4.
-#> ℹ Please use `derive_vars_merged_summary()` instead.
-#> ✖ Function is brought inline with our programming strategy - warning will be
-#>   issued in January 2027
-#> ℹ See admiral's deprecation guidance:
-#>   https://pharmaverse.github.io/admiraldev/dev/articles/programming_strategy.html#deprecation
 
 if (nrow(many_nes) > 0) {
   cli_warn("There are subjects with more than three NEs in a row.")
@@ -565,7 +559,7 @@ pre-derived as first date of new anti-cancer therapy.
 In our example `NACTDT` is present in `SUPPRS` domain. If not available,
 see [admiralonco](https://pharmaverse.github.io/admiralonco/) [Creating
 and Using New Anti-Cancer Start
-Date](https:/pharmaverse.github.io/admiralonco/v1.4.1/articles/nactdt.md)
+Date](https:/pharmaverse.github.io/admiralonco/v1.5.0/articles/nactdt.md)
 for deriving this variable).
 
 ``` r
@@ -584,7 +578,7 @@ adrs_imwg <- adrs_imwg %>%
 To restrict response data up to and including first reported progressive
 disease `ANL03FL` flag could be created by using
 [admiral](https://pharmaverse.github.io/admiral/) function
-[`admiral::derive_var_relative_flag()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_var_relative_flag.html).
+[`admiral::derive_var_relative_flag()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/derive_var_relative_flag.html).
 
 ``` r
 adrs_imwg <- adrs_imwg %>%
@@ -621,7 +615,7 @@ overwritten by `set_values_to` argument are kept from the earliest
 occurring input record fulfilling the required criteria.
 
 The function
-[`admiral::derive_extreme_records()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_records.html)
+[`admiral::derive_extreme_records()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/derive_extreme_records.html)
 can be used to find the date of first PD.
 
 ``` r
@@ -652,7 +646,7 @@ For progressive disease and response shown in steps here and below, in
 our examples we show these as `ADRS` parameters, but they could equally
 be achieved via `ADSL` dates or `ADEVENT` parameters. If you prefer to
 store as an ADSL date, then the function
-[`admiral::derive_var_extreme_dt()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_var_extreme_dt.html)
+[`admiral::derive_var_extreme_dt()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/derive_var_extreme_dt.html)
 could be used to find the date of first `PD` as a variable, rather than
 as a new parameter record.
 
@@ -662,7 +656,7 @@ The building blocks for the events that contribute to deriving common
 endpoints like what constitutes a responder, or a Best Overall Response
 of complete response (CR), … are predefined in admiralonco for RECIST
 1.1 (see [Pre-Defined Response Event
-Objects](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/event_objects.md)).
+Objects](https:/pharmaverse.github.io/admiralonco/v1.5.0/reference/event_objects.md)).
 
 New events need to be defined for the IMWG criteria.  
 Below are definitions of non-response events used in the derivations of
@@ -694,7 +688,7 @@ no_data_missing <- event(
 ### Derive Response Parameter
 
 The function
-[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html)
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/derive_extreme_event.html)
 can then be used to find the date of first response. In the below
 example, the response condition has been defined as `PR` or better via
 the event `rsp_y_imwg` that was created for IMWG.
@@ -733,7 +727,7 @@ adrs <- adrs %>%
 ### Derive Clinical Benefit Parameter
 
 The function
-[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html)
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/derive_extreme_event.html)
 can then be used to derive the clinical benefit parameter, which we
 define as a patient having had a response or a sustained period of time
 before first `PD`. This could also be known as disease control. In this
@@ -857,7 +851,7 @@ adrs <- adrs %>%
 ### Derive Best Confirmed Overall Response Parameter
 
 The function
-[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/derive_extreme_event.html)
+[`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/derive_extreme_event.html)
 can be used to derive the best confirmed overall response parameter.
 
 Please note that the order of the events specified for `events` is
@@ -940,4 +934,4 @@ adrs <- adrs %>%
 
 For examples on the additional endpoints, please see [Creating ADRS
 (Including Non-standard
-Endpoints)](https:/pharmaverse.github.io/admiralonco/v1.4.1/articles/adrs.md).
+Endpoints)](https:/pharmaverse.github.io/admiralonco/v1.5.0/articles/adrs.md).

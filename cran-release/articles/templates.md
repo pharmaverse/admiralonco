@@ -10,7 +10,7 @@ template without visiting the
 [admiralonco](https://pharmaverse.github.io/admiralonco/) repository.
 
 As a reminder, you can create a starter script from a template using
-[`admiral::use_ad_template()`](https:/pharmaverse.github.io/admiral/v1.4.1/cran-release/reference/use_ad_template.html),
+[`admiral::use_ad_template()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/use_ad_template.html),
 e.g.,
 
 ``` r
@@ -998,7 +998,7 @@ adtr_sum <- derive_summary_records(
 
 # Derive analysis flag (ANL01FL) ----
 adtr_sum <- adtr_sum %>%
-  derive_var_merged_summary(
+  derive_vars_merged_summary(
     dataset_add = adtr,
     by_vars = get_admiral_option("subject_keys"),
     filter_add = AVISIT == "BASELINE" &
@@ -1006,7 +1006,7 @@ adtr_sum <- adtr_sum %>%
         (str_starts(PARAMCD, "NLDIAM") & TULOCGR1 == "NODAL")),
     new_vars = exprs(LSEXP = paste(sort(TRLNKID), collapse = ", "))
   ) %>%
-  derive_var_merged_summary(
+  derive_vars_merged_summary(
     dataset_add = adtr,
     by_vars = c(get_admiral_option("subject_keys"), exprs(AVISIT)),
     filter_add = ((str_starts(PARAMCD, "LDIAM") & TULOCGR1 == "NON-NODAL") |

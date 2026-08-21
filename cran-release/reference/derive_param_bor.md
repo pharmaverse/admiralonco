@@ -69,7 +69,7 @@ derive_param_bor(
   account.
 
   *Permitted Values:* a `date_source` object (see
-  [`date_source()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/date_source.md)
+  [`date_source()`](https:/pharmaverse.github.io/admiralonco/v1.5.0/reference/date_source.md)
   for details)
 
 - source_datasets:
@@ -199,12 +199,12 @@ be overwritten using the `set_values_to` parameter.
 ## See also
 
 Other deprecated:
-[`date_source()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/date_source.md),
-[`derive_param_clinbenefit()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/derive_param_clinbenefit.md),
-[`derive_param_confirmed_bor()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/derive_param_confirmed_bor.md),
-[`derive_param_confirmed_resp()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/derive_param_confirmed_resp.md),
-[`derive_param_response()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/derive_param_response.md),
-[`filter_pd()`](https:/pharmaverse.github.io/admiralonco/v1.4.1/reference/filter_pd.md)
+[`date_source()`](https:/pharmaverse.github.io/admiralonco/v1.5.0/reference/date_source.md),
+[`derive_param_clinbenefit()`](https:/pharmaverse.github.io/admiralonco/v1.5.0/reference/derive_param_clinbenefit.md),
+[`derive_param_confirmed_bor()`](https:/pharmaverse.github.io/admiralonco/v1.5.0/reference/derive_param_confirmed_bor.md),
+[`derive_param_confirmed_resp()`](https:/pharmaverse.github.io/admiralonco/v1.5.0/reference/derive_param_confirmed_resp.md),
+[`derive_param_response()`](https:/pharmaverse.github.io/admiralonco/v1.5.0/reference/derive_param_response.md),
+[`filter_pd()`](https:/pharmaverse.github.io/admiralonco/v1.5.0/reference/filter_pd.md)
 
 ## Author
 
