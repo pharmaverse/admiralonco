@@ -11,11 +11,11 @@ Page](https://pharmaverse.github.io/admiralonco/).
 
 - **Amit Jain**. Author.
 
-- **Vinh Nguyen**. Author.
-
-- **Olga Starostecka**. Author.
-
 - **Kiran Peddamudium**. Author.
+
+- **Michael Hall**. Author.
+
+- **Nathan Rees**. Author.
 
 - **Tomoyuki Namai**. Author.
 
@@ -40,15 +40,15 @@ Page](https://pharmaverse.github.io/admiralonco/).
 Source:
 [`DESCRIPTION`](https://github.com/pharmaverse/admiralonco/blob/main/DESCRIPTION)
 
-Bundfuss S, Jain A, Nguyen V, Starostecka O, Peddamudium K, Namai T,
-Farrugia R (2026). *admiralonco: Oncology Extension Package for ADaM in
-'R' Asset Library*. R package version 1.5.0,
+Bundfuss S, Jain A, Peddamudium K, Hall M, Rees N, Namai T, Farrugia R
+(2026). *admiralonco: Oncology Extension Package for ADaM in 'R' Asset
+Library*. R package version 1.5.0.9000,
 <https://pharmaverse.github.io/admiralonco/>.
 
     @Manual{,
       title = {admiralonco: Oncology Extension Package for ADaM in 'R' Asset Library},
-      author = {Stefan Bundfuss and Amit Jain and Vinh Nguyen and Olga Starostecka and Kiran Peddamudium and Tomoyuki Namai and Ross Farrugia},
+      author = {Stefan Bundfuss and Amit Jain and Kiran Peddamudium and Michael Hall and Nathan Rees and Tomoyuki Namai and Ross Farrugia},
       year = {2026},
-      note = {R package version 1.5.0},
+      note = {R package version 1.5.0.9000},
       url = {https://pharmaverse.github.io/admiralonco/},
     }

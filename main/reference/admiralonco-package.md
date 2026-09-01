@@ -29,11 +29,11 @@ Authors:
 
 - Amit Jain
 
-- Vinh Nguyen
-
-- Olga Starostecka
-
 - Kiran Peddamudium
+
+- Michael Hall
+
+- Nathan Rees
 
 - Tomoyuki Namai
 

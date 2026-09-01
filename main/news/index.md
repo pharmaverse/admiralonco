@@ -1,6 +1,10 @@
 # Changelog
 
+## admiralonco (development version)
+
 ## admiralonco 1.5.0
+
+CRAN release: 2026-08-21
 
 ### Documentation
 
