@@ -26,9 +26,9 @@ Authors:
 \itemize{
   \item Stefan Bundfuss \email{stefan.bundfuss@external.roche.com}
   \item Amit Jain
-  \item Vinh Nguyen
-  \item Olga Starostecka
   \item Kiran Peddamudium
+  \item Michael Hall
+  \item Nathan Rees
   \item Tomoyuki Namai
   \item Ross Farrugia
 }
