@@ -1,0 +1,93 @@
+# Package-specific context for AI coding assistants (AGENTS.md generation).
+#
+# Intended to be consumed by the `sync-admiralci-agents.yml` workflow / the
+# `pharmaverse/admiralci` create-agents-md pipeline, alongside the shared
+# {admiraldev} programming strategy, git usage, R CMD check, and unit test
+# guidance that every admiral-family package receives. Rendering this file
+# into AGENTS.md is tracked in pharmaverse/admiralci#246.
+#
+# This file captures what is unique to {admiralonco} so an agent understands
+# the therapeutic scope, the sibling packages it interoperates with, and the
+# CDISC/response-criteria references that govern its derivations, without
+# having to infer any of that from the R source alone.
+
+package_name: admiralonco
+
+therapeutic_area: >
+  Oncology — solid tumor and hematologic malignancy clinical trials, covering
+  tumor response, tumor measurements, and time-to-event efficacy endpoints.
+
+package_purpose: >
+  Extension package to {admiral} providing oncology-specific objects,
+  templates, and vignettes for building ADRS (response), ADTR (tumor
+  results), and ADTTE (time-to-event) datasets. Most derivations are done
+  with general {admiral} functions (e.g. derive_extreme_event(),
+  derive_param_tte()) combined with the predefined event and source objects
+  that {admiralonco} exports; it does not duplicate general-purpose
+  {admiral} derivations.
+
+related_packages:
+  - name: admiral
+    role: Core package this extends; admiralonco objects are designed to be
+      passed to admiral functions such as derive_extreme_event() and
+      derive_param_tte(), and admiralonco follows admiral's naming
+      conventions.
+  - name: admiraldev
+    role: Source of shared programming strategy, git usage, R CMD check, and
+      unit test guidance synced into this package's AGENTS.md files.
+  - name: pharmaversesdtm
+    role: Source of test SDTM data (e.g. RS, TR, TU) used in admiralonco
+      examples, vignettes, templates, and unit tests.
+  - name: pharmaverseadam
+    role: Source of example ADaM datasets (e.g. ADSL) used as inputs in
+      vignettes and templates.
+  - name: admiralpeds
+    role: Sibling {admiral} extension package (pediatrics); reference for
+      extension-package conventions.
+  - name: admiralvaccine
+    role: Sibling {admiral} extension package (vaccines); another reference
+      implementation for extension-package conventions.
+  - name: metacore
+    role: Spec-driven metadata package that can drive variable derivation
+      and control terminology checks upstream of admiralonco derivations.
+  - name: xportr
+    role: Downstream package used to turn finished ADaM datasets (including
+      those built with admiralonco) into submission-ready XPT transport
+      files.
+
+cdisc_igs:
+  - name: ADaM Implementation Guide (ADaMIG)
+    relevance: All admiralonco derivations follow ADaMIG conventions for
+      variable naming, flag values, and dataset structure, same as admiral.
+  - name: ADaM Basic Data Structure (BDS)
+    relevance: ADRS and ADTR are BDS datasets, with one record per subject,
+      parameter, and analysis timepoint.
+  - name: ADaM Basic Data Structure for Time-to-Event Analyses (ADTTE)
+    relevance: Governs ADTTE parameters such as overall survival,
+      progression-free survival, and duration of response, including
+      CNSR, EVNTDESC, and SRCDOM/SRCVAR.
+  - name: SDTM Oncology Domains (RS, TR, TU)
+    relevance: Primary SDTM inputs for response and tumor-measurement
+      derivations.
+  - name: Response Criteria (RECIST 1.1, iRECIST, Lugano 2014, IMWG, PCWG3, GCIG)
+    relevance: Define overall response values, progression, and
+      confirmation rules; RECIST 1.1 is the default, and vignettes show how
+      to adapt derivations to the other criteria.
+
+oncology_specific_conventions:
+  - The derive_param_*() functions (e.g. derive_param_bor(),
+    derive_param_confirmed_bor(), derive_param_response()) and filter_pd()
+    are deprecated. Use admiral::derive_extreme_event() with admiralonco's
+    predefined event()/event_joined() objects (e.g. rsp_y, bor_cr, bor_pr,
+    cbor_cr, crsp_y_cr, cb_y) instead, and do not add new code that calls
+    the deprecated functions.
+  - Time-to-event parameters are derived with admiral::derive_param_tte()
+    using admiralonco's event_source()/censor_source() objects (e.g.
+    death_event, pd_event, lastalive_censor, rand_censor, trts_censor).
+  - Response derivations commonly need to be restricted to assessments
+    before progression and/or before the start of new anti-cancer therapy;
+    keep these cut-offs explicit and configurable rather than hard-coded.
+  - Investigator and independent review (IRF/BICR) assessments are kept as
+    separate parameters rather than mixed within one parameter.
+  - As with admiral, analysis flag variables (e.g. ANLxxFL) take "Y" or NA,
+    never "N".
