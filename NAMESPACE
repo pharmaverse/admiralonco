@@ -100,7 +100,7 @@ importFrom(lifecycle,
   deprecated
 )
 importFrom(lubridate,days)
-importFrom(magrittr,`%>%`)
+importFrom(magrittr,"%>%")
 importFrom(rlang,
   abort,
   enexpr,

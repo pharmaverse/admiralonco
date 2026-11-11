@@ -1,10 +1,11 @@
 # Package-specific context for AI coding assistants (AGENTS.md generation).
 #
-# Intended to be consumed by the `sync-admiralci-agents.yml` workflow / the
-# `pharmaverse/admiralci` create-agents-md pipeline, alongside the shared
+# Not yet consumed: the `sync-admiralci-agents.yml` workflow calls the
+# `pharmaverse/admiralci` create-agents-md pipeline, which currently ignores
+# this file. Once admiralci#246 (PR #249) is merged, the pipeline will render
+# it as a package-context section in AGENTS.md, alongside the shared
 # {admiraldev} programming strategy, git usage, R CMD check, and unit test
-# guidance that every admiral-family package receives. Rendering this file
-# into AGENTS.md is tracked in pharmaverse/admiralci#246.
+# guidance that every admiral-family package receives.
 #
 # This file captures what is unique to {admiralonco} so an agent understands
 # the therapeutic scope, the sibling packages it interoperates with, and the
