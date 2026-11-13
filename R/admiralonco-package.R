@@ -11,7 +11,7 @@
 #'   assert_list_of assert_function assert_integer_scalar assert_list_of
 #'   assert_logical_scalar assert_param_does_not_exist assert_s3_class
 #'   assert_symbol assert_vars assert_varval_list deprecate_inform enumerate
-#'   expect_dfs_equal extract_vars filter_if expr_c process_set_values_to squote
+#'   expect_dfs_equal extract_vars filter_if process_set_values_to squote
 #'   suppress_warning vars2chr
 #'
 #' @importFrom cli cli_abort

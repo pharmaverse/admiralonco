@@ -362,7 +362,7 @@ derive_param_confirmed_bor <- function(dataset,
   assert_varval_list(set_values_to, required_elements = "PARAMCD")
   assert_vars(subject_keys)
   assert_data_frame(dataset,
-    required_vars = expr_c(subject_keys, reference_date, exprs(PARAMCD, ADT, AVALC))
+    required_vars = c(subject_keys, reference_date, exprs(PARAMCD, ADT, AVALC))
   )
   assert_data_frame(dataset_adsl, required_vars = subject_keys)
   assert_param_does_not_exist(dataset, set_values_to$PARAMCD)

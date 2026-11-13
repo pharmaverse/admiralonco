@@ -294,7 +294,7 @@ derive_param_bor <- function(dataset,
 
   assert_data_frame(
     arg = dataset,
-    required_vars = expr_c(
+    required_vars = c(
       subject_keys,
       reference_date,
       exprs(PARAMCD, ADT, AVALC)
@@ -303,7 +303,7 @@ derive_param_bor <- function(dataset,
 
   assert_data_frame(
     arg           = dataset_adsl,
-    required_vars = expr_c(subject_keys)
+    required_vars = subject_keys
   )
 
   filter_source <- assert_filter_cond(arg = enexpr(filter_source))

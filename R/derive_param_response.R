@@ -194,7 +194,7 @@ derive_param_response <- function(dataset,
   assert_vars(subject_keys)
   assert_data_frame(
     dataset,
-    required_vars = expr_c(subject_keys, exprs(PARAMCD, ADT, AVALC))
+    required_vars = c(subject_keys, exprs(PARAMCD, ADT, AVALC))
   )
   assert_data_frame(dataset_adsl)
   filter_s <- assert_filter_cond(enexpr(filter_source), optional = TRUE)
