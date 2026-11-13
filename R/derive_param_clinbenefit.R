@@ -225,7 +225,7 @@ derive_param_clinbenefit <- function(dataset,
   )
   assert_data_frame(
     dataset,
-    required_vars = expr_c(subject_keys, reference_date, exprs(PARAMCD, AVALC, ADT))
+    required_vars = c(subject_keys, reference_date, exprs(PARAMCD, AVALC, ADT))
   )
 
   filter_source <- assert_filter_cond(
