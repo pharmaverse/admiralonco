@@ -430,7 +430,7 @@ The function
 [`admiral::derive_extreme_event()`](https:/pharmaverse.github.io/admiral/v1.5.0/cran-release/reference/derive_extreme_event.html)
 can then be used to find the date of first response. In the below
 example, the response condition has been defined as `CR` or `PR` via the
-`rsp_y`[¹](#fn1) event.
+`rsp_y`[^1] event.
 
 ``` r
 adrs <- adrs %>%
@@ -464,7 +464,7 @@ can then be used to derive the clinical benefit parameter, which we
 define as a patient having had a response or a sustained period of time
 before first `PD`. This could also be known as disease control. In this
 example the “sustained period” has been defined as 42 days after
-randomization date via the `cb_y`[²](#fn2) event.
+randomization date via the `cb_y`[^2] event.
 
 Please note that the result `AVALC = "Y"` is defined by the first *two*
 events specified for `events`. For subjects with observations fulfilling
@@ -602,8 +602,8 @@ above can then be re-used passing in these confirmed response records.
 See the examples below of derived parameters requiring confirmation. The
 assessment and the confirmatory assessment here need to occur at least
 28 days apart *(without any +1 applied to this calculation of days
-between visits)*, using the `crsp_y_cr`[³](#fn3), `crsp_y_pr`[⁴](#fn4),
-`cbor_cr`[⁵](#fn5), and `cbor_pr`[⁶](#fn6) event.
+between visits)*, using the `crsp_y_cr`[^3], `crsp_y_pr`[^4],
+`cbor_cr`[^5], and `cbor_pr`[^6] event.
 
 Please note that the result `AVALC = "Y"` for confirmed clinical benefit
 is defined by the first *two* events specified for `events`. For
@@ -942,9 +942,8 @@ adrs <- adrs %>%
 |--------|-------------------------------------------------------------|
 | `ADRS` | `admiral::use_ad_template("ADRS", package = "admiralonco")` |
 
-------------------------------------------------------------------------
-
-1.  ``` downlit
+[^1]:
+    ``` downlit
     rsp_y
     #> <event> object
     #> description: "Define CR or PR as (unconfirmed) response"
@@ -957,7 +956,8 @@ adrs <- adrs %>%
     #> keep_source_vars: NULL
     ```
 
-2.  ``` downlit
+[^2]:
+    ``` downlit
     cb_y
     #> <event> object
     #> description: "Define CR, PR, SD, or NON-CR/NON-PD occuring at least 42 days after randomization as clinical benefit"
@@ -971,7 +971,8 @@ adrs <- adrs %>%
     #> keep_source_vars: NULL
     ```
 
-3.  ``` downlit
+[^3]:
+    ``` downlit
     crsp_y_cr
     #> <event_joined> object
     #> description: "Define confirmed response as CR followed by CR at least 21 days later and at most one NE in between"
@@ -994,7 +995,8 @@ adrs <- adrs %>%
     #> keep_source_vars: NULL
     ```
 
-4.  ``` downlit
+[^4]:
+    ``` downlit
     crsp_y_pr
     #> <event_joined> object
     #> description: "Define confirmed response as PR followed by CR or PR at least 21 days later, at most one NE in between, and no PR after CR"
@@ -1020,7 +1022,8 @@ adrs <- adrs %>%
     #> keep_source_vars: NULL
     ```
 
-5.  ``` downlit
+[^5]:
+    ``` downlit
     cbor_cr
     #> <event_joined> object
     #> description: "Define complete response (CR) for confirmed best overall response (CBOR) as CR followed by CR at least 21 days later and at most one NE in between"
@@ -1042,7 +1045,8 @@ adrs <- adrs %>%
     #> keep_source_vars: NULL
     ```
 
-6.  ``` downlit
+[^6]:
+    ``` downlit
     cbor_pr
     #> <event_joined> object
     #> description: "Define partial response (PR) for confirmed best overall response (CBOR) as PR followed by CR or PR at least 21 28 days later, at most one NE in between, and no PR after CR"

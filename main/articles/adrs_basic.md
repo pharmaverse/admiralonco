@@ -778,6 +778,6 @@ adrs <- adrs %>%
 
 ## Example Script
 
-| ADaM         | Sample Code                                                       |
-|--------------|-------------------------------------------------------------------|
+| ADaM | Sample Code |
+|----|----|
 | `ADRS_BASIC` | `admiral::use_ad_template("ADRS_BASIC", package = "admiralonco")` |

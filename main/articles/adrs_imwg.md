@@ -275,22 +275,22 @@ calculation at each time point. The maximum refers to numeric values
 previously defined in `aval_resp_conf` function.
 
 | Response at 1st time point | Response at 2nd time point | Confirmed Response at 1st time point |
-|:---------------------------|:---------------------------|:-------------------------------------|
-| sCR                        | sCR                        | sCR                                  |
-| CR                         | sCR/CR                     | max(CR, last Confirmed Response)     |
-| VGPR                       | sCR/CR/VGPR                | max(VGPR, last Confirmed Response)   |
-| PR                         | sCR/CR/VGPR/PR             | max(PR, last Confirmed Response)     |
-| MR                         | sCR/CR/VGPR/PR/MR          | max(MR, last Confirmed Response)     |
-| sCR                        | CR                         | max(CR, last Confirmed Response)     |
-| sCR/CR                     | VGPR                       | max(VGPR, last Confirmed Response)   |
-| sCR/CR/VGPR                | PR                         | max(PR, last Confirmed Response)     |
-| sCR/CR/VGPR/PR             | MR                         | max(MR, last Confirmed Response)     |
-| sCR/CR/VGPR/PR/MR          | SD/PD/NE/NA                | max(SD, last Confirmed Response)     |
-| SD                         | any                        | max(SD, last Confirmed Response)     |
-| NE                         | any                        | max(NE, last Confirmed Response)     |
-| PD reason imaging          | any                        | PD                                   |
-| PD reason serum/urine      | PD/death                   | PD                                   |
-| PD reason serum/urine      | sCR/CR/VGPR/PR/MR/SD/NE/NA | max(NE, last Confirmed Response)     |
+|:---|:---|:---|
+| sCR | sCR | sCR |
+| CR | sCR/CR | max(CR, last Confirmed Response) |
+| VGPR | sCR/CR/VGPR | max(VGPR, last Confirmed Response) |
+| PR | sCR/CR/VGPR/PR | max(PR, last Confirmed Response) |
+| MR | sCR/CR/VGPR/PR/MR | max(MR, last Confirmed Response) |
+| sCR | CR | max(CR, last Confirmed Response) |
+| sCR/CR | VGPR | max(VGPR, last Confirmed Response) |
+| sCR/CR/VGPR | PR | max(PR, last Confirmed Response) |
+| sCR/CR/VGPR/PR | MR | max(MR, last Confirmed Response) |
+| sCR/CR/VGPR/PR/MR | SD/PD/NE/NA | max(SD, last Confirmed Response) |
+| SD | any | max(SD, last Confirmed Response) |
+| NE | any | max(NE, last Confirmed Response) |
+| PD reason imaging | any | PD |
+| PD reason serum/urine | PD/death | PD |
+| PD reason serum/urine | sCR/CR/VGPR/PR/MR/SD/NE/NA | max(NE, last Confirmed Response) |
 
 #### Handling Non-Evaluable Responses
 

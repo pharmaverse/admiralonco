@@ -16,12 +16,7 @@ situations in which CA-125 criteria could be used. These guidelines are
 becoming more and more popular in clinical trials for ovarian cancer and
 are often used as one of the secondary endpoints.
 
-| GCIG recommendations for CA-125 criteria for response and progression in various clinical situations |                                 |                                               |                             |
-|------------------------------------------------------------------------------------------------------|---------------------------------|-----------------------------------------------|-----------------------------|
-| **Use case**                                                                                         | **Use Recommended by GCIG**     | **Not Standard and Needs Further Validation** | **Not Recommended by GCIG** |
-| First-line trials                                                                                    | CA-125 progression              |                                               | CA-125 response             |
-| Maintenance or consolidation trials                                                                  |                                 | CA-125 response and progression               |                             |
-| Relapse trials                                                                                       | CA-125 response and progression |                                               |                             |
+[TABLE]
 
 However, the CA-125 criteria can be a bit tricky to use in programming,
 especially when used alongside the RECIST 1.1.
@@ -120,14 +115,14 @@ collected on the CRF:
 
 5.  In `SUPPRS` there are records with below `QNAM` and `QLABEL` values:
 
-    | QNAM       | QLABEL                                    | QVAL | Purpose                                                                                                    | Use case                                                   |
-    |:-----------|:------------------------------------------|:-----|:-----------------------------------------------------------------------------------------------------------|:-----------------------------------------------------------|
-    | `CA125EFL` | CA-125 response evaluable                 | Y/N  | Indicates population evaluable for CA-125 response (baseline CA-125 \>= 2 \* ULRR and no mouse antibodies) | `CA125EFL` variable                                        |
-    | `CAELEPRE` | Elevated pre-treatment CA-125             | Y/N  | Indicates CA-125 level at baseline (Y - elevated, N - not elevated)                                        | Derivation of PD category (`MCRIT1`/`MCRIT1ML`/`MCRIT1MN`) |
-    | `MOUSEANT` | Received mouse antibodies                 | Y    | Indicates if a prohibited therapy was received                                                             | Derivation of `ANL02FL`                                    |
-    | `CA50RED`  | \>=50% reduction from baseline            | Y    | Indicates response, but does not distinguish between CR and PR                                             | Not used in further derivations                            |
-    | `CANORM2X` | CA125 normal, lab increased \>=2x ULRR    | Y    | Indicates PD category A or C                                                                               | Derivation of PD category (`MCRIT1`/`MCRIT1ML`/`MCRIT1MN`) |
-    | `CNOTNORM` | CA125 not norm, lab increased \>=2x nadir | Y    | Indicates PD category B                                                                                    | Derivation of PD category (`MCRIT1`/`MCRIT1ML`/`MCRIT1MN`) |
+    | QNAM | QLABEL | QVAL | Purpose | Use case |
+    |:---|:---|:---|:---|:---|
+    | `CA125EFL` | CA-125 response evaluable | Y/N | Indicates population evaluable for CA-125 response (baseline CA-125 \>= 2 \* ULRR and no mouse antibodies) | `CA125EFL` variable |
+    | `CAELEPRE` | Elevated pre-treatment CA-125 | Y/N | Indicates CA-125 level at baseline (Y - elevated, N - not elevated) | Derivation of PD category (`MCRIT1`/`MCRIT1ML`/`MCRIT1MN`) |
+    | `MOUSEANT` | Received mouse antibodies | Y | Indicates if a prohibited therapy was received | Derivation of `ANL02FL` |
+    | `CA50RED` | \>=50% reduction from baseline | Y | Indicates response, but does not distinguish between CR and PR | Not used in further derivations |
+    | `CANORM2X` | CA125 normal, lab increased \>=2x ULRR | Y | Indicates PD category A or C | Derivation of PD category (`MCRIT1`/`MCRIT1ML`/`MCRIT1MN`) |
+    | `CNOTNORM` | CA125 not norm, lab increased \>=2x nadir | Y | Indicates PD category B | Derivation of PD category (`MCRIT1`/`MCRIT1ML`/`MCRIT1MN`) |
 
 The above `SUPPRS` records refer only to records with
 `RS.RSCAT = "CA125"`. The exception is `QNAM = "MOUSEANT"`, which

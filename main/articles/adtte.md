@@ -52,7 +52,7 @@ specific process.
 
 For example purpose, the ADaM datasets—which are included in
 [pharmaverseadam](https://pharmaverse.github.io/pharmaverseadam/)—are
-used. An alternative might be to use `ADEVENT` as input[¹](#fn1).
+used. An alternative might be to use `ADEVENT` as input[^1].
 
 ``` r
 adsl <- pharmaverseadam::adsl
@@ -350,8 +350,6 @@ adtte <- adtte %>%
 |---------|--------------------------------------------------------------|
 | `ADTTE` | `admiral::use_ad_template("ADTTE", package = "admiralonco")` |
 
-------------------------------------------------------------------------
-
-1.  The subjects are restricted to `"01-701-1015"`, `"01-701-1028"`,
+[^1]: The subjects are restricted to `"01-701-1015"`, `"01-701-1028"`,
     `"01-701-1034"`, `"01-701-1097"`, `"01-701-1115"`, `"01-701-1118"`,
     `"01-701-1130"`, `"01-701-1133"`, `"01-701-1146"`, `"01-701-1211"`.
