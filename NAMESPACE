@@ -70,7 +70,6 @@ importFrom(admiraldev,
   deprecate_inform,
   enumerate,
   expect_dfs_equal,
-  expr_c,
   extract_vars,
   filter_if,
   process_set_values_to,
@@ -100,7 +99,7 @@ importFrom(lifecycle,
   deprecated
 )
 importFrom(lubridate,days)
-importFrom(magrittr,`%>%`)
+importFrom(magrittr,"%>%")
 importFrom(rlang,
   abort,
   enexpr,

@@ -292,7 +292,7 @@ derive_param_confirmed_resp <- function(dataset,
   assert_vars(subject_keys)
   assert_data_frame(
     dataset,
-    required_vars = expr_c(subject_keys, exprs(PARAMCD, ADT, AVALC))
+    required_vars = c(subject_keys, exprs(PARAMCD, ADT, AVALC))
   )
   assert_data_frame(dataset_adsl, required_vars = subject_keys)
   if (!is.null(dataset)) {
