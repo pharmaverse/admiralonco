@@ -1,5 +1,9 @@
 # admiralonco (development version)
 
+## Various
+
+- Added `AGENTS.md` and `tests/testthat/AGENTS.md` to give AI coding assistants context on `{admiral}`/ADaM conventions, kept current by a monthly `{admiralci}` workflow that syncs `{admiraldev}` guidance, following the same pattern adopted by `{admiral}` and `{admiralpeds}`. Oncology-specific context is captured in `.github/agents-config.yml`. (#363)
+
 # admiralonco 1.5.0
 
 ## Documentation
