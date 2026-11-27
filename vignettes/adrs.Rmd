@@ -803,7 +803,9 @@ adrs <- adrs %>%
       AVAL = aval_resp(AVALC),
       ANL01FL = "Y"
     )
-  ) %>%
+  )
+
+adrs <- adrs %>%
   derive_extreme_records(
     dataset_ref = adsl,
     dataset_add = adrs,
